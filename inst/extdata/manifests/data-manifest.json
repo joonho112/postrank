@@ -1,0 +1,117 @@
+{
+  "manifest_schema_version": "1",
+  "package_version": "1.1.0",
+  "created_at_utc": "2026-10-30T13:12:43Z",
+  "r_version": "R version 4.6.0 (2026-04-24)",
+  "objects": {
+    "postrank_toy": {
+      "object": "postrank_toy",
+      "file": "data/postrank_toy.rda",
+      "bytes": 4044,
+      "sha256": "f36ea376f7d78d0ca4c8f1b814954740df1bcd0ea2e9dca670e78dca978f1d2a",
+      "class": "postrank_draws",
+      "input_identity": "9e7e1006f4d53c1bf75b4bbeb89fdf72c24afc2b24ecfb6832c86acc66692331"
+    },
+    "pr_case_alabama": {
+      "object": "pr_case_alabama",
+      "file": "data/pr_case_alabama.rda",
+      "bytes": 54160,
+      "sha256": "fa5a83cd5dfd4d11011e2925052a497e5b55942009a614d312ae13b4e6b49f8f",
+      "class": "list",
+      "case_id": "alabama-opportunity-67-county-M1",
+      "input_identity": "a12826d5a8a466d540ec8ae54278672f377f2530da340defec250ee7e5bf8766",
+      "data_distribution": "CC-BY-4.0",
+      "data_notice": "extdata/case-studies/DATA-NOTICE.md",
+      "source_conditions": "CC BY 4.0; attribution and modification notices retained"
+    },
+    "pr_case_cde": {
+      "object": "pr_case_cde",
+      "file": "data/pr_case_cde.rda",
+      "bytes": 21752,
+      "sha256": "30ad51890b30e5d205f8db7ccb872d71508e7f03fccbb38b698d5a7f3b0493e6",
+      "class": "list",
+      "case_id": "cde-chronic-2026-twelve-school",
+      "input_identity": "cb31241dfa428b8ddb06ffa611532b37fa6f499b4b75693f2f24e73aa2fbf13b",
+      "data_distribution": "public-source-maintainer-confirmed",
+      "data_notice": "extdata/case-studies/DATA-NOTICE.md",
+      "source_conditions": "Public-source data; redistribution confirmed by the package maintainer; source attribution retained."
+    },
+    "pr_case_krw": {
+      "object": "pr_case_krw",
+      "file": "data/pr_case_krw.rda",
+      "bytes": 379376,
+      "sha256": "1c6d6ed56e197d3428284e948008968a31d81f9357d40ceb0fb5d0185ab1afe5",
+      "class": "list",
+      "case_id": "krw-97-firm-signed-cell",
+      "input_identity": "469243f72fc8d7a881ec5a7f9c3a5fda3617e7b5a2b1a735b6d769befeb1b0ee",
+      "data_distribution": "CC-BY-NC",
+      "data_notice": "extdata/case-studies/DATA-NOTICE.md",
+      "source_conditions": "CC-BY-NC; version unspecified in inspected source readme"
+    },
+    "pr_example_draws": {
+      "object": "pr_example_draws",
+      "file": "data/pr_example_draws.rda",
+      "bytes": 2678100,
+      "sha256": "06d440f36e4b0d59dfbb4b66ea3cddf1b248d6d633a3e75fdbbae38eb31a3cfe",
+      "class": "postrank_draws",
+      "input_identity": "d22550eafe18a9e626cf80490fc4944559a5fe8cdd4f6ad1ff87824774d8018f",
+      "law": {
+        "file": "data-raw/pr-example-law.json",
+        "sha256": "f9951cf1dda5c69c56093c4e8882e554050664d00badeb4c402d1610a3c852b5"
+      }
+    },
+    "pr_example_gaussian": {
+      "object": "pr_example_gaussian",
+      "file": "data/pr_example_gaussian.rda",
+      "bytes": 20804,
+      "sha256": "24f120e9a5dd146353c6709b6ffbe7a76240507378ea87c5d709caa56a9a6479",
+      "class": "postrank_coefficients",
+      "coefficient_identity": "0b488bcc654c532a007a195b07e6268083442971c37b661528bc2d2aa687bb46",
+      "law": {
+        "file": "data-raw/pr-example-law.json",
+        "sha256": "f9951cf1dda5c69c56093c4e8882e554050664d00badeb4c402d1610a3c852b5"
+      }
+    },
+    "pr_toy_mcmc": {
+      "object": "pr_toy_mcmc",
+      "file": "data/pr_toy_mcmc.rda",
+      "bytes": 2416,
+      "sha256": "0eca85566b01346c783e37c2c3d82be150edd32cb0394598389fdac781309be5",
+      "class": "array",
+      "dim": [
+        2048,
+        3,
+        2
+      ]
+    },
+    "pr_tutorial": {
+      "object": "pr_tutorial",
+      "file": "data/pr_tutorial.rda",
+      "bytes": 2028,
+      "sha256": "d02ab18a37d5b2cc4972ba2788b4b0b6273ba8b2adbd8bb7e4a57e5c3a8b3b46",
+      "class": "list",
+      "law": {
+        "file": "data-raw/pr-tutorial-law.json",
+        "sha256": "446bd26a0fef78997f7af871198310bd816d24b2f38243598ab80cb78ab02ad0"
+      },
+      "input_identities": {
+        "one": "1029257218c55178ffb91d8b9ea0cd86efeef4e3d0f4be5da7676d8d8677cc33",
+        "two": "83c9e6459b4ba70c1660ba40ee4dff5efdc1b760be9800efe6815ccc67e09127"
+      }
+    }
+  },
+  "source_data_bytes": 3162680,
+  "source_data_budget_bytes": 4194304,
+  "installed_data_budget_bytes": 5242880,
+  "public_preparation": {
+    "prepared_at": "2026-10-30T16:09:41Z",
+    "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+    "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+    "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+  },
+  "pilot_removal_preparation": {
+    "prepared_at": "2026-10-30T16:42:17Z",
+    "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+    "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+  }
+}

@@ -1,0 +1,348 @@
+---
+title: "Race and gender at large employers"
+output:
+  rmarkdown::html_vignette:
+    math_method: mathml
+vignette: >
+  %\VignetteIndexEntry{Race and gender at large employers}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse=TRUE, comment="#>", fig.width=8.5,
+  fig.height=5, dpi=120, out.width="100%")
+library(postrank)
+source(system.file("scripts", "_vignette-setup.R", package="postrank", mustWork=TRUE), local=TRUE)
+analysis <- load_or_compute("case_krw_signed97")
+krw <- pr_case_krw
+grades <- get_grades(analysis)
+profile <- get_profile(analysis)
+risk <- get_risk(analysis)
+ev <- analysis$fit$evaluation
+n_firms <- nrow(krw$units)
+grade_sizes <- table(grades)
+sc <- krw$reference$single_criterion
+core <- krw$reference$signed_core
+scope <- krw$reference$certification_scope
+fmt <- function(x, digits=3) formatC(x, digits=digits, format="f", big.mark=",")
+count <- function(x) format(x, big.mark=",", scientific=FALSE, trim=TRUE)
+pct <- function(x) paste0(fmt(100*x, 1), "%")
+sci <- function(x) format(x, digits=3, scientific=TRUE, trim=TRUE)
+firm_labels <- setNames(paste0(krw$units$firm_name, " [", krw$units$entity_id, "]"), krw$units$entity_id)
+firm_labels <- vapply(firm_labels, function(z) paste(strwrap(z, width=23), collapse="\n"), "")
+criterion_labels <- c(race_signed="White-name contact advantage\n(log ratio)",
+  gender_signed="Male-name contact advantage\n(log ratio)")
+```
+
+Employer comparisons may concern both race and gender, with a single grade
+required to summarize the two criteria. We consider such a report for the
+`r n_firms` firms in the bundled Kline, Rose, and Walters case. The analysis
+specifies the comparison probabilities and reporting loss, examines the
+resulting disclosure and withholding, and compares the common grading with
+archived single-criterion cards.
+
+The results use a prepared analysis of the bundled input. Rendering the
+article requires neither posterior model fitting nor a solver. An optional
+call specifies a new analysis using HiGHS. The input and prepared result
+refer to the same firms and targets, with no Gaussian approximation.
+
+## Targets and source data {#the-question-encoded-in-the-input}
+
+The data are adapted from Kline, Rose, and Walters' *Data and Code for: A
+Discrimination Report Card*, available in the
+[replication archive](https://doi.org/10.3886/E198284V1). They concern the
+original correspondence experiment. A grade here describes the modelled
+contact differences in those data; it is not a statement about an employer's
+current practices or the effect of an intervention.
+
+```{r input}
+library(postrank)
+krw <- pr_case_krw
+dim(krw$input$e)
+krw$input$targets
+```
+
+The first target is the signed white-name contact advantage,
+\(\log(p_{white})-\log(p_{black})\). The second is the signed male-name contact
+advantage, \(\log(p_{male})-\log(p_{female})\). Larger values receive higher
+reporting priority on each criterion. Consequently, grade 1 denotes the
+higher-priority group. A negative gender target means a female-name contact
+advantage; taking its absolute value would answer a different question.
+
+Both targets are log ratios. Their posterior means differ from the
+logarithms of posterior mean probability ratios, and exponentiating a
+posterior mean log ratio generally differs from taking the posterior mean
+ratio. Retaining the supplied scale ensures a common interpretation of the
+target, intervals and pairwise comparisons.
+
+The source README states, “The data are licensed under a Creative
+Commons/CC-BY-NC license.” Its license version is unspecified. The bundled
+adaptation retains the same noncommercial source notice. See
+`?pr_case_krw` for attribution and the extraction description. The package
+code license does not replace those conditions.
+
+### Posterior specification {#what-distribution-do-these-numbers-describe}
+
+The original empirical-Bayes analysis supplies posterior grids. This case
+uses continuous uniform cells whose boundaries lie between retained grid
+midpoints, preserving each cell's posterior mass. The first race cell has
+nonnegative support. The fitted prior and its parameters remain fixed. The
+supplied means and `r count(100*krw$input$summaries$level)`% equal-tail marginal
+intervals describe those same continuous cells.
+
+For distinct firms, `e[i, j, k]` is the posterior probability that firm
+`i`'s target is no larger than firm `j`'s target on criterion `k`. It is
+therefore the expected directional error when the report places `i` above
+`j`. These probabilities were calculated assuming conditional independence
+of firms given the fixed empirical-Bayes quantities. Importing the array
+preserves this assumption without establishing its empirical validity.
+
+The archive's `Pi` matrix, discrete grid atoms and the continuous cell law
+used here represent different probability specifications. `Pi` is a
+published comparison reference with its own conventions. Grid atoms assign
+mass to nodes and can produce positive equality probabilities; the continuous
+law distributes each mass over an interval and declares zero equality
+probability for distinct firms. The archive's plotting repair and the grade
+generator's probability floor are not applied to this input. Their reference
+records are retained separately in `krw$reference$archive_pi`.
+
+Criterion-wise probabilities and marginal summaries suffice for the
+weighted loss below, which adds expected errors across criteria. The input
+contains neither target draws nor a within-firm joint distribution of race
+and gender. Consequently, it does not identify probabilities involving a
+composite race-and-gender target or simultaneous dominance on both criteria.
+
+## Loss and grade constraints {#choose-the-comparisons-worth-reporting}
+
+The reporting loss assigns equal criterion weights, a withholding cost of
+`r fmt(analysis$settings$tau, 2)`, and at most
+`r analysis$settings$G_max` grades. The weights average expected directional
+errors; they neither combine the posterior means nor impose equal precision
+across criteria.
+
+```{r policy}
+settings <- postrank_settings(
+  weights = c(race_signed = .5, gender_signed = .5),
+  tau = .25,
+  G_max = 4L
+)
+```
+
+There are \(M=\binom{n}{2}\) unordered firm pairs. A grade either discloses a
+direction for a pair or leaves it unordered. Let \(N\) be the number disclosed
+and \(E_k\) the expected number of wrong-direction disclosures on criterion
+\(k\). The risk for this policy is
+
+\[
+ R(g)=\frac{\sum_k w_k E_k(g)+\tau\{M-N(g)\}}{M}.
+\]
+
+Each pair receives a common grade relation whose expected error may differ
+across criteria. Assigning all firms to one grade is admissible and gives
+risk \(\tau\) by withholding every comparison. This action makes no equality
+claim about firms. Likewise, an increase in the grade cap expands the
+permitted number of groups without requiring all grades to be occupied.
+
+The following optional call uses the supplied interval level, explicitly
+selects a solver and imposes a time limit. It is not executed during document
+rendering. For a new run, the returned status and bound determine whether
+optimality was established within tolerance; the time limit alone provides
+no such assurance.
+
+```{r optional-fresh-analysis, eval=FALSE}
+analysis <- postrank(
+  krw$input, settings = settings,
+  level = krw$input$summaries$level,
+  backend = "highs",
+  control = postrank_control(time_limit = 30, threads = 1L, seed = 1304L),
+  fragility = FALSE
+)
+```
+
+## Common grading {#what-the-common-grade-discloses}
+
+```{r result}
+analysis
+get_risk(analysis)
+```
+
+The prepared result has `r length(grade_sizes)` grades containing
+`r paste(as.integer(grade_sizes), collapse=" / ")` firms. It discloses
+`r count(ev$N)` of `r count(ev$M)` pairs (`r pct(ev$N/ev$M)`) and withholds
+`r count(ev$M-ev$N)`. Its risk is `r fmt(risk$risk, 11)`, compared with
+`r fmt(analysis$settings$tau, 2)` for withholding all pairs under the same
+settings. The large middle grade thus reflects substantial withholding at
+the specified cost.
+
+The returned status is `r risk$status`, meaning optimal within the numerical
+solver tolerances for the supplied coefficient problem. The recorded gap is
+`r risk$gap`. The result also retains a warning: the reported lower bound
+exceeded the validated action risk by `r sci(analysis$fit$objective$risk_bound_minus_action_risk)`,
+within its bound-validation tolerance of
+`r sci(analysis$fit$objective$bound_validation_risk_tolerance)`, and was clamped
+to the action risk. Thus a displayed zero gap is a numerical optimization
+statement conditional on this finite probability table. It does not certify
+the underlying posterior approximation, the empirical-Bayes assumptions, or
+the firms' true contact differences.
+
+```{r criterion-results}
+profile <- get_profile(analysis)
+knitr::kable(profile[, c("criterion", "weight", "E", "E_over_N", "E_over_M", "risk")],
+  digits = 4, row.names = FALSE)
+```
+
+The expected error per disclosed pair is
+`r fmt(profile$E_over_N[profile$criterion=="race_signed"], 3)` for race and
+`r fmt(profile$E_over_N[profile$criterion=="gender_signed"], 3)` for gender.
+These ratios use the same `r count(ev$N)` disclosed pairs. By contrast,
+`E_over_M` divides by all `r count(ev$M)` pairs. Neither quantity is a count
+of observed mistakes: both average over the declared posterior uncertainty.
+The criterion risks also include the cost of the withheld pairs.
+
+```{r criterion-profile, fig.height=4, fig.cap="Expected wrong-direction comparisons per disclosed pair. Both criteria describe the same common grade, and both use N as the denominator."}
+postrank_plot_profile(analysis, show = "E_over_N")
+```
+
+A weighted loss may retain a direction with greater uncertainty on one
+criterion when the other criterion provides sufficient support. Equal
+weights can therefore yield different criterion-specific errors. This
+analysis imposes no separate criterion error budget, so `q` is unavailable
+in the extracted profile rather than equal to zero.
+
+## Posterior summaries for selected firms {#read-a-named-report-without-hiding-the-withheld-group}
+
+The following report card includes every firm outside the largest grade
+and a spaced selection within that grade. This display allocation retains
+the small outer groups and permits legible intervals. It changes neither
+the grading nor the population represented by the full result, and is not a
+representative subsample. All `r n_firms` firms remain available in
+`as.data.frame(analysis)`.
+
+```{r select-firms}
+grades <- get_grades(analysis)
+largest_grade <- as.integer(names(which.max(table(grades))))
+middle_ids <- names(grades)[grades == largest_grade]
+selected <- c(
+  names(grades)[grades != largest_grade],
+  middle_ids[round(seq(1, length(middle_ids), length.out = 5))]
+)
+firm_labels <- setNames(
+  paste0(krw$units$firm_name, " [", krw$units$entity_id, "]"),
+  krw$units$entity_id
+)
+firm_labels <- vapply(firm_labels, function(z)
+  paste(strwrap(z, width = 23), collapse = "\n"), "")
+```
+
+```{r named-card, fig.height=8.5, fig.cap=paste0("Selected firms, with identifiers retained beside their names. Points and intervals are marginal means and ", format(100*krw$input$summaries$level), "% equal-tail intervals from the continuous cell law. The original common grades are unchanged.")}
+postrank_plot_report_card(
+  analysis, entities = selected, entity_labels = firm_labels,
+  criterion_labels = c(
+    race_signed = "White-name contact advantage\n(log ratio)",
+    gender_signed = "Male-name contact advantage\n(log ratio)"
+  ), ncol = 2
+)
+```
+
+The horizontal intervals describe uncertainty about firm targets, whereas
+the grades specify the reporting action across firms. The grading is chosen
+from pairwise directional probabilities and the declared loss, rather than
+interval overlap. Firms assigned to the same grade may therefore have
+different posterior means, intervals and targets.
+
+Firm names provide display labels, while IDs retain the correspondence with
+source rows. The estimates and standard errors in `krw$units` are source
+estimates and differ from the posterior summaries shown here. The latter
+are available in `as.data.frame(analysis, what = "report_card")`.
+Combining source standard errors with posterior means would not reconstruct
+the reported intervals.
+
+## Evaluation of archived cards under a common loss {#put-the-archived-cards-on-the-same-loss-before-comparing}
+
+The archived single-criterion cards use
+\(\lambda\) = `r fmt(sc$lambda, 2)`, corresponding to
+\(\tau=\lambda/(1+\lambda)\) = `r fmt(sc$tau, 2)`. The common analysis above
+uses \(\tau\) = `r fmt(analysis$settings$tau, 2)`. Numerically equal lambda and
+tau values therefore do not denote the same withholding cost. The original
+single-criterion cards also permit up to `r sc$G_max` grades and address one
+target at a time. Direct comparison of their original losses with the common
+loss would therefore compare values of different objective functions.
+
+For a common comparison, each archived card can be evaluated under the
+current signed cell probabilities, equal criterion weights and common
+withholding cost. Supplying its named grade vector to `postrank_compare()`
+performs this fixed-action evaluation. The archived optimization is neither
+rerun nor assigned a new optimization status.
+
+```{r compare-actions}
+comparison <- postrank_compare(
+  analysis,
+  archived_common = krw$reference$signed_core$grade,
+  published_race = krw$reference$single_criterion$grade$race,
+  published_gender = krw$reference$single_criterion$grade$gender,
+  baselines = character()
+)
+knitr::kable(comparison$table[, c("method", "risk", "N", "G", "status", "family_feasible")],
+  digits = 6, row.names = FALSE)
+```
+
+```{r compare-figure, fig.height=5.5, fig.cap="All displayed risks use the current signed cell input and one common policy. Supplied archived actions are evaluated only; their original numerical statuses are not inherited."}
+postrank_plot_compare(comparison)
+```
+
+The archived and prepared common actions differ in
+`r count(sum(comparison$relations[comparison$relations$method=="archived_common", c("n_new_disclosed","n_new_withheld","n_reversed")]))`
+pair relations. The archived race and gender cards disclose
+`r count(sc$cell_metrics$race$N)` and `r count(sc$cell_metrics$gender$N)`
+pairs, respectively. These evaluations describe the trade-off between
+disclosure and expected error for the fixed actions under the common loss;
+they do not establish a general advantage over single-criterion reports.
+
+Even for a fixed action, its evaluated risk depends on the coefficient law.
+For the archived common action, the archive-reference risk is
+`r fmt(core$archive_metrics$risk, 11)` and the continuous-cell risk is
+`r fmt(core$cell_metrics$risk, 11)`, a difference of
+`r sci(core$cell_metrics$risk-core$archive_metrics$risk)`.
+The difference results from the probability reference rather than a new
+optimization. Its magnitude is retained when assessing numerical
+reproduction.
+
+## Changes of target and the limits of the stored evidence
+
+The inputs `krw$alternatives$race` and `krw$alternatives$gender` support
+single-criterion analyses of the same signed targets.
+`krw$alternatives$absolute_gender` retains signed race and replaces gender
+by the magnitude of its contact gap. This input folds the original
+continuous cells, including those crossing zero, and provides the
+corresponding probabilities and summaries.
+
+Absolute gender assigns high priority to a large advantage in either
+direction. It therefore changes the target even when the numerical policy
+settings are held fixed. The stored action is a separate reference whose
+risk cannot be interpreted as an improvement over the signed analysis.
+Changes in weights or tau likewise require evaluation or optimization under
+the newly specified loss.
+
+The source research campaign completed
+`r scope$solver_and_coefficient_gate_passed + scope$validated_independent_reference`
+of `r scope$total_unique_problems` distinct numerical problems:
+`r scope$solver_and_coefficient_gate_passed` passed its solver and
+finite-reference coefficient checks, and
+`r scope$validated_independent_reference` had an independent reference
+validation. The other `r scope$not_run` were not run. Those qualifications
+belong to their declared research calculations. They are neither a completed
+sensitivity sweep nor additional certification of this prepared package
+result. This article does not run a weight path, refit the prior, or fill in
+the missing research problems.
+
+A smaller one-criterion analysis is given in
+[Analysis with one or several criteria](a1-getting-started.html). The preparation of other
+posterior inputs is described in
+[Analysis of supplied posterior results](a5-your-posterior-results.html).
+[Reading and exporting results](a6-reading-exporting-results.html) documents
+the result tables, and
+[Figures and sensitivity analysis](a7-figures-sensitivity.html) considers
+explicit changes to reporting settings.
+
+The [several-criteria article](m2-several-criteria.html) develops the distinction between weighted directional errors and composite targets. [Monte Carlo uncertainty and diagnostics](m6-uncertainty-diagnostics.html) separates numerical checks from model calibration and empirical-Bayes conditioning.

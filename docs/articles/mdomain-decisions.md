@@ -1,0 +1,529 @@
+# When domains can be graded separately
+
+A multidomain report assigns each unit one grade in each domain. Smaller
+grade labels mean higher reported priority within that domain. A tie
+withholds a direction; it does not assert that the latent targets are
+equal. This article explains when separate domain choices solve the
+reporting problem, and when the dependence between domains changes the
+chosen profile. The executable examples use small, independently
+specified synthetic inputs, run offline, and need no optimization
+backend. The exact and MCMC examples run when the suggested package
+`gmp` is installed.
+
+## Additive loss and separate choices
+
+Let $`G_d`$ be the grade column in domain $`d`$, $`F_d`$ the number of
+false disclosed directions in a posterior state, and $`T_d`$ the number
+of withheld pairs. A strict direction at latent equality is false. With
+$`n`$ original units, $`M = {n \choose 2}`$ remains the loss
+denominator, even when a card withholds some comparisons. The additive
+expected loss is
+
+``` math
+R(G) = \sum_d w_d\{E(F_d) + \tau_d T_d\}/M.
+```
+
+Its domain terms depend only on the corresponding marginal law. Suppose
+the declared family is a Cartesian product of domain banks and every
+constraint is domain specific, such as structural equality, grade caps,
+or an expected-error guard. The feasible family is then also a Cartesian
+product. Minimizing each weighted domain term separately minimizes the
+sum; combining the complete sets of those minimizers gives every minimum
+in that product. For a zero-weight domain, every feasible column
+minimizes its weighted term. This conclusion does not require
+independent posterior domains. A common-grade requirement or another
+constraint linking columns would require a different argument.
+
+A joint protection requirement changes the feasible set. For example,
+write $`N_d`$ for the number of disclosed pairs in the specified scope
+and require
+
+``` math
+J(G) = P\{\text{at least one }d\text{ has }F_d > t_d N_d\}
+\leq \alpha.
+```
+
+This is a union within the **same posterior state**. Dependence can
+change its probability while leaving the marginal errors and additive
+loss unchanged. If $`N_d=0`$, that domain’s exceedance event is
+structurally false; the corresponding error fraction is undefined rather
+than a measured zero.
+
+## Two units, two domains, unchanged marginal errors
+
+Units A and B have binary priority values. In a normal state A is above
+B in both domains. A reversal exchanges their values. The two complete
+finite laws below differ only in how their reversals occur together:
+
+| Law | Normal in both | Reverse domain one only | Reverse domain two only | Reverse both |
+|:---|---:|---:|---:|---:|
+| Coincident | 9/10 | 0 | 0 | 1/10 |
+| Disjoint | 8/10 | 1/10 | 1/10 | 0 |
+
+In either domain of either law, reporting A above B has error
+probability 1/10. Set equal domain weights, tie loss `tau = "1/4"`,
+strict threshold `t = "0"`, and joint cap `alpha = "3/20"`. Character
+fractions preserve these exact policy values.
+
+``` r
+
+units <- c("A", "B")
+domains <- c("one", "two")
+targets <- setNames(lapply(domains, function(d) list(
+  definition = paste("Fictional priority in domain", d),
+  units = "arbitrary priority units", orientation = "larger_is_higher",
+  equality_classes = units,
+  equality_provenance = "A and B are distinct modeled targets.")), domains)
+
+# Each row specifies the reversals in one complete joint state.
+make_states <- function(reverse, ids) {
+  x <- array(0, c(nrow(reverse), 2L, 2L),
+    dimnames = list(ids, units, domains))
+  for (d in seq_along(domains)) {
+    x[, "A", d] <- ifelse(reverse[, d], 1, 2)
+    x[, "B", d] <- ifelse(reverse[, d], 2, 1)
+  }
+  x
+}
+make_law <- function(id, reverse, masses) {
+  postrank_mdomain_input(
+    make_states(reverse, paste0(id, "-", seq_len(nrow(reverse)))),
+    targets = targets,
+    provenance = list(input_id = id, law_id = id, proper_law = TRUE,
+      joint_generation = "Complete finite support authored in this article.",
+      sampling_assumptions = list(
+        finite_support_origin = "All support states and exact masses listed here.")),
+    representation = "exact_finite_law", masses = masses)
+}
+laws <- list(
+  coincident = make_law("coincident",
+    rbind(c(FALSE, FALSE), c(TRUE, TRUE)), c("9/10", "1/10")),
+  disjoint = make_law("disjoint",
+    rbind(c(FALSE, FALSE), c(TRUE, FALSE), c(FALSE, TRUE)),
+    c("8/10", "1/10", "1/10")))
+policy <- postrank_mdomain_decision(tau = "1/4", t = "0", alpha = "3/20")
+```
+
+Declare three columns per domain: withhold, A above B, and B above A.
+Their full Cartesian product has nine candidates. No direction is
+omitted from this stated bank. The optimum claims below concern this
+bank.
+
+``` r
+
+columns <- list(withhold = c(A = 1L, B = 1L),
+  A_above_B = c(A = 1L, B = 2L), B_above_A = c(A = 2L, B = 1L))
+families <- lapply(laws, postrank_mdomain_family,
+  columns = list(one = columns, two = columns), max_actions = 9L)
+fits <- lapply(names(laws), function(id)
+  postrank_mdomain_solve(laws[[id]], families[[id]], policy, max_actions = 9L))
+names(fits) <- names(laws)
+
+column_label <- function(g) {
+  if (g[1L] == g[2L]) "withhold" else
+    if (g[1L] < g[2L]) "A above B" else "B above A"
+}
+candidate_display <- function(fit) {
+  tab <- fit$candidate_table
+  actions <- fit$solution$actions[tab$action_id]
+  data.frame(
+    one = vapply(actions, function(g) column_label(g[, "one"]), ""),
+    two = vapply(actions, function(g) column_label(g[, "two"]), ""),
+    risk = tab$risk_exact, joint_probability = tab$J_exact,
+    feasible = tab$feasible_for_represented_measure, optimal = tab$optimal,
+    row.names = NULL)
+}
+knitr::kable(candidate_display(fits$coincident),
+  caption = "All nine candidates: coincident reversals")
+```
+
+| one       | two       | risk  | joint_probability | feasible | optimal |
+|:----------|:----------|:------|:------------------|:---------|:--------|
+| withhold  | withhold  | 1/4   | 0                 | TRUE     | FALSE   |
+| withhold  | A above B | 7/40  | 1/10              | TRUE     | FALSE   |
+| withhold  | B above A | 23/40 | 9/10              | FALSE    | FALSE   |
+| A above B | withhold  | 7/40  | 1/10              | TRUE     | FALSE   |
+| A above B | A above B | 1/10  | 1/10              | TRUE     | TRUE    |
+| A above B | B above A | 1/2   | 1                 | FALSE    | FALSE   |
+| B above A | withhold  | 23/40 | 9/10              | FALSE    | FALSE   |
+| B above A | A above B | 1/2   | 1                 | FALSE    | FALSE   |
+| B above A | B above A | 9/10  | 9/10              | FALSE    | FALSE   |
+
+All nine candidates: coincident reversals {.table}
+
+``` r
+
+knitr::kable(candidate_display(fits$disjoint),
+  caption = "All nine candidates: disjoint reversals")
+```
+
+| one       | two       | risk  | joint_probability | feasible | optimal |
+|:----------|:----------|:------|:------------------|:---------|:--------|
+| withhold  | withhold  | 1/4   | 0                 | TRUE     | FALSE   |
+| withhold  | A above B | 7/40  | 1/10              | TRUE     | TRUE    |
+| withhold  | B above A | 23/40 | 9/10              | FALSE    | FALSE   |
+| A above B | withhold  | 7/40  | 1/10              | TRUE     | TRUE    |
+| A above B | A above B | 1/10  | 1/5               | FALSE    | FALSE   |
+| A above B | B above A | 1/2   | 9/10              | FALSE    | FALSE   |
+| B above A | withhold  | 23/40 | 9/10              | FALSE    | FALSE   |
+| B above A | A above B | 1/2   | 9/10              | FALSE    | FALSE   |
+| B above A | B above A | 9/10  | 1                 | FALSE    | FALSE   |
+
+All nine candidates: disjoint reversals {.table}
+
+The dual report A above B has expected loss 1/10 under either law. Its
+joint error probability is 1/10 for coincident reversals and 1/5 for
+disjoint reversals. Thus it passes the 3/20 cap only under the
+coincident law. The disjoint law has two tied optima: report A above B
+in either one domain and withhold the other. Each has loss
+$`(1/2)(1/10 + 1/4) = 7/40`$ and joint probability 1/10.
+
+``` r
+
+dual <- matrix(c(1L, 2L, 1L, 2L), 2L,
+  dimnames = list(units, domains))
+dual_evaluations <- lapply(laws, postrank_mdomain_evaluate,
+  grades = dual, decision = policy)
+knitr::kable(do.call(rbind, lapply(names(laws), function(id) {
+  e <- dual_evaluations[[id]]
+  data.frame(law = id, error_one = e$domain_table$EF_exact[1L],
+    error_two = e$domain_table$EF_exact[2L], risk = e$risk_exact,
+    joint_probability = e$J_exact,
+    feasible = e$feasible_for_represented_measure)
+})), caption = "The same dual card under the two joint laws")
+```
+
+| law        | error_one | error_two | risk | joint_probability | feasible |
+|:-----------|:----------|:----------|:-----|:------------------|:---------|
+| coincident | 1/10      | 1/10      | 1/10 | 1/10              | TRUE     |
+| disjoint   | 1/10      | 1/10      | 1/10 | 1/5               | FALSE    |
+
+The same dual card under the two joint laws {.table}
+
+``` r
+
+stopifnot(all(vapply(dual_evaluations,
+  function(e) all(e$domain_table$EF_exact == "1/10"), TRUE)))
+```
+
+``` r
+
+optima <- do.call(rbind, lapply(names(fits), function(id) {
+  fit <- fits[[id]]
+  tab <- candidate_display(fit)
+  data.frame(law = id, tab[tab$optimal, ], row.names = NULL)
+}))
+knitr::kable(optima, caption = "The complete optimizer sets in the declared banks")
+```
+
+| law        | one       | two       | risk | joint_probability | feasible | optimal |
+|:-----------|:----------|:----------|:-----|:------------------|:---------|:--------|
+| coincident | A above B | A above B | 1/10 | 1/10              | TRUE     | TRUE    |
+| disjoint   | withhold  | A above B | 7/40 | 1/10              | TRUE     | TRUE    |
+| disjoint   | A above B | withhold  | 7/40 | 1/10              | TRUE     | TRUE    |
+
+The complete optimizer sets in the declared banks {.table
+style="width:100%;"}
+
+``` r
+
+stopifnot(fits$coincident$optimizer_count == 1L,
+  fits$disjoint$optimizer_count == 2L,
+  fits$coincident$evaluation$risk_exact == "1/10",
+  fits$disjoint$evaluation$risk_exact == "7/40",
+  all(vapply(fits, function(f) f$search_scope$examined_actions == 9L, TRUE)))
+```
+
+Disabling joint protection recovers the separate-choice result: the dual
+report is optimal for both laws. Marginal expected errors and expected
+loss did not change; the union constraint is what coupled the feasible
+choices. An arbitrary pairing or permutation of separate marginal draws
+cannot establish which joint law applies.
+
+``` r
+
+separable_policy <- postrank_mdomain_decision(tau = "1/4", t = NULL)
+separate_fits <- lapply(names(laws), function(id)
+  postrank_mdomain_solve(laws[[id]], families[[id]], separable_policy,
+    max_actions = 9L))
+knitr::kable(data.frame(law = names(laws),
+  optimum_risk = vapply(separate_fits, function(f) f$evaluation$risk_exact, ""),
+  optimizer_count = vapply(separate_fits, `[[`, 1L, "optimizer_count")))
+```
+
+| law        | optimum_risk | optimizer_count |
+|:-----------|:-------------|----------------:|
+| coincident | 1/10         |               1 |
+| disjoint   | 1/10         |               1 |
+
+``` r
+
+stopifnot(all(vapply(separate_fits,
+  function(f) identical(unname(f$grades), matrix(c(1L, 2L, 1L, 2L), 2L)), TRUE)))
+```
+
+## Reading a frozen 40-site illustration
+
+The installed JSON below is a small, frozen output illustration for 40
+fictional sites from JoonHo Lee’s [Need-Based Prekindergarten Funding
+tutorial](https://github.com/joonho112/need-based-prek-funding-tutorial).
+Domain S describes student-composition economic need and domain C
+describes catchment-community economic need; both use larger values for
+higher need. These are distinct target definitions, including
+conditional predictive S targets for new sites. Sharing a community
+target does not identify student targets: S05/S06 and S21/S22 are
+declared C identity pairs, while all 40 S targets are distinct. The
+original all-pair denominator is 780.
+
+The original calculation used 8,000 retained states from chains 1–2 for
+selection, a declared seven-column bank per domain (49 candidate cards),
+and a fixed-card diagnostic replay on 8,000 states from chains 3–4.
+Ordering the candidate columns used the selection states. The two cases
+share equal weights, `tau = "1/10"`, `q = "1/20"` and `alpha = "1/20"`;
+the wide case changes `t` from 5% to 10%. Their distinct case IDs
+preserve that difference.
+
+**This vignette reads the frozen grades and summary counts. It does not
+run the original 40-site analysis, load its posterior archive, select a
+new card, or perform a new validation.** The public [reproducibility
+appendix](https://github.com/joonho112/need-based-prek-funding-tutorial/blob/ff223082b27c8af92f762c20f49092f06b19a913/appendices/D-reproducibility.qmd)
+describes the external tutorial workflow. Source commit, relative input
+path, hash and changes are recorded in the JSON; none is an
+installation-time dependency. Reproducing the multidomain analysis
+separately requires the original identified joint states,
+target/equality map, chain allocation and the stated 7-by-7 candidate
+design, rather than these summaries alone.
+
+``` r
+
+frozen <- jsonlite::read_json(system.file("extdata", "mdomain",
+  "synthetic40-card.json", package = "postrank"), simplifyVector = TRUE)
+knitr::kable(frozen$cases[, c("case_id", "t", "N_S", "N_C", "risk_exact",
+  "selection_J_exact", "diagnostic_J_exact")],
+  caption = "Stored results; rational values refer to the supplied empirical measures")
+```
+
+| case_id | t | N_S | N_C | risk_exact | selection_J_exact | diagnostic_J_exact |
+|:---|:---|---:|---:|:---|:---|:---|
+| main-alpha-1_20 | 1/20 | 0 | 500 | 170039/2496000 | 0 | 0 |
+| sensitivity-t-wide | 1/10 | 300 | 500 | 716341/12480000 | 133/4000 | 229/8000 |
+
+Stored results; rational values refer to the supplied empirical measures
+{.table}
+
+The primary card withholds every S comparison and discloses 500 C
+comparisons in grades of size 10, 10 and 20. Its selection risk is
+170039/2496000. Strict 5% exceedance among 500 disclosed pairs requires
+at least 26 errors; exactly 25 does not exceed the threshold. No
+selection state exceeded the threshold, although 1,871 had at least one
+error. Hence `J = 0` describes zero observed exceedances at that
+threshold, and does not say that the card made no errors.
+
+The wide card discloses 300 S pairs and 500 C pairs. Its selection risk
+is 716341/12480000 and its selection exceedance rate is 266/8000 =
+133/4000. The same fixed card gives 229/8000 in the diagnostic chains.
+Exact fractions here mean exact arithmetic for the represented
+equal-weight empirical measure. Splitting chains and recording disjoint
+state IDs does not establish independence or an iid numerical
+certificate for the intended posterior.
+
+``` r
+
+knitr::kable(frozen$grades,
+  caption = "Frozen grades: smaller numbers indicate higher priority within each domain")
+```
+
+| unit_id | primary_S | primary_C | wide_S | wide_C |
+|:--------|----------:|----------:|-------:|-------:|
+| S01     |         1 |         3 |      2 |      3 |
+| S02     |         1 |         3 |      2 |      3 |
+| S03     |         1 |         3 |      2 |      3 |
+| S04     |         1 |         3 |      2 |      3 |
+| S05     |         1 |         3 |      2 |      3 |
+| S06     |         1 |         3 |      2 |      3 |
+| S07     |         1 |         3 |      2 |      3 |
+| S08     |         1 |         3 |      2 |      3 |
+| S09     |         1 |         3 |      2 |      3 |
+| S10     |         1 |         3 |      2 |      3 |
+| S11     |         1 |         2 |      1 |      2 |
+| S12     |         1 |         2 |      1 |      2 |
+| S13     |         1 |         1 |      1 |      1 |
+| S14     |         1 |         1 |      1 |      1 |
+| S15     |         1 |         3 |      2 |      3 |
+| S16     |         1 |         2 |      1 |      2 |
+| S17     |         1 |         1 |      1 |      1 |
+| S18     |         1 |         1 |      2 |      1 |
+| S19     |         1 |         1 |      2 |      1 |
+| S20     |         1 |         1 |      2 |      1 |
+| S21     |         1 |         3 |      2 |      3 |
+| S22     |         1 |         3 |      2 |      3 |
+| S23     |         1 |         2 |      2 |      2 |
+| S24     |         1 |         2 |      1 |      2 |
+| S25     |         1 |         1 |      2 |      1 |
+| S26     |         1 |         1 |      1 |      1 |
+| S27     |         1 |         1 |      1 |      1 |
+| S28     |         1 |         3 |      2 |      3 |
+| S29     |         1 |         2 |      2 |      2 |
+| S30     |         1 |         2 |      2 |      2 |
+| S31     |         1 |         2 |      2 |      2 |
+| S32     |         1 |         1 |      1 |      1 |
+| S33     |         1 |         2 |      2 |      2 |
+| S34     |         1 |         2 |      2 |      2 |
+| S35     |         1 |         3 |      2 |      3 |
+| S36     |         1 |         3 |      2 |      3 |
+| S37     |         1 |         3 |      2 |      3 |
+| S38     |         1 |         3 |      2 |      3 |
+| S39     |         1 |         3 |      2 |      3 |
+| S40     |         1 |         3 |      2 |      3 |
+
+Frozen grades: smaller numbers indicate higher priority within each
+domain {.table}
+
+``` r
+
+wide_grades <- as.matrix(frozen$grades[, c("wide_S", "wide_C")])
+rownames(wide_grades) <- frozen$grades$unit_id
+colnames(wide_grades) <- c("S", "C")
+occupancy <- table(C = factor(wide_grades[, "C"], levels = 1:3),
+                   S = factor(wide_grades[, "S"], levels = 1:2))
+knitr::kable(occupancy, caption = "Wide card: rows are C grades, columns are S grades")
+```
+
+|   1 |   2 |
+|----:|----:|
+|   6 |   4 |
+|   4 |   6 |
+|   0 |  20 |
+
+Wide card: rows are C grades, columns are S grades {.table}
+
+``` r
+
+knitr::kable(wide_grades[c("S11", "S18"), , drop = FALSE],
+  caption = "A crossed pair: S11 has higher S priority; S18 has higher C priority")
+```
+
+|     |   S |   C |
+|:----|----:|----:|
+| S11 |   1 |   2 |
+| S18 |   2 |   1 |
+
+A crossed pair: S11 has higher S priority; S18 has higher C priority
+{.table}
+
+The occupancy rows are (6, 4), (4, 6), and (0, 20): five of six profile
+cells are occupied. Of 548 unique pairs disclosed in at least one
+domain, 16 have opposite directions across domains. S11=(1,2) and
+S18=(2,1) are one such pair. There is no single best ordering of these
+two sites implied by this profile; an application would need an
+additional decision rule to collapse the two domain priorities.
+
+The derived JSON credits JoonHo Lee and preserves the original
+artificial values’ [CC BY 4.0
+terms](https://creativecommons.org/licenses/by/4.0/). It retains only
+fictional IDs, selected grade columns, aggregate counts and source
+identity. No raw posterior states, geographic layers, school records or
+catchment database are bundled. Original tutorial code is separately MIT
+licensed; the source-specific exclusions remain in its [rights
+notice](https://github.com/joonho112/need-based-prek-funding-tutorial/blob/ff223082b27c8af92f762c20f49092f06b19a913/RIGHTS.md).
+
+## Inspecting MCMC history for a fixed report
+
+The following independent, tiny synthetic example demonstrates the MCMC
+assessment API. It generates two short Markov histories of unequal
+lengths. The two-state transition probabilities are 1/10 from normal to
+reversed and 2/5 in reverse; the stationary reversal probability is 1/5.
+A whole state reverses both domains together. Original chain order and
+iteration numbers are retained. These short histories illustrate
+diagnostic fields, not a recommended simulation length or evidence about
+the 40-site source.
+
+``` r
+
+simulate_chain <- function(n) {
+  z <- logical(n)
+  z[1L] <- stats::runif(1) < 1/5
+  for (i in 2:n)
+    z[i] <- if (z[i - 1L]) stats::runif(1) >= 2/5 else stats::runif(1) < 1/10
+  z
+}
+set.seed(1202)
+chains <- list(chain_A = simulate_chain(24L), chain_B = simulate_chain(31L))
+z <- unlist(chains, use.names = FALSE)
+history <- data.frame(source_index = seq_along(z),
+  chain_id = rep(names(chains), lengths(chains)),
+  iteration_id = unlist(lapply(chains, seq_along), use.names = FALSE))
+history_input <- postrank_mdomain_input(
+  make_states(cbind(z, z), paste0("markov-", seq_along(z))), targets = targets,
+  provenance = list(input_id = "tiny-markov-history", law_id = "tiny-markov-law",
+    proper_law = TRUE,
+    joint_generation = "Both domains use the same synthetic binary chain state.",
+    retention = list(warmup_removed = 0L, thinning = 1L),
+    sampling_assumptions = list(sampler = "Two-state Markov transition simulator.",
+      chain_details = "Lengths 24 and 31; stationary initial draws; seed 1202.",
+      target_assertion = "Stationary reversal probability 1/5 by the specified transitions.")),
+  representation = "mcmc_equal_weight_draws", state_origin = history)
+fixed_grades <- matrix(c(1L, 2L, 1L, 2L), 2L,
+  dimnames = list(units, domains))
+assessment <- postrank_mdomain_assess(history_input, fixed_grades, policy,
+  method = "mcmc", batch_size = 10L,
+  design = list(role = "synthetic_method_demonstration"))
+chain_table <- assessment$native$chain_table
+knitr::kable(chain_table[chain_table$event_id == "joint-union",
+  c("chain_id", "n_retained", "hit_count", "rate", "max_zero_run",
+    "partial_batch_count")], digits = 3)
+```
+
+|  | chain_id | n_retained | hit_count | rate | max_zero_run | partial_batch_count |
+|:---|:---|---:|---:|---:|---:|---:|
+| markov-72 | chain_A | 24 | 9 | 0.375 | 9 | 1 |
+| markov-332 | chain_B | 31 | 4 | 0.129 | 19 | 1 |
+
+``` r
+
+batch_table <- assessment$native$batch_table
+knitr::kable(batch_table[batch_table$event_id == "joint-union" & batch_table$partial,
+  c("chain_id", "batch_id", "n_retained", "hit_count", "rate", "partial")],
+  caption = "Final partial batches remain in the diagnostic record", digits = 3)
+```
+
+|     | chain_id | batch_id | n_retained | hit_count | rate | partial |
+|:----|:---------|---------:|-----------:|----------:|-----:|:--------|
+| 17  | chain_A  |        3 |          4 |         4 |    1 | TRUE    |
+| 21  | chain_B  |        4 |          1 |         1 |    1 | TRUE    |
+
+Final partial batches remain in the diagnostic record {.table}
+
+``` r
+
+assessment$assurance[c("certificate_basis", "numerical_guarantee",
+  "convergence_established", "independence_established")]
+#> $certificate_basis
+#> [1] "empirical_diagnostic"
+#> 
+#> $numerical_guarantee
+#> [1] FALSE
+#> 
+#> $convergence_established
+#> [1] FALSE
+#> 
+#> $independence_established
+#> [1] FALSE
+stopifnot(!assessment$joint_certificate,
+  !assessment$assurance$numerical_guarantee,
+  identical(assessment$native$histories$chain_id, history$chain_id))
+```
+
+Use hit counts, long zero runs and batch-to-batch variation to inspect
+how well a run has explored the event relevant to the fixed report. A
+zero-hit history is different from a structurally impossible event.
+Unequal chain rates must be combined using their retained state counts;
+a simple average of their rates changes the empirical measure. Batch
+rates are descriptive and are not independent replicates. This route
+does not supply an iid binomial certificate, a convergence proof, or a
+held-out interpretation. See
+[`?postrank_mdomain_assess`](https://joonho112.github.io/postrank/reference/postrank_mdomain_assess.md)
+for the separate fixed-sample iid route and its required design record,
+and
+[`vignette("mdomain-quickstart")`](https://joonho112.github.io/postrank/articles/mdomain-quickstart.md)
+for the input-to-report workflow.

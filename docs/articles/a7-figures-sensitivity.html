@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Figures and sensitivity analysis • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Figures and sensitivity analysis">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-article">
+
+
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Figures and sensitivity analysis</h1>
+            
+      
+      <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/a7-figures-sensitivity.Rmd" class="external-link"><code>vignettes/a7-figures-sensitivity.Rmd</code></a></small>
+      <div class="d-none name"><code>a7-figures-sensitivity.Rmd</code></div>
+    </div>
+
+    
+    
+<p>Graphical summaries distinguish uncertainty in entity scores from the
+comparisons disclosed by a grading. Sensitivity analyses additionally
+examine how that grading changes with the withholding cost, criterion
+weights or grade cap.</p>
+<p>We use the six fictional sites in <a href="a1-getting-started.html">Analysis with one or several
+criteria</a>. Their scores have specified normal laws in illustrative
+standardized units, with standard deviation 0.2. Sites are independent,
+as are the scores within each site. These laws are not fitted to
+observations. Larger values receive higher priority on both criteria,
+and grade 1 has highest priority.</p>
+<p>The reference analysis assigns equal criterion weights, permits at
+most 3 grades and sets the withholding cost <code>tau</code> to 0.2. It
+groups A through D together, followed by E and then F. The analyses and
+settings sweeps were prepared using HiGHS. Rendering reads those
+results, evaluates fixed alternatives and produces figures without an
+optimizer. Optional recomputation calls are displayed without
+execution.</p>
+<div class="section level2">
+<h2 id="choose-a-figure-by-the-question">Graphical representations<a class="anchor" aria-label="anchor" href="#choose-a-figure-by-the-question"></a>
+</h2>
+<p>The seven plotting functions return <code>ggplot</code> objects based
+on prepared results. A change in graphical representation therefore
+leaves the selected grading unchanged.</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Quantity or comparison</th>
+<th align="left">Function and what it shows</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Target estimates and uncertainty</td>
+<td align="left">
+<code><a href="../reference/postrank_plot_report_card.html">postrank_plot_report_card()</a></code>: target means,
+marginal intervals and grade membership.</td>
+</tr>
+<tr class="even">
+<td align="left">Disclosed and withheld pair relations</td>
+<td align="left">
+<code><a href="../reference/postrank_plot_relations.html">postrank_plot_relations()</a></code>: selected
+relations, or changes between two reports.</td>
+</tr>
+<tr class="odd">
+<td align="left">Error probability for a potential direction</td>
+<td align="left">
+<code><a href="../reference/postrank_plot_pairwise.html">postrank_plot_pairwise()</a></code>:
+criterion-specific probabilities of an error if the row is placed above
+the column.</td>
+</tr>
+<tr class="even">
+<td align="left">Criterion-specific expected errors</td>
+<td align="left">
+<code><a href="../reference/postrank_plot_profile.html">postrank_plot_profile()</a></code>: expected error
+rates or risk for the selected grades.</td>
+</tr>
+<tr class="odd">
+<td align="left">Variation with the withholding cost</td>
+<td align="left">
+<code><a href="../reference/postrank_plot_frontier.html">postrank_plot_frontier()</a></code>: disclosure,
+error and risk along a prepared cost grid.</td>
+</tr>
+<tr class="even">
+<td align="left">Evaluation of alternative grade vectors</td>
+<td align="left">
+<code><a href="../reference/postrank_plot_compare.html">postrank_plot_compare()</a></code>: reports evaluated
+under a common loss, or their relation changes.</td>
+</tr>
+<tr class="odd">
+<td align="left">Criterion-specific cost of common grades</td>
+<td align="left">
+<code><a href="../reference/postrank_plot_commonality.html">postrank_plot_commonality()</a></code>: extra
+criterion risk relative to its own optimized report.</td>
+</tr>
+</tbody>
+</table>
+<p>Report cards and pairwise probabilities summarize the posterior,
+whereas relation maps represent selected reporting actions. A pale
+pairwise cell may support a direction whose comparison is withheld by
+the grading, and shared grades do not assert score equality. This
+distinction is illustrated in the <a href="a2-cde-accountability.html">chronic-absence example</a>.</p>
+<p>For large analyses, the displayed subset and its selection rule
+should be specified. Report cards use <code>entities</code> and
+<code>max_rows</code>, whereas pairwise plots use <code>entities</code>
+and <code>max_entities</code>. Named <code>entity_labels</code> and
+<code>criterion_labels</code> change display labels while retaining
+identifiers and values. Setting <code>ncol = 1</code> arranges criterion
+panels vertically for narrow formats. Subset figures still refer to the
+original report; they do not refit or optimize the subset.</p>
+</div>
+<div class="section level2">
+<h2 id="read-the-error-denominator-first">Error rates and denominators<a class="anchor" aria-label="anchor" href="#read-the-error-denominator-first"></a>
+</h2>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joonho112/postrank" class="external-link">postrank</a></span><span class="op">)</span></span>
+<span><span class="va">sites</span> <span class="op">&lt;-</span> <span class="va">pr_tutorial</span></span>
+<span><span class="va">entity_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="va">sites</span><span class="op">$</span><span class="va">units</span><span class="op">$</span><span class="va">label</span>, <span class="va">sites</span><span class="op">$</span><span class="va">units</span><span class="op">$</span><span class="va">entity_id</span><span class="op">)</span></span>
+<span><span class="va">criterion_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="st">"Score A"</span>, score_B <span class="op">=</span> <span class="st">"Score B"</span><span class="op">)</span></span></code></pre></div>
+<p>The common grading discloses 9 of 15 unordered pairs. Each
+criterion’s expected error count is divided by this same number of
+disclosed pairs in the default profile. The resulting rates can differ
+even under equal criterion weights.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">profile_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_plot_profile.html">postrank_plot_profile</a></span><span class="op">(</span><span class="va">two</span>, show <span class="op">=</span> <span class="st">"E_over_N"</span>,</span>
+<span>  criterion_labels <span class="op">=</span> <span class="va">criterion_labels</span><span class="op">)</span></span>
+<span><span class="va">profile_plot</span></span></code></pre></div>
+<div class="figure">
+<a href="a7-figures-sensitivity_files/figure-html/profile-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Expected wrong-direction errors per disclosed pair for the prepared common grading. Both criteria use the same disclosed comparisons; point size represents criterion weight." target="_blank" rel="noopener"><img src="a7-figures-sensitivity_files/figure-html/profile-1.png" class="r-plt" alt="Expected wrong-direction errors per disclosed pair for the prepared common grading. Both criteria use the same disclosed comparisons; point size represents criterion weight." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a7-figures-sensitivity_files/figure-html/profile-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Expected wrong-direction errors per disclosed pair for the prepared common grading. Both criteria use the same disclosed comparisons; point size represents criterion weight.">Open full-size figure</a></span><p class="caption">
+Expected wrong-direction errors per disclosed pair for the prepared
+common grading. Both criteria use the same disclosed comparisons; point
+size represents criterion weight.
+</p>
+</div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">profile_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_plot_data.html">postrank_plot_data</a></span><span class="op">(</span><span class="va">two</span>, <span class="st">"profile"</span><span class="op">)</span></span>
+<span><span class="va">profile_data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion"</span>, <span class="st">"weight"</span>, <span class="st">"E"</span>, <span class="st">"E_over_N"</span>, <span class="st">"E_over_M"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;   criterion weight         E   E_over_N   E_over_M</span></span>
+<span><span class="co">#&gt; 1   score_A    0.5 0.1596996 0.01774440 0.01064664</span></span>
+<span><span class="co">#&gt; 2   score_B    0.5 0.2405960 0.02673289 0.01603973</span></span></code></pre></div>
+<p>Expected errors per disclosed pair are 1.77% for score A and 2.67%
+for score B. <code>E_over_M</code> instead uses all 15 pairs as its
+denominator. Both quantities are posterior expectations rather than
+observed error counts. Criterion risk additionally includes the cost of
+the 6 withheld pairs and is displayed by <code>show = "risk"</code>.</p>
+<p>When every comparison is withheld, <code>E/N</code> is undefined and
+the profile omits the point with an explanation. The absence of a valid
+grading is likewise represented by its status. Unavailable frontier
+results interrupt lines. Empty panels must therefore be interpreted from
+these recorded states rather than as evidence of agreement or
+precision.</p>
+</div>
+<div class="section level2">
+<h2 id="vary-one-reporting-choice-at-a-time">Changes to reporting settings<a class="anchor" aria-label="anchor" href="#vary-one-reporting-choice-at-a-time"></a>
+</h2>
+<p>The settings grid distinguishes three changes to the decision
+problem. Changing <code>tau</code> alters the cost of withholding;
+changing criterion weights alters the relative contribution of errors;
+changing only the grade cap changes the admissible reports under a fixed
+loss. The posterior score distributions remain fixed throughout. Weights
+combine criterion-specific losses rather than defining a composite score
+to be ranked.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_settings_grid.html">postrank_settings_grid</a></span><span class="op">(</span><span class="va">two</span><span class="op">$</span><span class="va">settings</span>,</span>
+<span>  tau <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.1</span>, <span class="fl">.3</span><span class="op">)</span>, G_max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2L</span>, <span class="fl">4L</span><span class="op">)</span>,</span>
+<span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    A_heavy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">.8</span>, score_B <span class="op">=</span> <span class="fl">.2</span><span class="op">)</span>,</span>
+<span>    B_heavy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">.2</span>, score_B <span class="op">=</span> <span class="fl">.8</span><span class="op">)</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>The default grid varies one supplied axis at a time around the
+reference, giving 7 settings here rather than their full cross-product.
+The optional call below recomputes these reports from the same posterior
+input. Displayed results use the stored sweep’s grid and are matched by
+setting ID.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sensitivity</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_sensitivity.html">postrank_sensitivity</a></span><span class="op">(</span><span class="va">two</span>, <span class="va">grid</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="../reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">60</span>, threads <span class="op">=</span> <span class="fl">1</span>, seed <span class="op">=</span> <span class="fl">1304</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>One choice varies at a time. Errors/N is the posterior expected
+error proportion among the comparisons disclosed by that row’s
+report.</caption>
+<colgroup>
+<col width="14%">
+<col width="5%">
+<col width="5%">
+<col width="17%">
+<col width="10%">
+<col width="14%">
+<col width="15%">
+<col width="15%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Setting</th>
+<th align="right">tau</th>
+<th align="right">Cap</th>
+<th align="left">Weights A/B</th>
+<th align="right">Grades</th>
+<th align="right">Disclosed</th>
+<th align="left">A errors/N</th>
+<th align="left">B errors/N</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">reference</td>
+<td align="right">0.2</td>
+<td align="right">3</td>
+<td align="left">0.5/0.5</td>
+<td align="right">3</td>
+<td align="right">9</td>
+<td align="left">1.77%</td>
+<td align="left">2.67%</td>
+</tr>
+<tr class="even">
+<td align="left">tau=0.10</td>
+<td align="right">0.1</td>
+<td align="right">3</td>
+<td align="left">0.5/0.5</td>
+<td align="right">2</td>
+<td align="right">8</td>
+<td align="left">0.19%</td>
+<td align="left">0.01%</td>
+</tr>
+<tr class="odd">
+<td align="left">tau=0.30</td>
+<td align="right">0.3</td>
+<td align="right">3</td>
+<td align="left">0.5/0.5</td>
+<td align="right">3</td>
+<td align="right">11</td>
+<td align="left">1.86%</td>
+<td align="left">11.52%</td>
+</tr>
+<tr class="even">
+<td align="left">G_max=2</td>
+<td align="right">0.2</td>
+<td align="right">2</td>
+<td align="left">0.5/0.5</td>
+<td align="right">2</td>
+<td align="right">8</td>
+<td align="left">0.19%</td>
+<td align="left">0.01%</td>
+</tr>
+<tr class="odd">
+<td align="left">G_max=4</td>
+<td align="right">0.2</td>
+<td align="right">4</td>
+<td align="left">0.5/0.5</td>
+<td align="right">3</td>
+<td align="right">9</td>
+<td align="left">1.77%</td>
+<td align="left">2.67%</td>
+</tr>
+<tr class="even">
+<td align="left">A_heavy</td>
+<td align="right">0.2</td>
+<td align="right">3</td>
+<td align="left">0.8/0.2</td>
+<td align="right">3</td>
+<td align="right">12</td>
+<td align="left">0.21%</td>
+<td align="left">23.71%</td>
+</tr>
+<tr class="odd">
+<td align="left">B_heavy</td>
+<td align="right">0.2</td>
+<td align="right">3</td>
+<td align="left">0.2/0.8</td>
+<td align="right">2</td>
+<td align="right">8</td>
+<td align="left">0.19%</td>
+<td align="left">0.01%</td>
+</tr>
+</tbody>
+</table>
+<p>Assigning weight 0.8 to score A reduces its expected error proportion
+among disclosed pairs to 0.21%, while that for score B increases to
+23.71%. This change follows from the specified relative importance of
+errors, with the precision of the score-A posterior held fixed. A weight
+also differs from a constraint limiting an error proportion.</p>
+<p>Increasing the cap to 4 gives a report with 3 grades and changes 0
+pair relations. An additional permitted grade need not be occupied. The
+effect depends on the posterior and loss rather than implying a fixed
+increase in the number of comparisons.</p>
+<p>All these stored rows have numerical status <code>optimal</code>,
+with maximum recorded risk gap 1.39e-17. 2 rows record a small
+correction where a solver lower bound exceeded the evaluated action loss
+within the objective tolerance. The bound source and warnings remain in
+the result. These are optimization statements about the supplied
+probabilities, not posterior intervals or guarantees about the score
+model.</p>
+</div>
+<div class="section level2">
+<h2 id="follow-the-withholding-cost-path">Withholding-cost path<a class="anchor" aria-label="anchor" href="#follow-the-withholding-cost-path"></a>
+</h2>
+<p>The withholding-cost path holds criterion weights and the grade cap
+fixed while varying <code>tau</code>. The optional call specifies the
+prepared grid shown below.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">frontier</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_frontier.html">postrank_frontier</a></span><span class="op">(</span><span class="va">two</span>, tau <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.05</span>, <span class="fl">.1</span>, <span class="fl">.2</span>, <span class="fl">.3</span>, <span class="fl">.4</span><span class="op">)</span>,</span>
+<span>  backend <span class="op">=</span> <span class="st">"highs"</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="../reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">60</span>, threads <span class="op">=</span> <span class="fl">1</span>, seed <span class="op">=</span> <span class="fl">1304</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">frontier_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_plot_frontier.html">postrank_plot_frontier</a></span><span class="op">(</span><span class="va">frontier</span>, highlight <span class="op">=</span> <span class="va">reference_tau</span><span class="op">)</span></span>
+<span><span class="va">frontier_plot</span></span></code></pre></div>
+<div class="figure">
+<a href="a7-figures-sensitivity_files/figure-html/frontier-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Prepared withholding-cost path with fixed equal weights and a fixed grade cap. The dashed line marks the reference cost. Each risk panel value uses its own tau; the lines connect computed settings and are not interpolated grade reports." target="_blank" rel="noopener"><img src="a7-figures-sensitivity_files/figure-html/frontier-1.png" class="r-plt" alt="Prepared withholding-cost path with fixed equal weights and a fixed grade cap. The dashed line marks the reference cost. Each risk panel value uses its own tau; the lines connect computed settings and are not interpolated grade reports." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a7-figures-sensitivity_files/figure-html/frontier-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Prepared withholding-cost path with fixed equal weights and a fixed grade cap. The dashed line marks the reference cost. Each risk panel value uses its own tau; the lines connect computed settings and are not interpolated grade reports.">Open full-size figure</a></span><p class="caption">
+Prepared withholding-cost path with fixed equal weights and a fixed
+grade cap. The dashed line marks the reference cost. Each risk panel
+value uses its own tau; the lines connect computed settings and are not
+interpolated grade reports.
+</p>
+</div>
+<p>The disclosure counts along the grid are 8, 8, 9, 11, 12. A greater
+withholding cost favors additional disclosure. For exact optima under
+the same posterior, weights and admissible reports, the disclosure count
+is nondecreasing in <code>tau</code>. The finite grid may omit change
+points, and numerical solver statuses alone do not establish the exact
+property.</p>
+<p>For score B, the error proportion increases from the reference to the
+next withholding cost, then decreases at the final cost as the groups
+change. Neither criterion-specific error proportion is required to be
+monotone. The risk panel evaluates a different loss at each cost; its
+increase cannot be interpreted as deterioration on a common accuracy
+scale. Lines connect evaluated settings for display and do not define
+fractional grades between them.</p>
+<p>Nondecreasing disclosure counts do not require nested sets of
+comparisons. At <code>tau =</code> 0.3, the report newly discloses 3
+pairs and newly withholds 1 relative to the reference. The net increase
+is 2, although one previously disclosed direction is removed.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">higher_cost_fit</span> <span class="op">&lt;-</span> <span class="va">sensitivity</span><span class="op">$</span><span class="va">fits</span><span class="op">[[</span><span class="va">hi_row</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">changes_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_plot_relations.html">postrank_plot_relations</a></span><span class="op">(</span><span class="va">two</span>, <span class="va">higher_cost_fit</span>,</span>
+<span>  entity_labels <span class="op">=</span> <span class="va">entity_labels</span><span class="op">)</span></span>
+<span><span class="va">changes_plot</span></span></code></pre></div>
+<div class="figure">
+<a href="a7-figures-sensitivity_files/figure-html/changes-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Relation changes from the reference to the next larger withholding cost. Light gray means unchanged, including pairs withheld by both reports; medium gray marks a newly withheld pair." target="_blank" rel="noopener"><img src="a7-figures-sensitivity_files/figure-html/changes-1.png" class="r-plt" alt="Relation changes from the reference to the next larger withholding cost. Light gray means unchanged, including pairs withheld by both reports; medium gray marks a newly withheld pair." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a7-figures-sensitivity_files/figure-html/changes-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Relation changes from the reference to the next larger withholding cost. Light gray means unchanged, including pairs withheld by both reports; medium gray marks a newly withheld pair.">Open full-size figure</a></span><p class="caption">
+Relation changes from the reference to the next larger withholding cost.
+Light gray means unchanged, including pairs withheld by both reports;
+medium gray marks a newly withheld pair.
+</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="compare-alternatives-on-the-same-loss">Comparison under a common loss<a class="anchor" aria-label="anchor" href="#compare-alternatives-on-the-same-loss"></a>
+</h2>
+<p>Comparison of candidate reports requires evaluation under common
+posterior inputs, weights and withholding cost. The score-A-only grading
+provides an alternative action, but its original single-criterion risk
+is not directly comparable with the common report’s two-criterion
+risk.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_compare.html">postrank_compare</a></span><span class="op">(</span><span class="va">two</span>,</span>
+<span>  `Score A grades` <span class="op">=</span> <span class="fu"><a href="../reference/get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span>,</span>
+<span>  `Withhold all` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">sites</span><span class="op">$</span><span class="va">units</span><span class="op">)</span><span class="op">)</span>, <span class="va">sites</span><span class="op">$</span><span class="va">units</span><span class="op">$</span><span class="va">entity_id</span><span class="op">)</span>,</span>
+<span>  baselines <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Each supplied action is evaluated under the same two-criterion
+reference loss. Evaluating an action does not optimize it.</caption>
+<colgroup>
+<col width="21%">
+<col width="14%">
+<col width="39%">
+<col width="24%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Report</th>
+<th align="right">Disclosed</th>
+<th align="left">Risk at reference settings</th>
+<th align="left">Within grade cap</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Common grades</td>
+<td align="right">9</td>
+<td align="left">0.0933</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">Score A grades</td>
+<td align="right">12</td>
+<td align="left">0.1356</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">Withhold all</td>
+<td align="right">0</td>
+<td align="left">0.2000</td>
+<td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+<p>Score A’s grades disclose 12 pairs and have common-loss risk 0.1356,
+compared with 0.0933 for the common grading. Both respect the same cap.
+This comparison concerns these fixed reports and the stated loss; it
+does not establish that one score or weighting policy is scientifically
+preferable. <code>postrank_plot_compare(comparison)</code> presents
+these results graphically, retaining each action’s computation status
+and scope. The relation view displays changes in pairwise decisions; it
+does not compare the reports’ risks.</p>
+</div>
+<div class="section level2">
+<h2 id="quantify-the-cost-of-sharing-grades">Criterion-specific cost of a common grading<a class="anchor" aria-label="anchor" href="#quantify-the-cost-of-sharing-grades"></a>
+</h2>
+<p><code><a href="../reference/postrank_commonality_cost.html">postrank_commonality_cost()</a></code> measures the additional
+criterion-specific loss associated with a fixed common grading. Each
+criterion is optimized separately at the same withholding cost and grade
+cap, and its loss is compared with its loss under the common action. No
+additional error-budget constraints are imposed here.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">commonality</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_commonality_cost.html">postrank_commonality_cost</a></span><span class="op">(</span><span class="va">two</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="../reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">60</span>, threads <span class="op">=</span> <span class="fl">1</span>, seed <span class="op">=</span> <span class="fl">1304</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">commonality_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_plot_commonality.html">postrank_plot_commonality</a></span><span class="op">(</span><span class="va">commonality</span><span class="op">)</span></span>
+<span><span class="va">commonality_plot</span></span></code></pre></div>
+<div class="figure">
+<a href="a7-figures-sensitivity_files/figure-html/commonality-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Extra criterion risk from using the common grading. The plotted endpoints are derived from each own-criterion solve's incumbent and lower bound; they are not posterior uncertainty intervals." target="_blank" rel="noopener"><img src="a7-figures-sensitivity_files/figure-html/commonality-1.png" class="r-plt" alt="Extra criterion risk from using the common grading. The plotted endpoints are derived from each own-criterion solve's incumbent and lower bound; they are not posterior uncertainty intervals." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a7-figures-sensitivity_files/figure-html/commonality-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Extra criterion risk from using the common grading. The plotted endpoints are derived from each own-criterion solve's incumbent and lower bound; they are not posterior uncertainty intervals.">Open full-size figure</a></span><p class="caption">
+Extra criterion risk from using the common grading. The plotted
+endpoints are derived from each own-criterion solve’s incumbent and
+lower bound; they are not posterior uncertainty intervals.
+</p>
+</div>
+<p>For score A, criterion risk under the common report is 0.0906,
+compared with 0.0417 under its best found report, a difference of
+0.0490. The corresponding additional risk for score B is 0.0145. These
+differences are in expected-loss units, including withholding costs, and
+do not measure changes in individual sites’ score uncertainty.</p>
+<p>The figure retains uncertainty about numerical optimization
+separately. The common-action risk minus the own incumbent risk gives
+the lower endpoint (truncated at zero); subtracting the own solver lower
+bound gives the upper endpoint when available. A large gap in the
+criterion-specific optimization can therefore leave the additional loss
+imprecisely determined. Here the endpoints nearly coincide. Their width
+does not measure posterior variation, sampling uncertainty or model
+misspecification, and their interpretation inherits the solver bounds’
+numerical limitations.</p>
+</div>
+<div class="section level2">
+<h2 id="save-the-view-together-with-its-meaning">Figure data and export<a class="anchor" aria-label="anchor" href="#save-the-view-together-with-its-meaning"></a>
+</h2>
+<p><code><a href="../reference/postrank_plot_data.html">postrank_plot_data()</a></code> returns the stored values
+underlying a figure. Standard <code>ggplot2</code> layers can modify
+presentation, with label and theme changes leaving those values
+unchanged. The following code writes a PNG profile to a temporary
+directory and, when the optional <code>svglite</code> package is
+installed, an SVG version:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">figure_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="st">"postrank-figures-"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">figure_dir</span><span class="op">)</span></span>
+<span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">figure_dir</span>, <span class="st">"criterion-profile.png"</span><span class="op">)</span>,</span>
+<span>  <span class="va">profile_plot</span>, width <span class="op">=</span> <span class="fl">7</span>, height <span class="op">=</span> <span class="fl">3.5</span>, units <span class="op">=</span> <span class="st">"in"</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"svglite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">figure_dir</span>, <span class="st">"criterion-profile.svg"</span><span class="op">)</span>,</span>
+<span>    <span class="va">profile_plot</span>, device <span class="op">=</span> <span class="fu">svglite</span><span class="fu">::</span><span class="va"><a href="https://svglite.r-lib.org/reference/svglite.html" class="external-link">svglite</a></span>,</span>
+<span>    width <span class="op">=</span> <span class="fl">7</span>, height <span class="op">=</span> <span class="fl">3.5</span>, units <span class="op">=</span> <span class="st">"in"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p>Figures intended for a report require a permanent output directory
+and inspection at the intended print size. Labels, denominators,
+selected entities and legends should remain legible, with captions
+identifying the target direction and distinguishing posterior intervals,
+solver bounds and withheld comparisons. Retaining the analysis object
+alongside the figure preserves its settings and computation status, as
+described in <a href="a6-reading-exporting-results.html">Reading and
+exporting results</a>.</p>
+<p><a href="m5-computing-grades.html">Computing grades and choosing
+settings</a> describes how these settings alter the action families and
+objectives. <a href="m2-several-criteria.html">Several criteria and
+competing goals</a> gives the mathematical interpretation of the
+common-grade cost.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

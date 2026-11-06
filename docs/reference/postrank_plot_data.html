@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Extract Stored Data for a Figure — postrank_plot_data • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Extract Stored Data for a Figure — postrank_plot_data"><meta name="description" content="The complete data underlying the seven postrank figure types are returned
+for inspection or alternative displays. Stored results are read and reshaped
+without optimization, action evaluation or calculation of posterior
+summaries. Plot row limits and display labels do not affect the returned
+tables."><meta property="og:description" content="The complete data underlying the seven postrank figure types are returned
+for inspection or alternative displays. Stored results are read and reshaped
+without optimization, action evaluation or calculation of posterior
+summaries. Plot row limits and display labels do not affect the returned
+tables."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul></div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Extract Stored Data for a Figure</h1>
+
+      <div class="d-none name"><code>postrank_plot_data.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>The complete data underlying the seven postrank figure types are returned
+for inspection or alternative displays. Stored results are read and reshaped
+without optimization, action evaluation or calculation of posterior
+summaries. Plot row limits and display labels do not affect the returned
+tables.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_plot_data</span><span class="op">(</span><span class="va">x</span>, which <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
+<dd><p>A <code>postrank_analysis</code>, <code>postrank_fit</code>, <code>postrank_report_card</code>,
+<code>postrank_baseline</code>, <code>postrank_frontier</code>, <code>postrank_commonality_cost</code>,
+<code>postrank_comparison</code>, or prepared pairwise/coefficient input.</p></dd>
+
+
+<dt id="arg-which">which<a class="anchor" aria-label="anchor" href="#arg-which"></a></dt>
+<dd><p>Optional component name. Analysis components are
+<code>"report_card"</code>, <code>"relations"</code> and <code>"profile"</code>; <code>"pairwise"</code> explicitly
+requests prepared probabilities. See Details for other classes.</p></dd>
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A data frame, a named list for an analysis with <code>which = NULL</code>,
+or <code>NULL</code> for an unavailable card or relation component. A profile without
+a validated incumbent is an empty typed data frame. The analysis list has
+an <code>availability</code> attribute with an available flag and reason per component.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>For an analysis, <code>which = NULL</code> returns <code>report_card</code>, <code>relations</code> and
+<code>profile</code>. Pairwise probabilities are deliberately separate because the
+complete table has <code>n * n * K</code> rows. A fit defaults to <code>"relations"</code> and
+also accepts <code>"profile"</code> or <code>"pairwise"</code>. A report card returns its long
+table; a baseline returns its relations. Frontier and commonality objects
+return their stored tables. A comparison returns its summary table by
+default and its change-count table for <code>which = "relations"</code>.</p>
+<p>The report-card table has <code>entity_id</code>, <code>grade</code>, <code>sort_rank</code>, <code>n_withheld</code>,
+<code>criterion</code>, <code>mean</code>, <code>lower</code>, <code>upper</code> and <code>expected_rank</code>. Rows are grouped
+by criterion and follow stored card order within each criterion; interval
+level and source remain on the card object. Relations contain one row per
+unordered pair with <code>entity_i</code>, <code>entity_j</code>, <code>i_pos</code>, <code>j_pos</code>, <code>code</code> and
+<code>relation</code>, in grade-then-ID order. Code 1 means the first entity is above
+the second, 0 means withheld and -1 means below. Profile columns are
+listed in <code><a href="get_profile.html">get_profile()</a></code>.</p>
+<p><code>which = "pairwise"</code> returns <code>entity_i</code>, <code>entity_j</code>, <code>criterion</code> and
+<code>error_probability</code>, including the <code>NA</code> diagonal. It preserves input ID
+order, with <code>entity_i</code> varying fastest. This component remains available
+for fits without a validated grade. Prepared pairwise/probability/coefficient
+objects return it by default, but raw draws must first be aggregated with
+<code><a href="postrank_pairwise.html">postrank_pairwise()</a></code>. The table is not a relation-change map; use
+<code><a href="postrank_plot_relations.html">postrank_plot_relations()</a></code> with two actions for that view.</p>
+<p>The designs <code>"sensitivity"</code>, <code>"fragility"</code>, <code>"crossfit"</code>, <code>"trace"</code> and
+<code>"dispersion"</code> are reserved and raise <code>unshipped_figure</code>. This does not
+imply that all similarly named numerical diagnostic functions are unavailable.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="postrank_plot_report_card.html">postrank_plot_report_card()</a></code>, <code><a href="postrank_plot_relations.html">postrank_plot_relations()</a></code>,
+<code><a href="postrank_plot_pairwise.html">postrank_plot_pairwise()</a></code>, <code><a href="get_profile.html">get_profile()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Read prepared tutorial results; no model fitting or optimization.</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"scripts"</span>, <span class="st">"_vignette-setup.R"</span>, package <span class="op">=</span> <span class="st">"postrank"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"tutorial_one"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">card_data</span> <span class="op">&lt;-</span> <span class="fu">postrank_plot_data</span><span class="op">(</span><span class="va">one</span>, <span class="st">"report_card"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">card_data</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   entity_id grade sort_rank n_withheld criterion  mean       lower      upper</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         A     1         1          1   score_A  1.20  0.87102927  1.5289707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         B     1         2          1   score_A  0.95  0.62102927  1.2789707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         C     2         3          1   score_A  0.25 -0.07897073  0.5789707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         D     2         4          1   score_A  0.15 -0.17897073  0.4789707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         E     3         5          1   score_A -0.50 -0.82897073 -0.1710293</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         F     3         6          1   score_A -0.80 -1.12897073 -0.4710293</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   expected_rank</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      1.188874</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      1.820624</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      3.358889</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      3.646891</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5      5.129639</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      5.855084</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Complete two-criterion probability table, including its gray diagonal cells.</span></span></span>
+<span class="r-in"><span><span class="va">pair_data</span> <span class="op">&lt;-</span> <span class="fu">postrank_plot_data</span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">two</span>, <span class="st">"pairwise"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pair_data</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 72</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pair_data</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   entity_i entity_j criterion error_probability</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        A        A   score_A                NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        B        A   score_A         0.8116204</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        C        A   score_A         0.9996085</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4        D        A   score_A         0.9998973</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5        E        A   score_A         1.0000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6        F        A   score_A         1.0000000</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="fu">postrank_plot_data</span><span class="op">(</span><span class="va">one</span><span class="op">)</span>, <span class="st">"availability"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $report_card</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $report_card$available</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $report_card$reason</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $relations</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $relations$available</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $relations$reason</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $profile</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $profile$available</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $profile$reason</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer></div>
+
+
+
+
+
+  </body></html>
+

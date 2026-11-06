@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Find Pairwise Decisions Close to the Monte Carlo Noise Scale — postrank_mc_fragility • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Find Pairwise Decisions Close to the Monte Carlo Noise Scale — postrank_mc_fragility">
+<meta name="description" content="The diagnostic identifies pairs for which the estimated loss from disclosure
+in the better direction is close to the withholding cost. Since
+grades are selected jointly, a flagged pair need not imply a change in the
+selected grading. Indicator traces are calculated without optimization.">
+<meta property="og:description" content="The diagnostic identifies pairs for which the estimated loss from disclosure
+in the better direction is close to the withholding cost. Since
+grades are selected jointly, a flagged pair need not imply a change in the
+selected grading. Indicator traces are calculated without optimization.">
+<meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Find Pairwise Decisions Close to the Monte Carlo Noise Scale</h1>
+
+      <div class="d-none name"><code>postrank_mc_fragility.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>The diagnostic identifies pairs for which the estimated loss from disclosure
+in the better direction is close to the withholding cost. Since
+grades are selected jointly, a flagged pair need not imply a change in the
+selected grading. Indicator traces are calculated without optimization.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_mc_fragility</span><span class="op">(</span></span>
+<span>  <span class="va">draws</span>,</span>
+<span>  fit <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  settings <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  z <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  screen_margin <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a>
+</h2>
+
+
+<dl>
+<dt id="arg-draws">draws<a class="anchor" aria-label="anchor" href="#arg-draws"></a>
+</dt>
+<dd><p>Joint equal-weight ordinary posterior draws. Whole states must
+retain the dependence among entities and criteria. Exact finite laws,
+criterion-wise blocks, Gaussian/mixture coefficients, supplied probabilities,
+and equality-neutral inputs are not supported by this Monte Carlo diagnostic.</p></dd>
+
+
+<dt id="arg-fit-settings">fit, settings<a class="anchor" aria-label="anchor" href="#arg-fit-settings"></a>
+</dt>
+<dd><p>Supply exactly one, as in <code><a href="postrank_crossfit.html">postrank_crossfit()</a></code>. Only
+<code>weights</code> and <code>tau</code> are needed in a settings list. A supplied fit's grade
+is used to label its relation for each traced pair; its optimization status
+is not improved by this diagnostic.</p></dd>
+
+
+<dt id="arg-z">z<a class="anchor" aria-label="anchor" href="#arg-z"></a>
+</dt>
+<dd><p>Positive MCSE multiplier, default 2. This sets a descriptive scale,
+not a simultaneous confidence level.</p></dd>
+
+
+<dt id="arg-screen-margin">screen_margin<a class="anchor" aria-label="anchor" href="#arg-screen-margin"></a>
+</dt>
+<dd><p>Positive threshold: only pairs with margin strictly below
+it are traced. For IID samples with <code>S &gt; 1</code>, the default is
+<code>z * 0.5 / sqrt(S - 1)</code>, using the maximum sample SD of a bounded indicator
+to avoid screening out a pair that this rule could flag. The MCMC default
+<code>0.1</code> is a heuristic screening threshold, not a bound on omitted pairs.</p></dd>
+
+</dl>
+</div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
+</h2>
+    <p>A <code>postrank_mc_fragility</code> list with a <code>pairs</code> table of better
+directions, weighted error, margin, MCSE, margin/MCSE ratio, and <code>fragile</code>
+flag; a supplied grade adds its reported relation. <code>summary</code> counts all
+pairs, traced pairs, flagged pairs, and unavailable MCSEs. Screening choices,
+sampling regime, and diagnostic warnings are retained.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
+</h2>
+    <p><span>Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>e</mi><mo accent="true">‾</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><msub><mo>∑</mo><mi>k</mi></msub><msub><mi>w</mi><mi>k</mi></msub><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\bar e_{ij}=\sum_k w_k e_{ij,k}</annotation></semantics></math> and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>=</mo><mrow><mi mathvariant="normal">min</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mover><mi>e</mi><mo accent="true">‾</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mover><mi>e</mi><mo accent="true">‾</mo></mover><mrow><mi>j</mi><mi>i</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">d=\min(\bar e_{ij},\bar e_{ji})</annotation></semantics></math>. Considering this pair alone,
+disclosure in the better direction has lower estimated loss than
+withholding when <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>&lt;</mo><mi>τ</mi></mrow><annotation encoding="application/x-tex">d&lt;\tau</annotation></semantics></math>. The function flags
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mi>d</mi><mo>−</mo><mi>τ</mi><mo stretchy="false" form="prefix">|</mo><mo>&lt;</mo><mi>z</mi><mspace width="0.167em"></mspace><mover><mrow><mi mathvariant="normal">M</mi><mi mathvariant="normal">C</mi><mi mathvariant="normal">S</mi><mi mathvariant="normal">E</mi></mrow><mo accent="true">̂</mo></mover></mrow><annotation encoding="application/x-tex">|d-\tau|&lt;z\,\widehat{\mathrm{MCSE}}</annotation></semantics></math> using the weighted indicator
+trace for the empirically better direction. It does not diagnose global
+action stability, enforce grade counts or protections, or provide
+post-selection coverage for that chosen direction.</span></p>
+<p>IID MCSE is sample SD divided by the square root of the actual draw count.
+MCMC MCSE uses <code><a href="https://rdrr.io/pkg/posterior/man/mcse_mean.html" class="external-link">posterior::mcse_mean</a></code> with the original equal-length chains.
+Unequal chains are not truncated or padded; missing optional software or
+unavailable MCSE leaves the corresponding flags unavailable. In particular,
+a constant empirical trace is not proof of certainty or adequate chain
+exploration. MCMC ESS cannot replace an IID sample count in a concentration
+bound. These pairwise flags are descriptive, not finite-sample guarantees.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
+</h2>
+    <div class="dont-index"><p><code><a href="postrank_diagnose.html">postrank_diagnose()</a></code>, <code><a href="postrank_crossfit.html">postrank_crossfit()</a></code>, <code><a href="postrank_iid_bounds.html">postrank_iid_bounds()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">fragility</span> <span class="op">&lt;-</span> <span class="fu">postrank_mc_fragility</span><span class="op">(</span><span class="va">postrank_toy</span>,</span></span>
+<span class="r-in"><span>  settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">.6</span>, need_B <span class="op">=</span> <span class="fl">.4</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fragility</span><span class="op">$</span><span class="va">summary</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $pairs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $traced</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $fragile</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $fragile_share</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $mcse_unavailable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="va">fragility</span><span class="op">$</span><span class="va">pairs</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   entity_i entity_j better_direction weighted_error margin disclose_preferred</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      001   site C          i_ahead         0.3125 0.0625              FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   site-B   site C          i_ahead         0.0750 0.1750               TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         mcse    ratio fragile</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.02969944 2.104417   FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.03206596 5.457501   FALSE</span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

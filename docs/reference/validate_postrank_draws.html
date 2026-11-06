@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Check a Posterior Input and Inspect Its Validation Results — validate_postrank_draws • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Check a Posterior Input and Inspect Its Validation Results — validate_postrank_draws"><meta name="description" content="The validator checks the target definitions, numerical values, axes and
+sampling history required by the ordinary input routes. Its valid and
+issues fields report whether the input meets those requirements."><meta property="og:description" content="The validator checks the target definitions, numerical values, axes and
+sampling history required by the ordinary input routes. Its valid and
+issues fields report whether the input meets those requirements."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul></div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Check a Posterior Input and Inspect Its Validation Results</h1>
+
+      <div class="d-none name"><code>validate_postrank_draws.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>The validator checks the target definitions, numerical values, axes and
+sampling history required by the ordinary input routes. Its <code>valid</code> and
+<code>issues</code> fields report whether the input meets those requirements.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">validate_postrank_draws</span><span class="op">(</span><span class="va">x</span>, source <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
+<dd><p>A canonical <code>applied-0.1</code> named-list payload or a <code>postrank_draws</code>.</p></dd>
+
+
+<dt id="arg-source">source<a class="anchor" aria-label="anchor" href="#arg-source"></a></dt>
+<dd><p>Reserved; leave <code>NULL</code>. To compare mapped values with a
+<code>posterior</code> source object, use <code><a href="as_postrank_posterior.html">as_postrank_posterior()</a></code>.</p></dd>
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A <code>postrank_validation</code> list with logical <code>valid</code>, an <code>issues</code> list
+of error codes, paths and messages, and separate check flags. Invalid
+payloads are reported in this record rather than constructed as inputs.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The checks cover the supported structures, ordered IDs, target and source
+declarations, numeric values, zero-tie policy and sampling history. They
+do not change the values or perform a fit. The function does not run a
+general JSON Schema validator, so <code>schema_checked</code> is <code>FALSE</code> even for a
+valid R input. The additional placeholder-text checks of
+<code><a href="postrank_declarations.html">postrank_declarations()</a></code> are not applied here.</p>
+<p><code>source_values_checked</code>, <code>jointness_verified</code> and <code>convergence_verified</code>
+are separate from <code>valid</code>. Source-value comparison is retained only when
+an existing object's successful <code><a href="as_postrank_posterior.html">as_postrank_posterior()</a></code> audit matches
+its current input identity. Structural validity does not establish the
+scientific truth of the declarations, model adequacy or convergence.
+The tie-aware validator has a different return convention; see
+<code><a href="validate_postrank_tie_draws.html">validate_postrank_tie_draws()</a></code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="as_postrank_draws.html">as_postrank_draws()</a></code>, <code><a href="postrank_draws.html">postrank_draws()</a></code>, <code><a href="as_postrank_posterior.html">as_postrank_posterior()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">check</span> <span class="op">&lt;-</span> <span class="fu">validate_postrank_draws</span><span class="op">(</span><span class="va">postrank_toy</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">check</span><span class="op">$</span><span class="va">valid</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span><span class="va">check</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"source_values_checked"</span>, <span class="st">"jointness_verified"</span>, <span class="st">"convergence_verified"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $source_values_checked</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $jointness_verified</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $convergence_verified</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Deliberately omit required context to inspect the reported problem.</span></span></span>
+<span class="r-in"><span><span class="va">bad</span> <span class="op">&lt;-</span> <span class="va">postrank_toy</span></span></span>
+<span class="r-in"><span><span class="va">bad</span><span class="op">$</span><span class="va">context</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span><span class="fu">validate_postrank_draws</span><span class="op">(</span><span class="va">bad</span><span class="op">)</span><span class="op">$</span><span class="va">issues</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]$code</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "invalid_input"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]$path</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "$"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]$message</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "$: missing fields: context"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]$severity</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "error"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer></div>
+
+
+
+
+
+  </body></html>
+

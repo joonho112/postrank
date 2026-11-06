@@ -1,0 +1,843 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "tie-aware-input-0.1"
+    },
+    "input_kind": {
+      "enum": [
+        "equal_weight_draws",
+        "exact_finite_posterior"
+      ]
+    },
+    "dependence_mode": {
+      "const": "joint_model"
+    },
+    "requested_functional": {
+      "const": "expected_rank_loss"
+    },
+    "entity_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/id"
+      },
+      "minItems": 2,
+      "uniqueItems": true
+    },
+    "criterion_ids": {
+      "$ref": "#/$defs/ids"
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/target"
+      },
+      "minItems": 1
+    },
+    "context": {
+      "$ref": "#/$defs/context"
+    },
+    "identification": {
+      "$ref": "#/$defs/identification"
+    },
+    "tie_policy": {
+      "$ref": "#/$defs/tiePolicy"
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    },
+    "joint_draws": {
+      "$ref": "#/$defs/jointDraws"
+    },
+    "finite_law": {
+      "$ref": "#/$defs/finiteLaw"
+    },
+    "equality": {
+      "$ref": "#/$defs/equality"
+    }
+  },
+  "required": [
+    "schema_version",
+    "input_kind",
+    "dependence_mode",
+    "requested_functional",
+    "entity_ids",
+    "criterion_ids",
+    "targets",
+    "context",
+    "identification",
+    "tie_policy",
+    "provenance",
+    "equality"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:postrank:tie-aware:draws-contract:0.1",
+  "title": "Explicit equality-neutral joint posterior-input structure",
+  "description": "Opt-in joint equal-weight IID/MCMC draws or nonempirical exact finite integer-state law. Ties are declared genuine and structural equality classes are separately declared or derived. Numerical checks do not authenticate scientific declarations.",
+  "oneOf": [
+    {
+      "properties": {
+        "input_kind": {
+          "const": "equal_weight_draws"
+        },
+        "dependence_mode": {
+          "const": "joint_model"
+        }
+      },
+      "required": [
+        "joint_draws"
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "criterion_blocks"
+            ]
+          },
+          {
+            "required": [
+              "finite_law"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "properties": {
+        "input_kind": {
+          "const": "exact_finite_posterior"
+        },
+        "dependence_mode": {
+          "const": "joint_model"
+        }
+      },
+      "required": [
+        "finite_law"
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "joint_draws"
+            ]
+          },
+          {
+            "required": [
+              "criterion_blocks"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "ids": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/id"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "iterationList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/positiveInteger"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "criterion_id": {
+          "$ref": "#/$defs/id"
+        },
+        "estimand": {
+          "$ref": "#/$defs/id"
+        },
+        "entity_population": {
+          "$ref": "#/$defs/id"
+        },
+        "time_reference": {
+          "$ref": "#/$defs/id"
+        },
+        "units": {
+          "$ref": "#/$defs/id"
+        },
+        "source_transform": {
+          "$ref": "#/$defs/id"
+        },
+        "identification_basis": {
+          "$ref": "#/$defs/id"
+        },
+        "orientation": {
+          "const": "higher_priority"
+        }
+      },
+      "required": [
+        "criterion_id",
+        "estimand",
+        "entity_population",
+        "time_reference",
+        "units",
+        "source_transform",
+        "identification_basis",
+        "orientation"
+      ]
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cohort_id": {
+          "$ref": "#/$defs/id"
+        },
+        "data_version": {
+          "$ref": "#/$defs/id"
+        },
+        "data_conditioning": {
+          "$ref": "#/$defs/id"
+        },
+        "model_summary": {
+          "$ref": "#/$defs/id"
+        }
+      },
+      "required": [
+        "cohort_id",
+        "data_version",
+        "data_conditioning",
+        "model_summary"
+      ]
+    },
+    "identification": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "identified_declared"
+        },
+        "note": {
+          "$ref": "#/$defs/id"
+        }
+      },
+      "required": [
+        "status",
+        "note"
+      ]
+    },
+    "tiePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rule": {
+          "const": "equality_neutral"
+        },
+        "declared": {
+          "const": true
+        },
+        "justification": {
+          "$ref": "#/$defs/id"
+        },
+        "observed_tie_action": {
+          "const": "accept_declared_exact_equality"
+        }
+      },
+      "required": [
+        "rule",
+        "declared",
+        "justification",
+        "observed_tie_action"
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "producer": {
+          "$ref": "#/$defs/id"
+        },
+        "artifact_id": {
+          "$ref": "#/$defs/id"
+        },
+        "artifact_hash": {
+          "$ref": "#/$defs/id"
+        },
+        "construction_note": {
+          "$ref": "#/$defs/id"
+        },
+        "created_at": {
+          "$ref": "#/$defs/id"
+        }
+      },
+      "required": [
+        "producer",
+        "artifact_id",
+        "artifact_hash",
+        "construction_note",
+        "created_at"
+      ]
+    },
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_id": {
+          "$ref": "#/$defs/id"
+        },
+        "fit_id": {
+          "$ref": "#/$defs/id"
+        },
+        "model_id": {
+          "$ref": "#/$defs/id"
+        },
+        "source_format": {
+          "$ref": "#/$defs/id"
+        },
+        "source_artifact": {
+          "$ref": "#/$defs/id"
+        },
+        "source_hash": {
+          "$ref": "#/$defs/id"
+        },
+        "vector_generation_provenance": {
+          "$ref": "#/$defs/id"
+        },
+        "within_criterion_joint_declared": {
+          "const": true
+        }
+      },
+      "required": [
+        "source_id",
+        "fit_id",
+        "model_id",
+        "source_format",
+        "source_artifact",
+        "source_hash",
+        "vector_generation_provenance",
+        "within_criterion_joint_declared"
+      ]
+    },
+    "variableMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "$ref": "#/$defs/id"
+        },
+        "criterion_id": {
+          "$ref": "#/$defs/id"
+        },
+        "source_target_variable_id": {
+          "$ref": "#/$defs/id"
+        },
+        "derivation_note": {
+          "$ref": "#/$defs/id"
+        }
+      },
+      "required": [
+        "entity_id",
+        "criterion_id",
+        "source_target_variable_id",
+        "derivation_note"
+      ]
+    },
+    "drawIndex": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "slot_id": {
+          "$ref": "#/$defs/id"
+        },
+        "original_draw_id": {
+          "$ref": "#/$defs/id"
+        },
+        "chain_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "iteration": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/positiveInteger"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "slot_id",
+        "original_draw_id",
+        "chain_id",
+        "iteration"
+      ]
+    },
+    "chainHistory": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "chain_id": {
+          "$ref": "#/$defs/id"
+        },
+        "retained_iterations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/positiveInteger"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "warmup_iterations": {
+          "$ref": "#/$defs/iterationList"
+        },
+        "discarded_sampling_iterations": {
+          "$ref": "#/$defs/iterationList"
+        },
+        "selection_note": {
+          "$ref": "#/$defs/id"
+        }
+      },
+      "required": [
+        "chain_id",
+        "retained_iterations",
+        "warmup_iterations",
+        "discarded_sampling_iterations",
+        "selection_note"
+      ]
+    },
+    "sampling": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "regime": {
+          "enum": [
+            "iid",
+            "mcmc"
+          ]
+        },
+        "target_distribution": {
+          "const": "declared_posterior"
+        },
+        "equal_weight": {
+          "const": true
+        },
+        "warmup_status": {
+          "enum": [
+            "not_applicable",
+            "removed"
+          ]
+        },
+        "sampling_provenance": {
+          "$ref": "#/$defs/id"
+        },
+        "chain_history": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/chainHistory"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "regime",
+        "target_distribution",
+        "equal_weight",
+        "warmup_status",
+        "sampling_provenance",
+        "chain_history"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "regime": {
+                "const": "iid"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "warmup_status": {
+                "const": "not_applicable"
+              },
+              "chain_history": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "regime": {
+                "const": "mcmc"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "warmup_status": {
+                "const": "removed"
+              },
+              "chain_history": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "tensor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "axis_order": {
+          "const": [
+            "draw",
+            "entity",
+            "criterion"
+          ]
+        },
+        "shape": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "S": {
+              "$ref": "#/$defs/positiveInteger"
+            },
+            "n": {
+              "type": "integer",
+              "minimum": 2
+            },
+            "K": {
+              "$ref": "#/$defs/positiveInteger"
+            }
+          },
+          "required": [
+            "S",
+            "n",
+            "K"
+          ]
+        },
+        "dimnames": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "draw": {
+              "$ref": "#/$defs/ids"
+            },
+            "entity": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/id"
+              },
+              "minItems": 2,
+              "uniqueItems": true
+            },
+            "criterion": {
+              "$ref": "#/$defs/ids"
+            }
+          },
+          "required": [
+            "draw",
+            "entity",
+            "criterion"
+          ]
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 1
+            },
+            "minItems": 2
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "axis_order",
+        "shape",
+        "dimnames",
+        "values"
+      ]
+    },
+    "matrix": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "axis_order": {
+          "const": [
+            "draw",
+            "entity"
+          ]
+        },
+        "shape": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "S": {
+              "$ref": "#/$defs/positiveInteger"
+            },
+            "n": {
+              "type": "integer",
+              "minimum": 2
+            }
+          },
+          "required": [
+            "S",
+            "n"
+          ]
+        },
+        "dimnames": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "draw": {
+              "$ref": "#/$defs/ids"
+            },
+            "entity": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/id"
+              },
+              "minItems": 2,
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "draw",
+            "entity"
+          ]
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "axis_order",
+        "shape",
+        "dimnames",
+        "values"
+      ]
+    },
+    "jointDraws": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tensor": {
+          "$ref": "#/$defs/tensor"
+        },
+        "origin": {
+          "$ref": "#/$defs/origin"
+        },
+        "sampling": {
+          "$ref": "#/$defs/sampling"
+        },
+        "draw_index": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/drawIndex"
+          },
+          "minItems": 1
+        },
+        "variable_map": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/variableMap"
+          },
+          "minItems": 2
+        },
+        "cross_criterion_joint_provenance": {
+          "$ref": "#/$defs/id"
+        }
+      },
+      "required": [
+        "tensor",
+        "origin",
+        "sampling",
+        "draw_index",
+        "variable_map",
+        "cross_criterion_joint_provenance"
+      ]
+    },
+    "criterionBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "criterion_id": {
+          "$ref": "#/$defs/id"
+        },
+        "matrix": {
+          "$ref": "#/$defs/matrix"
+        },
+        "origin": {
+          "$ref": "#/$defs/origin"
+        },
+        "sampling": {
+          "$ref": "#/$defs/sampling"
+        },
+        "draw_index": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/drawIndex"
+          },
+          "minItems": 1
+        },
+        "variable_map": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/variableMap"
+          },
+          "minItems": 2
+        }
+      },
+      "required": [
+        "criterion_id",
+        "matrix",
+        "origin",
+        "sampling",
+        "draw_index",
+        "variable_map"
+      ]
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "state_id": {
+          "$ref": "#/$defs/id"
+        },
+        "mass_numerator": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "theta": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            "minItems": 1
+          },
+          "minItems": 2
+        }
+      },
+      "required": [
+        "state_id",
+        "mass_numerator",
+        "theta"
+      ]
+    },
+    "finiteLaw": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "denominator": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "value_representation": {
+          "const": "safe_integer"
+        },
+        "states": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/state"
+          },
+          "minItems": 1
+        },
+        "law_definition": {
+          "$ref": "#/$defs/id"
+        },
+        "not_empirical_posterior_relabeling": {
+          "const": true
+        }
+      },
+      "required": [
+        "denominator",
+        "value_representation",
+        "states",
+        "law_definition",
+        "not_empirical_posterior_relabeling"
+      ]
+    },
+    "equality": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "enum": [
+            "structural_declared",
+            "exact_finite_law"
+          ]
+        },
+        "justification": {
+          "$ref": "#/$defs/id"
+        },
+        "criterion_classes": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/$defs/id"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "basis",
+        "justification",
+        "criterion_classes"
+      ]
+    }
+  },
+  "x-semantic-checks": [
+    "Joint states preserve every original provider and criterion, with complete finite numeric axes and original IID/MCMC provenance/history. Criterionwise and weighted approximate inputs are unsupported.",
+    "Every retained numeric tie is declared genuine. No rounding, epsilon, jitter or inferred precision repair is performed; rounded continuous output requires source review.",
+    "Monte Carlo equality basis is structural_declared: criterion_classes supplies one named nonblank label for every entity in every criterion. Within-class values must agree exactly in every retained draw; observed cross-class coincidences never merge declarations.",
+    "Exact finite-law basis is exact_finite_law: positive safe-integer masses sum exactly to a safe denominator, and class partitions are derived over all positive-mass states; a supplied partition must match.",
+    "Declarations are checked for numerical consistency, not scientific truth, jointness, convergence or finite-sample/numerical certification. The legacy applied-0.1 domain remains separate."
+  ]
+}

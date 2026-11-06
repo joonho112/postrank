@@ -1,0 +1,28 @@
+pandoc: '3.9'
+pkgdown: 2.2.0
+pkgdown_sha: ~
+articles:
+  a1-getting-started: a1-getting-started.html
+  a2-cde-accountability: a2-cde-accountability.html
+  a3-krw-race-gender: a3-krw-race-gender.html
+  a4-alabama-opportunity: a4-alabama-opportunity.html
+  a5-your-posterior-results: a5-your-posterior-results.html
+  a6-reading-exporting-results: a6-reading-exporting-results.html
+  a7-figures-sensitivity: a7-figures-sensitivity.html
+  baselines-and-the-cost-of-a-common-grade: baselines-and-the-cost-of-a-common-grade.html
+  figure-gallery: figure-gallery.html
+  inputs-and-producers: inputs-and-producers.html
+  m1-ranking-and-loss: m1-ranking-and-loss.html
+  m2-several-criteria: m2-several-criteria.html
+  m3-posterior-inputs: m3-posterior-inputs.html
+  m4-ties-and-withholding: m4-ties-and-withholding.html
+  m5-computing-grades: m5-computing-grades.html
+  m6-uncertainty-diagnostics: m6-uncertainty-diagnostics.html
+  mdomain-decisions: mdomain-decisions.html
+  mdomain-quickstart: mdomain-quickstart.html
+  migration-from-0-9: migration-from-0-9.html
+  quickstart: quickstart.html
+last_built: 2026-11-06T15:57Z
+urls:
+  reference: https://joonho112.github.io/postrank/reference
+  article: https://joonho112.github.io/postrank/articles

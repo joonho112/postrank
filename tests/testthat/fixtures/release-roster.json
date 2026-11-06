@@ -1,0 +1,1391 @@
+{
+  "api": {
+    "exports": [
+      "as_postrank_draws",
+      "as_postrank_posterior",
+      "as_postrank_tie_draws",
+      "autoplot",
+      "canonical_postrank_grade",
+      "format_postrank_analysis_cli",
+      "format_postrank_backend_availability_cli",
+      "format_postrank_baseline_cli",
+      "format_postrank_coefficient_diagnostics_cli",
+      "format_postrank_coefficients_cli",
+      "format_postrank_commonality_cost_cli",
+      "format_postrank_comparison_cli",
+      "format_postrank_control_cli",
+      "format_postrank_crossfit_cli",
+      "format_postrank_declarations_cli",
+      "format_postrank_diagnostics_cli",
+      "format_postrank_draws_cli",
+      "format_postrank_fit_cli",
+      "format_postrank_frontier_cli",
+      "format_postrank_guarantee_cli",
+      "format_postrank_mc_fragility_cli",
+      "format_postrank_pairwise_cli",
+      "format_postrank_problem_cli",
+      "format_postrank_report_card_cli",
+      "format_postrank_report_cli",
+      "format_postrank_sensitivity_cli",
+      "format_postrank_settings_cli",
+      "format_postrank_summary_cli",
+      "format_postrank_validation_cli",
+      "get_grades",
+      "get_profile",
+      "get_relations",
+      "get_risk",
+      "postrank",
+      "postrank_backend_available",
+      "postrank_coefficient_capabilities",
+      "postrank_coefficient_diagnose",
+      "postrank_commonality_cost",
+      "postrank_compare",
+      "postrank_composite",
+      "postrank_control",
+      "postrank_crossfit",
+      "postrank_cuts",
+      "postrank_declarations",
+      "postrank_diagnose",
+      "postrank_draws",
+      "postrank_draws_from_array",
+      "postrank_evaluate",
+      "postrank_expected_rank",
+      "postrank_frontier",
+      "postrank_gaussian_coefficients",
+      "postrank_guarantee_capabilities",
+      "postrank_iid_bounds",
+      "postrank_mc_fragility",
+      "postrank_mixture_coefficients",
+      "postrank_pairwise",
+      "postrank_palette",
+      "postrank_plot_commonality",
+      "postrank_plot_compare",
+      "postrank_plot_data",
+      "postrank_plot_frontier",
+      "postrank_plot_pairwise",
+      "postrank_plot_profile",
+      "postrank_plot_relations",
+      "postrank_plot_report_card",
+      "postrank_posterior_means",
+      "postrank_probabilities",
+      "postrank_problem",
+      "postrank_protection_analysis",
+      "postrank_protection_envelopes",
+      "postrank_regret_bound",
+      "postrank_report",
+      "postrank_report_card",
+      "postrank_sensitivity",
+      "postrank_settings",
+      "postrank_settings_grid",
+      "postrank_solve",
+      "postrank_tie_capabilities",
+      "postrank_tie_evaluate",
+      "postrank_tie_pairwise",
+      "postrank_tie_problem",
+      "postrank_tie_solve",
+      "read_postrank_draws",
+      "read_postrank_tie_draws",
+      "scale_color_grade",
+      "scale_colour_grade",
+      "scale_fill_grade",
+      "theme_postrank",
+      "validate_postrank_coefficients",
+      "validate_postrank_draws",
+      "validate_postrank_probabilities",
+      "validate_postrank_solution",
+      "validate_postrank_tie_draws",
+      "validate_postrank_tie_pairwise",
+      "validate_postrank_tie_solution",
+      "write_postrank_draws",
+      "write_postrank_tie_draws",
+      "postrank_mdomain_input",
+      "postrank_mdomain_evaluate",
+      "postrank_mdomain_solve",
+      "postrank_mdomain_assess",
+      "postrank_mdomain_grades",
+      "postrank_mdomain_decision",
+      "postrank_mdomain_family",
+      "postrank_plot_mdomain"
+    ],
+    "s3_methods": [
+      {
+        "generic": "print",
+        "class": "postrank_draws"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_draws"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_draws"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_validation"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_validation"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_validation"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_pairwise"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_pairwise"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_pairwise"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_coefficients"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_coefficients"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_coefficients"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_coefficient_diagnostics"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_coefficient_diagnostics"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_coefficient_diagnostics"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_declarations"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_declarations"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_settings"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_settings"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_settings"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_control"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_control"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_control"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_problem"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_problem"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_problem"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "autoplot",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "plot",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "as.data.frame",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_solution_validation"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_solution_validation"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_solution_validation"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "autoplot",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "plot",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "as.data.frame",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_report_card"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_report_card"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_report_card"
+      },
+      {
+        "generic": "autoplot",
+        "class": "postrank_report_card"
+      },
+      {
+        "generic": "plot",
+        "class": "postrank_report_card"
+      },
+      {
+        "generic": "as.data.frame",
+        "class": "postrank_report_card"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_baseline"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_baseline"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_baseline"
+      },
+      {
+        "generic": "autoplot",
+        "class": "postrank_baseline"
+      },
+      {
+        "generic": "plot",
+        "class": "postrank_baseline"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_comparison"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_comparison"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_comparison"
+      },
+      {
+        "generic": "autoplot",
+        "class": "postrank_comparison"
+      },
+      {
+        "generic": "plot",
+        "class": "postrank_comparison"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_frontier"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_frontier"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_frontier"
+      },
+      {
+        "generic": "autoplot",
+        "class": "postrank_frontier"
+      },
+      {
+        "generic": "plot",
+        "class": "postrank_frontier"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_commonality_cost"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_commonality_cost"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_commonality_cost"
+      },
+      {
+        "generic": "autoplot",
+        "class": "postrank_commonality_cost"
+      },
+      {
+        "generic": "plot",
+        "class": "postrank_commonality_cost"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_sensitivity"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_sensitivity"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_sensitivity"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_crossfit"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_crossfit"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_crossfit"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_mc_fragility"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_mc_fragility"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_mc_fragility"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_diagnostics"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_diagnostics"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_diagnostics"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_report"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_report"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_report"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_iid_bounds"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_iid_bounds"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_iid_bounds"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_protection_envelopes"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_protection_envelopes"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_protection_envelopes"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_protection_analysis"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_protection_analysis"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_protection_analysis"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_regret_bound"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_regret_bound"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_regret_bound"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_backend_availability"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_backend_availability"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_backend_availability"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_summary"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_summary"
+      },
+      {
+        "generic": "get_grades",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "get_grades",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "get_grades",
+        "class": "postrank_baseline"
+      },
+      {
+        "generic": "get_relations",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "get_relations",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "get_profile",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "get_profile",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "get_risk",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "get_risk",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "as.data.frame",
+        "class": "postrank_baseline"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_tie_draws"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_tie_pairwise"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_tie_problem"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_tie_fit"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_tie_evaluation"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_tie_solution_validation"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_tie_draws"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_tie_pairwise"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_tie_problem"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_tie_fit"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_tie_evaluation"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_tie_solution_validation"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_tie_draws"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_tie_pairwise"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_tie_problem"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_tie_fit"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_tie_evaluation"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_tie_solution_validation"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_mdomain_input"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_mdomain_input"
+      },
+      {
+        "generic": "print",
+        "class": "summary.postrank_mdomain_input"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_mdomain_decision"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_mdomain_decision"
+      },
+      {
+        "generic": "print",
+        "class": "summary.postrank_mdomain_decision"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_mdomain_evaluation"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_mdomain_evaluation"
+      },
+      {
+        "generic": "print",
+        "class": "summary.postrank_mdomain_evaluation"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_mdomain_fit"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_mdomain_fit"
+      },
+      {
+        "generic": "print",
+        "class": "summary.postrank_mdomain_fit"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_mdomain_assessment"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_mdomain_assessment"
+      },
+      {
+        "generic": "print",
+        "class": "summary.postrank_mdomain_assessment"
+      }
+    ],
+    "tie_aware_additions": {
+      "exports": [
+        "as_postrank_tie_draws",
+        "validate_postrank_tie_draws",
+        "postrank_tie_pairwise",
+        "validate_postrank_tie_pairwise",
+        "read_postrank_tie_draws",
+        "write_postrank_tie_draws",
+        "postrank_tie_problem",
+        "postrank_tie_evaluate",
+        "validate_postrank_tie_solution",
+        "postrank_tie_solve",
+        "postrank_tie_capabilities"
+      ]
+    },
+    "probability_input_additions": {
+      "exports": [
+        "postrank_probabilities",
+        "validate_postrank_probabilities"
+      ]
+    },
+    "v1_visualization_additions": {
+      "exports": [
+        "postrank_plot_pairwise"
+      ]
+    },
+    "v1_1_exports": [
+      "as_postrank_draws",
+      "as_postrank_posterior",
+      "as_postrank_tie_draws",
+      "autoplot",
+      "canonical_postrank_grade",
+      "format_postrank_analysis_cli",
+      "format_postrank_backend_availability_cli",
+      "format_postrank_baseline_cli",
+      "format_postrank_coefficient_diagnostics_cli",
+      "format_postrank_coefficients_cli",
+      "format_postrank_commonality_cost_cli",
+      "format_postrank_comparison_cli",
+      "format_postrank_control_cli",
+      "format_postrank_crossfit_cli",
+      "format_postrank_declarations_cli",
+      "format_postrank_diagnostics_cli",
+      "format_postrank_draws_cli",
+      "format_postrank_fit_cli",
+      "format_postrank_frontier_cli",
+      "format_postrank_guarantee_cli",
+      "format_postrank_mc_fragility_cli",
+      "format_postrank_pairwise_cli",
+      "format_postrank_problem_cli",
+      "format_postrank_report_card_cli",
+      "format_postrank_report_cli",
+      "format_postrank_sensitivity_cli",
+      "format_postrank_settings_cli",
+      "format_postrank_summary_cli",
+      "format_postrank_validation_cli",
+      "get_grades",
+      "get_profile",
+      "get_relations",
+      "get_risk",
+      "postrank",
+      "postrank_backend_available",
+      "postrank_coefficient_capabilities",
+      "postrank_coefficient_diagnose",
+      "postrank_commonality_cost",
+      "postrank_compare",
+      "postrank_composite",
+      "postrank_control",
+      "postrank_crossfit",
+      "postrank_cuts",
+      "postrank_declarations",
+      "postrank_diagnose",
+      "postrank_draws",
+      "postrank_draws_from_array",
+      "postrank_evaluate",
+      "postrank_expected_rank",
+      "postrank_frontier",
+      "postrank_gaussian_coefficients",
+      "postrank_guarantee_capabilities",
+      "postrank_iid_bounds",
+      "postrank_mc_fragility",
+      "postrank_mixture_coefficients",
+      "postrank_pairwise",
+      "postrank_palette",
+      "postrank_plot_commonality",
+      "postrank_plot_compare",
+      "postrank_plot_data",
+      "postrank_plot_frontier",
+      "postrank_plot_pairwise",
+      "postrank_plot_profile",
+      "postrank_plot_relations",
+      "postrank_plot_report_card",
+      "postrank_posterior_means",
+      "postrank_probabilities",
+      "postrank_problem",
+      "postrank_protection_analysis",
+      "postrank_protection_envelopes",
+      "postrank_regret_bound",
+      "postrank_report",
+      "postrank_report_card",
+      "postrank_sensitivity",
+      "postrank_settings",
+      "postrank_settings_grid",
+      "postrank_solve",
+      "postrank_tie_capabilities",
+      "postrank_tie_evaluate",
+      "postrank_tie_pairwise",
+      "postrank_tie_problem",
+      "postrank_tie_solve",
+      "read_postrank_draws",
+      "read_postrank_tie_draws",
+      "scale_color_grade",
+      "scale_colour_grade",
+      "scale_fill_grade",
+      "theme_postrank",
+      "validate_postrank_coefficients",
+      "validate_postrank_draws",
+      "validate_postrank_probabilities",
+      "validate_postrank_solution",
+      "validate_postrank_tie_draws",
+      "validate_postrank_tie_pairwise",
+      "validate_postrank_tie_solution",
+      "write_postrank_draws",
+      "write_postrank_tie_draws"
+    ],
+    "v1_1_s3_methods": [
+      {
+        "generic": "print",
+        "class": "postrank_draws"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_draws"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_draws"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_validation"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_validation"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_validation"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_pairwise"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_pairwise"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_pairwise"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_coefficients"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_coefficients"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_coefficients"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_coefficient_diagnostics"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_coefficient_diagnostics"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_coefficient_diagnostics"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_declarations"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_declarations"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_settings"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_settings"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_settings"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_control"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_control"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_control"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_problem"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_problem"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_problem"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "autoplot",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "plot",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "as.data.frame",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_solution_validation"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_solution_validation"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_solution_validation"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "autoplot",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "plot",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "as.data.frame",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_report_card"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_report_card"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_report_card"
+      },
+      {
+        "generic": "autoplot",
+        "class": "postrank_report_card"
+      },
+      {
+        "generic": "plot",
+        "class": "postrank_report_card"
+      },
+      {
+        "generic": "as.data.frame",
+        "class": "postrank_report_card"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_baseline"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_baseline"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_baseline"
+      },
+      {
+        "generic": "autoplot",
+        "class": "postrank_baseline"
+      },
+      {
+        "generic": "plot",
+        "class": "postrank_baseline"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_comparison"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_comparison"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_comparison"
+      },
+      {
+        "generic": "autoplot",
+        "class": "postrank_comparison"
+      },
+      {
+        "generic": "plot",
+        "class": "postrank_comparison"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_frontier"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_frontier"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_frontier"
+      },
+      {
+        "generic": "autoplot",
+        "class": "postrank_frontier"
+      },
+      {
+        "generic": "plot",
+        "class": "postrank_frontier"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_commonality_cost"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_commonality_cost"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_commonality_cost"
+      },
+      {
+        "generic": "autoplot",
+        "class": "postrank_commonality_cost"
+      },
+      {
+        "generic": "plot",
+        "class": "postrank_commonality_cost"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_sensitivity"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_sensitivity"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_sensitivity"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_crossfit"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_crossfit"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_crossfit"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_mc_fragility"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_mc_fragility"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_mc_fragility"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_diagnostics"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_diagnostics"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_diagnostics"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_report"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_report"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_report"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_iid_bounds"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_iid_bounds"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_iid_bounds"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_protection_envelopes"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_protection_envelopes"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_protection_envelopes"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_protection_analysis"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_protection_analysis"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_protection_analysis"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_regret_bound"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_regret_bound"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_regret_bound"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_backend_availability"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_backend_availability"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_backend_availability"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_summary"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_summary"
+      },
+      {
+        "generic": "get_grades",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "get_grades",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "get_grades",
+        "class": "postrank_baseline"
+      },
+      {
+        "generic": "get_relations",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "get_relations",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "get_profile",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "get_profile",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "get_risk",
+        "class": "postrank_fit"
+      },
+      {
+        "generic": "get_risk",
+        "class": "postrank_analysis"
+      },
+      {
+        "generic": "as.data.frame",
+        "class": "postrank_baseline"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_tie_draws"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_tie_pairwise"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_tie_problem"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_tie_fit"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_tie_evaluation"
+      },
+      {
+        "generic": "print",
+        "class": "postrank_tie_solution_validation"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_tie_draws"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_tie_pairwise"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_tie_problem"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_tie_fit"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_tie_evaluation"
+      },
+      {
+        "generic": "format",
+        "class": "postrank_tie_solution_validation"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_tie_draws"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_tie_pairwise"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_tie_problem"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_tie_fit"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_tie_evaluation"
+      },
+      {
+        "generic": "summary",
+        "class": "postrank_tie_solution_validation"
+      }
+    ],
+    "mdomain_additions": {
+      "exports": [
+        "postrank_mdomain_input",
+        "postrank_mdomain_evaluate",
+        "postrank_mdomain_solve",
+        "postrank_mdomain_assess",
+        "postrank_mdomain_grades",
+        "postrank_mdomain_decision",
+        "postrank_mdomain_family",
+        "postrank_plot_mdomain"
+      ],
+      "s3_methods": [
+        {
+          "generic": "print",
+          "class": "postrank_mdomain_input"
+        },
+        {
+          "generic": "summary",
+          "class": "postrank_mdomain_input"
+        },
+        {
+          "generic": "print",
+          "class": "summary.postrank_mdomain_input"
+        },
+        {
+          "generic": "print",
+          "class": "postrank_mdomain_decision"
+        },
+        {
+          "generic": "summary",
+          "class": "postrank_mdomain_decision"
+        },
+        {
+          "generic": "print",
+          "class": "summary.postrank_mdomain_decision"
+        },
+        {
+          "generic": "print",
+          "class": "postrank_mdomain_evaluation"
+        },
+        {
+          "generic": "summary",
+          "class": "postrank_mdomain_evaluation"
+        },
+        {
+          "generic": "print",
+          "class": "summary.postrank_mdomain_evaluation"
+        },
+        {
+          "generic": "print",
+          "class": "postrank_mdomain_fit"
+        },
+        {
+          "generic": "summary",
+          "class": "postrank_mdomain_fit"
+        },
+        {
+          "generic": "print",
+          "class": "summary.postrank_mdomain_fit"
+        },
+        {
+          "generic": "print",
+          "class": "postrank_mdomain_assessment"
+        },
+        {
+          "generic": "summary",
+          "class": "postrank_mdomain_assessment"
+        },
+        {
+          "generic": "print",
+          "class": "summary.postrank_mdomain_assessment"
+        }
+      ],
+      "contract": "Multidomain additive risk A and direct joint protection; complete declared candidate bank only."
+    }
+  }
+}

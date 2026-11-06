@@ -1,0 +1,44 @@
+citHeader("References for the postrank package, its theory book and the report-card method:")
+
+bibentry(
+  bibtype = "Manual",
+  title = "postrank: Posterior Ranking with Integer Grades",
+  author = person("JoonHo", "Lee", email = "jlee296@ua.edu",
+                  comment = c(ORCID = "0009-0006-4019-8703")),
+  year = "2026",
+  note = paste0("R package version ", meta$Version,
+                ". Package documentation: https://joonho112.github.io/postrank/"),
+  url = "https://github.com/joonho112/postrank",
+  textVersion = paste0("Lee, J. (2026). postrank: Posterior Ranking with Integer Grades. ",
+    "R package version ", meta$Version, ". GitHub: https://github.com/joonho112/postrank. ",
+    "Package documentation: https://joonho112.github.io/postrank/")
+)
+
+bibentry(
+  bibtype = "Book",
+  title = "Decisions from noisy multidimensional indicators: Theory, evidence, and posterior grading",
+  author = person("JoonHo", "Lee"),
+  year = "2026",
+  publisher = "Zenodo",
+  note = "Version 1.0.0",
+  doi = "10.5281/zenodo.23790260",
+  url = "https://joonho112.github.io/postrank-theory-book/",
+  textVersion = paste("Lee, J. (2026). Decisions from noisy multidimensional indicators:",
+    "Theory, evidence, and posterior grading (Version 1.0.0). Zenodo.",
+    "https://doi.org/10.5281/zenodo.23790260.",
+    "Online reading: https://joonho112.github.io/postrank-theory-book/")
+)
+
+bibentry(
+  bibtype = "Article",
+  title = "A Discrimination Report Card",
+  author = c(person("Patrick", "Kline"), person("Evan K.", "Rose"), person("Christopher R.", "Walters")),
+  journal = "American Economic Review",
+  year = "2024",
+  volume = "114",
+  number = "8",
+  pages = "2472--2525",
+  doi = "10.1257/aer.20230700",
+  textVersion = paste("Kline, P., Rose, E. K., & Walters, C. R. (2024). A discrimination report card.",
+    "American Economic Review, 114(8), 2472-2525. https://doi.org/10.1257/aer.20230700")
+)

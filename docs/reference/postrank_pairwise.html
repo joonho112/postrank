@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Calculate Directional-Error Probabilities — postrank_pairwise • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Calculate Directional-Error Probabilities — postrank_pairwise">
+<meta name="description" content="Posterior draws or a specified finite law are aggregated into comparison
+probabilities for one or several criteria. For distinct entities,
+\(e_{ij,k}=P(\theta_{i,k}\leq\theta_{j,k})\) is the error for reporting
+entity i above entity j, with larger target values having higher priority.
+Diagonal entries are NA because self-comparisons are unused.">
+<meta property="og:description" content="Posterior draws or a specified finite law are aggregated into comparison
+probabilities for one or several criteria. For distinct entities,
+\(e_{ij,k}=P(\theta_{i,k}\leq\theta_{j,k})\) is the error for reporting
+entity i above entity j, with larger target values having higher priority.
+Diagonal entries are NA because self-comparisons are unused.">
+<meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Calculate Directional-Error Probabilities</h1>
+
+      <div class="d-none name"><code>postrank_pairwise.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p><span>Posterior draws or a specified finite law are aggregated into comparison
+probabilities for one or several criteria. For distinct entities,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>≤</mo><msub><mi>θ</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">e_{ij,k}=P(\theta_{i,k}\leq\theta_{j,k})</annotation></semantics></math> is the error for reporting
+entity i above entity j, with larger target values having higher priority.
+Diagonal entries are </span><code>NA</code> because self-comparisons are unused.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_pairwise</span><span class="op">(</span><span class="va">draws</span>, method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blocks"</span>, <span class="st">"reference"</span><span class="op">)</span>, block_size <span class="op">=</span> <span class="fl">128L</span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a>
+</h2>
+
+
+<dl>
+<dt id="arg-draws">draws<a class="anchor" aria-label="anchor" href="#arg-draws"></a>
+</dt>
+<dd><p>An object from <code><a href="postrank_draws.html">postrank_draws()</a></code> or <code><a href="as_postrank_draws.html">as_postrank_draws()</a></code>, a
+supported canonical input payload, or already calculated coefficients from
+<code><a href="postrank_gaussian_coefficients.html">postrank_gaussian_coefficients()</a></code>, <code><a href="postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code>, or
+<code><a href="postrank_probabilities.html">postrank_probabilities()</a></code>. For already calculated inputs, omit <code>method</code>
+and <code>block_size</code>.</p></dd>
+
+
+<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a>
+</dt>
+<dd><p>For Monte Carlo draws, <code>"blocks"</code> (default) aggregates bounded
+blocks of ordered pairs; <code>"reference"</code> aggregates one pair at a time.
+Both use equal-weight empirical frequencies and preserve the input draws.
+Exact finite laws instead use their declared masses.</p></dd>
+
+
+<dt id="arg-block-size">block_size<a class="anchor" aria-label="anchor" href="#arg-block-size"></a>
+</dt>
+<dd><p>Positive integer maximum ordered-pair block size for the
+block algorithm. It changes working storage, not the probability event.</p></dd>
+
+</dl>
+</div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
+</h2>
+    <p>For draw or finite-law input, a <code>postrank_pairwise</code> object containing
+the directional-error array <code>e</code>, criterion-specific <code>sample_sizes</code>, and
+source records. Exact finite laws also retain rational coefficients and
+a floating-point projection, with sample sizes marked unavailable.
+Already calculated coefficient or probability inputs are validated and
+returned unchanged, with their original class and source information.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
+</h2>
+    <p>The ordinary route requires zero equality probability for each pair
+of distinct entities. Continuity of every marginal is neither necessary
+nor sufficient: a finite law with no pairwise equality is admissible,
+whereas identical continuous targets have equality probability one.
+Use <code><a href="postrank_tie_pairwise.html">postrank_tie_pairwise()</a></code> for the separate equality-neutral loss when
+genuine equality is present. With zero equality, reverse off-diagonal
+probabilities sum to one.</p>
+<p>For IID or MCMC output, a frequency of zero or one does not establish that
+the underlying posterior event is impossible or certain. A declared exact
+finite law instead defines the probabilities through its complete states
+and masses; it requires the optional <code>gmp</code> package for exact arithmetic.</p>
+<p>Criterion-wise inputs retain each criterion's own draw count and history.
+Within a criterion, all entity values must refer to the same state. The
+resulting coefficients suffice for additive expected risk, but separate
+criterion blocks do not establish a cross-criterion joint trace for
+composite-score or simultaneous-event calculations.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
+</h2>
+    <div class="dont-index"><p><code><a href="postrank_evaluate.html">postrank_evaluate()</a></code>, <code><a href="postrank_probabilities.html">postrank_probabilities()</a></code>,
+<code><a href="postrank_tie_pairwise.html">postrank_tie_pairwise()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># A one-criterion analytic input is already calculated.</span></span></span>
+<span class="r-in"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu">postrank_pairwise</span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">one</span><span class="op">$</span><span class="va">e</span><span class="op">[</span>, , <span class="st">"score_A"</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         entity_j</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> entity_i         A         B            C            D            E</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        A        NA 0.1883796 0.0003914691 0.0001026879 9.252871e-10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        B 0.8116204        NA 0.0066641644 0.0023388675 1.475701e-07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        C 0.9996085 0.9933358           NA 0.3618368049 4.004971e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        D 0.9998973 0.9976611 0.6381631951           NA 1.077813e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        E 1.0000000 0.9999999 0.9959950288 0.9892218666           NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        F 1.0000000 1.0000000 0.9998973121 0.9996085309 8.555778e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         entity_j</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> entity_i            F</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        A 7.687299e-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        B 3.062416e-10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        C 1.026879e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        D 3.914691e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        E 1.444222e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        F           NA</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">one</span>, <span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Empirical frequencies from the bundled joint posterior-draw example.</span></span></span>
+<span class="r-in"><span><span class="va">pw</span> <span class="op">&lt;-</span> <span class="fu">postrank_pairwise</span><span class="op">(</span><span class="va">postrank_toy</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pw</span><span class="op">$</span><span class="va">sample_sizes</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> need_A need_B </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     32     32 </span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

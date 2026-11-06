@@ -1,0 +1,16 @@
+^(dev|checks|contracts|reviews|registry|results|log|producers)(/|$)
+^(applications|experiments|release|validation|config|handoff|examples|reports)(/|$)
+^(data-raw|docs|pkgdown|\.github|\.git|\.quarto|\.local)(/|$)
+^(_pkgdown\.yml|\.gitignore|\.Rhistory|\.DS_Store)$
+^.*(\.Rproj|\.Rcheck|\.tar\.gz)$
+^\.Rproj\.user(/|$)
+^tests/testthat/_problems(/|$)
+^tests/testthat/testthat-problems\.rds$
+^tests/(producer|experiment|application)(/|$)
+^README\.(Rmd|html|qmd)$
+^(HANDOFF\.md|cran-comments\.md|CRAN-SUBMISSION|LICENSE\.md)$
+^vignettes/.*(_cache|_files|\.html)$
+^(tests/testthat/)?Rplots\.pdf$
+^tests/testthat/_snaps/.*\.new\.svg$
+^AGENTS\.md$
+^tools(/|$)

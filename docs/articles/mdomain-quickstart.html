@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>A first multidomain report card • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="A first multidomain report card">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-article">
+
+
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>A first multidomain report card</h1>
+            
+      
+      <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/mdomain-quickstart.Rmd" class="external-link"><code>vignettes/mdomain-quickstart.Rmd</code></a></small>
+      <div class="d-none name"><code>mdomain-quickstart.Rmd</code></div>
+    </div>
+
+    
+    
+<p>A multidomain report gives each unit a grade in each domain. A unit
+can have higher reported priority in one domain and lower priority in
+another. Grade 1 is highest; equal grades withhold the pair’s direction
+in that domain. The input supplies posterior information: postrank does
+not fit the underlying model.</p>
+<p>This article builds a small fictional law, evaluates a proposed card,
+searches a declared set of alternatives, and displays three views. All
+data are defined below, so the example runs offline and needs no
+optimizer backend. The suggested package <code>gmp</code> supplies the
+exact arithmetic used by the multidomain interface. Install it with
+<code>install.packages("gmp")</code> if needed.</p>
+<p>The eight functions have separate jobs:</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Function</th>
+<th align="left">Job</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code><a href="../reference/postrank_mdomain_input.html">postrank_mdomain_input()</a></code></td>
+<td align="left">Bind identified states to targets and provenance.</td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="../reference/postrank_mdomain_decision.html">postrank_mdomain_decision()</a></code></td>
+<td align="left">Specify loss weights, withholding cost and
+protection.</td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="../reference/postrank_mdomain_evaluate.html">postrank_mdomain_evaluate()</a></code></td>
+<td align="left">Evaluate a fixed named grade matrix.</td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="../reference/postrank_mdomain_grades.html">postrank_mdomain_grades()</a></code></td>
+<td align="left">Extract verified grades from a card or fit.</td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="../reference/postrank_mdomain_family.html">postrank_mdomain_family()</a></code></td>
+<td align="left">Declare the candidate columns to consider.</td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="../reference/postrank_mdomain_solve.html">postrank_mdomain_solve()</a></code></td>
+<td align="left">Search their complete Cartesian product.</td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="../reference/postrank_mdomain_assess.html">postrank_mdomain_assess()</a></code></td>
+<td align="left">Assess a fixed card under an explicit finite, iid or
+MCMC route.</td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="../reference/postrank_plot_mdomain.html">postrank_plot_mdomain()</a></code></td>
+<td align="left">Display grades, profile cells or a selected pair.</td>
+</tr>
+</tbody>
+</table>
+<div class="section level2">
+<h2 id="supply-identified-joint-states">Supply identified joint states<a class="anchor" aria-label="anchor" href="#supply-identified-joint-states"></a>
+</h2>
+<p>The array dimensions are <strong>state by unit by domain</strong>. A
+state contains all units and domains together; its dependence is part of
+the supplied law. The two slices below exhaust a specified finite law,
+with probability 9/10 on the usual state and 1/10 on a reversal. They
+are complete support, rather than a two-draw approximation to another
+posterior.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">unit_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alder"</span>, <span class="st">"Birch"</span>, <span class="st">"Cedar"</span><span class="op">)</span></span>
+<span><span class="va">domain_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"attainment"</span>, <span class="st">"community"</span><span class="op">)</span></span>
+<span><span class="va">states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="cn">NA_real_</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2L</span>, <span class="fl">3L</span>, <span class="fl">2L</span><span class="op">)</span>,</span>
+<span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"usual"</span>, <span class="st">"reversal"</span><span class="op">)</span>, <span class="va">unit_ids</span>, <span class="va">domain_ids</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">states</span><span class="op">[</span><span class="st">"usual"</span>, , <span class="st">"attainment"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">states</span><span class="op">[</span><span class="st">"usual"</span>, , <span class="st">"community"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">states</span><span class="op">[</span><span class="st">"reversal"</span>, , <span class="st">"attainment"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">states</span><span class="op">[</span><span class="st">"reversal"</span>, , <span class="st">"community"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<p>Every target is already oriented so that larger means higher
+priority. <code>equality_classes</code> declares model identities.
+Distinct labels say that the model imposes no structural identity
+between distinct units; they do not rule out equality in an individual
+posterior state. Here there are no such equalities either.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">targets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">domain_ids</span>, <span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  definition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Fictional"</span>, <span class="va">d</span>, <span class="st">"priority coordinate"</span><span class="op">)</span>,</span>
+<span>  units <span class="op">=</span> <span class="st">"illustrative score"</span>, orientation <span class="op">=</span> <span class="st">"larger_is_higher"</span>,</span>
+<span>  transformations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  equality_classes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="va">unit_ids</span>, <span class="va">unit_ids</span><span class="op">)</span>,</span>
+<span>  equality_provenance <span class="op">=</span> <span class="st">"The model imposes no identity between distinct units."</span></span>
+<span><span class="op">)</span><span class="op">)</span>, <span class="va">domain_ids</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">provenance</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  input_id <span class="op">=</span> <span class="st">"three-unit-support"</span>, law_id <span class="op">=</span> <span class="st">"fictional-two-state-law"</span>,</span>
+<span>  proper_law <span class="op">=</span> <span class="cn">TRUE</span>, producer <span class="op">=</span> <span class="st">"Self-contained teaching example"</span>,</span>
+<span>  conditioning_info <span class="op">=</span> <span class="st">"No observations: this is a specified probability law."</span>,</span>
+<span>  joint_generation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Each labeled slice is one complete state"</span>,</span>
+<span>    <span class="st">"of all units and domains."</span><span class="op">)</span>,</span>
+<span>  sampling_assumptions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>finite_support_origin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span></span>
+<span>    <span class="st">"These two states exhaust the specified fictional law;"</span>,</span>
+<span>    <span class="st">"they are not sampled draws."</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_mdomain_input.html">postrank_mdomain_input</a></span><span class="op">(</span><span class="va">states</span>, targets <span class="op">=</span> <span class="va">targets</span>,</span>
+<span>  provenance <span class="op">=</span> <span class="va">provenance</span>, representation <span class="op">=</span> <span class="st">"exact_finite_law"</span>,</span>
+<span>  masses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"9/10"</span>, <span class="st">"1/10"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">input</span></span>
+<span><span class="co">#&gt; Multidomain posterior input</span></span>
+<span><span class="co">#&gt;  3 units; 2 domains; joint_array</span></span>
+<span><span class="co">#&gt;   Representation: exact_finite_law</span></span>
+<span><span class="co">#&gt;   Coupling: supplied_joint</span></span>
+<span><span class="co">#&gt;   Proper law: producer declaration; numerical guarantee: none</span></span></code></pre></div>
+<p>The constructor checks these declarations for consistency. It does
+not verify that a producer’s law is scientifically valid or properly
+sampled. Keep the array’s unit and domain order when supplying target
+lists, named policy vectors and grades. Matching state labels in
+separately generated domain histories do not establish a joint law.</p>
+</div>
+<div class="section level2">
+<h2 id="choose-a-decision-and-evaluate-a-card">Choose a decision and evaluate a card<a class="anchor" aria-label="anchor" href="#choose-a-decision-and-evaluate-a-card"></a>
+</h2>
+<p>The decision uses equal domain weights and a withholding cost of 1/5.
+There are no expected-error guards (<code>q = NULL</code>). Joint
+protection requires the probability of <strong>any</strong> protected
+domain’s strict error-proportion exceedance to be at most
+<code>alpha = 1/5</code>. With <code>t = 0</code>, one false disclosed
+direction triggers that domain’s event.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">decision</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_mdomain_decision.html">postrank_mdomain_decision</a></span><span class="op">(</span></span>
+<span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>attainment <span class="op">=</span> <span class="st">"1/2"</span>, community <span class="op">=</span> <span class="st">"1/2"</span><span class="op">)</span>,</span>
+<span>  tau <span class="op">=</span> <span class="st">"1/5"</span>, q <span class="op">=</span> <span class="cn">NULL</span>, t <span class="op">=</span> <span class="st">"0"</span>, alpha <span class="op">=</span> <span class="st">"1/5"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">G</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>attainment <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, community <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">G</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">unit_ids</span></span>
+<span><span class="va">card</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_mdomain_evaluate.html">postrank_mdomain_evaluate</a></span><span class="op">(</span><span class="va">input</span>, <span class="va">G</span>, <span class="va">decision</span><span class="op">)</span></span>
+<span><span class="va">card</span></span>
+<span><span class="co">#&gt; Fixed multidomain report evaluation</span></span>
+<span><span class="co">#&gt;   3 units; 2 domains; mode: joint</span></span>
+<span><span class="co">#&gt;   Risk: 1/30; joint probability: 1/10</span></span>
+<span><span class="co">#&gt;   Joint guards: evaluated; feasible_for_represented_measure</span></span>
+<span><span class="co">#&gt;   Basis: declared_finite_law; exact_represented_measure_arithmetic</span></span>
+<span><span class="co">#&gt;   Intended posterior feasibility certificate: none</span></span>
+<span><span class="fu"><a href="../reference/postrank_mdomain_grades.html">postrank_mdomain_grades</a></span><span class="op">(</span><span class="va">card</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       attainment community</span></span>
+<span><span class="co">#&gt; Alder          1         2</span></span>
+<span><span class="co">#&gt; Birch          2         1</span></span>
+<span><span class="co">#&gt; Cedar          3         3</span></span></code></pre></div>
+<p>Alder’s profile is (1, 2), and Birch’s is (2, 1): the directions
+cross. There is no single overall ordering implied by these two
+profiles. The card has expected loss <code>1/30</code> and joint-event
+probability <code>1/10</code>, so it meets the specified cap under this
+declared finite law. The reversal causes errors in both domains at once;
+the union counts that state once.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">card</span><span class="op">$</span><span class="va">domain_table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"domain_id"</span>, <span class="st">"N"</span>, <span class="st">"EF_exact"</span>, <span class="st">"loss_exact"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;    domain_id N EF_exact loss_exact</span></span>
+<span><span class="co">#&gt; 1 attainment 3     1/10       1/30</span></span>
+<span><span class="co">#&gt; 2  community 3     1/10       1/30</span></span>
+<span><span class="va">card</span><span class="op">$</span><span class="va">event_table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"domain_id"</span>, <span class="st">"N"</span>, <span class="st">"cutoff_exact"</span>, <span class="st">"p_exact"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;    domain_id N cutoff_exact p_exact</span></span>
+<span><span class="co">#&gt; 1 attainment 3            1    1/10</span></span>
+<span><span class="co">#&gt; 2  community 3            1    1/10</span></span>
+<span><span class="va">card</span><span class="op">$</span><span class="va">feasible_for_represented_measure</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<p><code>M = choose(3, 2) = 3</code> is the original number of unordered
+pairs. Each domain’s loss divides expected false directions plus
+<code>tau</code> times withheld pairs by this original <code>M</code>.
+By contrast, the protected error proportion uses <code>N</code>, the
+number of directions disclosed <strong>in its scope</strong>. Its strict
+event is <code>F/N &gt; t</code>, with first triggering count
+<code>floor(t*N) + 1</code>.</p>
+<p>Equal grades withhold direction; they do not claim equal targets. A
+strict direction asserted when targets are equal is false. Model
+identities declared in <code>equality_classes</code> must remain tied in
+every supplied card, including domains with zero loss weight.</p>
+<p>For an all-withheld card, <code>N = 0</code>. Its ratio is undefined
+(<code>eFDP = NA</code>), while the no-disclosure convention
+<code>eFDP_zero</code> is zero and the exceedance event is analytically
+false. This differs from observing zero events in a finite sample.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">withheld</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_mdomain_evaluate.html">postrank_mdomain_evaluate</a></span><span class="op">(</span><span class="va">input</span>, <span class="va">G</span> <span class="op">*</span> <span class="fl">0</span> <span class="op">+</span> <span class="fl">1</span>, <span class="va">decision</span><span class="op">)</span></span>
+<span><span class="va">withheld</span><span class="op">$</span><span class="va">scope_table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"domain_id"</span>, <span class="st">"N"</span>, <span class="st">"eFDP"</span>, <span class="st">"eFDP_zero"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;    domain_id N eFDP eFDP_zero</span></span>
+<span><span class="co">#&gt; 1 attainment 0   NA         0</span></span>
+<span><span class="co">#&gt; 2  community 0   NA         0</span></span>
+<span><span class="va">withheld</span><span class="op">$</span><span class="va">status</span><span class="op">$</span><span class="va">joint</span></span>
+<span><span class="co">#&gt; [1] "analytic_zero"</span></span></code></pre></div>
+<p>Use strings such as <code>"1/10"</code> or <code>"0.1"</code> when
+the policy is that exact rational number. An R numeric value such as
+<code>0.1</code> retains its stored binary value. The two
+representations can differ at a strict policy boundary. Grade labels
+have a different role: they encode order and ties and are canonicalized
+to consecutive occupied integers. Labels 10, 20, 30 produce the same
+card as 1, 2, 3.</p>
+</div>
+<div class="section level2">
+<h2 id="search-a-declared-set-of-candidate-columns">Search a declared set of candidate columns<a class="anchor" aria-label="anchor" href="#search-a-declared-set-of-candidate-columns"></a>
+</h2>
+<p>Give each domain a bank of permitted grade vectors in original unit
+order. Here each bank contains its proposed column; the constructor
+always adds the all-withheld column. Two choices per domain give four
+candidate cards.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">family</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_mdomain_family.html">postrank_mdomain_family</a></span><span class="op">(</span><span class="va">input</span>, columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  attainment <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="va">G</span><span class="op">[</span>, <span class="st">"attainment"</span><span class="op">]</span>, <span class="va">unit_ids</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  community <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="va">G</span><span class="op">[</span>, <span class="st">"community"</span><span class="op">]</span>, <span class="va">unit_ids</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  max_actions <span class="op">=</span> <span class="fl">4L</span><span class="op">)</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_mdomain_solve.html">postrank_mdomain_solve</a></span><span class="op">(</span><span class="va">input</span>, <span class="va">family</span>, <span class="va">decision</span>, max_actions <span class="op">=</span> <span class="fl">4L</span><span class="op">)</span></span>
+<span><span class="va">fit</span></span>
+<span><span class="co">#&gt; Multidomain candidate-family fit</span></span>
+<span><span class="co">#&gt;   4 declared actions examined; 1 optimizer (unique)</span></span>
+<span><span class="co">#&gt;   Risk: 1/30; joint probability: 1/10</span></span>
+<span><span class="co">#&gt;   Scope: complete declared candidate product; unrestricted optimality not established</span></span>
+<span><span class="co">#&gt;   Search: candidate_restricted_exact_optimum_for_represented_measure</span></span>
+<span><span class="co">#&gt;   Intended posterior feasibility certificate: none</span></span>
+<span><span class="va">fit</span><span class="op">$</span><span class="va">candidate_table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"risk_exact"</span>, <span class="st">"J_exact"</span>,</span>
+<span>  <span class="st">"feasible_for_represented_measure"</span>, <span class="st">"optimal"</span>, <span class="st">"selected"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;   risk_exact J_exact feasible_for_represented_measure optimal selected</span></span>
+<span><span class="co">#&gt; 1        1/5       0                             TRUE   FALSE    FALSE</span></span>
+<span><span class="co">#&gt; 2       7/60    1/10                             TRUE   FALSE    FALSE</span></span>
+<span><span class="co">#&gt; 3       7/60    1/10                             TRUE   FALSE    FALSE</span></span>
+<span><span class="co">#&gt; 4       1/30    1/10                             TRUE    TRUE     TRUE</span></span>
+<span><span class="fu"><a href="../reference/postrank_mdomain_grades.html">postrank_mdomain_grades</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       attainment community</span></span>
+<span><span class="co">#&gt; Alder          1         2</span></span>
+<span><span class="co">#&gt; Birch          2         1</span></span>
+<span><span class="co">#&gt; Cedar          3         3</span></span></code></pre></div>
+<p>The crossing card is the unique minimum-loss feasible candidate among
+these four. This is <strong>candidate-restricted optimality</strong>: no
+claim is made about unlisted ordered partitions. The search retains
+every exact optimizer and selects the first in canonical lexicographic
+grade order when there is a tie. <code>max_actions</code> refuses an
+oversized product before enumeration; it never truncates the search.</p>
+<p>For a larger ordered bank, supply domain-specific unit-ID
+permutations through <code>order</code> and permitted cut positions
+through <code>cuts</code>. Neither is guessed. The explicit choice
+<code>order = "posterior_mean"</code> records that the same supplied
+states informed the ordering. Such construction records do not provide
+independent validation.</p>
+</div>
+<div class="section level2">
+<h2 id="read-three-views-of-the-same-card">Read three views of the same card<a class="anchor" aria-label="anchor" href="#read-three-views-of-the-same-card"></a>
+</h2>
+<p>The grade view shows each unit’s profile. Labels can change for
+display without changing the IDs used for evaluation.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_mdomain.html">postrank_plot_mdomain</a></span><span class="op">(</span><span class="va">fit</span>, view <span class="op">=</span> <span class="st">"grades"</span>,</span>
+<span>  domain_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>attainment <span class="op">=</span> <span class="st">"Attainment"</span>, community <span class="op">=</span> <span class="st">"Community"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><a href="mdomain-quickstart_files/figure-html/mdomain-grades-view-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Grades of Alder, Birch and Cedar in attainment and community; Alder and Birch exchange first and second grades." target="_blank" rel="noopener"><img src="mdomain-quickstart_files/figure-html/mdomain-grades-view-1.png" class="r-plt" alt="Grades of Alder, Birch and Cedar in attainment and community; Alder and Birch exchange first and second grades." width="100%"></a><span class="figure-full-size-link d-block small"><a href="mdomain-quickstart_files/figure-html/mdomain-grades-view-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Grades of Alder, Birch and Cedar in attainment and community; Alder and Birch exchange first and second grades.">Open full-size figure</a></span></p>
+<p>The cell view locates occupied grade combinations. Empty combinations
+remain visible; cells do not impose an overall ordering of the
+profiles.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_mdomain.html">postrank_plot_mdomain</a></span><span class="op">(</span><span class="va">fit</span>, view <span class="op">=</span> <span class="st">"cells"</span><span class="op">)</span></span></code></pre></div>
+<p><a href="mdomain-quickstart_files/figure-html/mdomain-cells-view-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Three occupied profile cells at grades (1,2), (2,1) and (3,3), with other combinations empty." target="_blank" rel="noopener"><img src="mdomain-quickstart_files/figure-html/mdomain-cells-view-1.png" class="r-plt" alt="Three occupied profile cells at grades (1,2), (2,1) and (3,3), with other combinations empty." width="100%"></a><span class="figure-full-size-link d-block small"><a href="mdomain-quickstart_files/figure-html/mdomain-cells-view-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Three occupied profile cells at grades (1,2), (2,1) and (3,3), with other combinations empty.">Open full-size figure</a></span></p>
+<p>The pair view states the crossing directions for Alder and Birch.
+Filtering a view changes the display; captioned risk and protection
+continue to refer to the original card and its full declared scope.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_mdomain.html">postrank_plot_mdomain</a></span><span class="op">(</span><span class="va">fit</span>, view <span class="op">=</span> <span class="st">"pair"</span>, units <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alder"</span>, <span class="st">"Birch"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><a href="mdomain-quickstart_files/figure-html/mdomain-pair-view-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Alder has higher reported priority in attainment and Birch in community." target="_blank" rel="noopener"><img src="mdomain-quickstart_files/figure-html/mdomain-pair-view-1.png" class="r-plt" alt="Alder has higher reported priority in attainment and Birch in community." width="100%"></a><span class="figure-full-size-link d-block small"><a href="mdomain-quickstart_files/figure-html/mdomain-pair-view-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Alder has higher reported priority in attainment and Birch in community.">Open full-size figure</a></span></p>
+</div>
+<div class="section level2">
+<h2 id="use-draws-and-choose-the-assessment-route">Use draws and choose the assessment route<a class="anchor" aria-label="anchor" href="#use-draws-and-choose-the-assessment-route"></a>
+</h2>
+<p>For actual joint iid draws, keep each whole state together and use
+unique draw IDs. This small independent simulation samples complete
+states from the teaching law; the new input describes the empirical
+measure of 20 draws rather than its known source probabilities.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">120</span><span class="op">)</span></span>
+<span><span class="va">draw_rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample.int</a></span><span class="op">(</span><span class="fl">2L</span>, <span class="fl">20L</span>, replace <span class="op">=</span> <span class="cn">TRUE</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.9</span>, <span class="fl">.1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">joint_draws</span> <span class="op">&lt;-</span> <span class="va">states</span><span class="op">[</span><span class="va">draw_rows</span>, , , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">joint_draws</span><span class="op">)</span><span class="op">[[</span><span class="fl">1L</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"draw-"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">20L</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">draw_provenance</span> <span class="op">&lt;-</span> <span class="va">provenance</span></span>
+<span><span class="va">draw_provenance</span><span class="op">$</span><span class="va">input_id</span> <span class="op">&lt;-</span> <span class="st">"three-unit-iid-draws"</span></span>
+<span><span class="va">draw_provenance</span><span class="op">$</span><span class="va">joint_generation</span> <span class="op">&lt;-</span> <span class="st">"Independent draws of complete two-domain states."</span></span>
+<span><span class="va">draw_provenance</span><span class="op">$</span><span class="va">sampling_assumptions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  iid_mechanism <span class="op">=</span> <span class="st">"Independent categorical draws from the two-state law."</span>,</span>
+<span>  target_assertion <span class="op">=</span> <span class="st">"Each complete draw targets fictional-two-state-law."</span><span class="op">)</span></span>
+<span><span class="va">draw_input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_mdomain_input.html">postrank_mdomain_input</a></span><span class="op">(</span><span class="va">joint_draws</span>, targets <span class="op">=</span> <span class="va">targets</span>,</span>
+<span>  provenance <span class="op">=</span> <span class="va">draw_provenance</span>, representation <span class="op">=</span> <span class="st">"iid_equal_weight_draws"</span><span class="op">)</span></span>
+<span><span class="va">draw_card</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_mdomain_evaluate.html">postrank_mdomain_evaluate</a></span><span class="op">(</span><span class="va">draw_input</span>, <span class="va">G</span>, <span class="va">decision</span><span class="op">)</span></span>
+<span><span class="va">draw_card</span><span class="op">$</span><span class="va">assurance</span><span class="op">$</span><span class="va">numerical_basis</span></span>
+<span><span class="co">#&gt; [1] "supplied_empirical_measure"</span></span>
+<span><span class="va">draw_card</span><span class="op">$</span><span class="va">assurance</span><span class="op">$</span><span class="va">intended_posterior_feasibility_certified</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span></code></pre></div>
+<p>Exact arithmetic on draw counts does not certify feasibility for the
+intended posterior. For iid assurance, freeze the card, decision, target
+law, sample size and numerical budget <strong>before</strong> collecting
+independent validation states, then use
+<code>postrank_mdomain_assess(method = "iid")</code> with the documented
+design record. Reusing exploration states does not establish that
+design.</p>
+<p>For MCMC draws, use
+<code>representation = "mcmc_equal_weight_draws"</code> and provide
+<code>state_origin</code> with original <code>source_index</code>,
+<code>chain_id</code> and <code>iteration_id</code> in supplied state
+order. Assess them with <code>method = "mcmc"</code> for empirical
+diagnostics. Zero observed hits and chain diagnostics do not establish
+iid assurance or convergence.</p>
+<p>Our complete finite law instead uses the explicit finite-law
+route:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">assessed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_mdomain_assess.html">postrank_mdomain_assess</a></span><span class="op">(</span><span class="va">input</span>, <span class="va">fit</span>, method <span class="op">=</span> <span class="st">"exact"</span><span class="op">)</span></span>
+<span><span class="va">assessed</span></span>
+<span><span class="co">#&gt; Fixed multidomain report assessment</span></span>
+<span><span class="co">#&gt;   Method: exact; status: evaluated_declared_finite_law</span></span>
+<span><span class="co">#&gt;   Risk: 1/30; joint probability: 1/10</span></span>
+<span><span class="co">#&gt;   Joint certificate: yes; scope: specified declared-finite-law joint event only</span></span>
+<span><span class="co">#&gt;   Sampling assumptions verified: no; model calibration certified: no</span></span>
+<span><span class="va">assessed</span><span class="op">$</span><span class="va">certificate_scope</span></span>
+<span><span class="co">#&gt; [1] "specified declared-finite-law joint event only"</span></span></code></pre></div>
+<p>This route computes the specified joint-event probability under the
+declared finite law. It does not establish model calibration, mean
+guards or report optimality. See <a href="mdomain-decisions.html">Multidomain decisions</a> for the
+dependence examples and assessment details.</p>
+</div>
+<div class="section level2">
+<h2 id="repair-two-common-input-errors">Repair two common input errors<a class="anchor" aria-label="anchor" href="#repair-two-common-input-errors"></a>
+</h2>
+<p>Errors from this interface inherit
+<code>postrank_mdomain_error</code> and carry <code>code</code> and
+<code>field</code>. Catching that class lets an application explain the
+repair without parsing an error message.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">incomplete</span> <span class="op">&lt;-</span> <span class="va">provenance</span></span>
+<span><span class="va">incomplete</span><span class="op">$</span><span class="va">joint_generation</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
+<span><span class="va">missing_joint</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/postrank_mdomain_input.html">postrank_mdomain_input</a></span><span class="op">(</span><span class="va">states</span>, targets <span class="op">=</span> <span class="va">targets</span>, provenance <span class="op">=</span> <span class="va">incomplete</span>,</span>
+<span>    representation <span class="op">=</span> <span class="st">"exact_finite_law"</span>, masses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"9/10"</span>, <span class="st">"1/10"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  postrank_mdomain_error <span class="op">=</span> <span class="va">identity</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>code <span class="op">=</span> <span class="va">missing_joint</span><span class="op">$</span><span class="va">code</span>, field <span class="op">=</span> <span class="va">missing_joint</span><span class="op">$</span><span class="va">field</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                          code                         field </span></span>
+<span><span class="co">#&gt;       "mdomain_input_invalid" "provenance.joint_generation"</span></span></code></pre></div>
+<p>Restore the producer’s actual <code>joint_generation</code>
+explanation and rebuild the input, as in the first constructor call. If
+the domain histories were generated separately, supply a domain-named
+list and the appropriate <code>within_domain_joint</code> declaration.
+Do not claim joint generation solely because their row counts or labels
+match.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">reordered</span> <span class="op">&lt;-</span> <span class="va">G</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Birch"</span>, <span class="st">"Alder"</span>, <span class="st">"Cedar"</span><span class="op">)</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
+<span><span class="va">bad_ids</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="fu"><a href="../reference/postrank_mdomain_evaluate.html">postrank_mdomain_evaluate</a></span><span class="op">(</span><span class="va">input</span>, <span class="va">reordered</span>, <span class="va">decision</span><span class="op">)</span>,</span>
+<span>  postrank_mdomain_error <span class="op">=</span> <span class="va">identity</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>code <span class="op">=</span> <span class="va">bad_ids</span><span class="op">$</span><span class="va">code</span>, field <span class="op">=</span> <span class="va">bad_ids</span><span class="op">$</span><span class="va">field</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                      code                     field </span></span>
+<span><span class="co">#&gt; "mdomain_action_identity"                  "grades"</span></span>
+<span></span>
+<span><span class="co"># Reorder the values by verified IDs; changing labels alone would misidentify them.</span></span>
+<span><span class="va">repaired</span> <span class="op">&lt;-</span> <span class="va">reordered</span><span class="op">[</span><span class="va">input</span><span class="op">$</span><span class="va">unit_ids</span>, <span class="va">input</span><span class="op">$</span><span class="va">domain_ids</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
+<span><span class="fu"><a href="../reference/postrank_mdomain_grades.html">postrank_mdomain_grades</a></span><span class="op">(</span><span class="fu"><a href="../reference/postrank_mdomain_evaluate.html">postrank_mdomain_evaluate</a></span><span class="op">(</span><span class="va">input</span>, <span class="va">repaired</span>, <span class="va">decision</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       attainment community</span></span>
+<span><span class="co">#&gt; Alder          1         2</span></span>
+<span><span class="co">#&gt; Birch          2         1</span></span>
+<span><span class="co">#&gt; Cedar          3         3</span></span></code></pre></div>
+<p>Both dimensions must match the original input order. Preserve the
+names when subsetting (<code>drop = FALSE</code>), and rebuild the input
+if the source states or scientific declarations change.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

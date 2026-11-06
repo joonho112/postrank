@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Create a Standalone Report from Stored Results — postrank_report • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Create a Standalone Report from Stored Results — postrank_report"><meta name="description" content="The report combines stored grades, criterion losses, solver qualifications
+and available posterior summaries or diagnostics. A self-contained English
+HTML file can be written for offline use. Supplying analysis with its
+fit includes the prepared report card and other stored components. Report
+construction does not optimize or evaluate new grades, calculate pairwise
+probabilities or prepare missing summaries."><meta property="og:description" content="The report combines stored grades, criterion losses, solver qualifications
+and available posterior summaries or diagnostics. A self-contained English
+HTML file can be written for offline use. Supplying analysis with its
+fit includes the prepared report card and other stored components. Report
+construction does not optimize or evaluate new grades, calculate pairwise
+probabilities or prepare missing summaries."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul></div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Create a Standalone Report from Stored Results</h1>
+
+      <div class="d-none name"><code>postrank_report.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>The report combines stored grades, criterion losses, solver qualifications
+and available posterior summaries or diagnostics. A self-contained English
+HTML file can be written for offline use. Supplying <code>analysis</code> with its
+<code>fit</code> includes the prepared report card and other stored components. Report
+construction does not optimize or evaluate new grades, calculate pairwise
+probabilities or prepare missing summaries.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_report</span><span class="op">(</span></span>
+<span>  <span class="va">fit</span>,</span>
+<span>  diagnostics <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  output_file <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  lang <span class="op">=</span> <span class="st">"en"</span>,</span>
+<span>  figures <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  analysis <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-fit">fit<a class="anchor" aria-label="anchor" href="#arg-fit"></a></dt>
+<dd><p>A <code>postrank_fit</code>, such as <code>analysis$fit</code>.</p></dd>
+
+
+<dt id="arg-diagnostics">diagnostics<a class="anchor" aria-label="anchor" href="#arg-diagnostics"></a></dt>
+<dd><p>Optional matching <code>postrank_diagnostics</code> or
+<code>postrank_coefficient_diagnostics</code>. Omit to use matching diagnostics
+already stored in <code>analysis</code>. Source, grade and settings are checked;
+diagnostics are not recomputed.</p></dd>
+
+
+<dt id="arg-output-file">output_file<a class="anchor" aria-label="anchor" href="#arg-output-file"></a></dt>
+<dd><p>Optional path for a new HTML file. An existing file is
+refused. <code>NULL</code> returns the report object without writing HTML.</p></dd>
+
+
+<dt id="arg-lang">lang<a class="anchor" aria-label="anchor" href="#arg-lang"></a></dt>
+<dd><p>Report language. Only <code>"en"</code> is supported; another language
+raises <code>unsupported_language</code>.</p></dd>
+
+
+<dt id="arg-figures">figures<a class="anchor" aria-label="anchor" href="#arg-figures"></a></dt>
+<dd><p>Logical; embed eligible report-card and criterion-profile
+figures as PNGs. <code>FALSE</code> records <code>figures_disabled</code>.</p></dd>
+
+
+<dt id="arg-analysis">analysis<a class="anchor" aria-label="anchor" href="#arg-analysis"></a></dt>
+<dd><p>Optional <code>postrank_analysis</code> with the same fit identities.
+Supplies its prepared report card, declarations, extras and timings.</p></dd>
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A <code>postrank_report</code> list containing the stored grades, criterion
+profile, disclosure, objective, status, numerical validation information
+and source records, plus <code>figures</code>, <code>declarations</code>, <code>sections</code> and
+<code>strings_version</code>. <code>output_file</code> records the written path, or <code>NULL</code>.
+<code>diagnostics</code> retains the supplied object. Its <code>diagnostic_table</code> is
+trace-oriented for draws; for coefficient inputs it has columns
+<code>quantity</code>, <code>metric</code>, <code>value</code>, <code>available</code>, <code>NA_reason</code>, <code>method</code>,
+<code>raw_value</code>, <code>result_kind</code>, <code>warnings</code> and <code>error</code>. Unavailable metrics
+retain their reasons rather than becoming zero.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Grade 1 has highest priority; shared grades withhold directions.
+A valid all-withheld report has N=0 and undefined conditional error
+ratios, not an error-free ranking. With no validated grade, the report
+instead shows the solver status, available bounds and reasons for
+unavailable grade-dependent content. An optimization gap concerns the
+supplied numerical problem, separately from posterior or model uncertainty.</p>
+<p>Marginal posterior intervals retain their source and level and describe
+target uncertainty rather than Monte Carlo error. Stored diagnostics retain
+their producer's methods, warnings and unavailable values. Required inputs,
+including <code>chain_history</code> for eligible <code><a href="postrank_coefficient_diagnose.html">postrank_coefficient_diagnose()</a></code>
+calculations, must be supplied when diagnostics are prepared; report
+construction cannot recover missing draws or history. Numerical checks of an
+empirical error budget alone do not establish a guarantee for the true
+posterior.</p>
+<p>The HTML has eleven sections: <code>header</code>, <code>frame</code>, <code>declarations</code>, <code>grades</code>,
+<code>decision</code>, <code>profiles</code>, <code>protection</code>, <code>posterior</code>, <code>mc</code>, <code>stability</code> and
+<code>provenance</code>, followed by a footer. Tables include all stored rows; wide
+tables scroll horizontally. Included figures use their default display
+limits, so a report-card figure may show a stated subset while the table
+remains complete. Use the plotting functions separately for custom
+entity selection or labels; this function has no paging argument.</p>
+<p>Figures are embedded in the HTML, with no separate image or network
+dependency. Each attempt records <code>id</code>, <code>available</code>, <code>reason</code>,
+<code>png_base64</code>, <code>caption</code> and <code>alt</code> in <code>figures</code>. A missing PNG device or
+failed figure leaves an explanatory record and a usable report.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="postrank.html">postrank()</a></code>, <code><a href="postrank_plot_report_card.html">postrank_plot_report_card()</a></code>, <code><a href="postrank_plot_profile.html">postrank_plot_profile()</a></code>,
+<code><a href="../articles/a6-reading-exporting-results.html">vignette("a6-reading-exporting-results", package = "postrank")</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"highs"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">one</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank.html">postrank</a></span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span>, tau <span class="op">=</span> <span class="fl">.2</span>, G_max <span class="op">=</span> <span class="fl">3L</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span></span>
+<span class="r-in"><span>    control <span class="op">=</span> <span class="fu"><a href="postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>, fragility <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">html</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".html"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">report</span> <span class="op">&lt;-</span> <span class="fu">postrank_report</span><span class="op">(</span><span class="va">one</span><span class="op">$</span><span class="va">fit</span>, analysis <span class="op">=</span> <span class="va">one</span>, output_file <span class="op">=</span> <span class="va">html</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">report</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">figures</span>, <span class="va">`[[`</span>, <span class="fu"><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="st">"available"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">html</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer></div>
+
+
+
+
+
+  </body></html>
+

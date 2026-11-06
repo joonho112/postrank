@@ -1,0 +1,77 @@
+% Please edit documentation in R/protection-envelopes.R
+\name{postrank_protection_analysis}
+\alias{postrank_protection_analysis}
+\title{Solve Protection Envelopes and Compare Their Risk Bounds}
+\usage{
+postrank_protection_analysis(envelopes, backend = NULL, control = list())
+}
+\arguments{
+\item{envelopes}{An object from \code{\link[=postrank_protection_envelopes]{postrank_protection_envelopes()}}.}
+
+\item{backend}{Explicit \code{"highs"} or \code{"gurobi"}, or \code{NULL} to use the
+\code{postrank.backend} option and then Gurobi. There is no backend fallback.
+An unavailable selected backend raises an error before the attempts.}
+
+\item{control}{A \code{\link[=postrank_control]{postrank_control()}} object or named control list passed
+to each of the two solves. A time limit applies separately to each solve.}
+}
+\value{
+A \code{postrank_protection_analysis} object with \code{inner_fit}, \code{outer_fit},
+two \code{attempts}, thresholds, and any unavailable \code{reasons}. When usable, it
+contains \code{inner_risk_upper}, \code{outer_whole_problem_risk_lower}, \code{delta_w},
+and \code{computed_value}; otherwise that value is \code{NA} and the status is
+\code{"not_established"}. Computed values have \code{"diagnostic_only"} status,
+not numerical or finite-sample certification.
+}
+\description{
+The inner and outer problems from \code{\link[=postrank_protection_envelopes]{postrank_protection_envelopes()}} are
+solved to obtain a conditional regret reference for the inner report under
+the true criterion protections. The two optimizations are performed
+sequentially. Both attempt records are retained even when the first
+optimization fails or is infeasible.
+}
+\details{
+Let \eqn{U_{\rm inner}} be the risk of a validated inner candidate,
+\eqn{L_{\rm outer}} a lower bound for the whole outer problem, and
+\eqn{\delta_w=\sum_k w_k\varepsilon_k}. The returned reference is
+\eqn{U_{\rm inner}-L_{\rm outer}+2\delta_w}. Under the simultaneous
+coefficient event and valid numerical feasibility and bounds, this bounds
+the inner report's supplied-law regret relative to the true protected
+family.
+
+The calculation needs a validated inner candidate and a usable whole-outer
+lower bound without numerical issues. Neither the inner lower bound nor
+an outer incumbent may replace that lower bound. Missing incumbents,
+unusable bounds, solve errors, and an inverted cross-problem gap retain
+explicit reasons. A status label such as \code{"optimal"} is not sufficient.
+An infeasible inner envelope alone does not prove that the original
+protected family is empty.
+
+The IID assumptions and signed-threshold construction are described in
+\code{\link[=postrank_iid_bounds]{postrank_iid_bounds()}} and \code{\link[=postrank_protection_envelopes]{postrank_protection_envelopes()}}. The package
+supplies no verified outward coefficient/arithmetic enclosure or rigorous
+backend-bound certifier. This result is not a posterior probability of
+feasibility or evidence of calibration on new data.
+}
+\examples{
+bounds <- postrank_iid_bounds(postrank_toy, alpha = .05,
+  alpha_by_criterion = c(need_A = .025, need_B = .025),
+  design = list(sample_sizes_fixed_before_sampling = TRUE,
+    alpha_fixed_before_sampling = TRUE, adaptive_stopping = FALSE,
+    planned_sample_sizes = c(need_A = 32L, need_B = 32L),
+    declaration_note = "Prespecified in the bundled synthetic Normal generator"))
+problem <- postrank_problem(postrank_pairwise(postrank_toy),
+  weights = c(need_A = .6, need_B = .4), tau = .25, G_max = 3L,
+  q = c(need_A = .2))
+envelopes <- postrank_protection_envelopes(problem, bounds)
+\dontrun{
+# Optional: two small native solves, each with its own 10-second limit.
+analysis <- postrank_protection_analysis(envelopes, backend = "highs",
+  control = postrank_control(time_limit = 10, threads = 1))
+analysis[c("status", "computed_value", "reasons", "guarantee_issued")]
+}
+}
+\seealso{
+\code{\link[=postrank_regret_bound]{postrank_regret_bound()}}, \code{\link[=postrank_guarantee_capabilities]{postrank_guarantee_capabilities()}}
+}
+\concept{reference}

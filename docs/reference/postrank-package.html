@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>postrank: Posterior Ranking with Integer Grades — postrank-package • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="postrank: Posterior Ranking with Integer Grades — postrank-package"><meta name="description" content="Posterior information on one or several criteria is used to assign an
+integer grade to each entity under a declared loss. For several criteria,
+the original P1 entry points assign one common grade. Multidomain P2
+entry points retain a separate grade for each domain. The input is an existing posterior
+representation, supplied as draws, supported analytic laws or previously
+calculated comparison probabilities, together with scientific declarations
+and numerical qualifications. The package does not fit a statistical model."><meta property="og:description" content="Posterior information on one or several criteria is used to assign an
+integer grade to each entity under a declared loss. For several criteria,
+the original P1 entry points assign one common grade. Multidomain P2
+entry points retain a separate grade for each domain. The input is an existing posterior
+representation, supplied as draws, supported analytic laws or previously
+calculated comparison probabilities, together with scientific declarations
+and numerical qualifications. The package does not fit a statistical model."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul></div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>postrank: Posterior Ranking with Integer Grades</h1>
+
+      <div class="d-none name"><code>postrank-package.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>Posterior information on one or several criteria is used to assign an
+integer grade to each entity under a declared loss. For several criteria,
+the original P1 entry points assign one common grade. Multidomain P2
+entry points retain a separate grade for each domain. The input is an existing posterior
+representation, supplied as draws, supported analytic laws or previously
+calculated comparison probabilities, together with scientific declarations
+and numerical qualifications. The package does not fit a statistical model.</p>
+    </div>
+
+
+    <div class="section level2">
+    <h2 id="interpretation-of-grades">Interpretation of grades<a class="anchor" aria-label="anchor" href="#interpretation-of-grades"></a></h2>
+
+
+<p>Grade 1 is the highest-priority block; larger targets mean higher priority,
+and only the order and equality of grade labels matter. A shared grade
+withholds the comparison of its members and asserts no equality of the
+entities. The procedure seeks a grade minimizing the declared weighted
+wrong-direction loss plus the withholding cost <code>tau</code>, and reports the
+validated incumbent with the solver's bound and gap; withholding every
+comparison, with risk <code>tau</code>, is a legitimate action.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="package-functions">Package functions<a class="anchor" aria-label="anchor" href="#package-functions"></a></h2>
+
+
+<table class="table table"><tr><td>Input</td><td><code><a href="postrank_draws.html">postrank_draws()</a></code>, <code><a href="postrank_declarations.html">postrank_declarations()</a></code>, <code><a href="read_postrank_draws.html">read_postrank_draws()</a></code> and the strict constructors</td></tr><tr><td>Coefficients</td><td><code><a href="postrank_pairwise.html">postrank_pairwise()</a></code>, <code><a href="postrank_gaussian_coefficients.html">postrank_gaussian_coefficients()</a></code>, <code><a href="postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code>, <code><a href="postrank_probabilities.html">postrank_probabilities()</a></code></td></tr><tr><td>Settings and control</td><td><code><a href="postrank_settings.html">postrank_settings()</a></code>, <code><a href="postrank_control.html">postrank_control()</a></code></td></tr><tr><td>Decision</td><td><code><a href="postrank.html">postrank()</a></code>, <code><a href="postrank_problem.html">postrank_problem()</a></code>, <code><a href="postrank_solve.html">postrank_solve()</a></code>, <code><a href="postrank_evaluate.html">postrank_evaluate()</a></code></td></tr><tr><td>Baselines and comparison</td><td><code><a href="postrank_expected_rank.html">postrank_expected_rank()</a></code>, <code><a href="postrank_composite.html">postrank_composite()</a></code>, <code><a href="postrank_cuts.html">postrank_cuts()</a></code>, <code><a href="postrank_compare.html">postrank_compare()</a></code></td></tr><tr><td>Side outputs and grids</td><td><code><a href="postrank_commonality_cost.html">postrank_commonality_cost()</a></code>, <code><a href="postrank_frontier.html">postrank_frontier()</a></code>, <code><a href="postrank_sensitivity.html">postrank_sensitivity()</a></code></td></tr><tr><td>Diagnostics</td><td><code><a href="postrank_crossfit.html">postrank_crossfit()</a></code>, <code><a href="postrank_mc_fragility.html">postrank_mc_fragility()</a></code>, <code><a href="postrank_diagnose.html">postrank_diagnose()</a></code></td></tr><tr><td>Reporting</td><td><code><a href="postrank_report_card.html">postrank_report_card()</a></code>, <code><a href="postrank_report.html">postrank_report()</a></code>, <code><a href="get_grades.html">get_grades()</a></code> and the console formatters</td></tr><tr><td>Visualization</td><td>the seven <code>postrank_plot_*()</code> figures, <code><a href="theme_postrank.html">theme_postrank()</a></code>, <code><a href="postrank_palette.html">postrank_palette()</a></code></td></tr><tr><td>Reference calculations</td><td><code><a href="postrank_iid_bounds.html">postrank_iid_bounds()</a></code> and the conditional guarantee helpers</td></tr></table></div>
+    <div class="section level2">
+    <h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a></h2>
+
+
+<p><a href="pr_tutorial.html">pr_tutorial</a> provides the same six fictional sites with one or two
+criteria in <code><a href="../articles/a1-getting-started.html">vignette("a1-getting-started", package = "postrank")</a></code>.
+The Applied guides present empirical cases and the Methods guides describe the
+loss, information requirements, optimization and numerical uncertainty.
+Stored-result views need no optimizer. A fresh solve uses an explicitly
+selected backend, the <code>postrank.backend</code> option, or Gurobi in that order.
+HiGHS is an explicit alternative; there is no silent backend fallback.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="multidomain-profiles">Multidomain profiles<a class="anchor" aria-label="anchor" href="#multidomain-profiles"></a></h2>
+
+
+<p><code><a href="postrank_mdomain_input.html">postrank_mdomain_input</a></code> retains identified unit-by-domain
+states and declared target laws. A named grade matrix reports a separate
+order in each domain; a shared domain grade withholds direction.
+<code><a href="postrank_mdomain_decision.html">postrank_mdomain_decision</a></code> specifies additive losses and
+mean or direct joint-event guards. <code><a href="postrank_mdomain_evaluate.html">postrank_mdomain_evaluate</a></code>
+evaluates a fixed matrix; <code><a href="postrank_mdomain_family.html">postrank_mdomain_family</a></code> and
+<code><a href="postrank_mdomain_solve.html">postrank_mdomain_solve</a></code> select within a complete declared
+candidate bank. This bank is the stated scope of optimality.
+<code><a href="postrank_mdomain_grades.html">postrank_mdomain_grades</a></code> extracts verified grades,
+<code><a href="postrank_mdomain_assess.html">postrank_mdomain_assess</a></code> distinguishes finite-law, conditional
+iid and descriptive MCMC routes, and <code><a href="postrank_plot_mdomain.html">postrank_plot_mdomain</a></code>
+displays three stored-card views. Profile computation uses optional
+<span class="pkg">gmp</span> arithmetic and requires no MIP backend. Scientific sampling and
+proper-law declarations are retained, not independently established.
+See <code><a href="../articles/mdomain-quickstart.html">vignette("mdomain-quickstart", package = "postrank")</a></code> and
+<code><a href="../articles/mdomain-decisions.html">vignette("mdomain-decisions", package = "postrank")</a></code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="genuine-target-ties">Genuine target ties<a class="anchor" aria-label="anchor" href="#genuine-target-ties"></a></h2>
+
+
+<p>The separate <code><a href="postrank_tie_capabilities.html">postrank_tie_capabilities()</a></code> domain makes equality neutral
+in both wrong-direction and withheld-comparison loss. It supports guarded
+weighted at-most-G label-MIP problems through distinct <code>postrank_tie_*</code>
+entry points. Its all-withhold risk is R0, which can be below tau.
+Ordinary constructors retain their tie-free interpretation.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="case-study-data">Case-study data<a class="anchor" aria-label="anchor" href="#case-study-data"></a></h2>
+
+
+<p>The three case-study inputs are adapted from public sources and retain
+source-specific conditions, separate from the package code license. The CDE
+input preserves source attribution, KRW retains its source CC-BY-NC notice
+with the license version unspecified, and Alabama retains CC BY 4.0
+attribution. Details are given in the data help pages and the installed
+DATA-NOTICE.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a></h2>
+
+
+<p><code>citation("postrank")</code> returns the package, its theory book and the
+report-card method of Kline, Rose and Walters (2024), in that order.
+The book is <em>Decisions from noisy multidimensional indicators: Theory,
+evidence, and posterior grading</em> (Version 1.0.0),
+<a href="https://doi.org/10.5281/zenodo.23790260" class="external-link">doi:10.5281/zenodo.23790260</a>
+. The method reference is <em>A discrimination
+report card</em>, American Economic Review, 114(8), 2472-2525,
+<a href="https://doi.org/10.1257/aer.20230700" class="external-link">doi:10.1257/aer.20230700</a>
+.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><a href="postrank_options.html">postrank_options</a>, <a href="pr_tutorial.html">pr_tutorial</a>,
+<code><a href="../articles/a1-getting-started.html">vignette("a1-getting-started", package = "postrank")</a></code></p></div>
+    </div>
+    <div class="section level2">
+    <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
+    <p><strong>Maintainer</strong>: JoonHo Lee <a href="mailto:jlee296@ua.edu">jlee296@ua.edu</a> (<a href="https://orcid.org/0009-0006-4019-8703" class="external-link">ORCID</a>) [copyright holder]</p>
+<p>Authors:</p><ul><li><p>JoonHo Lee <a href="mailto:jlee296@ua.edu">jlee296@ua.edu</a> (<a href="https://orcid.org/0009-0006-4019-8703" class="external-link">ORCID</a>) [copyright holder]</p></li>
+</ul></div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;postrank_coefficients&gt;  6 entities under a declared conditional law</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   One criterion: score_A.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Gaussian comparison probabilities and marginal summaries are available.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Supported decisions use weighted loss and an upper limit on grades. Target</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     draws, q constraints, exact grade counts and minimax decisions are</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     unsupported here.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   i summary(x, details = TRUE) retains the conditional-law declarations and</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     source records.</span>
+<span class="r-in"><span><span class="fu"><a href="postrank_expected_rank.html">postrank_expected_rank</a></span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        A        B        C        D        E        F </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1.188874 1.820624 3.358889 3.646891 5.129639 5.855084 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"score_method")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "expected_rank"</span>
+<span class="r-in"><span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">two</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;postrank_coefficients&gt;  6 entities under a declared conditional law</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2 criteria: score_A, score_B.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Gaussian comparison probabilities and marginal summaries are available.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Supported decisions use weighted loss and an upper limit on grades. Target</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     draws, q constraints, exact grade counts and minimax decisions are</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     unsupported here.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   i summary(x, details = TRUE) retains the conditional-law declarations and</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     source records.</span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer></div>
+
+
+
+
+
+  </body></html>
+

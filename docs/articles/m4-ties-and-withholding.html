@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>True ties and withheld comparisons • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="True ties and withheld comparisons">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-article">
+
+
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>True ties and withheld comparisons</h1>
+            
+      
+      <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/m4-ties-and-withholding.Rmd" class="external-link"><code>vignettes/m4-ties-and-withholding.Rmd</code></a></small>
+      <div class="d-none name"><code>m4-ties-and-withholding.Rmd</code></div>
+    </div>
+
+    
+    
+<p>A common grade is a decision to withhold a comparison, whereas latent
+equality is an event under the target distribution. These need not
+coincide: unequal targets may receive a common grade, and a model may
+assign positive probability to exact equality before grades are chosen.
+We compare losses that treat equality differently and evaluate a finite
+example using <code>postrank_tie_*</code>. The probabilities are
+determined by complete finite laws, without model fitting or
+optimization.</p>
+<div class="section level2">
+<h2 id="a-tie-in-the-target-is-different-from-a-tie-in-the-report">Latent equality and shared grades<a class="anchor" aria-label="anchor" href="#a-tie-in-the-target-is-different-from-a-tie-in-the-report"></a>
+</h2>
+<p>A <strong>latent equality</strong> is an event such as
+<code>theta_A == theta_B</code> under the supplied posterior law. It may
+occur with probability between zero and one, or with probability one
+when two entities share the same structural target. A <strong>shared
+grade</strong> is a reporting decision: it withholds the direction
+between those entities. Shared grades do not establish equality.</p>
+<p>Neither equal posterior means nor rounded observations establish
+latent equality. Even continuous marginal distributions can have genuine
+ties: if both targets are the same continuous random variable, their
+equality probability is one. The relevant assumption concerns their
+joint law. A rule that treats differences within a practical margin as
+negligible defines a distinct decision convention; this article uses
+exact equality and no margin. The companion theory distinguishes these
+meanings in <a href="https://joonho112.github.io/postrank-theory-book/chapters/09-targets-actions-laws.html#different-meanings-of-a-tie">Chapter
+9, “Different meanings of a tie”</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="two-losses-make-different-choices-at-equality">Loss conventions at equality<a class="anchor" aria-label="anchor" href="#two-losses-make-different-choices-at-equality"></a>
+</h2>
+<p>Take a pair of targets, with larger values having higher priority.
+The ordinary weak-error loss counts a disclosed direction “A above B” as
+wrong when <code>theta_A &lt;= theta_B</code>. Withholding costs
+<code>tau</code>, regardless of the latent state. The opt-in
+<strong>equality-neutral loss</strong> instead counts only strict
+reversals as errors and charges withholding only when the targets are
+distinct:</p>
+<table class="table">
+<colgroup>
+<col width="15%">
+<col width="21%">
+<col width="21%">
+<col width="21%">
+<col width="21%">
+</colgroup>
+<thead><tr class="header">
+<th>Latent state</th>
+<th align="right">Weak: A above B</th>
+<th align="right">Weak: hold</th>
+<th align="right">Neutral: A above B</th>
+<th align="right">Neutral: hold</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>A &gt; B</td>
+<td align="right">0</td>
+<td align="right">tau</td>
+<td align="right">0</td>
+<td align="right">tau</td>
+</tr>
+<tr class="even">
+<td>A = B</td>
+<td align="right">1</td>
+<td align="right">tau</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td>A &lt; B</td>
+<td align="right">1</td>
+<td align="right">tau</td>
+<td align="right">1</td>
+<td align="right">tau</td>
+</tr>
+</tbody>
+</table>
+<p>The neutral loss also assigns zero cost to “B above A” when the
+targets are equal. Consequently, zero loss under this convention does
+not imply strict superiority. Equality neutrality changes the
+consequences that the loss penalizes and hence defines a different
+decision problem.</p>
+<p>The default package route retains its existing weak-error meaning and
+requires tie-free inputs. Its input checks do not assign an
+equality-neutral interpretation to atoms. The weak-loss column below is
+therefore calculated directly for illustration; a positive-tie law is
+passed to the separate tie-aware constructor. The two definitions and
+their difference are derived in <a href="https://joonho112.github.io/postrank-theory-book/chapters/11-multicriteria-loss.html#sec-tie-aware-loss">Chapter
+11, “An equality-neutral extension of directional loss”</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="specify-a-complete-two-entity-law">A finite two-entity law<a class="anchor" aria-label="anchor" href="#specify-a-complete-two-entity-law"></a>
+</h2>
+<p>Consider a law in which B has score 1 with probability one and A has
+scores 0, 1 and 2 with probabilities .1, .4 and .5. The three states
+specify the complete posterior for this example, rather than a Monte
+Carlo sample.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joonho112/postrank" class="external-link">postrank</a></span><span class="op">)</span></span>
+<span><span class="va">states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">a</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">a</span>, <span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>    dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>entity <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>, criterion <span class="op">=</span> <span class="st">"score"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">masses</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fl">4L</span>, <span class="fl">5L</span><span class="op">)</span></span>
+<span><span class="va">law_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, B <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  Probability <span class="op">=</span> <span class="va">masses</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">masses</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">law_table</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">A</th>
+<th align="right">B</th>
+<th align="right">Probability</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.1</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0.4</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">0.5</td>
+</tr>
+</tbody>
+</table>
+<p>The exact-law constructor requires integer state values, integer mass
+numerators and a common denominator. Exact coefficient arithmetic uses
+the optional <code>gmp</code> package. The following helper supplies the
+declarations for the specified examples to
+<code><a href="../reference/as_postrank_tie_draws.html">as_postrank_tie_draws()</a></code>. In applications, the target and
+model descriptions must correspond to the scientific quantities and
+assumptions of the analysis.</p>
+<details><summary>
+Construct the finite input, including its target and equality
+declarations
+</summary><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">finite_input</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">states</span>, <span class="va">masses</span>, <span class="va">description</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">states</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">criteria</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">states</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">payload</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    schema_version <span class="op">=</span> <span class="st">"tie-aware-input-0.1"</span>,</span>
+<span>    input_kind <span class="op">=</span> <span class="st">"exact_finite_posterior"</span>,</span>
+<span>    dependence_mode <span class="op">=</span> <span class="st">"joint_model"</span>,</span>
+<span>    requested_functional <span class="op">=</span> <span class="st">"expected_rank_loss"</span>,</span>
+<span>    entity_ids <span class="op">=</span> <span class="va">ids</span>, criterion_ids <span class="op">=</span> <span class="va">criteria</span>,</span>
+<span>    targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">criteria</span>, <span class="kw">function</span><span class="op">(</span><span class="va">k</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>      criterion_id <span class="op">=</span> <span class="va">k</span>, estimand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Specified"</span>, <span class="va">k</span>, <span class="st">"target"</span><span class="op">)</span>,</span>
+<span>      entity_population <span class="op">=</span> <span class="st">"Fictional entities in the displayed law"</span>,</span>
+<span>      time_reference <span class="op">=</span> <span class="st">"No observation period; mathematical example"</span>,</span>
+<span>      units <span class="op">=</span> <span class="st">"Illustrative score units"</span>, source_transform <span class="op">=</span> <span class="st">"Identity"</span>,</span>
+<span>      identification_basis <span class="op">=</span> <span class="st">"Defined by the complete listed states"</span>,</span>
+<span>      orientation <span class="op">=</span> <span class="st">"higher_priority"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    context <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cohort_id <span class="op">=</span> <span class="st">"m4-example"</span>, data_version <span class="op">=</span> <span class="st">"1"</span>,</span>
+<span>      data_conditioning <span class="op">=</span> <span class="st">"No observations; the listed law is stipulated"</span>,</span>
+<span>      model_summary <span class="op">=</span> <span class="va">description</span><span class="op">)</span>,</span>
+<span>    identification <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>status <span class="op">=</span> <span class="st">"identified_declared"</span>,</span>
+<span>      note <span class="op">=</span> <span class="st">"The mathematical targets are specified, not empirically identified"</span><span class="op">)</span>,</span>
+<span>    tie_policy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rule <span class="op">=</span> <span class="st">"equality_neutral"</span>, declared <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>      justification <span class="op">=</span> <span class="st">"Equality in a listed state is genuine target equality"</span>,</span>
+<span>      observed_tie_action <span class="op">=</span> <span class="st">"accept_declared_exact_equality"</span><span class="op">)</span>,</span>
+<span>    provenance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>producer <span class="op">=</span> <span class="st">"M4 vignette"</span>, artifact_id <span class="op">=</span> <span class="st">"specified-law"</span>,</span>
+<span>      artifact_hash <span class="op">=</span> <span class="fu">digest</span><span class="fu">::</span><span class="fu"><a href="https://eddelbuettel.github.io/digest/man/digest.html" class="external-link">digest</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">states</span>, <span class="va">masses</span><span class="op">)</span>, algo <span class="op">=</span> <span class="st">"sha256"</span><span class="op">)</span>,</span>
+<span>      construction_note <span class="op">=</span> <span class="st">"Complete finite law; no sampling or rounding"</span>,</span>
+<span>      created_at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, tz <span class="op">=</span> <span class="st">"UTC"</span>, format <span class="op">=</span> <span class="st">"%Y-%m-%dT%H:%M:%SZ"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    equality <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>basis <span class="op">=</span> <span class="st">"exact_finite_law"</span>,</span>
+<span>      justification <span class="op">=</span> <span class="st">"Check equality over every positive-mass state"</span>,</span>
+<span>      criterion_classes <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>,</span>
+<span>    finite_law <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>denominator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">masses</span><span class="op">)</span>,</span>
+<span>      value_representation <span class="op">=</span> <span class="st">"safe_integer"</span>,</span>
+<span>      states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">states</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>        state_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"state-"</span>, <span class="va">s</span><span class="op">)</span>, mass_numerator <span class="op">=</span> <span class="va">masses</span><span class="op">[</span><span class="va">s</span><span class="op">]</span>,</span>
+<span>        theta <span class="op">=</span> <span class="va">states</span><span class="op">[[</span><span class="va">s</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>      law_definition <span class="op">=</span> <span class="va">description</span>, not_empirical_posterior_relabeling <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/as_postrank_tie_draws.html">as_postrank_tie_draws</a></span><span class="op">(</span><span class="va">payload</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+</details><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu">finite_input</span><span class="op">(</span><span class="va">states</span>, <span class="va">masses</span>,</span>
+<span>  <span class="st">"B is 1; A is 0, 1, or 2 with masses 1/10, 4/10, 5/10"</span><span class="op">)</span></span>
+<span><span class="va">pw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_tie_pairwise.html">postrank_tie_pairwise</a></span><span class="op">(</span><span class="va">input</span><span class="op">)</span></span>
+<span><span class="va">probabilities</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  Event <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A &lt; B"</span>, <span class="st">"A = B"</span>, <span class="st">"A != B"</span>, <span class="st">"B &lt; A"</span><span class="op">)</span>,</span>
+<span>  Probability <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">pw</span><span class="op">$</span><span class="va">b</span><span class="op">[</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"score"</span><span class="op">]</span>, <span class="va">pw</span><span class="op">$</span><span class="va">t</span><span class="op">[</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"score"</span><span class="op">]</span>,</span>
+<span>    <span class="va">pw</span><span class="op">$</span><span class="va">d</span><span class="op">[</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"score"</span><span class="op">]</span>, <span class="va">pw</span><span class="op">$</span><span class="va">b</span><span class="op">[</span><span class="st">"B"</span>, <span class="st">"A"</span>, <span class="st">"score"</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">probabilities</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Event</th>
+<th align="right">Probability</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">A &lt; B</td>
+<td align="right">0.1</td>
+</tr>
+<tr class="even">
+<td align="left">A = B</td>
+<td align="right">0.4</td>
+</tr>
+<tr class="odd">
+<td align="left">A != B</td>
+<td align="right">0.6</td>
+</tr>
+<tr class="even">
+<td align="left">B &lt; A</td>
+<td align="right">0.5</td>
+</tr>
+</tbody>
+</table>
+<p>Here <code>b[i, j, k]</code> is the strict error probability for
+disclosing <code>i</code> above <code>j</code>; <code>t</code> is
+equality probability and <code>d</code> is distinctness probability.
+Off-diagonal entries satisfy
+<code>b[i,j,k] + b[j,i,k] = d[i,j,k]</code>, not generally one. In this
+example .1 + .5 = .6; using <code>1 - .1</code> for the reverse strict
+error would incorrectly include the equality mass. Diagonal entries are
+<code>NA</code> because an entity is not compared with itself.</p>
+</div>
+<div class="section level2">
+<h2 id="evaluate-directions-and-withholding">Evaluation of the three actions<a class="anchor" aria-label="anchor" href="#evaluate-directions-and-withholding"></a>
+</h2>
+<p>The three possible ordered reports for two entities can be evaluated
+directly. At <code>tau = .25</code>, their neutral risks are as
+follows:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tau</span> <span class="op">&lt;-</span> <span class="fl">.25</span></span>
+<span><span class="va">actions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>`A above B` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">1L</span>, B <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span>,</span>
+<span>  `B above A` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">2L</span>, B <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span>, Hold <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">1L</span>, B <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">evaluations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">actions</span>, <span class="va">postrank_tie_evaluate</span>,</span>
+<span>  pairwise <span class="op">=</span> <span class="va">pw</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, tau <span class="op">=</span> <span class="va">tau</span><span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">masses</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">masses</span><span class="op">)</span></span>
+<span><span class="va">weak_risk</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">p</span> <span class="op">*</span> <span class="op">(</span><span class="va">law_table</span><span class="op">$</span><span class="va">A</span> <span class="op">&lt;=</span> <span class="va">law_table</span><span class="op">$</span><span class="va">B</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">p</span> <span class="op">*</span> <span class="op">(</span><span class="va">law_table</span><span class="op">$</span><span class="va">B</span> <span class="op">&lt;=</span> <span class="va">law_table</span><span class="op">$</span><span class="va">A</span><span class="op">)</span><span class="op">)</span>, <span class="va">tau</span><span class="op">)</span></span>
+<span><span class="va">action_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Action <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">actions</span><span class="op">)</span>, Weak_loss <span class="op">=</span> <span class="va">weak_risk</span>,</span>
+<span>  Neutral_loss <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">evaluations</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span><span class="op">$</span><span class="va">primary_risk</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">action_table</span>, digits <span class="op">=</span> <span class="fl">3</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Action</th>
+<th align="right">Weak_loss</th>
+<th align="right">Neutral_loss</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">A above B</td>
+<td align="right">0.50</td>
+<td align="right">0.10</td>
+</tr>
+<tr class="even">
+<td align="left">B above A</td>
+<td align="right">0.90</td>
+<td align="right">0.50</td>
+</tr>
+<tr class="odd">
+<td align="left">Hold</td>
+<td align="right">0.25</td>
+<td align="right">0.15</td>
+</tr>
+</tbody>
+</table>
+<p>Under neutral loss, A above B has risk .1, compared with .25 × .6 =
+.15 for withholding, and is therefore preferred. Weak loss favors
+withholding because the disclosed error includes the .4 equality mass.
+Enumeration exhausts the two-entity action space, so no numerical
+optimality bound is required. For more entities, individually preferred
+pairwise actions may fail to define a coherent grading.</p>
+<p>For several entities and criteria, let <code>E_k</code> sum
+strict-error probabilities over disclosed pairs, <code>D_k</code> sum
+their distinctness probabilities, and <code>T_k</code> sum distinctness
+probabilities over <strong>all</strong> unordered pairs. With criterion
+weights summing to one, write <code>E_w = sum(w * E_k)</code>,
+<code>D = sum(w * D_k)</code> and <code>T = sum(w * T_k)</code>. The
+neutral risk is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>=</mo><mfrac><mrow><msub><mi>E</mi><mi>w</mi></msub><mo>+</mo><mi>τ</mi><mo stretchy="false" form="prefix">(</mo><mi>T</mi><mo>−</mo><mi>D</mi><mo stretchy="false" form="postfix">)</mo></mrow><mi>M</mi></mfrac><mo>=</mo><msub><mi>R</mi><mn>0</mn></msub><mo>+</mo><mfrac><mrow><msub><mi>E</mi><mi>w</mi></msub><mo>−</mo><mi>τ</mi><mi>D</mi></mrow><mi>M</mi></mfrac><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>R</mi><mn>0</mn></msub><mo>=</mo><mfrac><mrow><mi>τ</mi><mi>T</mi></mrow><mi>M</mi></mfrac><mo>,</mo><mspace width="2.0em"></mspace><mi>M</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><mi>n</mi><mn>2</mn></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+R = \frac{E_w + \tau(T-D)}{M}
+  = R_0 + \frac{E_w-\tau D}{M},
+\qquad R_0 = \frac{\tau T}{M},\qquad M=\binom{n}{2}.
+</annotation></semantics></math></p>
+<p>Consequently, the all-withhold baseline is <code>R0</code>, generally
+below <code>tau</code>. The centered objective <code>raw_Z</code>
+subtracts <code>tau * D</code>, not <code>tau * N</code>. The evaluator
+checks risk from the disclosed and withheld event masses; the identity
+can also be checked directly:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">forward</span> <span class="op">&lt;-</span> <span class="va">evaluations</span><span class="op">[[</span><span class="st">"A above B"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>direct <span class="op">=</span> <span class="va">forward</span><span class="op">$</span><span class="va">primary_risk</span>,</span>
+<span>  baseline_plus_centered <span class="op">=</span> <span class="va">forward</span><span class="op">$</span><span class="va">R0</span> <span class="op">+</span> <span class="va">forward</span><span class="op">$</span><span class="va">raw_Z</span> <span class="op">/</span> <span class="va">forward</span><span class="op">$</span><span class="va">M</span>,</span>
+<span>  all_withhold <span class="op">=</span> <span class="va">evaluations</span><span class="op">$</span><span class="va">Hold</span><span class="op">$</span><span class="va">primary_risk</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                 direct baseline_plus_centered           all_withhold </span></span>
+<span><span class="co">#&gt;                   0.10                   0.10                   0.15</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="read-the-denominator-as-carefully-as-the-numerator">Disclosure and distinctness denominators<a class="anchor" aria-label="anchor" href="#read-the-denominator-as-carefully-as-the-numerator"></a>
+</h2>
+<p><code>N/M</code> counts the fraction of pairs assigned different
+grades. It does not discount possible latent equality. <code>D/T</code>
+measures the fraction of weighted distinct-comparison opportunity
+disclosed. Criterion-specific <code>E_over_N</code> and
+<code>E_over_D</code> divide the same strict-error count by different
+quantities:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">denominators</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">evaluations</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>N <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">N</span>, D <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">D</span>, T <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="cn">T</span>,</span>
+<span>    `E/N` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">E_over_N</span><span class="op">)</span>, `E/D` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">E_over_D</span><span class="op">)</span>,</span>
+<span>    `D/T` <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">D_over_T</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">denominators</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left"></th>
+<th align="right">N</th>
+<th align="right">D</th>
+<th align="right">T</th>
+<th align="right">E/N</th>
+<th align="right">E/D</th>
+<th align="right">D/T</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">A above B</td>
+<td align="right">1</td>
+<td align="right">0.6</td>
+<td align="right">0.6</td>
+<td align="right">0.1</td>
+<td align="right">0.167</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">B above A</td>
+<td align="right">1</td>
+<td align="right">0.6</td>
+<td align="right">0.6</td>
+<td align="right">0.5</td>
+<td align="right">0.833</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Hold</td>
+<td align="right">0</td>
+<td align="right">0.0</td>
+<td align="right">0.6</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p>For A above B, .1 strict errors per raw pair becomes .1/.6 = 1/6 per
+distinct comparison. These are ratios of posterior expected counts, not
+expectations of state-by-state error ratios. With several criteria,
+<code>E_over_D</code> uses each criterion’s <code>D_k</code>; the scalar
+<code>D</code> is its weighted summary. In the companion theory this
+weighted quantity is denoted <code>Q_w</code>, avoiding a notation
+collision with an earlier weak-error count.</p>
+<p>For comparison, consider equality with probability one and an action
+that withholds the comparison:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">equal_pw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_tie_pairwise.html">postrank_tie_pairwise</a></span><span class="op">(</span><span class="fu">finite_input</span><span class="op">(</span><span class="va">states</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">1L</span>,</span>
+<span>  <span class="st">"A and B both equal 1 with probability one"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">equal_hold</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_tie_evaluate.html">postrank_tie_evaluate</a></span><span class="op">(</span><span class="va">actions</span><span class="op">$</span><span class="va">Hold</span>, <span class="va">equal_pw</span>,</span>
+<span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, tau <span class="op">=</span> <span class="va">tau</span><span class="op">)</span></span>
+<span><span class="va">equal_hold</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"N"</span>, <span class="st">"D"</span>, <span class="st">"T"</span>, <span class="st">"E_over_N"</span>, <span class="st">"E_over_D"</span>, <span class="st">"D_over_T"</span>, <span class="st">"R0"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $N</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $D</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $T</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $E_over_N</span></span>
+<span><span class="co">#&gt; score </span></span>
+<span><span class="co">#&gt;    NA </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $E_over_D</span></span>
+<span><span class="co">#&gt; score </span></span>
+<span><span class="co">#&gt;    NA </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $D_over_T</span></span>
+<span><span class="co">#&gt; [1] NA</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $R0</span></span>
+<span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
+<p>All three denominators <code>N</code>, <code>D</code> and
+<code>T</code> are zero, giving <code>NA</code> for their ratios. Zero
+risk in this example follows from certain equality and provides no
+evidence for a strict order. A disclosure with <code>D = 0</code> could
+also have zero strict error; the equality guard described below
+restricts such disclosures.</p>
+</div>
+<div class="section level2">
+<h2 id="check-the-zero-tie-case">Reduction under zero equality probability<a class="anchor" aria-label="anchor" href="#check-the-zero-tie-case"></a>
+</h2>
+<p>For a separate comparison, move all equality mass to the state A=2,
+B=1. The new complete law has masses .1 and .9 and no equality. Strict
+and weak errors then coincide; <code>d = 1</code>, <code>D = N</code>,
+<code>T = M</code>, and <code>R0 = tau</code>.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">no_tie</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_tie_pairwise.html">postrank_tie_pairwise</a></span><span class="op">(</span><span class="fu">finite_input</span><span class="op">(</span><span class="va">states</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fl">9L</span><span class="op">)</span>,</span>
+<span>  <span class="st">"A is 0 or 2 with masses 1/10 and 9/10; B is 1; equality is impossible"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">ordinary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_probabilities.html">postrank_probabilities</a></span><span class="op">(</span><span class="va">no_tie</span><span class="op">$</span><span class="va">b</span>,</span>
+<span>  event <span class="op">=</span> <span class="st">"directional_error"</span>, zero_ties <span class="op">=</span> <span class="cn">TRUE</span>, margin <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>kind <span class="op">=</span> <span class="st">"analytic_reference"</span>,</span>
+<span>    description <span class="op">=</span> <span class="st">"Probabilities summed over the displayed two-state law"</span>,</span>
+<span>    conditioning <span class="op">=</span> <span class="st">"Complete stipulated law; no sampled approximation"</span><span class="op">)</span>,</span>
+<span>  targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score <span class="op">=</span> <span class="st">"Higher specified score has higher priority"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">no_tie_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Action <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">actions</span><span class="op">)</span>,</span>
+<span>  Ordinary <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">actions</span>, <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="../reference/postrank_evaluate.html">postrank_evaluate</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">ordinary</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, <span class="va">tau</span><span class="op">)</span><span class="op">$</span><span class="va">primary_risk</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  Neutral <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">actions</span>, <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="../reference/postrank_tie_evaluate.html">postrank_tie_evaluate</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">no_tie</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, <span class="va">tau</span><span class="op">)</span><span class="op">$</span><span class="va">primary_risk</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">no_tie_table</span>, digits <span class="op">=</span> <span class="fl">3</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Action</th>
+<th align="right">Ordinary</th>
+<th align="right">Neutral</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">A above B</td>
+<td align="right">0.10</td>
+<td align="right">0.10</td>
+</tr>
+<tr class="even">
+<td align="left">B above A</td>
+<td align="right">0.90</td>
+<td align="right">0.90</td>
+</tr>
+<tr class="odd">
+<td align="left">Hold</td>
+<td align="right">0.25</td>
+<td align="right">0.25</td>
+</tr>
+</tbody>
+</table>
+<p>The losses agree for every action when all positive-weight criteria
+have zero pairwise equality probability and the action domain and other
+settings coincide. Zero-weight criteria do not affect the identity. This
+mathematical agreement does not require identical floating-point
+representations or the same numerical choice among multiple
+minimizers.</p>
+</div>
+<div class="section level2">
+<h2 id="keep-identical-active-profiles-in-the-same-grade">The same-grade constraint for identical active profiles<a class="anchor" aria-label="anchor" href="#keep-identical-active-profiles-in-the-same-grade"></a>
+</h2>
+<p>Positive equality probability for one pair is weaker than equality
+with probability one. The guard uses the latter: if two entities are
+equal in every state on <strong>every positive-weight
+criterion</strong>, they must receive the same grade in a released
+tie-aware solution.</p>
+<p>Consider one certain state with a shared attribute and an individual
+one:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">profile_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>entity <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
+<span>    criterion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"shared"</span>, <span class="st">"individual"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">profile_state</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left"></th>
+<th align="right">shared</th>
+<th align="right">individual</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">A</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">B</td>
+<td align="right">2</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">C</td>
+<td align="right">0</td>
+<td align="right">2</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">profile_pw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_tie_pairwise.html">postrank_tie_pairwise</a></span><span class="op">(</span><span class="fu">finite_input</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">profile_state</span><span class="op">)</span>, <span class="fl">1L</span>,</span>
+<span>  <span class="st">"One certain state with the displayed shared and individual attributes"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">split</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">1L</span>, B <span class="op">=</span> <span class="fl">2L</span>, C <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span>
+<span><span class="va">only_shared</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_tie_evaluate.html">postrank_tie_evaluate</a></span><span class="op">(</span><span class="va">split</span>, <span class="va">profile_pw</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>shared <span class="op">=</span> <span class="fl">1</span>, individual <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>, <span class="va">tau</span><span class="op">)</span></span>
+<span><span class="va">both_active</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_tie_evaluate.html">postrank_tie_evaluate</a></span><span class="op">(</span><span class="va">split</span>, <span class="va">profile_pw</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>shared <span class="op">=</span> <span class="fl">.5</span>, individual <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span>, <span class="va">tau</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1 / 0"</span>, <span class="st">".5 / .5"</span><span class="op">)</span>,</span>
+<span>  Guard_satisfied <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">only_shared</span><span class="op">$</span><span class="va">guard_satisfied</span>, <span class="va">both_active</span><span class="op">$</span><span class="va">guard_satisfied</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   Weights Guard_satisfied</span></span>
+<span><span class="co">#&gt; 1   1 / 0           FALSE</span></span>
+<span><span class="co">#&gt; 2 .5 / .5            TRUE</span></span></code></pre></div>
+<p>A and B must share a grade when only <code>shared</code> has positive
+weight. When both criteria are active, their different individual values
+remove that requirement. The evaluator deliberately permits scoring a
+guard-violating action for comparison; a finite risk alone does not make
+it admissible.</p>
+<p>The problem constructor enforces the guard while keeping all original
+entities and pair multiplicities:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">problem</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_tie_problem.html">postrank_tie_problem</a></span><span class="op">(</span><span class="va">profile_pw</span>,</span>
+<span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>shared <span class="op">=</span> <span class="fl">1</span>, individual <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>, tau <span class="op">=</span> <span class="va">tau</span>, G_max <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span>
+<span><span class="va">problem</span><span class="op">$</span><span class="va">guard</span><span class="op">$</span><span class="va">classes</span></span>
+<span><span class="co">#&gt;           A           B           C </span></span>
+<span><span class="co">#&gt; "profile_1" "profile_1" "profile_2"</span></span>
+<span><span class="va">problem</span><span class="op">$</span><span class="va">M</span></span>
+<span><span class="co">#&gt; [1] 3</span></span></code></pre></div>
+<p>There are still three entities and three pairs, even when A and B
+must share a grade. Replacing them with one unweighted representative
+would change the problem. For the full weighted
+<strong>at-most-G</strong> family without additional restrictions, a
+global minimizer satisfying this guard exists: moving identical profiles
+to their least costly currently occupied grade cannot increase loss or
+the number of grades. This is an existence result, not a claim that
+every optimum obeys the guard or that any arbitrary merge preserves
+risk. See <a href="https://joonho112.github.io/postrank-theory-book/chapters/11-multicriteria-loss.html#a-guard-for-identical-active-profiles">“Same-grade
+guard for identical active profiles”</a> for the argument and its
+restrictions.</p>
+<p>For Monte Carlo input, structural equality classes must be declared
+and checked against the retained values. Coincidence in the sampled
+draws is insufficient to establish these classes. For a complete finite
+law, they are determined by all positive-mass states. If ties arise from
+rounding continuous draws, full-precision values are required; jitter
+and numerical tolerances would alter the comparison being defined.</p>
+</div>
+<div class="section level2">
+<h2 id="use-the-supported-mode-deliberately">Supported inputs and decision problems<a class="anchor" aria-label="anchor" href="#use-the-supported-mode-deliberately"></a>
+</h2>
+<p>The current mode supports complete exact finite laws and joint
+equal-weight IID or MCMC draws. It supports weighted at-most-G problems
+with the guard, and native HiGHS or Gurobi solution through
+<code>label_mip</code>. The following call is optional and is not
+executed by this article:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_tie_solve.html">postrank_tie_solve</a></span><span class="op">(</span><span class="va">problem</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="../reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>strategy <span class="op">=</span> <span class="st">"label_mip"</span>, time_limit <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>    threads <span class="op">=</span> <span class="fl">1L</span>, seed <span class="op">=</span> <span class="fl">1304L</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><code>q</code> error budgets, minimax, exact-G, and staged solving
+are unsupported in this mode. Criterionwise inputs and typed
+Gaussian/mixture coefficients are also outside its current input paths.
+The guard’s weighted at-most-G argument does not automatically extend to
+those other constraints or objectives.</p>
+<p>Tie-aware objects provide <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>, <code><a href="https://rdrr.io/r/base/format.html" class="external-link">format()</a></code>
+and <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> methods, with results stored in
+<code>grade</code>, <code>evaluation</code> and <code>objective</code>.
+The legacy accessors, baseline comparisons, HTML reports and plots are
+unavailable for this object family, as are Monte Carlo diagnostics,
+uniform IID bounds, regret bounds and protection envelopes. These
+restrictions are listed by <code><a href="../reference/postrank_tie_capabilities.html">postrank_tie_capabilities()</a></code>.
+Exact rational coefficients also leave subsequent floating-point losses
+and solver bounds subject to numerical error.</p>
+<p>The definitions here follow JoonHo Lee (2026), <em>Decisions from
+Noisy Multidimensional Indicators: Theory, Evidence, and Posterior
+Grading</em>, version 3: Chapter 9, “Grade actions and disclosed
+comparisons”; Chapter 11, “An equality-neutral extension of directional
+loss,” especially “Risk identity and relation to the weak-error loss”
+and “Same-grade guard for identical active profiles”; and <a href="https://joonho112.github.io/postrank-theory-book/appendices/D-package-correspondence.html#sec-package-tie-aware">Appendix
+D, “Equality-neutral implementation and capability limits”</a>. The
+software limits above were also checked against the current package. The
+ordinary loss is defined in <a href="m1-ranking-and-loss.html">Ranking,
+grades and loss</a>, input assumptions in <a href="m3-posterior-inputs.html">Posterior inputs</a>, and numerical
+statuses in <a href="m5-computing-grades.html">Computing grades</a>.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Calculate a Conditional Fixed-Sample IID Probability Bound — postrank_iid_bounds • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Calculate a Conditional Fixed-Sample IID Probability Bound — postrank_iid_bounds">
+<meta name="description" content="A simultaneous reference radius is calculated for directional-error
+probabilities estimated from a fixed number of IID posterior draws. The
+associated probability statement concerns repeated Monte Carlo generation
+conditional on the same supplied posterior law. It does not give a posterior
+probability that a grade is correct.">
+<meta property="og:description" content="A simultaneous reference radius is calculated for directional-error
+probabilities estimated from a fixed number of IID posterior draws. The
+associated probability statement concerns repeated Monte Carlo generation
+conditional on the same supplied posterior law. It does not give a posterior
+probability that a grade is correct.">
+<meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Calculate a Conditional Fixed-Sample IID Probability Bound</h1>
+
+      <div class="d-none name"><code>postrank_iid_bounds.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>A simultaneous reference radius is calculated for directional-error
+probabilities estimated from a fixed number of IID posterior draws. The
+associated probability statement concerns repeated Monte Carlo generation
+conditional on the same supplied posterior law. It does not give a posterior
+probability that a grade is correct.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_iid_bounds</span><span class="op">(</span><span class="va">draws</span>, <span class="va">alpha</span>, <span class="va">alpha_by_criterion</span>, <span class="va">design</span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a>
+</h2>
+
+
+<dl>
+<dt id="arg-draws">draws<a class="anchor" aria-label="anchor" href="#arg-draws"></a>
+</dt>
+<dd><p>Ordinary posterior input from <code><a href="postrank_draws.html">postrank_draws()</a></code> or
+<code><a href="as_postrank_draws.html">as_postrank_draws()</a></code>, with equal-weight IID whole-entity states within
+every criterion. Joint-model and criterion-wise inputs are supported.
+MCMC, exact finite laws, Gaussian/mixture coefficients, supplied probabilities,
+and equality-neutral inputs are not fixed-sample IID target-draw inputs.</p></dd>
+
+
+<dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a>
+</dt>
+<dd><p>Overall failure-probability budget, strictly between zero and one.
+It must have been fixed before generating the draws.</p></dd>
+
+
+<dt id="arg-alpha-by-criterion">alpha_by_criterion<a class="anchor" aria-label="anchor" href="#arg-alpha-by-criterion"></a>
+</dt>
+<dd><p>Positive criterion-named allocations covering every
+criterion, summing to at most <code>alpha</code>. They must also have been fixed before
+sampling; they are not normalized automatically.</p></dd>
+
+
+<dt id="arg-design">design<a class="anchor" aria-label="anchor" href="#arg-design"></a>
+</dt>
+<dd><p>List with <code>sample_sizes_fixed_before_sampling = TRUE</code>,
+<code>alpha_fixed_before_sampling = TRUE</code>, <code>adaptive_stopping = FALSE</code>,
+criterion-named integer <code>planned_sample_sizes</code>, and a substantive
+<code>declaration_note</code>. Planned sizes must equal the actual retained counts.
+These are declarations about the real sampling design, not switches that
+make an adaptive or dependent sample eligible.</p></dd>
+
+</dl>
+</div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
+</h2>
+    <p>A <code>postrank_iid_bounds</code> object with criterion sample sizes <code>S</code>, pair
+count <code>M</code>, allocations, unclipped <code>raw_radius</code>, and capped <code>epsilon</code>.
+<code>guarantee_status</code> is <code>"conditional_bound"</code>, but <code>guarantee_issued</code>,
+<code>numerically_verified</code>, and <code>finite_sample_certificate</code> remain <code>FALSE</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
+</h2>
+    <p><span>With <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><mi>n</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">M=n(n-1)/2</annotation></semantics></math>, the criterion radius is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ε</mi><mi>k</mi></msub><mo>=</mo><mrow><mi mathvariant="normal">min</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><msqrt><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mi>M</mi><mi>/</mi><msub><mi>α</mi><mi>k</mi></msub><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><msub><mi>S</mi><mi>k</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow></msqrt><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\varepsilon_k=\min\{1,\sqrt{\log(2M/\alpha_k)/(2S_k)}\}</annotation></semantics></math>.
+Under the assumptions, the simultaneous event bounds the absolute error
+of every directed-pair coefficient on every criterion with probability at
+least <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow><annotation encoding="application/x-tex">1-\alpha</annotation></semantics></math>. Independence is required across whole-state draws
+within each criterion, not across pairs or criteria.</span></p>
+<p>The factor <code>2M</code> uses the ordinary zero-equality condition: reverse
+directional errors are complements. It must not be applied unchanged to
+positive-equality probabilities. The relevant assumption is zero pairwise
+equality, not continuous marginals. All draws must target the same fixed
+proper posterior; fitted empirical Bayes quantities held fixed remain part
+of that conditioning.</p>
+<p>No adaptive stopping or replacement of <code>S</code> by MCMC ESS is supported.
+Passing the structural checks does not verify IID sampling or prior fixation
+of the design. The computed radii are floating-point references, not
+verified outward enclosures. They do not assess model misspecification or
+frequentist performance across new observed datasets.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
+</h2>
+    <div class="dont-index"><p><code><a href="postrank_guarantee_capabilities.html">postrank_guarantee_capabilities()</a></code>, <code><a href="postrank_regret_bound.html">postrank_regret_bound()</a></code>,
+<code><a href="postrank_protection_envelopes.html">postrank_protection_envelopes()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># These choices were fixed before generation in the bundled toy producer.</span></span></span>
+<span class="r-in"><span><span class="va">bounds</span> <span class="op">&lt;-</span> <span class="fu">postrank_iid_bounds</span><span class="op">(</span><span class="va">postrank_toy</span>, alpha <span class="op">=</span> <span class="fl">.05</span>,</span></span>
+<span class="r-in"><span>  alpha_by_criterion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">.025</span>, need_B <span class="op">=</span> <span class="fl">.025</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  design <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sample_sizes_fixed_before_sampling <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>    alpha_fixed_before_sampling <span class="op">=</span> <span class="cn">TRUE</span>, adaptive_stopping <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>    planned_sample_sizes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">32L</span>, need_B <span class="op">=</span> <span class="fl">32L</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    declaration_note <span class="op">=</span> <span class="st">"Prespecified in the bundled synthetic Normal generator"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bounds</span><span class="op">$</span><span class="va">epsilon</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    need_A    need_B </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.2926346 0.2926346 </span>
+<span class="r-in"><span><span class="va">bounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"guarantee_status"</span>, <span class="st">"guarantee_issued"</span>, <span class="st">"numerically_verified"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $guarantee_status</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "conditional_bound"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $guarantee_issued</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $numerically_verified</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

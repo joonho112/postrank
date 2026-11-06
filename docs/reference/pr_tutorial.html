@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>One or Two Criteria for Six Fictional Sites — pr_tutorial • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="One or Two Criteria for Six Fictional Sites — pr_tutorial"><meta name="description" content="This Gaussian example illustrates the disclosure and withholding of pairwise
+comparisons through integer grades. All means and variances are specified
+directly, so the posterior laws are illustrative rather than fitted to
+observations."><meta property="og:description" content="This Gaussian example illustrates the disclosure and withholding of pairwise
+comparisons through integer grades. All means and variances are specified
+directly, so the posterior laws are illustrative rather than fitted to
+observations."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul></div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>One or Two Criteria for Six Fictional Sites</h1>
+
+      <div class="d-none name"><code>pr_tutorial.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>This Gaussian example illustrates the disclosure and withholding of pairwise
+comparisons through integer grades. All means and variances are specified
+directly, so the posterior laws are illustrative rather than fitted to
+observations.</p>
+    </div>
+
+
+    <div class="section level2">
+    <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
+    <p>A named list with four elements:</p><dl><dt>one</dt>
+<dd><p>A <code>postrank_coefficients</code> input with one criterion,
+<code>score_A</code>, for sites A through F.</p></dd>
+
+<dt>two</dt>
+<dd><p>A <code>postrank_coefficients</code> input for the same six sites
+with <code>score_A</code> and <code>score_B</code>. The law of <code>score_A</code>
+is identical to that in <code>one</code>.</p></dd>
+
+<dt>units</dt>
+<dd><p>Site IDs and display labels in input order.</p></dd>
+
+<dt>law</dt>
+<dd><p>The fixed means, covariance matrices, conditioning statement,
+direction, units and maintainer source information.</p></dd>
+
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="source">Source<a class="anchor" aria-label="anchor" href="#source"></a></h2>
+    <p>Maintainer-created synthetic law in
+<code>data-raw/pr-tutorial-law.json</code>; no external observations.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Each site has a bivariate normal law. Both marginal standard
+deviations are 0.2. The two criteria are independent within each site,
+and sites are independent. Higher values have higher priority on both
+criteria. Scores are in illustrative standardized units with no empirical
+calibration. Continuous normal laws have zero equality probability.</p>
+<p>Analytic comparison probabilities and marginal summaries are calculated from
+the same specified law. The example contains no draws, fitted-model
+uncertainty or Monte Carlo diagnostics. Addition of the second criterion
+changes the decision problem while retaining the first criterion's marginal
+law.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="../articles/a1-getting-started.html">vignette("a1-getting-started", package = "postrank")</a></code>,
+<code><a href="postrank_gaussian_coefficients.html">postrank_gaussian_coefficients()</a></code>, <code><a href="postrank.html">postrank()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "one"   "two"   "units" "law"  </span>
+<span class="r-in"><span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;postrank_coefficients&gt;  6 entities under a declared conditional law</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   One criterion: score_A.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Gaussian comparison probabilities and marginal summaries are available.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Supported decisions use weighted loss and an upper limit on grades. Target</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     draws, q constraints, exact grade counts and minimax decisions are</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     unsupported here.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   i summary(x, details = TRUE) retains the conditional-law declarations and</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     source records.</span>
+<span class="r-in"><span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">two</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;postrank_coefficients&gt;  6 entities under a declared conditional law</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2 criteria: score_A, score_B.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Gaussian comparison probabilities and marginal summaries are available.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Supported decisions use weighted loss and an upper limit on grades. Target</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     draws, q constraints, exact grade counts and minimax decisions are</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     unsupported here.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   i summary(x, details = TRUE) retains the conditional-law declarations and</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     source records.</span>
+<span class="r-in"><span><span class="fu"><a href="postrank_posterior_means.html">postrank_posterior_means</a></span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       criterion</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> entity score_A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      A    1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      B    0.95</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      C    0.25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      D    0.15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      E   -0.50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      F   -0.80</span>
+<span class="r-in"><span><span class="fu"><a href="postrank_posterior_means.html">postrank_posterior_means</a></span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">two</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       criterion</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> entity score_A score_B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      A    1.20     0.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      B    0.95     0.4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      C    0.25     0.9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      D    0.15     0.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      E   -0.50    -0.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      F   -0.80    -0.7</span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer></div>
+
+
+
+
+
+  </body></html>
+

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Calculate Strict Error and Equality Probabilities — postrank_tie_pairwise • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Calculate Strict Error and Equality Probabilities — postrank_tie_pairwise">
+<meta name="description" content="Comparison probabilities are calculated for an equality-neutral loss under a
+target law that permits exact equality. Under this loss, equality
+contributes neither a strict-direction error nor a withholding cost. A
+shared reported grade continues to denote a withheld direction without
+asserting equality of the underlying targets.">
+<meta property="og:description" content="Comparison probabilities are calculated for an equality-neutral loss under a
+target law that permits exact equality. Under this loss, equality
+contributes neither a strict-direction error nor a withholding cost. A
+shared reported grade continues to denote a withheld direction without
+asserting equality of the underlying targets.">
+<meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Calculate Strict Error and Equality Probabilities</h1>
+
+      <div class="d-none name"><code>postrank_tie_pairwise.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>Comparison probabilities are calculated for an equality-neutral loss under a
+target law that permits exact equality. Under this loss, equality
+contributes neither a strict-direction error nor a withholding cost. A
+shared reported grade continues to denote a withheld direction without
+asserting equality of the underlying targets.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_tie_pairwise</span><span class="op">(</span></span>
+<span>  <span class="va">draws</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blocks"</span>, <span class="st">"reference"</span><span class="op">)</span>,</span>
+<span>  block_size <span class="op">=</span> <span class="fl">128L</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a>
+</h2>
+
+
+<dl>
+<dt id="arg-draws">draws<a class="anchor" aria-label="anchor" href="#arg-draws"></a>
+</dt>
+<dd><p>A validated <code><a href="as_postrank_tie_draws.html">as_postrank_tie_draws()</a></code> input or its canonical
+payload, containing complete joint states for one or more criteria and
+explicit equality declarations. Values are compared at their supplied
+precision, without rounding, jitter, or independently rearranging entities.</p></dd>
+
+
+<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a>
+</dt>
+<dd><p><code>"blocks"</code> (default) or <code>"reference"</code> for equal-weight Monte
+Carlo aggregation. The block method limits working indicator storage;
+the reference method handles one ordered pair at a time. Exact finite
+laws instead use their declared masses.</p></dd>
+
+
+<dt id="arg-block-size">block_size<a class="anchor" aria-label="anchor" href="#arg-block-size"></a>
+</dt>
+<dd><p>Positive integer maximum ordered-pair block size for the
+block algorithm. It does not change which values count as equal.</p></dd>
+
+</dl>
+</div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
+</h2>
+    <p>A <code>postrank_tie_pairwise</code> object with entity-by-entity-by-criterion
+arrays <code>b</code> (strict directional error), <code>t</code> (equality), and <code>d</code> (distinctness),
+plus the source and equality declarations. All diagonals are <code>NA</code> because
+self-comparisons are unused. Sample sizes describe Monte Carlo input only;
+exact finite laws retain rational coefficients and their double projection.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
+</h2>
+    <p><span>For distinct entities, the error for reporting i above j is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>b</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>&lt;</mo><msub><mi>θ</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">b_{ij,k}=P(\theta_{i,k}&lt;\theta_{j,k})</annotation></semantics></math>.
+Equality is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><msub><mi>θ</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">t_{ij,k}=P(\theta_{i,k}=\theta_{j,k})</annotation></semantics></math>, and
+distinctness is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>≠</mo><msub><mi>θ</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">d_{ij,k}=P(\theta_{i,k}\ne\theta_{j,k})</annotation></semantics></math>.
+Equality and distinctness are symmetric, while the two strict-direction
+errors sum to distinctness: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>b</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>b</mi><mrow><mi>j</mi><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><msub><mi>d</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">b_{ij,k}+b_{ji,k}=d_{ij,k}</annotation></semantics></math>.
+Reverse strict errors sum to one only when equality probability is zero.
+The withholding contribution is </span><code>tau * d</code>, not always <code>tau</code>.</p>
+<p>For a complete finite law, aggregation uses every positive-mass state and
+optional <code>gmp</code> arithmetic. For Monte Carlo input, equality frequencies are
+empirical; repeated coincidences do not establish structural equality.
+Per-criterion structural classes come from supplied declarations for Monte
+Carlo input and from the full positive-mass support for finite laws.
+The problem builder later intersects those classes across active criteria;
+the coefficient calculation has no criterion-loss weights.</p>
+<p>This function neither converts positive equality into ordinary weak-error
+probabilities nor verifies the scientific equality model. Use
+<code><a href="postrank_pairwise.html">postrank_pairwise()</a></code> when every distinct pair has zero equality probability
+and the ordinary loss is intended. A finite target law need not have
+continuous marginals to satisfy that zero-equality condition.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
+</h2>
+    <div class="dont-index"><p><code><a href="validate_postrank_tie_pairwise.html">validate_postrank_tie_pairwise()</a></code>, <code><a href="postrank_tie_problem.html">postrank_tie_problem()</a></code>,
+<code><a href="postrank_tie_evaluate.html">postrank_tie_evaluate()</a></code>, <code><a href="read_postrank_tie_draws.html">read_postrank_tie_draws()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"gmp"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="co"># Bundled complete two-state teaching law, not retained Monte Carlo draws.</span></span></span>
+<span class="r-in"><span>  <span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"synthetic-tie-aware.json"</span>, package <span class="op">=</span> <span class="st">"postrank"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="read_postrank_tie_draws.html">read_postrank_tie_draws</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">pw</span> <span class="op">&lt;-</span> <span class="fu">postrank_tie_pairwise</span><span class="op">(</span><span class="va">input</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># A and B are structurally equal on criterion S in this specified law.</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>strict_error <span class="op">=</span> <span class="va">pw</span><span class="op">$</span><span class="va">b</span><span class="op">[</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"S"</span><span class="op">]</span>, equality <span class="op">=</span> <span class="va">pw</span><span class="op">$</span><span class="va">t</span><span class="op">[</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"S"</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>    distinctness <span class="op">=</span> <span class="va">pw</span><span class="op">$</span><span class="va">d</span><span class="op">[</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"S"</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># The reverse strict errors for C and D sum to their distinctness.</span></span></span>
+<span class="r-in"><span>  <span class="va">pw</span><span class="op">$</span><span class="va">b</span><span class="op">[</span><span class="st">"C"</span>, <span class="st">"D"</span>, <span class="st">"S"</span><span class="op">]</span> <span class="op">+</span> <span class="va">pw</span><span class="op">$</span><span class="va">b</span><span class="op">[</span><span class="st">"D"</span>, <span class="st">"C"</span>, <span class="st">"S"</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

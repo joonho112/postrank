@@ -1,0 +1,18 @@
+{
+  "postrank_plot_report_card-1.png": "Marginal score-A intervals and ordered grades for all six fictional sites, with display labels.",
+  "postrank_plot_report_card-2.png": "Two-criterion marginal intervals and common grades for selected fictional sites A, C and F.",
+  "postrank_plot_relations-1.png": "Disclosed and withheld pair relations in the one-criterion six-site report.",
+  "postrank_plot_relations-2.png": "Pair-relation changes from the one-criterion report to the common two-criterion report for the same six sites.",
+  "postrank_plot_profile-1.png": "Posterior expected errors per disclosed pair for the one-criterion report.",
+  "postrank_plot_profile-2.png": "Posterior expected errors per all unordered pairs for each criterion in the common two-criterion report.",
+  "postrank_plot_pairwise-1.png": "Prepared directional-error probabilities for score A across the six fictional sites; self-comparisons are unavailable.",
+  "postrank_plot_pairwise-2.png": "Prepared directional-error probabilities on two criteria for selected sites A, C and F.",
+  "postrank_plot_compare-1.png": "Risk, disclosure and grade-count panels comparing stored grading rules under the same 30-site posterior and loss.",
+  "postrank_plot_compare-2.png": "Counts of unchanged, newly disclosed, newly withheld and reversed pairs relative to the reference grading rule.",
+  "postrank_plot_frontier-1.png": "Stored disclosure and error summaries across five withholding costs for the six-site common-grade problem.",
+  "postrank_plot_commonality-1.png": "Criterion-specific commonality costs with intervals from numerical optimization bounds, not posterior uncertainty.",
+  "theme_postrank-1.png": "The one-criterion directional-error matrix displayed with the postrank theme at a larger text size.",
+  "scale_colour_grade-1.png": "Two example entities in grades one and three, preserving the missing second grade in the full three-grade color scale.",
+  "reexports-1.png": "The prepared one-criterion report card drawn through autoplot.",
+  "reexports-2.png": "The prepared common two-criterion pair relations drawn through autoplot."
+}

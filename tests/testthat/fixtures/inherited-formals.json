@@ -1,0 +1,268 @@
+{
+  "as_postrank_draws": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "x": ""
+    }
+  },
+  "as_postrank_posterior": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "x": "",
+      "variable_map": "",
+      "metadata": "",
+      "source_coordinates": ""
+    }
+  },
+  "canonical_postrank_grade": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "grade": "",
+      "entity_ids": ""
+    }
+  },
+  "postrank_backend_available": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "backend": "c(\"gurobi\", \"highs\")"
+    }
+  },
+  "postrank_commonality_cost": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "fit": "",
+      "backend": "c(\"gurobi\", \"highs\")",
+      "control": "list()",
+      "strategy": "c(\"staged\", \"label_mip\")",
+      "protection": "c(\"drop\", \"keep\")"
+    }
+  },
+  "postrank_crossfit": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "draws": "",
+      "fit": "NULL",
+      "settings": "NULL",
+      "backend": "c(\"gurobi\", \"highs\")",
+      "control": "list()",
+      "strategy": "c(\"staged\", \"label_mip\")"
+    }
+  },
+  "postrank_diagnose": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "draws": "",
+      "fit": "NULL",
+      "grade": "NULL",
+      "settings": "NULL",
+      "pairs": "NULL",
+      "stability": "NULL"
+    }
+  },
+  "postrank_draws_from_array": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "values": "",
+      "regime": "c(\"iid\", \"mcmc\")",
+      "chains": "NULL",
+      "targets": "",
+      "context": "",
+      "provenance": "",
+      "origin": "",
+      "identification_note": "",
+      "tie_justification": "",
+      "joint_generation": "",
+      "sampling_provenance": "",
+      "warmup_per_chain": "NULL",
+      "thin": "NULL"
+    }
+  },
+  "postrank_evaluate": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "grade": "",
+      "pairwise": "",
+      "weights": "",
+      "tau": "",
+      "objective": "c(\"weighted\", \"minimax\")",
+      "minimax_criteria": "NULL"
+    }
+  },
+  "postrank_frontier": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "pairwise": "",
+      "weights": "",
+      "tau": "",
+      "G_max": "",
+      "objective": "c(\"weighted\", \"minimax\")",
+      "q": "NULL",
+      "exact_G": "NULL",
+      "minimax_criteria": "NULL",
+      "q_criterion": "NULL",
+      "q_grid": "NULL",
+      "backend": "c(\"gurobi\", \"highs\")",
+      "control": "list()",
+      "strategy": "c(\"staged\", \"label_mip\")",
+      "minimax_refine": "c(\"weighted\", \"none\")"
+    }
+  },
+  "postrank_guarantee_capabilities": {
+    "source": "0.0.1.9002",
+    "formals": []
+  },
+  "postrank_iid_bounds": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "draws": "",
+      "alpha": "",
+      "alpha_by_criterion": "",
+      "design": ""
+    }
+  },
+  "postrank_mc_fragility": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "draws": "",
+      "fit": "NULL",
+      "settings": "NULL",
+      "z": "2",
+      "screen_margin": "NULL"
+    }
+  },
+  "postrank_pairwise": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "draws": "",
+      "method": "c(\"blocks\", \"reference\")",
+      "block_size": "128L"
+    }
+  },
+  "postrank_problem": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "pairwise": "",
+      "weights": "",
+      "tau": "",
+      "G_max": "",
+      "objective": "c(\"weighted\", \"minimax\")",
+      "q": "NULL",
+      "exact_G": "NULL",
+      "minimax_criteria": "NULL",
+      "minimax_refine": "c(\"weighted\", \"none\")"
+    }
+  },
+  "postrank_protection_analysis": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "envelopes": "",
+      "backend": "",
+      "control": "list()"
+    }
+  },
+  "postrank_protection_envelopes": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "problem": "",
+      "bounds": ""
+    }
+  },
+  "postrank_regret_bound": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "fit": "",
+      "bounds": ""
+    }
+  },
+  "postrank_report": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "fit": "",
+      "diagnostics": "NULL",
+      "output_file": "NULL",
+      "lang": "\"ko\""
+    }
+  },
+  "postrank_solve": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "problem": "",
+      "backend": "c(\"gurobi\", \"highs\")",
+      "control": "list()",
+      "strategy": "c(\"staged\", \"label_mip\")"
+    }
+  },
+  "read_postrank_draws": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "path": ""
+    }
+  },
+  "validate_postrank_draws": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "x": "",
+      "source": "NULL"
+    }
+  },
+  "validate_postrank_solution": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "problem": "",
+      "solution": "",
+      "tolerances": "list()"
+    }
+  },
+  "write_postrank_draws": {
+    "source": "0.0.1.9002",
+    "formals": {
+      "x": "",
+      "path": "",
+      "overwrite": "FALSE"
+    }
+  },
+  "postrank_gaussian_coefficients": {
+    "source": "0.0.1.9003",
+    "formals": {
+      "means": "",
+      "covariance": "",
+      "conditional_independence": "",
+      "provenance": ""
+    }
+  },
+  "postrank_mixture_coefficients": {
+    "source": "0.0.1.9003",
+    "formals": {
+      "components": "",
+      "weights": "",
+      "state_index": "",
+      "source_regime": "",
+      "conditional_independence": "",
+      "provenance": ""
+    }
+  },
+  "validate_postrank_coefficients": {
+    "source": "0.0.1.9003",
+    "formals": {
+      "x": "",
+      "recompute": "FALSE"
+    }
+  },
+  "postrank_coefficient_capabilities": {
+    "source": "0.0.1.9003",
+    "formals": {
+      "x": ""
+    }
+  },
+  "postrank_coefficient_diagnose": {
+    "source": "0.0.1.9003",
+    "formals": {
+      "x": "",
+      "fit": "NULL",
+      "grade": "NULL",
+      "settings": "NULL",
+      "chain_history": "NULL",
+      "max_trace_bytes": "8 * 1024^2"
+    }
+  }
+}

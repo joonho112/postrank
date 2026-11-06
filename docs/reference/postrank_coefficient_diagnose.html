@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Diagnose Integration of a Conditional Expected Risk — postrank_coefficient_diagnose • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Diagnose Integration of a Conditional Expected Risk — postrank_coefficient_diagnose"><meta name="description" content="The conditional expected risk of a fixed grading is evaluated from Gaussian
+or shared-state mixture coefficients. For a mixture, conditional expected
+risks are also obtained for the individual shared states. Where the
+hyperparameter states were obtained using MCMC and the required original chain
+histories are available, these values support diagnostics of the
+integration."><meta property="og:description" content="The conditional expected risk of a fixed grading is evaluated from Gaussian
+or shared-state mixture coefficients. For a mixture, conditional expected
+risks are also obtained for the individual shared states. Where the
+hyperparameter states were obtained using MCMC and the required original chain
+histories are available, these values support diagnostics of the
+integration."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul></div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Diagnose Integration of a Conditional Expected Risk</h1>
+
+      <div class="d-none name"><code>postrank_coefficient_diagnose.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>The conditional expected risk of a fixed grading is evaluated from Gaussian
+or shared-state mixture coefficients. For a mixture, conditional expected
+risks are also obtained for the individual shared states. Where the
+hyperparameter states were obtained using MCMC and the required original chain
+histories are available, these values support diagnostics of the
+integration.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_coefficient_diagnose</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  fit <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  grade <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  settings <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  chain_history <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max_trace_bytes <span class="op">=</span> <span class="fl">8</span> <span class="op">*</span> <span class="fl">1024</span><span class="op">^</span><span class="fl">2</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
+<dd><p>An object from <code><a href="postrank_gaussian_coefficients.html">postrank_gaussian_coefficients()</a></code> or
+<code><a href="postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code>.</p></dd>
+
+
+<dt id="arg-fit">fit<a class="anchor" aria-label="anchor" href="#arg-fit"></a></dt>
+<dd><p>Optional fit computed from the same input. Its problem, settings,
+and released grade are checked; an incumbent is independently revalidated.</p></dd>
+
+
+<dt id="arg-grade">grade<a class="anchor" aria-label="anchor" href="#arg-grade"></a></dt>
+<dd><p>Optional named fixed grade vector, with smaller grades indicating
+higher priority. It must agree with <code>fit</code> when both are supplied.</p></dd>
+
+
+<dt id="arg-settings">settings<a class="anchor" aria-label="anchor" href="#arg-settings"></a></dt>
+<dd><p>Weighted-loss settings for a fixed <code>grade</code> without <code>fit</code>,
+including criterion-named <code>weights</code>, <code>tau</code>, and <code>G_max</code>.</p></dd>
+
+
+<dt id="arg-chain-history">chain_history<a class="anchor" aria-label="anchor" href="#arg-chain-history"></a></dt>
+<dd><p>Original retained-history records, each with <code>chain_id</code>
+and ordered <code>retained_iterations</code>. Required for eligible hyperparameter-MCMC
+metrics; not used for a single Gaussian or fixed finite mixture.</p></dd>
+
+
+<dt id="arg-max-trace-bytes">max_trace_bytes<a class="anchor" aria-label="anchor" href="#arg-max-trace-bytes"></a></dt>
+<dd><p>Nonnegative integer bound on the numeric conditional-risk
+output buffers, in bytes. This is not a bound on total process memory.</p></dd>
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A <code>postrank_coefficient_diagnostics</code> object with the fixed-action
+<code>evaluation</code> when available, a mixture <code>conditional_risk_trace</code> where
+defined, and <code>diagnostics</code> records that distinguish available metrics from
+explicit unavailable reasons. It does not certify convergence or a selected
+report's frequentist or posterior accuracy.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The diagnostic traces concern conditional expected risk. They do not
+represent realized target losses or their quantiles. A single Gaussian law
+has no Monte Carlo trace, and its MCSE is unavailable rather than zero. A
+fixed finite mixture is evaluated using its specified weights and has no
+Monte Carlo sampling history.</p>
+<p>MCMC metrics require history matching all original retained source
+coordinates, at least two chains with four iterations each, equal chain
+lengths, and regular common spacing. Chains are not truncated, padded, or
+interpolated. Matching the records checks history structure, not its truth
+or sampler convergence. Missing history, unavailable optional libraries,
+inadequate chain layouts, and nonfinite raw metrics retain their reasons.</p>
+<p><code><a href="postrank_diagnose.html">postrank_diagnose()</a></code> dispatches these coefficient inputs here with the
+default missing-history behavior. Use this function to supply history.
+Target pair-indicator traces, stability solves, cross-fit diagnostics,
+target Monte Carlo fragility, and IID target-coefficient bounds are not
+supplied by this route. An all-withheld report has structurally constant
+risk and cannot diagnose exploration of the target posterior.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="postrank_coefficient_capabilities.html">postrank_coefficient_capabilities()</a></code>, <code><a href="postrank_diagnose.html">postrank_diagnose()</a></code>,
+<code><a href="postrank_report.html">postrank_report()</a></code> for displaying already prepared diagnostics.</p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span></span></span>
+<span class="r-in"><span><span class="co"># A specified report, evaluated without optimization.</span></span></span>
+<span class="r-in"><span><span class="va">grade</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fl">1L</span>, <span class="fl">2L</span>, <span class="fl">2L</span>, <span class="fl">3L</span>, <span class="fl">3L</span><span class="op">)</span>, <span class="va">x</span><span class="op">$</span><span class="va">entity_ids</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">postrank_coefficient_diagnose</span><span class="op">(</span><span class="va">x</span>, grade <span class="op">=</span> <span class="va">grade</span>,</span></span>
+<span class="r-in"><span>  settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.25</span>, G_max <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">d</span><span class="op">$</span><span class="va">evaluation</span><span class="op">$</span><span class="va">weighted_risk</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.05165164</span>
+<span class="r-in"><span><span class="va">d</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">mcse_mean</span><span class="op">$</span><span class="va">unavailable_reason</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "analytic_Gaussian_no_hyperstate_MC_trace"</span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer></div>
+
+
+
+
+
+  </body></html>
+

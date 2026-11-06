@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Optimal or Quantile Cuts of a Declared Score Order — postrank_cuts • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Optimal or Quantile Cuts of a Declared Score Order — postrank_cuts">
+<meta name="description" content="A declared score order is partitioned into ordered grades, with exactly tied
+scores retained in the same grade. Optimal cuts minimize weighted loss over
+partitions of that order, whereas quantile cuts use fixed positions. The
+search therefore remains conditional on the declared order.">
+<meta property="og:description" content="A declared score order is partitioned into ordered grades, with exactly tied
+scores retained in the same grade. Optimal cuts minimize weighted loss over
+partitions of that order, whereas quantile cuts use fixed positions. The
+search therefore remains conditional on the declared order.">
+<meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Optimal or Quantile Cuts of a Declared Score Order</h1>
+
+      <div class="d-none name"><code>postrank_cuts.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>A declared score order is partitioned into ordered grades, with exactly tied
+scores retained in the same grade. Optimal cuts minimize weighted loss over
+partitions of that order, whereas quantile cuts use fixed positions. The
+search therefore remains conditional on the declared order.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_cuts</span><span class="op">(</span></span>
+<span>  <span class="va">scores</span>,</span>
+<span>  <span class="va">pairwise</span>,</span>
+<span>  <span class="va">settings</span>,</span>
+<span>  direction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ascending"</span>, <span class="st">"descending"</span><span class="op">)</span>,</span>
+<span>  rule <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"optimal"</span>, <span class="st">"quantile"</span><span class="op">)</span>,</span>
+<span>  G_b <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  method <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a>
+</h2>
+
+
+<dl>
+<dt id="arg-scores">scores<a class="anchor" aria-label="anchor" href="#arg-scores"></a>
+</dt>
+<dd><p>A named score vector (one per entity), for example from
+<code><a href="postrank_expected_rank.html">postrank_expected_rank()</a></code> or <code><a href="postrank_composite.html">postrank_composite()</a></code>.</p></dd>
+
+
+<dt id="arg-pairwise">pairwise<a class="anchor" aria-label="anchor" href="#arg-pairwise"></a>
+</dt>
+<dd><p>The <code>postrank_pairwise</code>, <code>postrank_coefficients</code>, or
+<code>postrank_probabilities</code> object whose directional errors define the loss.</p></dd>
+
+
+<dt id="arg-settings">settings<a class="anchor" aria-label="anchor" href="#arg-settings"></a>
+</dt>
+<dd><p>A <code><a href="postrank_settings.html">postrank_settings()</a></code> object (weights, tau, grade rule).</p></dd>
+
+
+<dt id="arg-direction">direction<a class="anchor" aria-label="anchor" href="#arg-direction"></a>
+</dt>
+<dd><p><code>"ascending"</code> (smaller score = higher priority, as for
+expected rank) or <code>"descending"</code> (larger = higher, as for composites).</p></dd>
+
+
+<dt id="arg-rule">rule<a class="anchor" aria-label="anchor" href="#arg-rule"></a>
+</dt>
+<dd><p><code>"optimal"</code> or <code>"quantile"</code>.</p></dd>
+
+
+<dt id="arg-g-b">G_b<a class="anchor" aria-label="anchor" href="#arg-g-b"></a>
+</dt>
+<dd><p>For <code>rule = "quantile"</code>, the requested number of grades
+(default: the settings' <code>exact_G</code>, else <code>G_max</code>, capped at <code>n</code>).</p></dd>
+
+
+<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a>
+</dt>
+<dd><p>Optional label; defaults to the score's <code>score_method</code>
+attribute, else <code>"user_scores"</code>.</p></dd>
+
+</dl>
+</div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
+</h2>
+    <p>A <code>postrank_baseline</code> list. <code>scores</code>, <code>direction</code>, <code>order</code> and
+<code>score_blocks</code> record the declared order and its indivisible exact-score
+blocks. <code>cut_rule</code>, <code>cuts</code> (block positions) and the entity-named <code>grade</code>
+record the action. <code>evaluation</code> contains the fixed-action metrics;
+<code>risk</code> is the weighted loss and <code>objective</code> its raw optimization value.
+<code>optimality_scope</code> distinguishes optimal partitions of this score order
+from quantile cuts; neither provides a full-family solver bound.
+<code>method</code>, <code>tie_policy</code>, bound <code>settings</code>, <code>input_identity</code>,
+<code>schema_version</code>, <code>provenance</code> and <code>warnings</code> retain the construction
+record. When the requested grade count is impossible, the function raises
+an error rather than returning an all-withheld report.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
+</h2>
+    <p><code>rule = "optimal"</code> uses a contiguous-partition dynamic program
+(subject to ordinary floating-point arithmetic) under the settings' grade
+cap <code>G_max</code>, or the exact grade count <code>exact_G</code>; its optimality is
+restricted to contiguous partitions of this score order. <code>rule = "quantile"</code><span>
+uses the fixed positional labels <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>+</mo><mo stretchy="false" form="prefix">⌊</mo><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><msub><mi>G</mi><mi>b</mi></msub><mi>/</mi><mi>n</mi><mo stretchy="false" form="postfix">⌋</mo></mrow><annotation encoding="application/x-tex">1 + \lfloor (p - 1) G_b / n \rfloor</annotation></semantics></math>
+and performs no optimization. Exactly equal stored scores are never split;
+a quantile boundary inside an exact-score block merges the grades it
+straddles, so the realized number of grades can be below </span><code>G_b</code>. The realized
+grade count must still satisfy <code>G_max</code> and <code>exact_G</code>; violations raise
+<code>baseline_grade_limit_violation</code> or <code>baseline_exact_grade_violation</code>.</p>
+<p>The dynamic program optimizes the weighted objective only: settings with
+error budgets <code>q</code> or the minimax objective are refused
+(<code>unsupported_baseline_settings</code>); an <code>exact_G</code> larger than the number of
+exact-score blocks is refused (<code>exact_G_exceeds_blocks</code>). Typed Gaussian
+and mixture coefficients permit exact-count cuts within this fixed order,
+although their native joint problem constructor does not support exact-G.
+Direct <code><a href="postrank_probabilities.html">postrank_probabilities()</a></code> inputs are restricted to weighted
+at-most-G cuts, as well as weighted at-most-G native problems.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
+</h2>
+    <div class="dont-index"><p><code><a href="postrank_expected_rank.html">postrank_expected_rank()</a></code>, <code><a href="postrank_composite.html">postrank_composite()</a></code>, <code><a href="postrank_compare.html">postrank_compare()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pw</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_pairwise.html">postrank_pairwise</a></span><span class="op">(</span><span class="va">postrank_toy</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_settings.html">postrank_settings</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">.6</span>, need_B <span class="op">=</span> <span class="fl">.4</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.25</span>, G_max <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">er</span> <span class="op">&lt;-</span> <span class="fu">postrank_cuts</span><span class="op">(</span><span class="fu"><a href="postrank_expected_rank.html">postrank_expected_rank</a></span><span class="op">(</span><span class="va">pw</span>, <span class="va">s</span><span class="op">$</span><span class="va">weights</span><span class="op">)</span>, <span class="va">pw</span>, <span class="va">s</span>, direction <span class="op">=</span> <span class="st">"ascending"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">er</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    001 site-B site C </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      1      1      2 </span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

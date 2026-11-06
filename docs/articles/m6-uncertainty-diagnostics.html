@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Monte Carlo uncertainty and diagnostics • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Monte Carlo uncertainty and diagnostics">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-article">
+
+
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Monte Carlo uncertainty and diagnostics</h1>
+            
+      
+      <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/m6-uncertainty-diagnostics.Rmd" class="external-link"><code>vignettes/m6-uncertainty-diagnostics.Rmd</code></a></small>
+      <div class="d-none name"><code>m6-uncertainty-diagnostics.Rmd</code></div>
+    </div>
+
+    
+    
+<p>Posterior uncertainty, numerical approximation error and model
+adequacy refer to different aspects of an analysis. An accurately
+computed posterior may leave the ordering of two entities uncertain.
+Similarly, optimization can be accurate for coefficients that are
+themselves estimated imprecisely. We distinguish these sources of
+uncertainty when interpreting the available diagnostics.</p>
+<p>The calculations use two small bundled inputs: IID draws from a
+specified normal law and MCMC output with recorded chain history from a
+known two-state law. Both are simulation examples rather than empirical
+studies, and neither model fitting nor optimization is performed
+here.</p>
+<div class="section level2">
+<h2 id="start-with-one-direction-on-one-criterion">Pairwise Monte Carlo standard errors<a class="anchor" aria-label="anchor" href="#start-with-one-direction-on-one-criterion"></a>
+</h2>
+<p>For the claim that entity i has higher priority than j on criterion
+k, the directional-error probability is the posterior mean of
+<code>theta[i,k] &lt;= theta[j,k]</code>. A probability near one half
+describes uncertainty about that direction under the supplied law. A
+Monte Carlo standard error (MCSE) describes uncertainty in estimating
+the probability from a finite simulation. Increasing the simulation size
+can reduce MCSE without making the posterior direction any more
+certain.</p>
+<p>The object <code>postrank_toy</code> contains 32 IID whole-state
+draws for three fictional sites and two criteria. The following
+calculation selects the <code>need_A</code> comparison from
+<code>001</code> to <code>site-B</code>; the diagnostic therefore
+applies to this specified pair rather than to every pair.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joonho112/postrank" class="external-link">postrank</a></span><span class="op">)</span></span>
+<span><span class="va">pair</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>entity_i <span class="op">=</span> <span class="st">"001"</span>, entity_j <span class="op">=</span> <span class="st">"site-B"</span>,</span>
+<span>  criterion_id <span class="op">=</span> <span class="st">"need_A"</span><span class="op">)</span></span>
+<span><span class="va">iid_diagnostic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_diagnose.html">postrank_diagnose</a></span><span class="op">(</span><span class="va">postrank_toy</span>, pairs <span class="op">=</span> <span class="va">pair</span><span class="op">)</span></span>
+<span><span class="va">pair_summary</span> <span class="op">&lt;-</span> <span class="va">iid_diagnostic</span><span class="op">$</span><span class="va">summaries</span><span class="op">$</span><span class="va">pair_1</span></span>
+<span><span class="va">z_iid</span> <span class="op">&lt;-</span> <span class="va">iid_diagnostic</span><span class="op">$</span><span class="va">traces</span><span class="op">$</span><span class="va">pair_1</span><span class="op">$</span><span class="va">values</span></span>
+<span><span class="va">iid_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  Draws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">z_iid</span><span class="op">)</span>, Estimated_probability <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">z_iid</span><span class="op">)</span>,</span>
+<span>  MCSE <span class="op">=</span> <span class="va">pair_summary</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">mcse_mean</span><span class="op">$</span><span class="va">value</span>,</span>
+<span>  Direct_SD_over_sqrt_S <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">z_iid</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">z_iid</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">iid_table</span>, digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">Draws</th>
+<th align="right">Estimated_probability</th>
+<th align="right">MCSE</th>
+<th align="right">Direct_SD_over_sqrt_S</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">32</td>
+<td align="right">0.25</td>
+<td align="right">0.0778</td>
+<td align="right">0.0778</td>
+</tr></tbody>
+</table>
+<p>For IID output, the MCSE is the sample standard deviation divided by
+the square root of the number of retained states. For a binary trace
+this is <code>sqrt(p_hat * (1 - p_hat) / (S - 1))</code>. It estimates
+pointwise numerical precision and supplies neither a simultaneous
+interval over pairs nor a probability that the grade report is correct.
+The small draw count is used for illustration and is not a recommended
+simulation size.</p>
+<p>A posterior interval describes the target distribution under the
+model, whereas an interval for Monte Carlo error concerns the numerical
+estimate of a functional of that distribution. The distinction is
+developed in <a href="https://joonho112.github.io/postrank-theory-book/chapters/15-numerical-uncertainty.html#sec-monte-carlo-coefficients">Chapter
+15, “Monte Carlo error under a declared sampling law”</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="diagnose-the-loss-of-a-declared-report">Loss traces for a fixed report<a class="anchor" aria-label="anchor" href="#diagnose-the-loss-of-a-declared-report"></a>
+</h2>
+<p>For a fixed grade vector, <code><a href="../reference/postrank_diagnose.html">postrank_diagnose()</a></code> also forms
+criterion error and risk traces. With joint draws, it combines criterion
+losses <strong>within each same posterior state</strong> to obtain a
+weighted total-loss trace. This preserves their covariance, which
+generally precludes combining separate criterion MCSEs under an
+independence assumption.</p>
+<p>The next example uses <code>pr_toy_mcmc</code>, four independent
+chains of 512 iterations each, initialized from their stationary law.
+Its producer uses transition probabilities .012 from state 0 to state 1
+and .048 in reverse. Thus the stationary state-1 probability is .2, but
+successive states are strongly correlated. The data are stored chain by
+chain, with no warmup or thinning. These sampling properties are
+specified by the generator and cannot be inferred from an array without
+its chain records.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">law</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">pr_toy_mcmc</span>, <span class="st">"law"</span><span class="op">)</span></span>
+<span><span class="va">mcmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_draws.html">postrank_draws</a></span><span class="op">(</span><span class="va">pr_toy_mcmc</span>, regime <span class="op">=</span> <span class="st">"mcmc"</span>, chains <span class="op">=</span> <span class="fl">4L</span>,</span>
+<span>  warmup_per_chain <span class="op">=</span> <span class="fl">0L</span>, thin <span class="op">=</span> <span class="fl">1L</span>, declarations <span class="op">=</span> <span class="va">law</span><span class="op">$</span><span class="va">declarations</span><span class="op">)</span></span>
+<span><span class="va">grade</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">1L</span>, B <span class="op">=</span> <span class="fl">2L</span>, C <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span>
+<span><span class="va">settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>k1 <span class="op">=</span> <span class="fl">.6</span>, k2 <span class="op">=</span> <span class="fl">.4</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span></span>
+<span><span class="va">diagnostic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_diagnose.html">postrank_diagnose</a></span><span class="op">(</span><span class="va">mcmc</span>, grade <span class="op">=</span> <span class="va">grade</span>, settings <span class="op">=</span> <span class="va">settings</span>,</span>
+<span>  pairs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>entity_i <span class="op">=</span> <span class="st">"A"</span>, entity_j <span class="op">=</span> <span class="st">"B"</span>, criterion_id <span class="op">=</span> <span class="st">"k1"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">selected_summaries</span> <span class="op">&lt;-</span> <span class="va">diagnostic</span><span class="op">$</span><span class="va">summaries</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pair_1"</span>, <span class="st">"weighted_total_loss"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">diagnostic_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">selected_summaries</span>, <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Mean <span class="op">=</span> <span class="va">s</span><span class="op">$</span><span class="va">mean</span>, MCSE <span class="op">=</span> <span class="va">s</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">mcse_mean</span><span class="op">$</span><span class="va">value</span>,</span>
+<span>    ESS_mean <span class="op">=</span> <span class="va">s</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">ess_mean</span><span class="op">$</span><span class="va">value</span>,</span>
+<span>    Rhat <span class="op">=</span> <span class="va">s</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">rhat</span><span class="op">$</span><span class="va">value</span>,</span>
+<span>    ESS_tail <span class="op">=</span> <span class="va">s</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">ess_tail</span><span class="op">$</span><span class="va">value</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">diagnostic_table</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A above B: k1 error"</span>, <span class="st">"Fixed report: weighted loss"</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">diagnostic_table</span>, digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="41%">
+<col width="10%">
+<col width="10%">
+<col width="13%">
+<col width="10%">
+<col width="13%">
+</colgroup>
+<thead><tr class="header">
+<th align="left"></th>
+<th align="right">Mean</th>
+<th align="right">MCSE</th>
+<th align="right">ESS_mean</th>
+<th align="right">Rhat</th>
+<th align="right">ESS_tail</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">A above B: k1 error</td>
+<td align="right">0.1724</td>
+<td align="right">0.0576</td>
+<td align="right">42.9548</td>
+<td align="right">1.0905</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="left">Fixed report: weighted loss</td>
+<td align="right">0.2482</td>
+<td align="right">0.0384</td>
+<td align="right">42.9548</td>
+<td align="right">1.0905</td>
+<td align="right">NA</td>
+</tr>
+</tbody>
+</table>
+<p>The pair trace is exactly the state-1 indicator: its pooled mean is
+353/2048 = 0.1724, versus .2 under the known law. The fixed report’s
+loss is <code>2/15 + (2/3) * indicator</code>, so its exact expected
+loss is 4/15. Its estimated loss is 0.2482. The MCSE scales by 2/3 as
+well. This simple identity checks the diagnostic against the underlying
+states; it does not claim that this report is optimal.</p>
+<p>Criterion traces remain available separately as
+<code>diagnostic$summaries$criterion_risk_1</code> and
+<code>criterion_risk_2</code>. With criterionwise inputs, criterion
+diagnostics can be available while a joint total-loss MCSE is
+unavailable: separate blocks do not establish their simulation
+covariance. For minimax, the returned weighted total trace is auxiliary;
+it is not an implemented MCSE for the maximum of expected criterion
+risks.</p>
+</div>
+<div class="section level2">
+<h2 id="what-the-mcmc-metrics-actually-summarize">Interpretation of MCMC diagnostics<a class="anchor" aria-label="anchor" href="#what-the-mcmc-metrics-actually-summarize"></a>
+</h2>
+<p>For eligible equal-length chains the package calls
+<code><a href="https://rdrr.io/pkg/posterior/man/rhat.html" class="external-link">posterior::rhat</a></code>, <code>ess_bulk</code>,
+<code>ess_tail</code>, <code>ess_mean</code>, and
+<code>mcse_mean</code>. The installed <code>posterior</code> methods use
+split chains: R-hat combines rank-normalized and folded checks, bulk ESS
+concerns the rank-normalized distribution, and tail ESS uses the smaller
+of the .05 and .95 quantile ESS values. Mean ESS describes precision of
+the mean; <code>mcse_mean</code> uses the trace’s sample SD divided by
+its square root. These scalar diagnostics are not the multivariate
+determinant ESS described in <a href="https://joonho112.github.io/postrank-theory-book/chapters/15-numerical-uncertainty.html#sec-mcmc-output-analysis">Chapter
+15, “Multivariate output analysis and effective sample size”</a>.</p>
+<p>For this binary trace, tail diagnostics encounter degenerate quantile
+indicators. The table retains the resulting <code>NA</code>. Metric
+records include <code>available</code>, <code>unavailable_reason</code>,
+<code>result_kind</code>, warnings and the method; unavailable is not
+zero. Similarly, an observed constant trace can mean that a rare state
+has never been visited. Zero empirical variation is not proof of zero
+posterior probability or adequate exploration.</p>
+<p>The supplied history preserves original chain IDs and retained
+iteration numbers. Unequal chains keep every value in their pooled
+means, but the package does not calculate cross-chain MCSE, ESS or R-hat
+by truncating or padding them. One chain cannot establish
+independent-chain agreement. The package’s R-hat 1.01 and ESS
+100-per-chain guidelines flag potential limitations in exploration; they
+do not establish convergence or finite-sample coverage.</p>
+<p>In this run, R-hat is 1.0905, above 1.01. Mean and bulk ESS are both
+42.95, below the guideline of 400 across four chains. The three stored
+warnings concern chain exploration and mean precision and are available
+in <code>diagnostic$warnings</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pair_trace</span> <span class="op">&lt;-</span> <span class="va">diagnostic</span><span class="op">$</span><span class="va">traces</span><span class="op">$</span><span class="va">pair_1</span><span class="op">$</span><span class="va">values</span></span>
+<span><span class="va">chain_means</span> <span class="op">&lt;-</span> <span class="va">diagnostic</span><span class="op">$</span><span class="va">summaries</span><span class="op">$</span><span class="va">pair_1</span><span class="op">$</span><span class="va">chain_means</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Chain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">chain_means</span><span class="op">)</span>,</span>
+<span>  Estimated_probability <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">chain_means</span><span class="op">)</span><span class="op">)</span>, digits <span class="op">=</span> <span class="fl">4</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Chain</th>
+<th align="right">Estimated_probability</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">chain1</td>
+<td align="right">0.1426</td>
+</tr>
+<tr class="even">
+<td align="left">chain2</td>
+<td align="right">0.0859</td>
+</tr>
+<tr class="odd">
+<td align="left">chain3</td>
+<td align="right">0.2441</td>
+</tr>
+<tr class="even">
+<td align="left">chain4</td>
+<td align="right">0.2168</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>MCMC_MCSE <span class="op">=</span> <span class="va">diagnostic_table</span><span class="op">$</span><span class="va">MCSE</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
+<span>  Incorrect_IID_reference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">pair_trace</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">pair_trace</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;               MCMC_MCSE Incorrect_IID_reference </span></span>
+<span><span class="co">#&gt;             0.057642429             0.008348017</span></span></code></pre></div>
+<p>The IID reference is substantially smaller because it ignores serial
+dependence. Substituting an estimated ESS for S in an IID concentration
+inequality is not justified. The dependent-chain theorem in the book
+instead requires stationarity, reversibility and a justified full-chain
+spectral-gap bound. Neither an empirical ESS nor a chosen burn-in
+supplies these constants, and the implementation does not provide a
+general finite-sample certificate for MCMC output.</p>
+</div>
+<div class="section level2">
+<h2 id="a-fixed-action-and-a-selected-action-need-different-interpretations">Fixed and selected actions<a class="anchor" aria-label="anchor" href="#a-fixed-action-and-a-selected-action-need-different-interpretations"></a>
+</h2>
+<p>The grade above was supplied explicitly. When a <code>fit</code> is
+supplied instead, the diagnostic verifies its input and grade
+identities, uses its settings, and marks the summaries as descriptive
+after selection from the same draws. Pointwise MCSE for that realized
+grade does not automatically give coverage after searching for the best
+grade. Even an explicit <code>grade</code> declaration does not let the
+software verify how the analyst selected it.</p>
+<p>If every comparison is withheld, ordinary weighted loss is the
+constant <code>tau</code> at every state. There is then no loss
+variation to diagnose, although the latent targets may remain uncertain
+and chains may mix poorly. The object records
+<code>structural_constant_from_action</code>; conditional error ratios
+remain <code>NA</code> because N=0. Constant-action loss is different
+from an observed constant pair indicator.</p>
+<p>Probability-only inputs and supplied marginal means or intervals
+contain no recoverable simulation history. Chain records and MCSE
+therefore cannot be recovered from these inputs. Typed mixture
+diagnostics, when supported with genuine hyperstate history, describe
+integration of <strong>conditional expected risk</strong>, not latent
+target-loss dispersion. Fixed Gaussian or finite-mixture representations
+do not by themselves imply a Monte Carlo sample count. See <a href="m3-posterior-inputs.html">Posterior inputs</a> for those
+distinctions.</p>
+</div>
+<div class="section level2">
+<h2 id="sensitivity-and-cross-fitting-answer-narrower-questions">Sensitivity analysis and cross-fitting<a class="anchor" aria-label="anchor" href="#sensitivity-and-cross-fitting-answer-narrower-questions"></a>
+</h2>
+<p><code><a href="../reference/postrank_mc_fragility.html">postrank_mc_fragility()</a></code> compares the estimated weighted
+loss from disclosure in a pair’s better direction with the withholding
+cost. The absolute difference from <code>tau</code> is compared with a
+multiple of the MCSE of that direction’s weighted indicator. The grade
+report is chosen jointly, so a fragile pair need not change a grade.
+Screening and multiplier choices are reported. The default MCMC screen
+margin .1 is a computational screening rule and does not bound the
+omitted pairs.</p>
+<p>Stability requests in <code><a href="../reference/postrank_diagnose.html">postrank_diagnose()</a></code> run additional
+optimizations on declared prefixes, chain subsets or settings.
+Overlapping subsets are not independent replications. Changed grades can
+reflect numerical noise, policy changes, multiple optima or optimization
+gaps; unchanged grades do not prove convergence. The record keeps failed
+and no-incumbent attempts alongside successful ones. These solves are
+optional and are not run in this article.</p>
+<p><code><a href="../reference/postrank_crossfit.html">postrank_crossfit()</a></code> instead selects a grade on each of
+two folds and evaluates it on the other. IID inputs use stored halves;
+MCMC uses groups of whole chains, or halves when only one chain exists.
+With independent target-IID folds and loss settings fixed independently
+of evaluation draws, out-of-fold <strong>linear weighted risk</strong>
+is conditionally unbiased for the training fold’s selected grade. Its
+difference from in-fold risk concerns that fold grade, not the optimism
+of the full-data grade.</p>
+<p>The argument does not extend to the nonlinear maximum used by
+minimax. For MCMC, splitting whole chains alone establishes neither
+independence nor stationarity. Cross-fitting reuses the supplied fitted
+model; it is not refitting on held-out observations or testing external
+calibration. If both folds choose the same grade, signed differences
+cancel, so zero mean optimism need not mean precision;
+<code>mean_abs_optimism</code> retains scale. The fold statuses identify
+how many evaluations contributed to the summary; a result from one
+available fold supplies only one evaluation. Neither summary corrects
+the full-data risk.</p>
+</div>
+<div class="section level2">
+<h2 id="conditional-iid-bounds-cover-a-different-calculation">Conditional IID coefficient bounds<a class="anchor" aria-label="anchor" href="#conditional-iid-bounds-cover-a-different-calculation"></a>
+</h2>
+<p>For fixed-size IID sampling, a simultaneous coefficient envelope can
+cover an action selected using those same coefficients. The package’s
+tie-free setting makes reverse directions complementary. With
+<code>M = choose(n, 2)</code> and positive prespecified allocations
+summing to at most alpha, its criterion radius is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ε</mi><mi>k</mi></msub><mo>=</mo><mrow><mi mathvariant="normal">min</mi><mo>⁡</mo></mrow><mrow><mo stretchy="true" form="prefix">{</mo><mn>1</mn><mo>,</mo><msqrt><mfrac><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mi>M</mi><mi>/</mi><msub><mi>α</mi><mi>k</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mn>2</mn><msub><mi>S</mi><mi>k</mi></msub></mrow></mfrac></msqrt><mo stretchy="true" form="postfix">}</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\varepsilon_k = \min\left\{1,
+ \sqrt{\frac{\log(2M/\alpha_k)}{2S_k}}\right\}.
+</annotation></semantics></math></p>
+<p>The broader equality-permitting theorem in the book counts both
+ordered directions and uses <code>4M</code>, not <code>2M</code>. Its
+scope must not be inferred from the runtime’s smaller factor. The
+separate equality-neutral mode does not currently supply these
+diagnostic or bound helpers.</p>
+<p>The bundled normal generator prespecified S=32 and the following
+error allocations before sampling. These design declarations are
+therefore available for this example:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">bounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_iid_bounds.html">postrank_iid_bounds</a></span><span class="op">(</span><span class="va">postrank_toy</span>, alpha <span class="op">=</span> <span class="fl">.05</span>,</span>
+<span>  alpha_by_criterion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">.025</span>, need_B <span class="op">=</span> <span class="fl">.025</span><span class="op">)</span>,</span>
+<span>  design <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sample_sizes_fixed_before_sampling <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    alpha_fixed_before_sampling <span class="op">=</span> <span class="cn">TRUE</span>, adaptive_stopping <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    planned_sample_sizes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">32L</span>, need_B <span class="op">=</span> <span class="fl">32L</span><span class="op">)</span>,</span>
+<span>    declaration_note <span class="op">=</span> <span class="st">"Prespecified in the bundled synthetic Normal generator"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Criterion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">bounds</span><span class="op">$</span><span class="va">epsilon</span><span class="op">)</span>,</span>
+<span>  Radius <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">bounds</span><span class="op">$</span><span class="va">epsilon</span><span class="op">)</span><span class="op">)</span>, digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Criterion</th>
+<th align="right">Radius</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">need_A</td>
+<td align="right">0.2926</td>
+</tr>
+<tr class="even">
+<td align="left">need_B</td>
+<td align="right">0.2926</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">bounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"guarantee_status"</span>, <span class="st">"guarantee_issued"</span>, <span class="st">"numerically_verified"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $guarantee_status</span></span>
+<span><span class="co">#&gt; [1] "conditional_bound"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $guarantee_issued</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $numerically_verified</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span></code></pre></div>
+<p>The probability statement is over repeated fixed-size Monte Carlo
+runs conditional on the supplied law and observed information. It is not
+a posterior probability that a grade is right. Draws must be independent
+across whole states within each criterion; pairs and criteria need not
+be independent of one another. Sampling sizes and error allocations must
+be fixed in advance, with no adaptive stopping. A declaration records
+these assumptions; it does not verify them. The result is a floating
+reference <code>conditional_bound</code>; formal guarantee and
+numerical-verification flags remain false.</p>
+<p>On such a coefficient event, write
+<code>delta_w = sum(w * epsilon)</code>. Risk error for a fixed action
+is at most <code>(N/M) * delta_w</code>. For the <strong>same fixed
+action family</strong>, an empirical optimizer with a valid
+whole-problem absolute risk gap eta has supplied-law regret at most
+<code>2 * delta_w + eta</code>. <code><a href="../reference/postrank_regret_bound.html">postrank_regret_bound()</a></code>
+checks eligible weighted fits, matching inputs and usable gap
+information; it does not turn a candidate-only, raw or relative gap into
+that eta. The bound concerns risk, not agreement of grade vectors. It
+excludes empirically protected problems from this common-family
+calculation.</p>
+<p>Protection needs a separate construction: inner rows use
+<code>E_hat_k &lt;= (q_k - epsilon_k) * N</code>, outer rows use the
+plus sign. The signed thresholds are not clipped to zero. A negative
+inner threshold can exclude all positive disclosure without proving the
+intended protected problem infeasible. Zero-weight protected criteria
+still need their own radii. Protection analysis combines a validated
+inner action with a lower bound for the <strong>whole outer
+problem</strong>, not the inner lower bound or outer incumbent. These
+additional optimizations are not run in this article. The helpers retain
+diagnostic rather than formal certification flags. Full derivations and
+the current implementation distinction appear in <a href="https://joonho112.github.io/postrank-theory-book/chapters/15-numerical-uncertainty.html#sec-coefficient-error">Chapter
+15</a> and <a href="https://joonho112.github.io/postrank-theory-book/appendices/D-package-correspondence.html#conditional-numerical-helpers">Appendix
+D</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="numerical-accuracy-leaves-model-adequacy-to-be-assessed">Numerical accuracy and model adequacy<a class="anchor" aria-label="anchor" href="#numerical-accuracy-leaves-model-adequacy-to-be-assessed"></a>
+</h2>
+<p>Solver gaps provide numerical bounds on suboptimality for the
+declared problem. MCSEs and coefficient envelopes quantify aspects of
+its approximation to the supplied law. These measures do not assess the
+difference between that law and an external population: greater
+numerical precision can coexist with model misspecification. The
+distinction is examined in <a href="https://joonho112.github.io/postrank-theory-book/chapters/18-misspecification-calibration.html#sec-self-reported-calibration">Chapter
+18, “Self-reported error and calibration”</a>.</p>
+<p>In plug-in empirical Bayes, posterior calculations condition on the
+fitted mixing distribution, often written <code>G_hat</code>. This is
+not the grade cap G. More posterior draws with <code>G_hat</code> fixed
+do not include uncertainty from estimating it. Hierarchical integration
+propagates the uncertainty specified by that model, but does not
+establish its external calibration. A repeated-data evaluation of a
+fitting procedure must repeat estimation, transformations and
+data-dependent settings, rather than freeze them across datasets.</p>
+<p>Simulation results concern their stated generating laws and fitting
+rules. Independent datasets, not pairs or posterior arms from the same
+dataset, supply independent replications. Such results do not furnish a
+universal bias correction or make small reported risks calibrated in a
+new application. Diagnostics inform numerical work; assessment of
+targets, measurement and model adequacy requires the scientific evidence
+described in <a href="https://joonho112.github.io/postrank-theory-book/chapters/18-misspecification-calibration.html#sec-producer-model-error">Chapter
+18, “Hyperparameters, precision and represented uncertainty”</a>.</p>
+<p><a href="m5-computing-grades.html">Computing grades</a> describes
+numerical statuses and gaps. <a href="m4-ties-and-withholding.html">True
+ties and withheld comparisons</a> distinguishes shared grades from
+latent equality.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

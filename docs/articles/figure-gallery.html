@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>A gallery of the seven result figures • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="A gallery of the seven result figures">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-article">
+
+
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>A gallery of the seven result figures</h1>
+            
+      
+      <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/figure-gallery.Rmd" class="external-link"><code>vignettes/figure-gallery.Rmd</code></a></small>
+      <div class="d-none name"><code>figure-gallery.Rmd</code></div>
+    </div>
+
+    
+    
+<p>Seven graphical summaries describe the posterior information, grading
+decision and associated losses. Each plotting function returns a
+<code>ggplot</code> object based on prepared information, without
+further optimization, posterior estimation or calculation of comparison
+probabilities. The initial examples use the specified normal
+distributions for six sites in <a href="a1-getting-started.html">Getting
+started</a>; a separate comparison below uses the additional 30-site
+synthetic example.</p>
+<p>The distribution of score A is unchanged when score B is included.
+Both scores have standard deviation 0.2, sites and criteria are
+independent, and higher values have higher priority. Grade 1 is highest.
+These sites have no empirical interpretation. A shared grade withholds a
+comparison; it does not assert that the true scores coincide.</p>
+<div class="section level2">
+<h2 id="where-are-the-uncertain-scores-and-chosen-grades">1. Marginal posterior intervals and grades<a class="anchor" aria-label="anchor" href="#where-are-the-uncertain-scores-and-chosen-grades"></a>
+</h2>
+<p>The report card displays marginal posterior intervals alongside the
+selected grades. For one criterion, sites are represented on a common
+score axis. The intervals describe uncertainty about the targets; they
+do not represent probabilities of grade membership.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_report_card.html">postrank_plot_report_card</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span></code></pre></div>
+<p><a href="figure-gallery_files/figure-html/gallery-card-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Score-A marginal intervals for sites A through F, colored by the three chosen grades." target="_blank" rel="noopener"><img src="figure-gallery_files/figure-html/gallery-card-1.png" class="r-plt" alt="Score-A marginal intervals for sites A through F, colored by the three chosen grades." width="100%"></a><span class="figure-full-size-link d-block small"><a href="figure-gallery_files/figure-html/gallery-card-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Score-A marginal intervals for sites A through F, colored by the three chosen grades.">Open full-size figure</a></span></p>
+<p>For several criteria, separate panels accommodate differences in
+units. Display labels are separate from the stable entity identifiers.
+The default row limit is 30; selection is spread across grades and
+disclosed in the subtitle. Explicit <code>entities</code> can select a
+larger report. Ordering by the posterior mean requires a single
+displayed criterion or an explicit <code>order_by</code> naming the
+criterion that defines the order.</p>
+</div>
+<div class="section level2">
+<h2 id="which-comparisons-did-the-report-disclose">2. Disclosed and withheld comparisons<a class="anchor" aria-label="anchor" href="#which-comparisons-did-the-report-disclose"></a>
+</h2>
+<p>The relations plot represents the grading decision, with colour
+indicating the disclosed direction or withholding of each comparison.
+The cells encode actions rather than posterior probabilities. In
+particular, a withheld comparison does not imply a posterior probability
+of one half.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_relations.html">postrank_plot_relations</a></span><span class="op">(</span><span class="va">two</span><span class="op">)</span></span></code></pre></div>
+<p><a href="figure-gallery_files/figure-html/gallery-relations-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Pair relations in the common two-score grade: A through D share a grade, followed by E and F." target="_blank" rel="noopener"><img src="figure-gallery_files/figure-html/gallery-relations-1.png" class="r-plt" alt="Pair relations in the common two-score grade: A through D share a grade, followed by E and F." width="100%"></a><span class="figure-full-size-link d-block small"><a href="figure-gallery_files/figure-html/gallery-relations-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Pair relations in the common two-score grade: A through D share a grade, followed by E and F.">Open full-size figure</a></span></p>
+<p>Only order and equality of grade labels matter. Replacing occupied
+labels by other increasing integers preserves every relation. The same
+plot is available for a prepared fit or baseline, including an
+all-withheld action. When no validated incumbent is available, the
+display reports the computational status.</p>
+</div>
+<div class="section level2">
+<h2 id="how-does-each-criterion-contribute">3. Criterion-specific errors and losses<a class="anchor" aria-label="anchor" href="#how-does-each-criterion-contribute"></a>
+</h2>
+<p>Criterion profiles report posterior expected errors per disclosed
+pair, expected errors per all pairs, or posterior loss. The default is
+expected errors per disclosed pair; <code>show = "E_over_M"</code> and
+<code>show = "risk"</code> select the other quantities. Equal loss
+weights need not produce equal criterion-specific errors under the
+common grading.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_profile.html">postrank_plot_profile</a></span><span class="op">(</span><span class="va">two</span><span class="op">)</span></span></code></pre></div>
+<p><a href="figure-gallery_files/figure-html/gallery-profile-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Expected wrong-direction errors per disclosed pair by criterion for the common two-score action." target="_blank" rel="noopener"><img src="figure-gallery_files/figure-html/gallery-profile-1.png" class="r-plt" alt="Expected wrong-direction errors per disclosed pair by criterion for the common two-score action." width="100%"></a><span class="figure-full-size-link d-block small"><a href="figure-gallery_files/figure-html/gallery-profile-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Expected wrong-direction errors per disclosed pair by criterion for the common two-score action.">Open full-size figure</a></span></p>
+<p><code>E/N</code> is undefined when nothing is disclosed and remains
+unavailable; <code>E/M</code> can then be zero. These quantities are
+ratios of posterior expected counts and do not estimate classification
+accuracy in an external sample. Budget lines appear only when
+corresponding budgets were declared. Zero-weight criteria remain visible
+with their weight identified.</p>
+</div>
+<div class="section level2">
+<h2 id="what-probabilities-were-supplied-to-the-decision">4. Directional-error probabilities<a class="anchor" aria-label="anchor" href="#what-probabilities-were-supplied-to-the-decision"></a>
+</h2>
+<p>The pairwise plot describes the input to the grading problem. Each
+cell contains the stored probability of an incorrect declaration placing
+the row entity above the column entity. These probabilities are
+calculated before optimization.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_pairwise.html">postrank_plot_pairwise</a></span><span class="op">(</span><span class="va">two</span>, ncol <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></code></pre></div>
+<p><a href="figure-gallery_files/figure-html/gallery-pairwise-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Directional-error probability matrices for score A and score B; gray diagonal cells are unavailable self-comparisons." target="_blank" rel="noopener"><img src="figure-gallery_files/figure-html/gallery-pairwise-1.png" class="r-plt" alt="Directional-error probability matrices for score A and score B; gray diagonal cells are unavailable self-comparisons." width="100%"></a><span class="figure-full-size-link d-block small"><a href="figure-gallery_files/figure-html/gallery-pairwise-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Directional-error probability matrices for score A and score B; gray diagonal cells are unavailable self-comparisons.">Open full-size figure</a></span></p>
+<p>Ordinary tie-free coefficients use the event
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>≤</mo><msub><mi>θ</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>∣</mo><mi>Y</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(\theta_{i,k}\leq\theta_{j,k}\mid Y)</annotation></semantics></math>.
+Self-comparisons, shown in grey, are <code>NA</code> rather than
+zero-error comparisons. By default, the display selects at most 20
+entities and reports the selection; all six sites are included here. The
+function accepts prepared ordinary coefficients, including supported
+probability inputs. Raw draws and the separate equality-neutral domain
+are outside its input scope.</p>
+</div>
+<div class="section level2">
+<h2 id="how-do-grading-rules-compare-under-the-same-loss">5. Comparison of grading rules<a class="anchor" aria-label="anchor" href="#how-do-grading-rules-compare-under-the-same-loss"></a>
+</h2>
+<p>This example uses 30 synthetic sites on three criteria, with
+<code>weights = c(poverty = .5, frl = .25, snap = .25)</code>,
+<code>tau = .35</code> and at most four grades. The names are
+illustrative and do not identify observed poverty or school eligibility
+measures. The joint and fixed-order baseline actions are evaluated under
+this one posterior and loss.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_compare.html">postrank_plot_compare</a></span><span class="op">(</span><span class="va">comparison</span>, ncol <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></code></pre></div>
+<p><a href="figure-gallery_files/figure-html/gallery-comparison-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Risk, disclosure and grade-count panels comparing the prepared joint report with fixed-order baselines on the same 30-site posterior and loss." target="_blank" rel="noopener"><img src="figure-gallery_files/figure-html/gallery-comparison-1.png" class="r-plt" alt="Risk, disclosure and grade-count panels comparing the prepared joint report with fixed-order baselines on the same 30-site posterior and loss." width="100%"></a><span class="figure-full-size-link d-block small"><a href="figure-gallery_files/figure-html/gallery-comparison-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Risk, disclosure and grade-count panels comparing the prepared joint report with fixed-order baselines on the same 30-site posterior and loss.">Open full-size figure</a></span></p>
+<p>The method labels include computational status, optimization scope
+and gap. A fixed-order optimum applies to contiguous cuts of that score
+order, rather than every grading. A supplied action outside the
+reference constraints is marked accordingly; its risk can still be
+scored but is not a minimum over the same feasible family. The relations
+view, <code>view = "relations"</code>, counts newly disclosed, newly
+withheld and reversed comparisons against the reference.</p>
+</div>
+<div class="section level2">
+<h2 id="what-changes-when-withholding-costs-more">6. Sensitivity to the withholding cost<a class="anchor" aria-label="anchor" href="#what-changes-when-withholding-costs-more"></a>
+</h2>
+<p>For the six-site example with equal weights on the two scores, the
+prepared frontier varies tau through .05, .1, .2, .3 and .4. The inputs
+and the family of gradings with at most three grades are held fixed.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_frontier.html">postrank_plot_frontier</a></span><span class="op">(</span><span class="va">frontier</span><span class="op">)</span></span></code></pre></div>
+<p><a href="figure-gallery_files/figure-html/gallery-frontier-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Disclosure and error summaries at five withholding costs for the six-site common grade." target="_blank" rel="noopener"><img src="figure-gallery_files/figure-html/gallery-frontier-1.png" class="r-plt" alt="Disclosure and error summaries at five withholding costs for the six-site common grade." width="100%"></a><span class="figure-full-size-link d-block small"><a href="figure-gallery_files/figure-html/gallery-frontier-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Disclosure and error summaries at five withholding costs for the six-site common grade.">Open full-size figure</a></span></p>
+<p>For exact optima in a fixed family, disclosure is nondecreasing in
+tau. For numerical solutions, interpretation also depends on the stored
+optimization gaps. A sparse grid describes only part of the frontier.
+Missing actions appear as breaks in the plotted path. Risks at different
+tau values use different losses. Preparing a new frontier calls an
+optimizer; displaying this stored one does not.</p>
+</div>
+<div class="section level2">
+<h2 id="what-does-each-criterion-give-up-for-a-common-grade">7. Criterion-specific costs of a common grading<a class="anchor" aria-label="anchor" href="#what-does-each-criterion-give-up-for-a-common-grade"></a>
+</h2>
+<p>The commonality view compares each criterion’s risk under the common
+report with its own best risk under the same tau and grade-count
+settings. Preparing this object solves an own-criterion problem for each
+criterion.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_commonality.html">postrank_plot_commonality</a></span><span class="op">(</span><span class="va">commonality</span><span class="op">)</span></span></code></pre></div>
+<p><a href="figure-gallery_files/figure-html/gallery-commonality-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Criterion-specific commonality costs with intervals determined by numerical optimization bounds." target="_blank" rel="noopener"><img src="figure-gallery_files/figure-html/gallery-commonality-1.png" class="r-plt" alt="Criterion-specific commonality costs with intervals determined by numerical optimization bounds." width="100%"></a><span class="figure-full-size-link d-block small"><a href="figure-gallery_files/figure-html/gallery-commonality-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Criterion-specific commonality costs with intervals determined by numerical optimization bounds.">Open full-size figure</a></span></p>
+<p>The interval is determined by numerical bounds for the own-criterion
+problem and does not quantify posterior uncertainty about the cost.
+Incomplete optimization may therefore yield a range of possible costs.
+When the common problem includes protection constraints, the
+own-criterion comparison family depends on whether these constraints are
+retained. Their treatment must therefore be reported with the result.
+The tutorial has no such budgets.</p>
+</div>
+<div class="section level2">
+<h2 id="inspect-and-export">Underlying tables and figure export<a class="anchor" aria-label="anchor" href="#inspect-and-export"></a>
+</h2>
+<p>The full underlying table is available through
+<code>postrank_plot_data(two, "profile")</code> or another supported
+component. Display row limits and labels do not change those tables.
+<code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggplot2::ggsave()</a></code> exports the returned plots; optional
+<code>svglite</code> provides SVG output. See <a href="a7-figures-sensitivity.html">Figures and sensitivity analysis</a>
+for dimensions and explicit recomputation examples, and <a href="a6-reading-exporting-results.html">Reading and exporting
+results</a> for tables and reports. No public plotting functions are
+provided for the additional reserved figures in this candidate.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

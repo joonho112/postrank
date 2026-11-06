@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Economic opportunity in Alabama: income and incarceration • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Economic opportunity in Alabama: income and incarceration">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-article">
+
+
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Economic opportunity in Alabama: income and incarceration</h1>
+            
+      
+      <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/a4-alabama-opportunity.Rmd" class="external-link"><code>vignettes/a4-alabama-opportunity.Rmd</code></a></small>
+      <div class="d-none name"><code>a4-alabama-opportunity.Rmd</code></div>
+    </div>
+
+    
+    
+<p>A common ordering of counties may require comparisons across outcomes
+whose directions of association differ. We consider income and
+incarceration for all 67 Alabama counties, accounting for posterior
+uncertainty in each outcome. The analysis examines the comparisons
+disclosed by a common grading and evaluates that grading alongside
+separate outcome-specific reports.</p>
+<p>The targets concern historical outcomes of children from families
+with low parental income. Higher priority corresponds to higher income
+and lower incarceration, rather than greater need for funding. Grade 1
+is the most favorable group under these directions. Comparisons within a
+grade are withheld without an assertion that county outcomes are
+equal.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joonho112/postrank" class="external-link">postrank</a></span><span class="op">)</span></span>
+<span><span class="va">alabama</span> <span class="op">&lt;-</span> <span class="va">pr_case_alabama</span></span></code></pre></div>
+<p>The results use a prepared HiGHS analysis of the supplied input.
+Rendering the article requires neither model fitting nor optimization.
+An optional call specifies recomputation when HiGHS is available.</p>
+<div class="section level2">
+<h2 id="whose-outcomes-are-being-compared">Population and outcomes<a class="anchor" aria-label="anchor" href="#whose-outcomes-are-being-compared"></a>
+</h2>
+<p>The <a href="https://doi.org/10.7910/DVN/NKCQM1" class="external-link">Opportunity Atlas
+replication data</a> describe children born in 1978–1983, with outcomes
+evaluated at the 25th percentile of parental income and pooled across
+race and gender. The geography uses 2010 county identifiers. All 67
+Alabama counties have both published estimates and positive standard
+errors, so none is omitted from this analysis.</p>
+<p>The two outcomes refer to different dates. Income is the child’s
+household income rank, based on income averaged over 2014–2015.
+Incarceration is the probability of residing in a correctional facility
+on April 1, 2010. It is a snapshot, rather than lifetime incarceration
+or current crime. The underlying variable definitions are described in
+the <a href="https://opportunityinsights.org/wp-content/uploads/2019/07/Codebook-for-Table-2.pdf" class="external-link">county
+data codebook</a>. These historical conditional outcomes do not identify
+the causal effect of growing up in a particular county or of changing a
+policy today.</p>
+<p>The package retains the published estimates, standard errors and
+county names. Income ranks are expressed in percentile points, and
+incarceration probabilities in percent with standard errors in
+percentage points. The following table contains the observations
+entering the model, before posterior estimation:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">show</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Baldwin County"</span>, <span class="st">"Coosa County"</span>, <span class="st">"Crenshaw County"</span>,</span>
+<span>  <span class="st">"Russell County"</span><span class="op">)</span>, <span class="va">alabama</span><span class="op">$</span><span class="va">units</span><span class="op">$</span><span class="va">county_name</span><span class="op">)</span></span>
+<span><span class="va">observed</span> <span class="op">&lt;-</span> <span class="va">alabama</span><span class="op">$</span><span class="va">units</span><span class="op">[</span><span class="va">show</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"county_name"</span>, <span class="st">"income_estimate_points"</span>,</span>
+<span>  <span class="st">"income_se_points"</span>, <span class="st">"incarceration_estimate_points"</span>,</span>
+<span>  <span class="st">"incarceration_se_points"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">observed</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span>, digits <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"County"</span>, <span class="st">"Income rank"</span>, <span class="st">"Income SE"</span>,</span>
+<span>    <span class="st">"Incarceration (%)"</span>, <span class="st">"Incarceration SE"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="21%">
+<col width="16%">
+<col width="13%">
+<col width="24%">
+<col width="23%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">County</th>
+<th align="right">Income rank</th>
+<th align="right">Income SE</th>
+<th align="right">Incarceration (%)</th>
+<th align="right">Incarceration SE</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Baldwin County</td>
+<td align="right">38.88</td>
+<td align="right">0.36</td>
+<td align="right">2.26</td>
+<td align="right">0.25</td>
+</tr>
+<tr class="even">
+<td align="left">Coosa County</td>
+<td align="right">35.27</td>
+<td align="right">0.96</td>
+<td align="right">5.45</td>
+<td align="right">1.13</td>
+</tr>
+<tr class="odd">
+<td align="left">Crenshaw County</td>
+<td align="right">40.95</td>
+<td align="right">1.01</td>
+<td align="right">0.42</td>
+<td align="right">0.14</td>
+</tr>
+<tr class="even">
+<td align="left">Russell County</td>
+<td align="right">33.12</td>
+<td align="right">0.37</td>
+<td align="right">4.49</td>
+<td align="right">0.44</td>
+</tr>
+</tbody>
+</table>
+<p>The published standard errors account for sampling uncertainty and
+privacy noise. They enter the model once, without an additional privacy
+variance. The population-count column is descriptive; it serves neither
+as a binomial denominator nor as a weight in the grading loss.</p>
+</div>
+<div class="section level2">
+<h2 id="from-published-estimates-to-posterior-comparisons">From published estimates to posterior comparisons<a class="anchor" aria-label="anchor" href="#from-published-estimates-to-posterior-comparisons"></a>
+</h2>
+<p>The prepared analysis fitted each outcome separately. Its observation
+model treats a published estimate as Gaussian around a latent county
+mean, with the published standard error. A logistic-normal model
+partially pools those latent means across Alabama counties. The latent
+means lie between zero and one on the original fraction scale; the noisy
+observations are not clipped to that range.</p>
+<p>On the original fraction scale, the intercept prior is centered at
+.40 for income and .03 for incarceration; its logit-scale standard
+deviation is 1.5. The between-county logit standard deviation has a
+half-normal prior with scale 1. Those choices and the Alabama-only
+pooling population are part of the interpretation of the resulting
+uncertainty. The supplied probabilities are conditional on this model
+and these observations.</p>
+<p>For grading, the income target is 100 times the latent income
+fraction; the incarceration target is minus 100 times the latent
+incarceration probability. Thus a target of −1 is more favorable than −4
+on the incarceration panel. Larger values therefore receive higher
+priority for both oriented targets.</p>
+<p><code>alabama$input</code> contains estimated probabilities of a
+wrong-direction comparison for every pair and each criterion, together
+with marginal means and 95% equal-tail posterior intervals for these
+same targets. The probabilities came from the selected numerical pool A.
+The original within-criterion draws retained dependence among counties,
+including dependence induced by shared model parameters.</p>
+<p>Separate criterion fits suffice for the weighted sum of expected
+losses, but do not identify the posterior probability of simultaneous
+improvement in both outcomes. The compact input contains probability
+tables and marginal summaries without chains, effective sample sizes or
+information for new Monte Carlo diagnostics. Report cards therefore
+require the supplied interval level explicitly; other interval levels
+cannot be recovered from these summaries.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">posterior_means</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_posterior_means.html">postrank_posterior_means</a></span><span class="op">(</span><span class="va">alabama</span><span class="op">$</span><span class="va">input</span>, level <span class="op">=</span> <span class="fl">.95</span><span class="op">)</span></span>
+<span><span class="va">posterior_means</span><span class="op">[</span><span class="va">show</span>, <span class="op">]</span></span>
+<span><span class="co">#&gt;        criterion</span></span>
+<span><span class="co">#&gt; entity    income incarceration</span></span>
+<span><span class="co">#&gt;   01003 38.84718    -2.2332325</span></span>
+<span><span class="co">#&gt;   01037 35.52763    -3.8426327</span></span>
+<span><span class="co">#&gt;   01041 40.39833    -0.6706353</span></span>
+<span><span class="co">#&gt;   01113 33.21921    -4.2114555</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="choose-the-question-for-the-common-report">Loss for the common grading<a class="anchor" aria-label="anchor" href="#choose-the-question-for-the-common-report"></a>
+</h2>
+<p>The analysis assigns equal weights to income and incarceration,
+permits at most five grades and sets the loss for withholding a pair to
+.20:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_settings.html">postrank_settings</a></span><span class="op">(</span></span>
+<span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>income <span class="op">=</span> <span class="fl">.5</span>, incarceration <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span>,</span>
+<span>  tau <span class="op">=</span> <span class="fl">.20</span>, G_max <span class="op">=</span> <span class="fl">5L</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>For each pair assigned different grades, the loss uses the weighted
+posterior probability that its announced direction is wrong. A pair in
+the same grade contributes <code>tau</code>. The reported risk averages
+these costs over all county pairs. Equal weights here give equal weight
+to the two error probabilities; they do not add income points to
+incarceration percentage points. Each county pair has equal weight.</p>
+<p>These settings express illustrative preferences rather than estimates
+from the Atlas. Increasing the withholding cost increases the loss
+assigned to an unordered comparison. The five-grade cap constrains the
+complete report while allowing solutions with fewer groups.</p>
+<p>The following optional calculation uses the settings of the prepared
+result and is not executed during article rendering:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">common</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank.html">postrank</a></span><span class="op">(</span></span>
+<span>  <span class="va">alabama</span><span class="op">$</span><span class="va">input</span>, settings <span class="op">=</span> <span class="va">settings</span>, level <span class="op">=</span> <span class="fl">.95</span>,</span>
+<span>  backend <span class="op">=</span> <span class="st">"highs"</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="../reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">30</span>, threads <span class="op">=</span> <span class="fl">1L</span>, seed <span class="op">=</span> <span class="fl">1304L</span><span class="op">)</span>,</span>
+<span>  fragility <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">common</span></span>
+<span><span class="co">#&gt; &lt;postrank_analysis&gt;  67 entities in 5 grades (sizes 1 / 31 / 32 / 1 / 2)</span></span>
+<span><span class="co">#&gt;   2 criteria: income, incarceration.</span></span>
+<span><span class="co">#&gt;   Posterior loss: 0.1504.</span></span>
+<span><span class="co">#&gt;   Disclosed 1249 of 2211 pairs (56.5%); withheld 962.</span></span>
+<span><span class="co">#&gt;   Expected error among disclosed pairs: income 0.052; incarceration 0.172.</span></span>
+<span><span class="co">#&gt;   Solver: Optimal within solver tolerances.</span></span>
+<span><span class="co">#&gt;   Optimization gap: 1.11e-16; requested absolute gap 1e-08.</span></span>
+<span><span class="co">#&gt;   Prepared: report card.</span></span>
+<span><span class="co">#&gt;   Grade 1 has highest priority; a shared grade withholds the comparison.</span></span>
+<span><span class="co">#&gt;   67 entities; membership in get_grades(x)</span></span>
+<span><span class="co">#&gt;   i summary(x) explains the loss, settings and bounds; get_grades(x) returns</span></span>
+<span><span class="co">#&gt;     all grades.</span></span></code></pre></div>
+<p>The common report occupies 5 grades, orders 1,249 of 2,211 county
+pairs (56.5%), and withholds the remaining 962 pairs. Its expected loss
+is 0.150394, compared with .20 for withholding every pair. The groups
+are uneven:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">grades</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">common</span><span class="op">)</span></span>
+<span><span class="va">grade_sizes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">grades</span><span class="op">)</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">grade_sizes</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Grade"</span>, <span class="st">"Counties"</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">grade_sizes</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Grade</th>
+<th align="right">Counties</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="right">31</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="right">32</td>
+</tr>
+<tr class="even">
+<td align="left">4</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">5</td>
+<td align="right">2</td>
+</tr>
+</tbody>
+</table>
+<p>The large middle grade reflects the selected loss and grade cap,
+which allow many within-group comparisons to remain withheld. Its
+membership has no interpretation as equality of county outcomes. The two
+outcomes can also support different comparison directions.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">profile</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_profile.html">get_profile</a></span><span class="op">(</span><span class="va">common</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">profile</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion"</span>, <span class="st">"E"</span>, <span class="st">"E_over_N"</span>, <span class="st">"risk"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">4</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Criterion"</span>, <span class="st">"Expected wrong directions"</span>,</span>
+<span>    <span class="st">"Errors per ordered pair"</span>, <span class="st">"Criterion loss"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="17%">
+<col width="32%">
+<col width="30%">
+<col width="18%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Criterion</th>
+<th align="right">Expected wrong directions</th>
+<th align="right">Errors per ordered pair</th>
+<th align="right">Criterion loss</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">income</td>
+<td align="right">64.9662</td>
+<td align="right">0.0520</td>
+<td align="right">0.1164</td>
+</tr>
+<tr class="even">
+<td align="left">incarceration</td>
+<td align="right">215.2747</td>
+<td align="right">0.1724</td>
+<td align="right">0.1844</td>
+</tr>
+</tbody>
+</table>
+<p>The denominator of the third column is the 1,249 ordered pairs. The
+income error rate is 5.2%, while incarceration’s is 17.2%. Equal loss
+weights do not imply equal expected error rates. The final column
+includes the cost of withheld pairs and therefore differs from the
+expected error rate among ordered pairs.</p>
+<p>The prepared solve records optimal status and an absolute
+optimization gap of 1.11e-16. That gap compares a feasible grading’s
+loss with a numerical lower bound for the supplied pool-A probabilities.
+It does not measure posterior uncertainty, Monte Carlo error in those
+probabilities, or the model’s accuracy for the population.</p>
+</div>
+<div class="section level2">
+<h2 id="read-counties-within-the-common-grades">County posterior summaries and grades<a class="anchor" aria-label="anchor" href="#read-counties-within-the-common-grades"></a>
+</h2>
+<p>The figure displays 12 counties distributed across all five grades,
+using county names and the original units after the stated sign change.
+This selection concerns presentation only; all 67 counties enter the
+analysis. Setting <code>max_rows = NULL</code> includes every county and
+requires a taller saved figure. Alternatively, <code>entities</code>
+specifies county IDs for display.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">county_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="va">alabama</span><span class="op">$</span><span class="va">units</span><span class="op">$</span><span class="va">county_name</span>, <span class="va">alabama</span><span class="op">$</span><span class="va">units</span><span class="op">$</span><span class="va">entity_id</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/postrank_plot_report_card.html">postrank_plot_report_card</a></span><span class="op">(</span><span class="va">common</span>, max_rows <span class="op">=</span> <span class="fl">12</span>,</span>
+<span>  entity_labels <span class="op">=</span> <span class="va">county_names</span>,</span>
+<span>  criterion_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    income <span class="op">=</span> <span class="st">"Income rank\n(percentile points)"</span>,</span>
+<span>    incarceration <span class="op">=</span> <span class="st">"Lower incarceration\n(negative percentage points)"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<a href="a4-alabama-opportunity_files/figure-html/a4-report-card-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Selected counties from the full 67-county report. Points are posterior means and bars are supplied 95% equal-tail marginal intervals. Income is in percentile points; incarceration is negative percentage points. The intervals are conditional on the fitted model and are not simultaneous bands. Shared grades withhold comparisons." target="_blank" rel="noopener"><img src="a4-alabama-opportunity_files/figure-html/a4-report-card-1.png" class="r-plt" alt="Selected counties from the full 67-county report. Points are posterior means and bars are supplied 95% equal-tail marginal intervals. Income is in percentile points; incarceration is negative percentage points. The intervals are conditional on the fitted model and are not simultaneous bands. Shared grades withhold comparisons." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a4-alabama-opportunity_files/figure-html/a4-report-card-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Selected counties from the full 67-county report. Points are posterior means and bars are supplied 95% equal-tail marginal intervals. Income is in percentile points; incarceration is negative percentage points. The intervals are conditional on the fitted model and are not simultaneous bands. Shared grades withhold comparisons.">Open full-size figure</a></span><p class="caption">
+Selected counties from the full 67-county report. Points are posterior
+means and bars are supplied 95% equal-tail marginal intervals. Income is
+in percentile points; incarceration is negative percentage points. The
+intervals are conditional on the fitted model and are not simultaneous
+bands. Shared grades withhold comparisons.
+</p>
+</div>
+<p>Crenshaw County is the single county in grade 1. Its posterior mean
+income rank is 40.4 percentile points and its posterior mean
+incarceration probability is 0.67% on the original positive scale.
+Montgomery and Russell counties share grade 5; the report leaves their
+mutual comparison unordered. A grade number does not give the size of an
+outcome difference between counties.</p>
+<p>Within each panel, horizontal intervals describe posterior
+uncertainty in county targets. They do not represent uncertainty in
+grade labels. The grading uses pairwise probabilities to select a
+coherent ordered grouping across both criteria, so marginal interval
+overlap alone does not determine disclosure. A shared grade likewise
+makes no assertion that either interval contains the other county’s
+target value.</p>
+<p>County IDs are retained when names are used as display labels. The
+complete grade membership table is obtained without a new
+optimization:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">membership</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  county_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">grades</span><span class="op">)</span>,</span>
+<span>  county <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">county_names</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">grades</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">grades</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">membership</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">membership</span><span class="op">$</span><span class="va">grade</span>, <span class="va">membership</span><span class="op">$</span><span class="va">county</span><span class="op">)</span>, <span class="op">]</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="what-changes-when-each-outcome-gets-its-own-report">Comparison with outcome-specific reports<a class="anchor" aria-label="anchor" href="#what-changes-when-each-outcome-gets-its-own-report"></a>
+</h2>
+<p>The case includes archived income-only and incarceration-only grade
+vectors, called D1 and D2, plus an expected-rank cut rule called B3. B3
+fixes the order of counties using weighted expected ranks, then chooses
+the best contiguous grade boundaries in that order. Its optimization
+covers those boundaries; the common optimization can search beyond that
+fixed order.</p>
+<p>The common report and B3 have identical grades and pair relations in
+this example, and hence there is no improvement over B3. This agreement
+does not establish equivalence of the methods in other settings. In
+particular, a fixed-order optimization alone cannot provide a lower
+bound over all ordered groupings.</p>
+<p>The stored alternatives can be evaluated under the same two-criterion
+loss without further optimization:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_compare.html">postrank_compare</a></span><span class="op">(</span><span class="va">common</span>,</span>
+<span>  `Expected-rank cuts` <span class="op">=</span> <span class="va">alabama</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">actions</span><span class="op">$</span><span class="va">B3</span>,</span>
+<span>  `Income alone` <span class="op">=</span> <span class="va">alabama</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">actions</span><span class="op">$</span><span class="va">D1</span>,</span>
+<span>  `Incarceration alone` <span class="op">=</span> <span class="va">alabama</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">actions</span><span class="op">$</span><span class="va">D2</span>,</span>
+<span>  `Withhold all` <span class="op">=</span> <span class="va">alabama</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">actions</span><span class="op">$</span><span class="va">B0</span>,</span>
+<span>  baselines <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">comparison</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"method"</span>, <span class="st">"risk"</span>, <span class="st">"N"</span>, <span class="st">"G"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">6</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Report"</span>, <span class="st">"Two-criterion loss"</span>, <span class="st">"Ordered pairs"</span>, <span class="st">"Grades"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Report</th>
+<th align="right">Two-criterion loss</th>
+<th align="right">Ordered pairs</th>
+<th align="right">Grades</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">joint</td>
+<td align="right">0.150394</td>
+<td align="right">1249</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="left">Expected-rank cuts</td>
+<td align="right">0.150394</td>
+<td align="right">1249</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
+<td align="left">Income alone</td>
+<td align="right">0.190573</td>
+<td align="right">1769</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="left">Incarceration alone</td>
+<td align="right">0.199764</td>
+<td align="right">1572</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
+<td align="left">Withhold all</td>
+<td align="right">0.200000</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>joint</code> row is the prepared common result. The other
+rows evaluate supplied grade vectors; this call does not attach their
+historical solver bounds to the two-criterion loss. In particular, an
+income-only optimization bound concerns income’s objective, not the loss
+obtained by applying those grades to both outcomes.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_compare.html">postrank_plot_compare</a></span><span class="op">(</span><span class="va">comparison</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<a href="a4-alabama-opportunity_files/figure-html/a4-comparison-plot-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: All reports evaluated on pool A with weights .5/.5, withholding cost .20, and at most five grades. Supplied alternatives are evaluated actions, not new solves. The common report and expected-rank cuts coincide; withholding every pair has no defined error rate among ordered pairs." target="_blank" rel="noopener"><img src="a4-alabama-opportunity_files/figure-html/a4-comparison-plot-1.png" class="r-plt" alt="All reports evaluated on pool A with weights .5/.5, withholding cost .20, and at most five grades. Supplied alternatives are evaluated actions, not new solves. The common report and expected-rank cuts coincide; withholding every pair has no defined error rate among ordered pairs." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a4-alabama-opportunity_files/figure-html/a4-comparison-plot-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: All reports evaluated on pool A with weights .5/.5, withholding cost .20, and at most five grades. Supplied alternatives are evaluated actions, not new solves. The common report and expected-rank cuts coincide; withholding every pair has no defined error rate among ordered pairs.">Open full-size figure</a></span><p class="caption">
+All reports evaluated on pool A with weights .5/.5, withholding cost
+.20, and at most five grades. Supplied alternatives are evaluated
+actions, not new solves. The common report and expected-rank cuts
+coincide; withholding every pair has no defined error rate among ordered
+pairs.
+</p>
+</div>
+<p>Each separate report can also be evaluated under its own criterion.
+The following table compares that loss with the corresponding criterion
+loss in the common report:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">single</span> <span class="op">&lt;-</span> <span class="va">alabama</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">single_criterion</span></span>
+<span><span class="va">single_loss</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">single</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">criterion</span> <span class="op">&lt;-</span> <span class="va">single</span><span class="op">$</span><span class="va">criterion</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
+<span>  <span class="fu"><a href="../reference/postrank_evaluate.html">postrank_evaluate</a></span><span class="op">(</span><span class="va">alabama</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">actions</span><span class="op">[[</span><span class="va">single</span><span class="op">$</span><span class="va">method</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    <span class="va">alabama</span><span class="op">$</span><span class="va">alternatives</span><span class="op">[[</span><span class="va">criterion</span><span class="op">]</span><span class="op">]</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">criterion</span><span class="op">)</span>,</span>
+<span>    tau <span class="op">=</span> <span class="va">settings</span><span class="op">$</span><span class="va">tau</span><span class="op">)</span><span class="op">$</span><span class="va">primary_risk</span></span>
+<span><span class="op">}</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">common_loss</span> <span class="op">&lt;-</span> <span class="va">profile</span><span class="op">$</span><span class="va">risk</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">single</span><span class="op">$</span><span class="va">criterion</span>, <span class="va">profile</span><span class="op">$</span><span class="va">criterion</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">cost</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Criterion <span class="op">=</span> <span class="va">single</span><span class="op">$</span><span class="va">criterion</span>,</span>
+<span>  Common <span class="op">=</span> <span class="va">common_loss</span>, Separate <span class="op">=</span> <span class="va">single_loss</span>,</span>
+<span>  Difference <span class="op">=</span> <span class="va">common_loss</span> <span class="op">-</span> <span class="va">single_loss</span>,</span>
+<span>  Archived_gap <span class="op">=</span> <span class="va">single</span><span class="op">$</span><span class="va">gap</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">cost</span>, digits <span class="op">=</span> <span class="fl">6</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Criterion"</span>, <span class="st">"Common loss"</span>, <span class="st">"Separate loss"</span>,</span>
+<span>    <span class="st">"Extra loss for common grades"</span>, <span class="st">"Separate solver gap"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="15%">
+<col width="13%">
+<col width="15%">
+<col width="32%">
+<col width="22%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Criterion</th>
+<th align="right">Common loss</th>
+<th align="right">Separate loss</th>
+<th align="right">Extra loss for common grades</th>
+<th align="right">Separate solver gap</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">income</td>
+<td align="right">0.116403</td>
+<td align="right">0.061578</td>
+<td align="right">0.054824</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">incarceration</td>
+<td align="right">0.184385</td>
+<td align="right">0.119857</td>
+<td align="right">0.064528</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p>The separate optimizations were recorded as optimal by postrank 0.9.0
+with HiGHS 1.12.0.3. Here their fixed grades are reevaluated and their
+archived bounds retained, without repeating the full optimizations. The
+differences quantify the loss incurred by requiring a common report
+instead of separate outcome-specific reports. Their equal-weight average
+is 0.059676. This quantity is expressed in loss units; it is neither a
+monetary cost nor a posterior credible interval. The separate reports
+are also not an admissible replacement when a single common grading is
+required.</p>
+</div>
+<div class="section level2">
+<h2 id="check-numerical-repetition-without-changing-the-observations">Numerical replication with fixed observations<a class="anchor" aria-label="anchor" href="#check-numerical-repetition-without-changing-the-observations"></a>
+</h2>
+<p>Pool B is a separate numerical run using the same models and
+observations. The source retained 16,000 draws per criterion in A and
+8,000 in B. These are draw counts from the original runs; the package
+input contains the resulting summaries. Pool B assesses numerical
+integration without providing additional counties or independent
+observational replication.</p>
+<p>We evaluate the fixed pool-A grades under both probability
+inputs:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ev_A</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_evaluate.html">postrank_evaluate</a></span><span class="op">(</span><span class="va">grades</span>, <span class="va">alabama</span><span class="op">$</span><span class="va">input</span>, settings <span class="op">=</span> <span class="va">settings</span><span class="op">)</span></span>
+<span><span class="va">ev_B</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_evaluate.html">postrank_evaluate</a></span><span class="op">(</span><span class="va">grades</span>, <span class="va">alabama</span><span class="op">$</span><span class="va">alternatives</span><span class="op">$</span><span class="va">pool_B</span>,</span>
+<span>  settings <span class="op">=</span> <span class="va">settings</span><span class="op">)</span></span>
+<span><span class="va">pool_check</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Pool <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>,</span>
+<span>  Fixed_report_loss <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">ev_A</span><span class="op">$</span><span class="va">primary_risk</span>, <span class="va">ev_B</span><span class="op">$</span><span class="va">primary_risk</span><span class="op">)</span>,</span>
+<span>  Ordered_pairs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">ev_A</span><span class="op">$</span><span class="va">N</span>, <span class="va">ev_B</span><span class="op">$</span><span class="va">N</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">pool_check</span>, digits <span class="op">=</span> <span class="fl">6</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Pool</th>
+<th align="right">Fixed_report_loss</th>
+<th align="right">Ordered_pairs</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">A</td>
+<td align="right">0.150394</td>
+<td align="right">1249</td>
+</tr>
+<tr class="even">
+<td align="left">B</td>
+<td align="right">0.150342</td>
+<td align="right">1249</td>
+</tr>
+</tbody>
+</table>
+<p>The loss changes by -0.000051; the number of ordered pairs stays
+fixed because the grade vector stays fixed. The source also reselected a
+report using B and recorded 0 changed pair relations relative to A. That
+is a descriptive numerical stability result. Selecting and evaluating on
+B would not make B an independent evaluation of the newly selected
+report.</p>
+<p>Pool B did not meet the sensitive-pair Monte Carlo standard-error
+target of .005 in 486 directional criterion rows; its maximum was
+0.005867. The archived Monte Carlo standard error for the fixed common
+report’s pool-B loss was 0.0000962, which met the separate .001
+fixed-risk target. Thus precision of the aggregate loss can be
+satisfactory even when some sensitive pair probabilities fail their
+precision criterion.</p>
+<p>Those standard errors were calculated from the original chains and
+are reported here from the source results. They are not recalculated
+from these summaries. Constant-trace pair standard errors were
+unavailable; estimated probabilities of zero or one are not proof of
+posterior certainty. Neither the numerical repetition nor the
+optimizer’s small gap validates the model against new observations.</p>
+</div>
+<div class="section level2">
+<h2 id="use-the-result-and-retain-its-scope">Interpretation and scope<a class="anchor" aria-label="anchor" href="#use-the-result-and-retain-its-scope"></a>
+</h2>
+<p>For these historical outcomes, the common grading withholds many
+county comparisons, has different expected error rates across outcomes
+and agrees with the expected-rank cut baseline. Separate reports address
+distinct single-outcome losses. The choice between these formulations is
+substantive: a lower risk under a different loss does not establish
+improvement for the original decision problem.</p>
+<p>Application to another setting requires specification of the
+population, target directions, posterior model and intended use of the
+common grading. The <a href="a5-your-posterior-results.html">posterior-input article</a>
+describes input preparation, <a href="a6-reading-exporting-results.html">reading and exporting
+results</a> documents the result tables, and <a href="a7-figures-sensitivity.html">figures and sensitivity analysis</a>
+examines changes to settings and figure presentation. A smaller
+introductory example uses <a href="a1-getting-started.html">one or
+several criteria</a>.</p>
+<p>The data source is Raj Chetty, John Friedman, Nathaniel Hendren,
+Maggie R. Jones and Sonya R. Porter (2022), <em>Replication Data for:
+The Opportunity Atlas: Mapping the Childhood Roots of Social
+Mobility</em>, Harvard Dataverse, V1.0, <a href="https://doi.org/10.7910/DVN/NKCQM1" class="external-link">doi:10.7910/DVN/NKCQM1</a>.
+Source: Opportunity Insights and the U.S. Census Bureau. The selected <a href="https://opportunityinsights.org/wp-content/uploads/2018/10/county_outcomes_simple.csv" class="external-link">county
+CSV</a> and documented derivatives are used under <a href="https://creativecommons.org/licenses/by/4.0/" class="external-link">CC BY 4.0</a>.
+Changes include selecting Alabama, adding county identifiers and names,
+converting display units, reversing the incarceration direction, fitting
+separate posterior models, and preparing the probabilities and summaries
+used here. The grades and interpretation are this example’s analysis; no
+endorsement by the original authors or agencies is implied. These are
+the older historical county outcomes, distinct from a later policy-needs
+analysis with different directions and targets.</p>
+<p><a href="m3-posterior-inputs.html">Posterior inputs</a> specifies the
+probability information required by this loss. The <a href="m6-uncertainty-diagnostics.html">uncertainty article</a> explains
+why a stable aggregate risk can coexist with less precise individual
+comparisons.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Strict inputs, declarations and external producers • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Strict inputs, declarations and external producers">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-article">
+
+
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Strict inputs, declarations and external producers</h1>
+            
+      
+      <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/inputs-and-producers.Rmd" class="external-link"><code>vignettes/inputs-and-producers.Rmd</code></a></small>
+      <div class="d-none name"><code>inputs-and-producers.Rmd</code></div>
+    </div>
+
+    
+    
+<p>This retained reference preserves the original examples and article
+URL. <a href="a5-your-posterior-results.html">Analysis of supplied
+posterior results</a> describes input construction, and <a href="m3-posterior-inputs.html">Posterior inputs and pairwise
+probabilities</a> examines the information available under each
+representation.</p>
+<p>postrank accepts posterior draws or coefficients from an external
+estimation procedure, together with declarations of their scientific
+meaning and sampling history. We describe the input routes, eight
+required declarations, JSON representation, Gaussian and mixture
+constructors, fixed-grade evaluation and transfer from an external
+estimation pipeline. The package does not fit the underlying models.
+Solver results in this article are read from source-bound caches, with
+no new optimization.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joonho112/postrank" class="external-link">postrank</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"scripts"</span>, <span class="st">"_vignette-setup.R"</span>, package <span class="op">=</span> <span class="st">"postrank"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">has_posterior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"posterior"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>   <span class="co"># optional producer route below</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="a-an-array-of-draws-with-eight-declarations">(a) An array of draws with eight declarations<a class="anchor" aria-label="anchor" href="#a-an-array-of-draws-with-eight-declarations"></a>
+</h2>
+<p>The array interface accepts a numeric <code>S x n x K</code> array
+indexed by draw, entity and criterion, an explicit sampling
+<code>regime</code>, and a <code><a href="../reference/postrank_declarations.html">postrank_declarations()</a></code> bundle.
+All eight declarations are required and have no defaults; generic
+placeholders such as <code>"unknown"</code> or <code>"TBD"</code> are
+rejected. The declarations below describe the illustrative analysis and
+must be replaced by the corresponding statements for an application.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">decl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_declarations.html">postrank_declarations</a></span><span class="op">(</span></span>
+<span>  targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>criterion_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"need1"</span>, <span class="st">"need2"</span><span class="op">)</span>,</span>
+<span>    estimand <span class="op">=</span> <span class="st">"Latent need of each site (illustration)"</span>, entity_population <span class="op">=</span> <span class="st">"Six example sites"</span>,</span>
+<span>    time_reference <span class="op">=</span> <span class="st">"Example year"</span>, units <span class="op">=</span> <span class="st">"standardized units"</span><span class="op">)</span>,</span>
+<span>  context <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cohort_id <span class="op">=</span> <span class="st">"example-cohort"</span>, data_version <span class="op">=</span> <span class="st">"1"</span>,</span>
+<span>    data_conditioning <span class="op">=</span> <span class="st">"Simulated values for this article"</span>,</span>
+<span>    model_summary <span class="op">=</span> <span class="st">"Independent standard Normal draws (no data)"</span><span class="op">)</span>,</span>
+<span>  provenance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>producer <span class="op">=</span> <span class="st">"inputs-and-producers vignette"</span>, artifact_id <span class="op">=</span> <span class="st">"example-array"</span>,</span>
+<span>    construction_note <span class="op">=</span> <span class="st">"Generated in this article with set.seed(20261024)"</span><span class="op">)</span>,</span>
+<span>  origin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>source_id <span class="op">=</span> <span class="st">"vignette"</span>, fit_id <span class="op">=</span> <span class="st">"none"</span>, model_id <span class="op">=</span> <span class="st">"standard-normal"</span>,</span>
+<span>    source_format <span class="op">=</span> <span class="st">"R array"</span>, source_artifact <span class="op">=</span> <span class="st">"inputs-and-producers.Rmd"</span><span class="op">)</span>,</span>
+<span>  identification_note <span class="op">=</span> <span class="st">"The targets are the simulated coordinates themselves."</span>,</span>
+<span>  tie_justification <span class="op">=</span> <span class="st">"Continuous draws; exact ties between distinct sites have probability zero."</span>,</span>
+<span>  joint_generation <span class="op">=</span> <span class="st">"Each draw holds all sites and criteria from one simulated state."</span>,</span>
+<span>  sampling_provenance <span class="op">=</span> <span class="st">"IID draws from the stated Normal law; nothing discarded or thinned."</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">decl</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "targets"             "context"             "provenance"         </span></span>
+<span><span class="co">#&gt; [4] "origin"              "identification_note" "tie_justification"  </span></span>
+<span><span class="co">#&gt; [7] "joint_generation"    "sampling_provenance"</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">20261024</span><span class="op">)</span></span>
+<span><span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">500</span> <span class="op">*</span> <span class="fl">6</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">500</span>, <span class="fl">6</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"site"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"need1"</span>, <span class="st">"need2"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_draws.html">postrank_draws</a></span><span class="op">(</span><span class="va">values</span>, regime <span class="op">=</span> <span class="st">"iid"</span>, declarations <span class="op">=</span> <span class="va">decl</span><span class="op">)</span></span>
+<span><span class="va">draws</span></span>
+<span><span class="co">#&gt; &lt;postrank_draws&gt;  6 entities with posterior input</span></span>
+<span><span class="co">#&gt;   2 criteria: need1, need2.</span></span>
+<span><span class="co">#&gt;   500 retained IID draws; each draw contains all entities and criteria.</span></span>
+<span><span class="co">#&gt;   The input structure has been checked. The declared sampling history and</span></span>
+<span><span class="co">#&gt;     statistical model have not been independently verified.</span></span>
+<span><span class="co">#&gt;   i  summary(x) describes the targets; details = TRUE adds source records.</span></span></code></pre></div>
+<p>For numeric arrays, <code><a href="../reference/postrank_draws.html">postrank_draws()</a></code> calls the strict
+constructor <code><a href="../reference/postrank_draws_from_array.html">postrank_draws_from_array()</a></code>, which accepts the
+eight declarations as separate arguments and returns a validated
+<code>postrank_draws</code> object. MCMC input additionally requires a
+declared chain layout (<code>chains</code>,
+<code>warmup_per_chain</code> and <code>thin</code>, with
+<code>thin = 1L</code> for unthinned output) and values stored chain by
+chain. For a criterion with higher priority assigned to smaller values,
+<code>orientation = c(need2 = "lower")</code> negates the values once
+and records the transformation in the target’s
+<code>source_transform</code>.</p>
+<p>An incomplete declaration bundle produces an error:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="fu"><a href="../reference/postrank_declarations.html">postrank_declarations</a></span><span class="op">(</span>targets <span class="op">=</span> <span class="va">decl</span><span class="op">$</span><span class="va">targets</span>, context <span class="op">=</span> <span class="va">decl</span><span class="op">$</span><span class="va">context</span><span class="op">)</span>,</span>
+<span>  error <span class="op">=</span> <span class="va">identity</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">conditionMessage</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "$.declarations: missing required scientific declarations: provenance, origin, identification_note, tie_justification, joint_generation, sampling_provenance (they are not inferred or filled with placeholders)"</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="which-declaration-checks-run-on-each-route">Declaration checks by input route<a class="anchor" aria-label="anchor" href="#which-declaration-checks-run-on-each-route"></a>
+</h3>
+<p>All routes require the declarations in their input schema. The
+high-level array constructor also rejects generic placeholder tokens in
+descriptive text. This text check does not establish the scientific
+validity of the declarations.</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>Input route</th>
+<th>Declaration checks in 0.9.x</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>
+<code><a href="../reference/postrank_declarations.html">postrank_declarations()</a></code> and the high-level array
+constructor</td>
+<td>Required bundle fields and placeholder-token checks, followed by
+structural validation</td>
+</tr>
+<tr class="even">
+<td>Direct <code><a href="../reference/postrank_draws_from_array.html">postrank_draws_from_array()</a></code>
+</td>
+<td>Legacy required declarations and structural validation</td>
+</tr>
+<tr class="odd">
+<td>Existing <code>postrank_draws</code>, canonical JSON read/write</td>
+<td>Legacy declaration-presence and structural checks; no added token
+lint</td>
+</tr>
+<tr class="even">
+<td>Criterionwise matrix metadata and <code>posterior</code> metadata
+bridge</td>
+<td>Canonical metadata/coordinate checks; no added token lint</td>
+</tr>
+</tbody>
+</table>
+<p>The bundle checks the four narrative statements and required
+descriptive fields in targets, context, provenance and origin. Criterion
+IDs follow the ID rules; <code>fit_id</code> and
+<code>data_version</code> permit labels such as <code>"none"</code> and
+are not subject to the placeholder-token check. Passing a canonical
+route does not imply that the declaration bundle’s placeholder-token
+check was run. No route verifies jointness, identification or
+convergence as scientific facts.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="b-the-json-format-and-the-installed-toy">(b) The JSON format and the installed toy<a class="anchor" aria-label="anchor" href="#b-the-json-format-and-the-installed-toy"></a>
+</h2>
+<p>The installed example has 32 independent states from a specified
+normal law, three opaque IDs and two criteria. It is not an
+observed-data fit.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"synthetic-iid.json"</span>,</span>
+<span>                    package <span class="op">=</span> <span class="st">"postrank"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_postrank_draws.html">read_postrank_draws</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
+<span><span class="va">draws</span><span class="op">$</span><span class="va">entity_ids</span></span>
+<span><span class="co">#&gt; [1] "001"    "site-B" "site C"</span></span>
+<span><span class="va">draws</span><span class="op">$</span><span class="va">criterion_ids</span></span>
+<span><span class="co">#&gt; [1] "need_A" "need_B"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">draws</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">tensor</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 32  3  2</span></span>
+<span><span class="va">draws</span><span class="op">$</span><span class="va">validation</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"valid"</span>, <span class="st">"schema_checked"</span>, <span class="st">"source_values_checked"</span>,</span>
+<span>                   <span class="st">"jointness_verified"</span>, <span class="st">"convergence_verified"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $valid</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $schema_checked</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $source_values_checked</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $jointness_verified</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $convergence_verified</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span></code></pre></div>
+<p>The validation record distinguishes semantic checks from scientific
+verification. R validation neither invokes a general Draft 2020-12
+validator nor establishes joint generation or convergence. Input schema
+<code>applied-0.1</code>, derived API schema <code>0.1.0</code> and
+package version identify different components. The bundled
+<code>postrank_toy</code> contains the same object.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">generator</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"make-synthetic-input.R"</span>,</span>
+<span>                         package <span class="op">=</span> <span class="st">"postrank"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="va">generator</span><span class="op">)</span></span>
+<span><span class="va">payload</span> <span class="op">&lt;-</span> <span class="fu">make_postrank_synthetic_input</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">rebuilt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_postrank_draws.html">as_postrank_draws</a></span><span class="op">(</span><span class="va">payload</span><span class="op">)</span></span>
+<span><span class="va">rebuilt_values</span> <span class="op">&lt;-</span> <span class="va">rebuilt</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">tensor</span><span class="op">$</span><span class="va">values</span></span>
+<span><span class="va">stored_values</span> <span class="op">&lt;-</span> <span class="va">draws</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">tensor</span><span class="op">$</span><span class="va">values</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">rebuilt_values</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">stored_values</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">rebuilt_values</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">stored_values</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">rebuilt_values</span> <span class="op">-</span> <span class="va">stored_values</span><span class="op">)</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="fl">1e-12</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">payload</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] "schema_version"       "input_kind"           "dependence_mode"     </span></span>
+<span><span class="co">#&gt;  [4] "requested_functional" "entity_ids"           "criterion_ids"       </span></span>
+<span><span class="co">#&gt;  [7] "targets"              "context"              "identification"      </span></span>
+<span><span class="co">#&gt; [10] "tie_policy"           "provenance"           "joint_draws"</span></span>
+<span><span class="va">payload</span><span class="op">$</span><span class="va">targets</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $criterion_id</span></span>
+<span><span class="co">#&gt; [1] "need_A"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $estimand</span></span>
+<span><span class="co">#&gt; [1] "Toy latent site need under the explicitly specified independent Normal target law"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $entity_population</span></span>
+<span><span class="co">#&gt; [1] "Three labeled synthetic entities"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $time_reference</span></span>
+<span><span class="co">#&gt; [1] "Single fixed software example"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $units</span></span>
+<span><span class="co">#&gt; [1] "toy real-valued need units"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $source_transform</span></span>
+<span><span class="co">#&gt; [1] "identity"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $identification_basis</span></span>
+<span><span class="co">#&gt; [1] "Direct specified target coordinates; no fitted factor model"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $orientation</span></span>
+<span><span class="co">#&gt; [1] "higher_priority"</span></span></code></pre></div>
+<p>The regenerated values are compared with the stored sample at
+absolute tolerance <code>1e-12</code>; dimensions and labels must agree
+exactly. This allows floating-point variation across platforms without
+replacing the frozen input or its identity. Sourcing defines the
+function without drawing values or writing files; the function also
+preserves the caller RNG state. IDs are character labels. Missing or
+nonfinite targets, unresolved identification, observed entity ties and
+contradictory histories are rejected, without jitter or hidden
+reordering.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">copy_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".json"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/write_postrank_draws.html">write_postrank_draws</a></span><span class="op">(</span><span class="va">draws</span>, <span class="va">copy_path</span><span class="op">)</span></span>
+<span><span class="va">roundtrip</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_postrank_draws.html">read_postrank_draws</a></span><span class="op">(</span><span class="va">copy_path</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">roundtrip</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">tensor</span><span class="op">$</span><span class="va">values</span>,</span>
+<span>                    <span class="va">draws</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">tensor</span><span class="op">$</span><span class="va">values</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">copy_path</span><span class="op">)</span></span></code></pre></div>
+<p>The strict JSON reader rejects decoded duplicate keys, malformed
+numbers, unsafe integer metadata and invalid Unicode surrogates.
+Coordinates and singleton axes are preserved. These checks do not
+constitute general schema validation.</p>
+</div>
+<div class="section level2">
+<h2 id="c-criterionwise-matrices-and-posterior-draws">(c) Criterionwise matrices and <code>posterior</code> draws<a class="anchor" aria-label="anchor" href="#c-criterionwise-matrices-and-posterior-draws"></a>
+</h2>
+<p>When each criterion comes from its own fit, there is no joint
+cross-criterion state. A named list of <code>S_k x n</code> matrices
+(one per criterion; the <code>S_k</code> may differ) enters with
+complete canonical criterionwise metadata: one declared block per
+criterion with its own origin, sampling record, draw index and variable
+map. The matrix values are inserted into those blocks; no joint state is
+inferred.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># `metadata` is a canonical applied-0.1 payload with dependence_mode =</span></span>
+<span><span class="co"># "criterionwise_expected_only" and one criterion_blocks[[k]] per criterion,</span></span>
+<span><span class="co"># each without its matrix values (see ?postrank_draws and ?as_postrank_draws).</span></span>
+<span><span class="va">draws_cw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_draws.html">postrank_draws</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>need1 <span class="op">=</span> <span class="va">m1</span>, need2 <span class="op">=</span> <span class="va">m2</span><span class="op">)</span>, metadata <span class="op">=</span> <span class="va">metadata</span><span class="op">)</span></span></code></pre></div>
+<p>A <code>posterior</code> <code>draws_array</code>,
+<code>draws_df</code> or <code>draws_matrix</code> enters with canonical
+joint metadata, explicit variable-mapping records and the source
+coordinate of every retained draw. Here a producer has written the toy’s
+states as a one-chain <code>draws_array</code> with variables
+<code>theta[i,k]</code>; postrank maps them back and obtains the
+identical object.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="va">has_posterior</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu">make_postrank_synthetic_input</span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="va">vals</span> <span class="op">&lt;-</span> <span class="va">meta</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">tensor</span><span class="op">$</span><span class="va">values</span></span>
+<span>  <span class="va">map</span> <span class="op">&lt;-</span> <span class="va">meta</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">variable_map</span></span>
+<span>  <span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">map</span>, <span class="va">`[[`</span>, <span class="st">""</span>, <span class="st">"source_target_variable_id"</span><span class="op">)</span></span>
+<span>  <span class="va">src</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="cn">NA_real_</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">vals</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="fl">1L</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">vars</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>iteration <span class="op">=</span> <span class="cn">NULL</span>, chain <span class="op">=</span> <span class="st">"1"</span>, variable <span class="op">=</span> <span class="va">vars</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">m</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">map</span><span class="op">)</span><span class="op">)</span> <span class="va">src</span><span class="op">[</span>, <span class="fl">1</span>, <span class="va">vars</span><span class="op">[</span><span class="va">m</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">vals</span><span class="op">[</span>, <span class="va">map</span><span class="op">[[</span><span class="va">m</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">entity_id</span>, <span class="va">map</span><span class="op">[[</span><span class="va">m</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">criterion_id</span><span class="op">]</span></span>
+<span>  <span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">vals</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>slot_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">vals</span><span class="op">)</span><span class="op">$</span><span class="va">draw</span><span class="op">[[</span><span class="va">s</span><span class="op">]</span><span class="op">]</span>, iteration_index <span class="op">=</span> <span class="va">s</span>, chain_index <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">meta</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">tensor</span><span class="op">$</span><span class="va">values</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>          <span class="co"># the values come from the producer</span></span>
+<span>  <span class="va">from_posterior</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_draws.html">postrank_draws</a></span><span class="op">(</span><span class="fu">posterior</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/posterior/man/draws_array.html" class="external-link">as_draws_array</a></span><span class="op">(</span><span class="va">src</span><span class="op">)</span>, variables <span class="op">=</span> <span class="va">map</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">meta</span>, source_coordinates <span class="op">=</span> <span class="va">coords</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">from_posterior</span><span class="op">$</span><span class="va">validation</span><span class="op">$</span><span class="va">input_identity</span>, <span class="va">postrank_toy</span><span class="op">$</span><span class="va">validation</span><span class="op">$</span><span class="va">input_identity</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="d-gaussian-and-mixture-coefficients">(d) Gaussian and mixture coefficients<a class="anchor" aria-label="anchor" href="#d-gaussian-and-mixture-coefficients"></a>
+</h2>
+<p>Posterior information may be supplied as coefficients rather than
+draws. The Gaussian constructor calculates pairwise error probabilities
+from posterior means and covariances under an explicit
+conditional-independence declaration, with six required provenance
+fields. The object <code>pr_example_gaussian</code> represents the fixed
+law underlying <code>pr_example_draws</code> in this form.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pr_example_gaussian</span></span>
+<span><span class="co">#&gt; &lt;postrank_coefficients&gt;  30 entities under a declared conditional law</span></span>
+<span><span class="co">#&gt;   3 criteria: poverty, frl, snap.</span></span>
+<span><span class="co">#&gt;   Gaussian comparison probabilities and marginal summaries are available.</span></span>
+<span><span class="co">#&gt;   Supported decisions use weighted loss and an upper limit on grades. Target</span></span>
+<span><span class="co">#&gt;     draws, q constraints, exact grade counts and minimax decisions are</span></span>
+<span><span class="co">#&gt;     unsupported here.</span></span>
+<span><span class="co">#&gt;   i summary(x, details = TRUE) retains the conditional-law declarations and</span></span>
+<span><span class="co">#&gt;     source records.</span></span>
+<span><span class="va">pr_example_gaussian</span><span class="op">$</span><span class="va">provenance</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"producer_id"</span>, <span class="st">"posterior_id"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $producer_id</span></span>
+<span><span class="co">#&gt; [1] "postrank maintainer script data-raw/make-pr-example-gaussian.R"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $posterior_id</span></span>
+<span><span class="co">#&gt; [1] "pr-example-law A8 known-Gaussian posterior"</span></span>
+<span><span class="va">caps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_coefficient_capabilities.html">postrank_coefficient_capabilities</a></span><span class="op">(</span><span class="va">pr_example_gaussian</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">caps</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"weighted_expected_risk"</span>, <span class="st">"posterior_means"</span>, <span class="st">"minimax_problem"</span>, <span class="st">"target_state_trace"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; weighted_expected_risk        posterior_means        minimax_problem </span></span>
+<span><span class="co">#&gt;                   TRUE                   TRUE                  FALSE </span></span>
+<span><span class="co">#&gt;     target_state_trace </span></span>
+<span><span class="co">#&gt;                  FALSE</span></span></code></pre></div>
+<p>The capability record permits weighted problems and posterior means
+for this input. Minimax and protection problems are unsupported.
+Target-draw traces are also unavailable, which excludes draw-based
+fragility and cross-fitting.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"gaussian_analysis_30x3"</span><span class="op">)</span></span>
+<span><span class="va">g</span></span>
+<span><span class="co">#&gt; &lt;postrank_analysis&gt;  30 entities in 1 grade; all comparisons withheld</span></span>
+<span><span class="co">#&gt;   3 criteria: poverty, frl, snap.</span></span>
+<span><span class="co">#&gt;   Posterior loss: 0.2500.</span></span>
+<span><span class="co">#&gt;   Disclosed 0 of 435 pairs (0.0%); withheld 435.</span></span>
+<span><span class="co">#&gt;   Expected error among disclosed pairs: NA (N = 0); no pairs were disclosed.</span></span>
+<span><span class="co">#&gt;   A single shared grade withholds every comparison; it is not an error-free</span></span>
+<span><span class="co">#&gt;     ranking.</span></span>
+<span><span class="co">#&gt;   Solver: Optimal within solver tolerances.</span></span>
+<span><span class="co">#&gt;   Optimization gap: 0; requested absolute gap 1e-08.</span></span>
+<span><span class="co">#&gt;   Prepared: report card.</span></span>
+<span><span class="co">#&gt;   Grade 1 has highest priority; a shared grade withholds the comparison.</span></span>
+<span><span class="co">#&gt;   grade 1 (30): site001, site002, site003, site004, site005, site006,</span></span>
+<span><span class="co">#&gt;     site007, site008, site009, site010, site011, site012, site013, site014 +16</span></span>
+<span><span class="co">#&gt;     more</span></span>
+<span><span class="co">#&gt;   i summary(x) explains the loss, settings and bounds; get_grades(x) returns</span></span>
+<span><span class="co">#&gt;     all grades.</span></span></code></pre></div>
+<p>Cached asset <code>gaussian_analysis_30x3</code>: built by the
+maintainer with postrank 1.1.0 and the explicitly selected highs backend
+(version 1.12.0.3) at 2026-10-30T14:15:54Z; 1 solve, recorded status
+optimal. Reading it here solves nothing.</p>
+<p>The report card uses analytic Gaussian intervals, with
+<code>interval_source</code> equal to gaussian_analytic. Thus posterior
+means and intervals remain available for typed coefficient input,
+whereas unsupported quantities remain unavailable. Mixture intervals are
+obtained by numerical inversion of the marginal CDF. If an endpoint
+fails the probability tolerance in the target’s units, the result
+records <code>posterior_quantile_failure</code>. A valid fit is retained
+when this prevents construction of the report-card extra, and the reason
+for the unavailable extra is recorded.</p>
+<p>Prepared coefficient diagnostics can also be included in a report
+without recomputing them:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">gd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_coefficient_diagnose.html">postrank_coefficient_diagnose</a></span><span class="op">(</span><span class="va">pr_example_gaussian</span>, fit <span class="op">=</span> <span class="va">g</span><span class="op">$</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="va">gd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">mcse_mean</span><span class="op">$</span><span class="va">unavailable_reason</span></span>
+<span><span class="co">#&gt; [1] "analytic_Gaussian_no_hyperstate_MC_trace"</span></span>
+<span><span class="va">gaussian_report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_report.html">postrank_report</a></span><span class="op">(</span><span class="va">g</span><span class="op">$</span><span class="va">fit</span>, diagnostics <span class="op">=</span> <span class="va">gd</span>, analysis <span class="op">=</span> <span class="va">g</span>, figures <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">gaussian_report</span><span class="op">$</span><span class="va">diagnostic_table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"metric"</span>, <span class="st">"value"</span>, <span class="st">"available"</span>, <span class="st">"NA_reason"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;      metric value available                                NA_reason</span></span>
+<span><span class="co">#&gt; 1 mcse_mean    NA     FALSE analytic_Gaussian_no_hyperstate_MC_trace</span></span>
+<span><span class="co">#&gt; 2      rhat    NA     FALSE analytic_Gaussian_no_hyperstate_MC_trace</span></span>
+<span><span class="co">#&gt; 3  ess_mean    NA     FALSE analytic_Gaussian_no_hyperstate_MC_trace</span></span>
+<span><span class="co">#&gt; 4  ess_bulk    NA     FALSE analytic_Gaussian_no_hyperstate_MC_trace</span></span>
+<span><span class="co">#&gt; 5  ess_tail    NA     FALSE analytic_Gaussian_no_hyperstate_MC_trace</span></span></code></pre></div>
+<p>An analytic Gaussian law has no hyperstate Monte Carlo trace, so its
+MCSE is unavailable, not zero. For a shared-hyperstate mixture,
+conditional-risk metrics describe integration of expected weighted risk
+over hyperstates; they do not describe target-loss draws or their
+dispersion. Eligible hyperparameter-MCMC metrics need original
+<code>chain_history</code> supplied to
+<code><a href="../reference/postrank_coefficient_diagnose.html">postrank_coefficient_diagnose()</a></code>; the convenience
+<code><a href="../reference/postrank_diagnose.html">postrank_diagnose()</a></code> dispatch supplies no such history.
+Finite metrics and the report do not establish convergence,
+post-selection coverage or regret guarantees.</p>
+<p>The coefficient estimates from 4,000 IID draws can be compared with
+the known-law probabilities. Each <code>e[i,j,k]</code> has Monte Carlo
+standard error bounded by <code>sqrt(.25 / 4000)</code>; the fixture’s
+regression band is five times this value.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pw</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_pairwise.html">postrank_pairwise</a></span><span class="op">(</span><span class="va">pr_example_draws</span><span class="op">)</span></span>
+<span><span class="va">delta</span> <span class="op">&lt;-</span> <span class="va">pw</span><span class="op">$</span><span class="va">e</span> <span class="op">-</span> <span class="va">pr_example_gaussian</span><span class="op">$</span><span class="va">e</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>max_pointwise_error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">delta</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, band <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">.25</span> <span class="op">/</span> <span class="fl">4000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; max_pointwise_error                band </span></span>
+<span><span class="co">#&gt;          0.02850931          0.03952847</span></span></code></pre></div>
+<p>A pointwise coefficient error differs from a weighted coefficient
+envelope, which bounds fixed-action risk error uniformly for a specified
+weight vector. The two quantities are not interchangeable.</p>
+<p>A finite mixture of Gaussian states uses
+<code><a href="../reference/postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code> with the same declaration
+and provenance requirements:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>; <span class="va">ks</span> <span class="op">&lt;-</span> <span class="st">"k1"</span></span>
+<span><span class="va">covariance</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fl">.5</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>criterion_i <span class="op">=</span> <span class="va">ks</span>, criterion_j <span class="op">=</span> <span class="va">ks</span>, entity <span class="op">=</span> <span class="va">ids</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">state</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>k1 <span class="op">=</span> <span class="va">d</span><span class="op">)</span>,</span>
+<span>  Sigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>criterion_i <span class="op">=</span> <span class="va">ks</span>, criterion_j <span class="op">=</span> <span class="va">ks</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  means <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">d</span>, <span class="fl">.4</span><span class="op">)</span>, <span class="fl">2</span>, <span class="fl">1</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>entity <span class="op">=</span> <span class="va">ids</span>, criterion <span class="op">=</span> <span class="va">ks</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  covariance <span class="op">=</span> <span class="va">covariance</span><span class="op">)</span></span>
+<span><span class="va">provenance</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>producer_id <span class="op">=</span> <span class="st">"vignette-example"</span>, producer_version <span class="op">=</span> <span class="st">"1"</span>,</span>
+<span>  posterior_id <span class="op">=</span> <span class="st">"fixed-two-state-mixture"</span>, input_payload_sha256 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/strrep.html" class="external-link">strrep</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="fl">64</span><span class="op">)</span>,</span>
+<span>  source_sha256 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/strrep.html" class="external-link">strrep</a></span><span class="op">(</span><span class="st">"b"</span>, <span class="fl">64</span><span class="op">)</span>, config_sha256 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/strrep.html" class="external-link">strrep</a></span><span class="op">(</span><span class="st">"c"</span>, <span class="fl">64</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">mix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_mixture_coefficients.html">postrank_mixture_coefficients</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>s1 <span class="op">=</span> <span class="fu">state</span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span>, s2 <span class="op">=</span> <span class="fu">state</span><span class="op">(</span><span class="fl">.5</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>s1 <span class="op">=</span> <span class="fl">.5</span>, s2 <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>state_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"s1"</span>, <span class="st">"s2"</span><span class="op">)</span><span class="op">)</span>, <span class="st">"fixed_finite_mixture"</span>, <span class="st">"entities_given_shared_h"</span>, <span class="va">provenance</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">mix</span><span class="op">$</span><span class="va">e</span><span class="op">[</span>, , <span class="st">"k1"</span><span class="op">]</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">#&gt;         entity_j</span></span>
+<span><span class="co">#&gt; entity_i      A      B</span></span>
+<span><span class="co">#&gt;        A     NA 0.6897</span></span>
+<span><span class="co">#&gt;        B 0.3103     NA</span></span></code></pre></div>
+<p>Arbitrary coefficient arrays are not accepted by these typed-law
+constructors. The current <code><a href="../reference/postrank_probabilities.html">postrank_probabilities()</a></code>
+interface separately accepts validated tie-free comparison
+probabilities, as described in the posterior-input article.</p>
+</div>
+<div class="section level2">
+<h2 id="e-directional-errors-and-a-fixed-action">(e) Directional errors and a fixed action<a class="anchor" aria-label="anchor" href="#e-directional-errors-and-a-fixed-action"></a>
+</h2>
+<p><code>e[i,j,k]</code> estimates
+<code>P(theta[i,k] &lt;= theta[j,k])</code>: the error when i is placed
+above j. Diagonal NA sentinels are excluded; exact 0/1 values are not
+clipped.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pairwise</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_pairwise.html">postrank_pairwise</a></span><span class="op">(</span><span class="va">draws</span>, method <span class="op">=</span> <span class="st">"blocks"</span>, block_size <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span>
+<span><span class="va">pairwise</span><span class="op">$</span><span class="va">sample_sizes</span></span>
+<span><span class="co">#&gt; need_A need_B </span></span>
+<span><span class="co">#&gt;     32     32</span></span>
+<span><span class="va">pairwise</span><span class="op">$</span><span class="va">e</span><span class="op">[</span>, , <span class="st">"need_A"</span><span class="op">]</span></span>
+<span><span class="co">#&gt;         entity_j</span></span>
+<span><span class="co">#&gt; entity_i  001 site-B site C</span></span>
+<span><span class="co">#&gt;   001      NA 0.2500 0.0000</span></span>
+<span><span class="co">#&gt;   site-B 0.75     NA 0.0625</span></span>
+<span><span class="co">#&gt;   site C 1.00 0.9375     NA</span></span>
+<span><span class="va">weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">.6</span>, need_B <span class="op">=</span> <span class="fl">.4</span><span class="op">)</span></span>
+<span><span class="va">grade</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fl">2L</span>, <span class="fl">2L</span><span class="op">)</span>, <span class="va">draws</span><span class="op">$</span><span class="va">entity_ids</span><span class="op">)</span></span>
+<span><span class="va">evaluation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_evaluate.html">postrank_evaluate</a></span><span class="op">(</span><span class="va">grade</span>, <span class="va">pairwise</span>, <span class="va">weights</span>, tau <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span></span>
+<span><span class="va">evaluation</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"E_over_M"</span>, <span class="st">"E_over_N"</span>, <span class="st">"disclosure_rate"</span>, <span class="st">"weighted_risk"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $E_over_M</span></span>
+<span><span class="co">#&gt;     need_A     need_B </span></span>
+<span><span class="co">#&gt; 0.08333333 0.59375000 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $E_over_N</span></span>
+<span><span class="co">#&gt;   need_A   need_B </span></span>
+<span><span class="co">#&gt; 0.125000 0.890625 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $disclosure_rate</span></span>
+<span><span class="co">#&gt; [1] 0.6666667</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $weighted_risk</span></span>
+<span><span class="co">#&gt; [1] 0.3708333</span></span></code></pre></div>
+<p>This user-supplied action places <code>001</code> above the others
+and withholds their mutual comparison. It is not optimized. With M
+available unordered pairs and N disclosed directions, risk is
+<code>(sum(weights*E)+tau*(M-N))/M</code>. <code>E_over_M</code> and
+<code>E_over_N</code> have different denominators. Criterion-named
+weights are explicit loss preferences and are not automatically
+normalized.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">all_tie</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">draws</span><span class="op">$</span><span class="va">entity_ids</span><span class="op">)</span><span class="op">)</span>, <span class="va">draws</span><span class="op">$</span><span class="va">entity_ids</span><span class="op">)</span></span>
+<span><span class="va">abstained</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_evaluate.html">postrank_evaluate</a></span><span class="op">(</span><span class="va">all_tie</span>, <span class="va">pairwise</span>, <span class="va">weights</span>, tau <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="va">abstained</span><span class="op">$</span><span class="va">N</span> <span class="op">==</span> <span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">abstained</span><span class="op">$</span><span class="va">E_over_N</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>          <span class="va">abstained</span><span class="op">$</span><span class="va">weighted_risk</span> <span class="op">==</span> <span class="fl">.25</span><span class="op">)</span></span>
+<span><span class="va">abstained</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"N"</span>, <span class="st">"E_over_N"</span>, <span class="st">"weighted_risk"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $N</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $E_over_N</span></span>
+<span><span class="co">#&gt; need_A need_B </span></span>
+<span><span class="co">#&gt;     NA     NA </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $weighted_risk</span></span>
+<span><span class="co">#&gt; [1] 0.25</span></span></code></pre></div>
+<p>The all-withheld action has risk tau. A zero error numerator does not
+establish an error-free ranking. Canonical positive-integer labels
+preserve the public pair relations.</p>
+</div>
+<div class="section level2">
+<h2 id="f-a-producer-pipeline-outside-the-package">(f) A producer pipeline outside the package<a class="anchor" aria-label="anchor" href="#f-a-producer-pipeline-outside-the-package"></a>
+</h2>
+<p>The methods book’s hierarchical model is a normal-inverse-Wishart
+example: site-level latent needs with a normal measurement model and an
+inverse-Wishart prior on their covariance, fitted by MCMC. Estimation is
+conducted outside postrank. The following unevaluated code illustrates
+the transfer of latent draws from four chains of 1,000 retained
+iterations each, after 1,000 warmup iterations and without thinning:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># theta: 4000 x n x K array of retained draws, stored chain by chain</span></span>
+<span><span class="co"># (rows 1-1000 chain 1, 1001-2000 chain 2, ...), produced by your own Stan/JAGS run.</span></span>
+<span><span class="va">decl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_declarations.html">postrank_declarations</a></span><span class="op">(</span></span>
+<span>  targets <span class="op">=</span> <span class="va">my_targets</span>, context <span class="op">=</span> <span class="va">my_context</span>, provenance <span class="op">=</span> <span class="va">my_provenance</span>, origin <span class="op">=</span> <span class="va">my_origin</span>,</span>
+<span>  identification_note <span class="op">=</span> <span class="st">"..."</span>, tie_justification <span class="op">=</span> <span class="st">"..."</span>,</span>
+<span>  joint_generation <span class="op">=</span> <span class="st">"Each retained iteration holds all sites and criteria from one MCMC state."</span>,</span>
+<span>  sampling_provenance <span class="op">=</span> <span class="st">"4 NUTS chains, 1000 warmup + 1000 retained iterations each, no thinning."</span><span class="op">)</span></span>
+<span><span class="va">hb_draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_draws.html">postrank_draws</a></span><span class="op">(</span><span class="va">theta</span>, regime <span class="op">=</span> <span class="st">"mcmc"</span>, chains <span class="op">=</span> <span class="fl">4L</span>, warmup_per_chain <span class="op">=</span> <span class="fl">1000L</span>,</span>
+<span>  thin <span class="op">=</span> <span class="fl">1L</span>, declarations <span class="op">=</span> <span class="va">decl</span><span class="op">)</span></span></code></pre></div>
+<p>The repository’s Stan workflow provides an external
+posterior-production pipeline. The following unevaluated code requires
+labeled inputs and scientific metadata conforming to that pipeline’s
+contract.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw">for</span> <span class="op">(</span><span class="va">file</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="st">"producers/R"</span>, pattern <span class="op">=</span> <span class="st">"[.]R$"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span>
+<span><span class="va">bundle</span> <span class="op">&lt;-</span> <span class="fu">postrank_normal_hb_data</span><span class="op">(</span><span class="va">y</span>, <span class="va">V</span>, <span class="va">entity_ids</span>, <span class="va">criterion_ids</span>, <span class="va">measurement</span><span class="op">)</span></span>
+<span><span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span><span class="st">"config/stan-runtime.json"</span><span class="op">)</span></span>
+<span><span class="va">run</span> <span class="op">&lt;-</span> <span class="fu">run_postrank_stan</span><span class="op">(</span><span class="st">"producers/stan/normal_hb.stan"</span>, <span class="va">bundle</span>,</span>
+<span>                         <span class="st">"results/a-new-unique-attempt"</span>, <span class="va">config</span>, <span class="st">"my-reviewed-HB-run"</span><span class="op">)</span></span>
+<span><span class="va">sampler_diagnostics</span> <span class="op">&lt;-</span> <span class="fu">diagnose_postrank_stan</span><span class="op">(</span><span class="va">run</span><span class="op">)</span></span>
+<span><span class="va">stan_draws</span> <span class="op">&lt;-</span> <span class="fu">export_postrank_stan_draws</span><span class="op">(</span><span class="va">run</span>, <span class="va">scientific_metadata</span><span class="op">)</span></span></code></pre></div>
+<p>Structural export does not prove sampler adequacy or model validity.
+Unknown imports, variational and optimization output are not accepted as
+MCMC draws.</p>
+</div>
+<div class="section level2">
+<h2 id="g-problems-solvers-and-diagnostics-on-the-toy">(g) Problems, solvers and diagnostics on the toy<a class="anchor" aria-label="anchor" href="#g-problems-solvers-and-diagnostics-on-the-toy"></a>
+</h2>
+<p>The following calculations retain the examples from the earlier
+guide. Prepared solver results were computed with HiGHS selected
+explicitly; the corresponding optimization calls are displayed but are
+not evaluated.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">problem</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_problem.html">postrank_problem</a></span><span class="op">(</span><span class="va">pairwise</span>, <span class="va">weights</span>, tau <span class="op">=</span> <span class="fl">.25</span>, G_max <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span>
+<span><span class="va">protected</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_problem.html">postrank_problem</a></span><span class="op">(</span><span class="va">pairwise</span>, <span class="va">weights</span>, <span class="fl">.25</span>, <span class="fl">3L</span>,</span>
+<span>                              q <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_B <span class="op">=</span> <span class="fl">.2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">exact_two</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_problem.html">postrank_problem</a></span><span class="op">(</span><span class="va">pairwise</span>, <span class="va">weights</span>, <span class="fl">.25</span>, <span class="fl">3L</span>, exact_G <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span>
+<span><span class="va">minimax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_problem.html">postrank_problem</a></span><span class="op">(</span><span class="va">pairwise</span>, <span class="va">weights</span>, <span class="fl">.25</span>, <span class="fl">3L</span>, objective <span class="op">=</span> <span class="st">"minimax"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">problem</span><span class="op">$</span><span class="va">input_identity</span>, <span class="va">pairwise</span><span class="op">$</span><span class="va">input_identity</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">problem</span><span class="op">$</span><span class="va">objective_units</span></span>
+<span><span class="co">#&gt; $raw</span></span>
+<span><span class="co">#&gt; [1] "weighted_Z"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $scale</span></span>
+<span><span class="co">#&gt; [1] 0.3333333</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $offset</span></span>
+<span><span class="co">#&gt; [1] 0.25</span></span>
+<span><span class="va">minimax</span><span class="op">$</span><span class="va">objective_units</span></span>
+<span><span class="co">#&gt; $raw</span></span>
+<span><span class="co">#&gt; [1] "minimax_risk_t"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $scale</span></span>
+<span><span class="co">#&gt; [1] 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $offset</span></span>
+<span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
+<p>The default action family permits at most <code>G_max</code> occupied
+grades; exact-G requires exactly G nonempty grades. Protection uses
+<code>E_k &lt;= q_k*N</code>. Minimax minimizes the maximum of expected
+criterion risks, not the expected draw-level maximum.</p>
+<p>Gurobi is the default backend, and HiGHS is an explicitly selected
+alternative for the same sparse problem. Backend failures do not trigger
+automatic substitution. Availability information is derived from package
+metadata and does not test the solver runtime or license.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">availability</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_backend_available.html">postrank_backend_available</a></span><span class="op">(</span><span class="st">"highs"</span><span class="op">)</span></span>
+<span><span class="va">availability</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"installed"</span>, <span class="st">"available_for_attempt"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $installed</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $available_for_attempt</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit_gurobi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_solve.html">postrank_solve</a></span><span class="op">(</span><span class="va">problem</span>, backend <span class="op">=</span> <span class="st">"gurobi"</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span>, threads <span class="op">=</span> <span class="fl">1L</span>, seed <span class="op">=</span> <span class="fl">1304L</span>,</span>
+<span>                 absolute_risk_gap <span class="op">=</span> <span class="fl">1e-6</span>, relative_gap <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">control</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span>, threads <span class="op">=</span> <span class="fl">1L</span>, seed <span class="op">=</span> <span class="fl">1304L</span><span class="op">)</span></span>
+<span><span class="co"># Optional reproduction: postrank_solve(problem, backend = "highs", control = control)</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"toy_analysis"</span><span class="op">)</span><span class="op">$</span><span class="va">fit</span></span>
+<span><span class="va">fit</span><span class="op">$</span><span class="va">status</span><span class="op">$</span><span class="va">normalized</span></span>
+<span><span class="co">#&gt; [1] "optimal"</span></span>
+<span><span class="va">fit</span><span class="op">$</span><span class="va">grade</span></span>
+<span><span class="co">#&gt;    001 site-B site C </span></span>
+<span><span class="co">#&gt;      1      1      2</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">objective</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"risk_upper_bound"</span>, <span class="st">"risk_lower_bound"</span>, <span class="st">"risk_absolute_gap"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  risk_upper_bound  risk_lower_bound risk_absolute_gap </span></span>
+<span><span class="co">#&gt;            0.2125            0.2125            0.0000</span></span>
+<span><span class="va">fit</span><span class="op">$</span><span class="va">objective</span><span class="op">$</span><span class="va">bound_source</span></span>
+<span><span class="co">#&gt; [1] "engine_lp_relaxation_bound_clamped"</span></span></code></pre></div>
+<p>Cached asset <code>toy_analysis</code>: built by the maintainer with
+postrank 1.1.0 and the explicitly selected highs backend (version
+1.12.0.3) at 2026-10-30T14:15:54Z; 1 solve, recorded status optimal.
+Reading it here solves nothing. It solves the same declared problem
+(weights .6/.4, <code>tau = .25</code>, <code>G_max = 3</code>). The
+released grade is the independently validated incumbent. The upper bound
+is its risk and the lower bound is the solver’s, so a zero gap means the
+solver found no better grade for these coefficients within its
+tolerances; it is not a numerical certificate.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Optional reproduction: postrank_solve(minimax, backend = "highs", control = control)</span></span>
+<span><span class="va">mm</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"toy_minimax"</span><span class="op">)</span></span>
+<span><span class="va">mm</span><span class="op">$</span><span class="va">minimax_refine</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mode"</span>, <span class="st">"applied"</span>, <span class="st">"improved"</span>, <span class="st">"reason"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $mode</span></span>
+<span><span class="co">#&gt; [1] "weighted"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $applied</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $improved</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $reason</span></span>
+<span><span class="co">#&gt; [1] "released_action_lexicographic_and_pareto_certified"</span></span>
+<span><span class="va">minimax</span><span class="op">$</span><span class="va">minimax_diagnostics</span><span class="op">$</span><span class="va">degenerate_criteria</span></span>
+<span><span class="co">#&gt; character(0)</span></span></code></pre></div>
+<p>Cross-fitting selects a grade on one half of the draws and evaluates
+it on the other half; the fragility table flags pairs whose
+disclose-or-tie margin is within two Monte Carlo standard errors. Both
+are descriptive.</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Optional reproduction: postrank_crossfit(draws, fit = fit, backend = "highs", control = control)</span></span>
+<span><span class="va">cf</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"toy_crossfit"</span><span class="op">)</span></span>
+<span><span class="va">cf</span></span>
+<span><span class="co">#&gt; &lt;postrank_crossfit&gt;  2 posterior-draw folds</span></span>
+<span><span class="co">#&gt;   Fold sizes: 16 / 16; split: iid halves.</span></span>
+<span><span class="co">#&gt;    Fold Training loss Held-out loss Optimism Status</span></span>
+<span><span class="co">#&gt;    A    0.2167        0.2083        -0.0083  Optimal within solver tolerances</span></span>
+<span><span class="co">#&gt;    B    0.2083        0.2167        0.0083   Optimal within solver tolerances</span></span>
+<span><span class="co">#&gt;   Each grade is chosen on its training fold and evaluated on held-out</span></span>
+<span><span class="co">#&gt;     posterior draws. This is not a check on new observed data.</span></span>
+<span><span class="co">#&gt;   Mean optimism: 0.0000; mean absolute optimism: 0.0083.</span></span>
+<span><span class="co">#&gt;   i x$interpretation_support records the sampling assumptions for this</span></span>
+<span><span class="co">#&gt;     comparison.</span></span>
+<span><span class="fu"><a href="../reference/postrank_mc_fragility.html">postrank_mc_fragility</a></span><span class="op">(</span><span class="va">draws</span>, fit <span class="op">=</span> <span class="va">fit</span><span class="op">)</span><span class="op">$</span><span class="va">summary</span></span>
+<span><span class="co">#&gt; $pairs</span></span>
+<span><span class="co">#&gt; [1] 3</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $traced</span></span>
+<span><span class="co">#&gt; [1] 2</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $fragile</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $fragile_share</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $mcse_unavailable</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $fragile_disclosed</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $fragile_tied</span></span>
+<span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">diagnostics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_diagnose.html">postrank_diagnose</a></span><span class="op">(</span><span class="va">draws</span>, grade <span class="op">=</span> <span class="va">grade</span>,</span>
+<span>  settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>weights <span class="op">=</span> <span class="va">weights</span>, tau <span class="op">=</span> <span class="fl">.25</span>, G_max <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">diagnostics</span><span class="op">$</span><span class="va">summaries</span><span class="op">$</span><span class="va">weighted_total_loss</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">mcse_mean</span></span>
+<span><span class="co">#&gt; $value</span></span>
+<span><span class="co">#&gt; [1] 0.01651476</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $raw_value</span></span>
+<span><span class="co">#&gt; [1] 0.01651476</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $result_kind</span></span>
+<span><span class="co">#&gt; [1] "finite"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $available</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $unavailable_reason</span></span>
+<span><span class="co">#&gt; NULL</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $warnings</span></span>
+<span><span class="co">#&gt; character(0)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $error</span></span>
+<span><span class="co">#&gt; NULL</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $error_class</span></span>
+<span><span class="co">#&gt; NULL</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $method</span></span>
+<span><span class="co">#&gt; [1] "iid_sample_sd_over_sqrt_S"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="op">!</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">convergence_verified</span>,</span>
+<span>          <span class="op">!</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">finite_sample_certificate</span><span class="op">)</span></span></code></pre></div>
+<p>These are descriptive IID standard errors for the toy, not
+certificates. For MCMC, the optional <code>posterior</code> package
+supplies Rhat, bulk and tail ESS and MCSE; ESS is not an IID sample
+size.</p>
+<p>The conditional IID reference calculation applies only when sample
+sizes and alpha were fixed before sampling; for the toy they were fixed
+in its generator.</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">design</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sample_sizes_fixed_before_sampling <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>               alpha_fixed_before_sampling <span class="op">=</span> <span class="cn">TRUE</span>, adaptive_stopping <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>               planned_sample_sizes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">32L</span>, need_B <span class="op">=</span> <span class="fl">32L</span><span class="op">)</span>,</span>
+<span>               declaration_note <span class="op">=</span> <span class="st">"Fixed in the shipped toy generator before generation."</span><span class="op">)</span></span>
+<span><span class="va">bounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_iid_bounds.html">postrank_iid_bounds</a></span><span class="op">(</span><span class="va">draws</span>, alpha <span class="op">=</span> <span class="fl">.05</span>,</span>
+<span>  alpha_by_criterion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">.025</span>, need_B <span class="op">=</span> <span class="fl">.025</span><span class="op">)</span>, design <span class="op">=</span> <span class="va">design</span><span class="op">)</span></span>
+<span><span class="va">bounds</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"epsilon"</span>, <span class="st">"guarantee_status"</span>, <span class="st">"bound_computed"</span>, <span class="st">"numerically_verified"</span>,</span>
+<span>          <span class="st">"finite_sample_certificate"</span>, <span class="st">"guarantee_issued"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $epsilon</span></span>
+<span><span class="co">#&gt;    need_A    need_B </span></span>
+<span><span class="co">#&gt; 0.2926346 0.2926346 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $guarantee_status</span></span>
+<span><span class="co">#&gt; [1] "conditional_bound"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $bound_computed</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $numerically_verified</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $finite_sample_certificate</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $guarantee_issued</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="op">!</span><span class="va">bounds</span><span class="op">$</span><span class="va">numerically_verified</span>, <span class="op">!</span><span class="va">bounds</span><span class="op">$</span><span class="va">finite_sample_certificate</span><span class="op">)</span></span></code></pre></div>
+<p><code>bound_computed = TRUE</code> records a theoretical
+floating-point calculation of the radii. Without a verified outward
+enclosure, this result does not provide a numerical guarantee.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

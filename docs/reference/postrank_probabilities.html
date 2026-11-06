@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Use Previously Calculated Comparison Probabilities — postrank_probabilities • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Use Previously Calculated Comparison Probabilities — postrank_probabilities"><meta name="description" content="The constructor imports comparison probabilities from an external posterior
+analysis, numerical integration or a specified law. A matrix represents one
+criterion and an array represents several criteria. The event direction,
+target definition, source and any requested numerical correction are
+recorded. Neither posterior draws nor a fitted model are produced by this
+operation."><meta property="og:description" content="The constructor imports comparison probabilities from an external posterior
+analysis, numerical integration or a specified law. A matrix represents one
+criterion and an array represents several criteria. The event direction,
+target definition, source and any requested numerical correction are
+recorded. Neither posterior draws nor a fitted model are produced by this
+operation."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul></div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Use Previously Calculated Comparison Probabilities</h1>
+
+      <div class="d-none name"><code>postrank_probabilities.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>The constructor imports comparison probabilities from an external posterior
+analysis, numerical integration or a specified law. A matrix represents one
+criterion and an array represents several criteria. The event direction,
+target definition, source and any requested numerical correction are
+recorded. Neither posterior draws nor a fitted model are produced by this
+operation.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_probabilities</span><span class="op">(</span></span>
+<span>  <span class="va">probabilities</span>,</span>
+<span>  <span class="va">event</span>,</span>
+<span>  <span class="va">zero_ties</span>,</span>
+<span>  <span class="va">margin</span>,</span>
+<span>  <span class="va">source</span>,</span>
+<span>  <span class="va">targets</span>,</span>
+<span>  criterion <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  correction <span class="op">=</span> <span class="st">"none"</span>,</span>
+<span>  tolerance <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  summaries <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-probabilities">probabilities<a class="anchor" aria-label="anchor" href="#arg-probabilities"></a></dt>
+<dd><p>A named square matrix for one criterion, or a named
+entity-by-entity-by-criterion numeric array. Both entity axes must contain
+the same IDs in the same order. Diagonals must be <code>NA</code>: they are unused
+self-comparisons, not zero-probability events.</p></dd>
+
+
+<dt id="arg-event">event<a class="anchor" aria-label="anchor" href="#arg-event"></a></dt>
+<dd><p>Explicitly <code>"higher_priority"</code> for
+<code>P(theta[i,k] &gt; theta[j,k])</code>, or <code>"directional_error"</code> for
+<code>P(theta[i,k] &lt;= theta[j,k])</code>. Larger target values mean higher priority.
+The output <code>e</code> always stores the latter event, the error for reporting
+row entity i above column entity j.</p></dd>
+
+
+<dt id="arg-zero-ties">zero_ties<a class="anchor" aria-label="anchor" href="#arg-zero-ties"></a></dt>
+<dd><p>Explicitly <code>TRUE</code>: each pair of distinct targets has equality
+probability zero. Continuous marginals are not required; a finite law with
+no pairwise equality is also admissible. Positive or unknown equality
+probability cannot be imported by this route.</p></dd>
+
+
+<dt id="arg-margin">margin<a class="anchor" aria-label="anchor" href="#arg-margin"></a></dt>
+<dd><p>Explicitly <code>0</code>. Nonzero comparison margins are unsupported.</p></dd>
+
+
+<dt id="arg-source">source<a class="anchor" aria-label="anchor" href="#arg-source"></a></dt>
+<dd><p>A list with <code>kind</code>, <code>description</code>, and <code>conditioning</code>.
+<code>kind</code> is <code>"analytic_reference"</code>, <code>"numerical_integration"</code>,
+<code>"iid_summary"</code>, <code>"mcmc_summary"</code>, or <code>"published_reference"</code>.
+Describe how the probabilities were obtained and what was held fixed,
+including an estimated prior in an empirical Bayes analysis. The label
+records the producer's account; it does not verify calculation accuracy.</p></dd>
+
+
+<dt id="arg-targets">targets<a class="anchor" aria-label="anchor" href="#arg-targets"></a></dt>
+<dd><p>A criterion-named character vector describing the oriented
+targets and units, in the same order as the probability array.</p></dd>
+
+
+<dt id="arg-criterion">criterion<a class="anchor" aria-label="anchor" href="#arg-criterion"></a></dt>
+<dd><p>One criterion name, required for matrix input. Omit it for
+an array, whose third dimension provides the names.</p></dd>
+
+
+<dt id="arg-correction">correction<a class="anchor" aria-label="anchor" href="#arg-correction"></a></dt>
+<dd><p><code>"none"</code> (default) or an explicit <code>"symmetric"</code>
+correction of small reverse-complement discrepancies.</p></dd>
+
+
+<dt id="arg-tolerance">tolerance<a class="anchor" aria-label="anchor" href="#arg-tolerance"></a></dt>
+<dd><p>With symmetric correction, an explicit nonnegative
+tolerance no larger than <code>1e-3</code>. This upper limit is a safeguard, not a
+recommended integration tolerance. Without correction, reverse sums must
+be within <code>1e-12</code> of one and this argument must be omitted.</p></dd>
+
+
+<dt id="arg-summaries">summaries<a class="anchor" aria-label="anchor" href="#arg-summaries"></a></dt>
+<dd><p>Optional list with named entity-by-criterion <code>means</code>,
+<code>same_targets = TRUE</code>, and a <code>description</code>. To supply fixed central
+equal-tail intervals, also include <code>lower</code>, <code>upper</code>, and <code>level</code>.
+These must describe the same oriented targets and units. Intervals at
+another level cannot be recovered from these summaries.</p></dd>
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A <code>postrank_probabilities</code> object containing directional errors <code>e</code>,
+raw and corrected probabilities, source records, correction magnitudes,
+and optional supplied summaries. It can be used by <code><a href="postrank.html">postrank()</a></code>,
+<code><a href="postrank_problem.html">postrank_problem()</a></code>, <code><a href="postrank_evaluate.html">postrank_evaluate()</a></code>, <code><a href="postrank_expected_rank.html">postrank_expected_rank()</a></code>,
+and <code><a href="postrank_cuts.html">postrank_cuts()</a></code> within their documented scope. No draw count,
+Monte Carlo diagnostic, or numerical certificate is inferred.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Native joint search and fixed-order cuts support weighted expected
+loss with an upper grade-count limit for this input. Minimax, <code>q</code>
+protections, and an exact grade count are unsupported in those routes.
+A fixed report can be scored with <code><a href="postrank_evaluate.html">postrank_evaluate()</a></code>; this does not test
+whether it belongs to a particular constrained action family.</p>
+<p>Range and reverse-complement checks do not establish that the supplied
+probabilities come from a coherent joint posterior or a suitable model.
+Cross-criterion dependence is unnecessary for additive expected loss, but
+these coefficients do not determine composite ordering or simultaneous
+correctness probabilities. A summary of Monte Carlo comparisons likewise
+does not retain the original draws or chain histories.</p>
+<p>Symmetric correction replaces a forward probability by the average of
+itself and one minus its reverse, then complements the reverse value.
+The maximum change is retained separately for each criterion. For a fixed
+report, the resulting risk change is at most <code>N/M</code> times the weighted
+sum of these maxima, where <code>N</code> counts disclosed pairs and <code>M</code> counts all
+unordered pairs. This describes a change from the supplied array; it does
+not bound quadrature, model, or Monte Carlo error. Nothing is corrected
+silently when <code>correction = "none"</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="validate_postrank_probabilities.html">validate_postrank_probabilities()</a></code>, <code><a href="postrank_pairwise.html">postrank_pairwise()</a></code>,
+<code><a href="postrank_tie_pairwise.html">postrank_tie_pairwise()</a></code> for the separate equality-neutral loss.</p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># The same analytic one-criterion law as the tutorial Gaussian input.</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">postrank_probabilities</span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span><span class="op">$</span><span class="va">e</span>,</span></span>
+<span class="r-in"><span>  event <span class="op">=</span> <span class="st">"directional_error"</span>, zero_ties <span class="op">=</span> <span class="cn">TRUE</span>, margin <span class="op">=</span> <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>  source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>kind <span class="op">=</span> <span class="st">"analytic_reference"</span>,</span></span>
+<span class="r-in"><span>    description <span class="op">=</span> <span class="st">"Normal-CDF comparisons for pr_tutorial score A"</span>,</span></span>
+<span class="r-in"><span>    conditioning <span class="op">=</span> <span class="st">"The specified means, variances, and independent-site law are fixed"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="st">"Score A in illustrative units; larger means higher priority"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">grade</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fl">1L</span>, <span class="fl">2L</span>, <span class="fl">2L</span>, <span class="fl">3L</span>, <span class="fl">3L</span><span class="op">)</span>, <span class="va">x</span><span class="op">$</span><span class="va">entity_ids</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="postrank_evaluate.html">postrank_evaluate</a></span><span class="op">(</span><span class="va">grade</span>, <span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span><span class="op">$</span><span class="va">weighted_risk</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.05165164</span>
+<span class="r-in"><span><span class="fu"><a href="validate_postrank_probabilities.html">validate_postrank_probabilities</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer></div>
+
+
+
+
+
+  </body></html>
+

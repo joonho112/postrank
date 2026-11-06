@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Plot Posterior Estimates and Grade Membership — postrank_plot_report_card • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Plot Posterior Estimates and Grade Membership — postrank_plot_report_card">
+<meta name="description" content="The figure displays the stored posterior mean and central interval for each
+selected entity, with one panel per criterion and color indicating grade
+membership. Grade 1 has highest priority. The intervals describe uncertainty
+in the targets, whereas a shared grade denotes a withheld comparison without
+asserting target equality.">
+<meta property="og:description" content="The figure displays the stored posterior mean and central interval for each
+selected entity, with one panel per criterion and color indicating grade
+membership. Grade 1 has highest priority. The intervals describe uncertainty
+in the targets, whereas a shared grade denotes a withheld comparison without
+asserting target equality.">
+<meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Plot Posterior Estimates and Grade Membership</h1>
+
+      <div class="d-none name"><code>postrank_plot_report_card.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>The figure displays the stored posterior mean and central interval for each
+selected entity, with one panel per criterion and color indicating grade
+membership. Grade 1 has highest priority. The intervals describe uncertainty
+in the targets, whereas a shared grade denotes a withheld comparison without
+asserting target equality.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_plot_report_card</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  criteria <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grade"</span>, <span class="st">"expected_rank"</span>, <span class="st">"mean"</span>, <span class="st">"label"</span><span class="op">)</span>,</span>
+<span>  max_rows <span class="op">=</span> <span class="fl">30L</span>,</span>
+<span>  show_withheld <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  entities <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  entity_labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  criterion_labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ncol <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  order_by <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a>
+</h2>
+
+
+<dl>
+<dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a>
+</dt>
+<dd><p>A <code>postrank_report_card</code> or a <code>postrank_analysis</code> with a prepared card.</p></dd>
+
+
+<dt id="arg-criteria">criteria<a class="anchor" aria-label="anchor" href="#arg-criteria"></a>
+</dt>
+<dd><p>Optional nonempty subset and display order of criterion IDs.</p></dd>
+
+
+<dt id="arg-order">order<a class="anchor" aria-label="anchor" href="#arg-order"></a>
+</dt>
+<dd><p>Within-grade order: <code>"grade"</code> preserves the stored card order;
+<code>"expected_rank"</code> uses weighted expected rank across all criteria;
+<code>"mean"</code> uses one criterion's mean; <code>"label"</code> sorts raw entity IDs.</p></dd>
+
+
+<dt id="arg-max-rows">max_rows<a class="anchor" aria-label="anchor" href="#arg-max-rows"></a>
+</dt>
+<dd><p>Positive integer display limit, default 30. <code>NULL</code> shows
+every row. Explicit <code>entities</code> override this limit.</p></dd>
+
+
+<dt id="arg-show-withheld">show_withheld<a class="anchor" aria-label="anchor" href="#arg-show-withheld"></a>
+</dt>
+<dd><p>Logical; include full grade sizes in the subtitle.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a>
+</dt>
+<dd><p>Unused; nonempty arguments are rejected.</p></dd>
+
+
+<dt id="arg-entities">entities<a class="anchor" aria-label="anchor" href="#arg-entities"></a>
+</dt>
+<dd><p>Optional distinct entity IDs to show. All selected entities
+are shown, even if their number exceeds <code>max_rows</code>. Their display order
+follows <code>order</code>, not the order of this vector.</p></dd>
+
+
+<dt id="arg-entity-labels">entity_labels<a class="anchor" aria-label="anchor" href="#arg-entity-labels"></a>
+</dt>
+<dd><p>Optional named character vector mapping IDs to display
+names. Partial maps retain the other IDs. Final display names must be
+distinct; include an ID when names repeat. Newlines can break long labels.</p></dd>
+
+
+<dt id="arg-criterion-labels">criterion_labels<a class="anchor" aria-label="anchor" href="#arg-criterion-labels"></a>
+</dt>
+<dd><p>Optional named criterion-to-label vector. Partial
+maps use readable criterion names for the remainder. Final labels must be
+distinct. Labels may include units or newlines without changing values.</p></dd>
+
+
+<dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a>
+</dt>
+<dd><p>Positive integer number of facet columns; default at most three.
+Use <code>ncol = 1</code> with a taller figure for a narrow page.</p></dd>
+
+
+<dt id="arg-order-by">order_by<a class="anchor" aria-label="anchor" href="#arg-order-by"></a>
+</dt>
+<dd><p>Criterion used with <code>order = "mean"</code>. Required when several
+criteria are displayed; otherwise the sole displayed criterion is used.
+An explicit criterion may be any criterion of the card.</p></dd>
+
+</dl>
+</div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
+</h2>
+    <p>A <code>ggplot</code> object whose data retain raw entity and criterion IDs.
+If an analysis has no prepared card, a status panel explains the recorded
+reason; a card and grades must already be available.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
+</h2>
+    <p>The figure uses stored means, interval endpoints and grades without
+recomputing summaries or solving. Means are never clipped to intervals:
+a skewed distribution can have its mean outside its central interval.
+The caption gives the stored interval level and distinguishes supplied
+central summaries from computed equal-tail posterior intervals.
+These are not confidence intervals for the grades or solver bounds.</p>
+<p>All ordering keeps grades contiguous. <code>order = "expected_rank"</code> uses the
+card's weights across all criteria, even when only some panels are shown.
+<code>order = "mean"</code> uses the larger mean first within each grade; means in
+different units are never added for ordering. Labels affect display only.</p>
+<p>Automatic row selection spreads up to <code>max_rows</code> rows across grades.
+Where possible, each grade receives a row; remaining rows are allocated
+by grade size and spaced within each grade. If fewer rows than grades are
+requested, some grades are omitted. This is a display selection, not a
+representative sample or a new analysis. Grade colors and subtitle counts
+refer to the full report. For about 30 rows, consider a 7 by 8 inch output;
+smaller selections and <code>ncol = 1</code> suit narrow pages.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
+</h2>
+    <div class="dont-index"><p><code><a href="postrank_report_card.html">postrank_report_card()</a></code>, <code><a href="postrank_plot_data.html">postrank_plot_data()</a></code>,
+<code><a href="postrank_plot_relations.html">postrank_plot_relations()</a></code>, <code><a href="postrank_plot_pairwise.html">postrank_plot_pairwise()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Read prepared tutorial results; no model fitting or optimization.</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"scripts"</span>, <span class="st">"_vignette-setup.R"</span>, package <span class="op">=</span> <span class="st">"postrank"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"tutorial_one"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">postrank_plot_report_card</span><span class="op">(</span><span class="va">one</span>, max_rows <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>  criterion_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="st">"Score A (standardized units)"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span></span></span>
+<span class="r-plt img"><a href="postrank_plot_report_card-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Marginal score-A intervals and ordered grades for all six fictional sites, with display labels." target="_blank" rel="noopener"><img src="postrank_plot_report_card-1.png" alt="Marginal score-A intervals and ordered grades for all six fictional sites, with display labels." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="postrank_plot_report_card-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Marginal score-A intervals and ordered grades for all six fictional sites, with display labels.">Open full-size figure</a></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># The same six sites on two criteria, with one panel per row.</span></span></span>
+<span class="r-in"><span><span class="va">two</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"tutorial_two"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">postrank_plot_report_card</span><span class="op">(</span><span class="va">two</span>, ncol <span class="op">=</span> <span class="fl">1</span>, entities <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"C"</span>, <span class="st">"F"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  entity_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="st">"Site A"</span>, C <span class="op">=</span> <span class="st">"Site C"</span>, F <span class="op">=</span> <span class="st">"Site F"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  criterion_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="st">"Score A"</span>, score_B <span class="op">=</span> <span class="st">"Score B"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-plt img"><a href="postrank_plot_report_card-2.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Two-criterion marginal intervals and common grades for selected fictional sites A, C and F." target="_blank" rel="noopener"><img src="postrank_plot_report_card-2.png" alt="Two-criterion marginal intervals and common grades for selected fictional sites A, C and F." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="postrank_plot_report_card-2.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Two-criterion marginal intervals and common grades for selected fictional sites A, C and F.">Open full-size figure</a></span></span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

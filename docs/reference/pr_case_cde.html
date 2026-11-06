@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chronic Absence in a Small California School Example — pr_case_cde • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Chronic Absence in a Small California School Example — pr_case_cde">
+<meta name="description" content="A one-criterion teaching example using 12 schools from a frozen 2026
+California School Dashboard chronic-absence analysis. Larger target values
+mean lower chronic-absence probability: \(\theta=-p\). The target uses
+proportion units. Source attribution and documented transformations are
+retained in the object and the installed DATA-NOTICE.">
+<meta property="og:description" content="A one-criterion teaching example using 12 schools from a frozen 2026
+California School Dashboard chronic-absence analysis. Larger target values
+mean lower chronic-absence probability: \(\theta=-p\). The target uses
+proportion units. Source attribution and documented transformations are
+retained in the object and the installed DATA-NOTICE.">
+<meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Chronic Absence in a Small California School Example</h1>
+
+      <div class="d-none name"><code>pr_case_cde.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p><span>A one-criterion teaching example using 12 schools from a frozen 2026
+California School Dashboard chronic-absence analysis. Larger target values
+mean lower chronic-absence probability: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo>=</mo><mi>−</mi><mi>p</mi></mrow><annotation encoding="application/x-tex">\theta=-p</annotation></semantics></math>. The target uses
+proportion units. Source attribution and documented transformations are
+retained in the object and the installed DATA-NOTICE.</span></p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">pr_case_cde</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a>
+</h2>
+    <p>A named list with five elements:</p>
+<dl>
+<dt>input</dt>
+<dd><p>A validated <code>postrank_probabilities</code> input for 12
+schools and one criterion, with genuine posterior means and fixed
+90% equal-tail marginal intervals for the same oriented target.</p></dd>
+
+<dt>units</dt>
+<dd><p>12 rows in input order: school CDS IDs as character strings,
+chronic-absence numerators, eligible denominators, observed proportions,
+and the two selection strata. Counts are local source observations,
+not posterior estimates.</p></dd>
+
+<dt>alternatives</dt>
+<dd><p><code>order_32</code> and <code>order_64</code> are supported
+inputs calculated with more quadrature nodes per prior bin. They use
+the same posterior law, observations and supplied marginal summaries.</p></dd>
+
+<dt>reference</dt>
+<dd><p>Settings and three fixed teaching actions, their risk
+evaluations, compact continuous posterior parameters, separate upstream
+and constructor corrections, quadrature diagnostics, and archived
+statewide summary rows. These are archive records rather than current
+native fits.</p></dd>
+
+<dt>provenance</dt>
+<dd><p>Source-relative filenames and SHA-256 hashes, dates,
+selection rule, model conditioning, target direction, citation and
+historical source-review records. No raw CDE download is bundled.</p></dd>
+
+
+</dl>
+</div>
+    <div class="section level2">
+    <h2 id="source">Source<a class="anchor" aria-label="anchor" href="#source"></a>
+</h2>
+    <p>California Department of Education, 2026 California School
+Dashboard chronic absenteeism data, academic year 2025–26.
+<a href="https://www.cde.ca.gov/ta/ac/cm/chronicdatafiles.asp" class="external-link">https://www.cde.ca.gov/ta/ac/cm/chronicdatafiles.asp</a>.
+Source copyright statement:
+<a href="https://www.cde.ca.gov/re/di/cr/index.asp" class="external-link">https://www.cde.ca.gov/re/di/cr/index.asp</a> (accessed 2026-10-30).
+Model, numerical integration and teaching selection by the case-study
+authors. No CDE endorsement is implied.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
+</h2>
+    <p>The source frame contains 5,834 elementary-type, non-DASS,
+ALL-student schools with usable chronic-absence counts and denominators
+at least 30; charter schools remain eligible. It is not all California
+schools. The teaching selection takes one school from each of four
+observed-rate rank groups crossed with three denominator rank groups.
+Within a cell, the lower middle school ordered by observed rate,
+denominator and CDS ID is selected. The subset is deliberately spread,
+not a representative statewide sample. Input order follows the rate group
+and then the denominator group.</p>
+<p>The empirical Bayes prior G was estimated on the full source frame and
+remains fixed for this subset. Uncertainty is conditional on that estimated
+G; uncertainty in estimating G is not propagated. The prior is uniform
+within 161 continuous bins. Within a bin the posterior is a truncated
+Beta(y+1,n-y+1) density, weighted by that school's posterior bin mass.
+It is neither a uniform posterior within bins nor a set of bin-center
+atoms. Independent school posteriors given G have zero equality probability.</p>
+<p><span>The primary comparison probabilities use 16 Gauss-Legendre nodes per bin.
+Stored refinements use 32 and 64 nodes. Source integration retains raw
+probabilities before correcting values outside <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0,1]</annotation></semantics></math> by at most 64 machine
+epsilons. The public input then applies a separate symmetric
+reverse-complement correction with tolerance 1e-6. Neither a small correction
+nor agreement between refinement orders is a certified integration-error
+bound. No posterior draws or Monte Carlo diagnostics are claimed.</span></p>
+<p><span>The supplied target mean is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mi>E</mi><mo stretchy="false" form="prefix">[</mo><mi>p</mi><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">-E[p]</annotation></semantics></math>. Its 90% interval is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><mi>−</mi><msub><mi>q</mi><mn>.95</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mi>−</mi><msub><mi>q</mi><mn>.05</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[-q_{.95}(p), -q_{.05}(p)]</annotation></semantics></math>; the negative direction reverses the endpoints.
+Request </span><code>level = .9</code> to use these intervals in <code><a href="postrank.html">postrank()</a></code> or
+<code><a href="postrank_report_card.html">postrank_report_card()</a></code>. Other interval levels cannot be recovered
+from the supplied summaries. The retained intervals are marginal,
+not simultaneous.</p>
+<p>The three sample actions withhold all comparisons or use fixed observed-rate
+and posterior-mean tertiles. They have no optimization guarantee. Archived
+statewide rows describe fixed-order contiguous cuts and other baselines.
+Optimal cuts conditional on a declared order are not an unrestricted
+statewide optimum; their independent-pair relaxation lower bound has a
+separate scope. These posterior-conditioned risks do not provide external
+validation. Current-probability comparisons do not reproduce Dashboard
+Status-plus-Change colors or establish causal effects. Suspension is a
+separate extension and is not included here.</p>
+<p>The asset contains selected public-source IDs/counts and author-derived
+numerical results, not CDE raw files or logos. The original source attribution
+and historical preparation records remain in the provenance. The installed
+DATA-NOTICE describes the current distribution scope. No Creative Commons
+or package-code license is substituted for the CDE source conditions.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
+</h2>
+    <div class="dont-index"><p><code><a href="../articles/a2-cde-accountability.html">vignette("a2-cde-accountability", package = "postrank")</a></code>,
+<code><a href="postrank_probabilities.html">postrank_probabilities()</a></code>, <code><a href="postrank_report_card.html">postrank_report_card()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">pr_case_cde</span></span></span>
+<span class="r-in"><span><span class="va">x</span><span class="op">$</span><span class="va">units</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         entity_id chronic_absent_count eligible_count observed_rate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  30665976068399                   20            363    0.05509642</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  38684786113997                   26            409    0.06356968</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  30736506094718                   55            873    0.06300115</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  58727516056840                   49            390    0.12564103</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  30736436030639                   56            448    0.12500000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  01750936118038                  112            909    0.12321232</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  19647330106427                   67            348    0.19252874</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  37684520105882                  105            552    0.19021739</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  36676866035711                  124            642    0.19314642</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 34674216033732                   99            340    0.29117647</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 19648816021687                  128            448    0.28571429</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 36677106035901                  164            569    0.28822496</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    observed_rate_group denominator_group</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                    1                 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                    1                 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                    1                 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                    2                 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                    2                 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                    2                 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7                    3                 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                    3                 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9                    3                 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10                   4                 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11                   4                 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12                   4                 3</span>
+<span class="r-in"><span><span class="fu"><a href="postrank_posterior_means.html">postrank_posterior_means</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">input</span>, level <span class="op">=</span> <span class="fl">.9</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 criterion</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> entity           negative_chronic_absence</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   30665976068399              -0.05959043</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   38684786113997              -0.06741062</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   30736506094718              -0.06484309</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   58727516056840              -0.12739063</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   30736436030639              -0.12655681</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   01750936118038              -0.12403027</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   19647330106427              -0.19124897</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   37684520105882              -0.18945586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   36676866035711              -0.19241127</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   34674216033732              -0.28618836</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   19648816021687              -0.28201593</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   36677106035901              -0.28525081</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"lower")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 criterion</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> entity           negative_chronic_absence</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   30665976068399              -0.08106193</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   38684786113997              -0.08862801</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   30736506094718              -0.07901464</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   58727516056840              -0.15546707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   30736436030639              -0.15276486</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   01750936118038              -0.14226231</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   19647330106427              -0.22621309</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   37684520105882              -0.21700330</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   36676866035711              -0.21816439</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   34674216033732              -0.32690719</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   19648816021687              -0.31715130</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   36677106035901              -0.31650101</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"upper")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 criterion</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> entity           negative_chronic_absence</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   30665976068399              -0.04074866</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   38684786113997              -0.04848198</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   30736506094718              -0.05176929</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   58727516056840              -0.10134991</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   30736436030639              -0.10218227</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   01750936118038              -0.10668051</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   19647330106427              -0.15842066</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   37684520105882              -0.16315798</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   36676866035711              -0.16773115</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   34674216033732              -0.24741189</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   19648816021687              -0.24818431</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   36677106035901              -0.25464526</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"level")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"interval_source")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "supplied_marginal_summaries"</span>
+<span class="r-in"><span><span class="va">ev</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_evaluate.html">postrank_evaluate</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">actions</span><span class="op">$</span><span class="va">posterior_mean_tertiles</span>,</span></span>
+<span class="r-in"><span>  <span class="va">x</span><span class="op">$</span><span class="va">input</span>, tau <span class="op">=</span> <span class="fl">.2</span>, weights <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">settings</span><span class="op">$</span><span class="va">weights</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ev</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G"</span>, <span class="st">"N"</span>, <span class="st">"M"</span>, <span class="st">"primary_risk"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $N</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 48</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $M</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 66</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $primary_risk</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.08225512</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="va">x</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">statewide</span><span class="op">$</span><span class="va">metrics</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"method"</span>, <span class="st">"N"</span>, <span class="st">"E"</span>, <span class="st">"risk"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  method        N        E       risk</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        posterior_mean 11343829 150190.6 0.07548678</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2               all_tie        0      0.0 0.20000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3              raw_rate 11337601 150248.7 0.07556340</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      matched_raw_rate 11343829 151730.7 0.07557729</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         expected_rank 11342876 149871.2 0.07547921</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 matched_expected_rank 11343829 150110.8 0.07548208</span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

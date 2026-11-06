@@ -1,0 +1,33 @@
+# OS, interactive R and editor state
+.DS_Store
+.Rhistory
+.RData
+.Rproj.user/
+.quarto/
+.local/
+
+# Temporary checks/builds and failed-test artifacts
+*.Rcheck/
+*.tar.gz
+Rplots.pdf
+tests/testthat/_problems/
+tests/testthat/testthat-problems.rds
+tests/testthat/_snaps/**/*.new.svg
+
+# Machine-specific maintainer handoff; public docs come from README and vignettes
+/dev/HANDOFF.md
+
+# Private working materials and local previews
+/dev/
+/log/
+/data-raw/
+/AGENTS.*
+/README.html
+.Renviron
+.env
+.env.*
+*.pem
+*.key
+
+# Optional machine-readable site index
+/docs/llms.txt

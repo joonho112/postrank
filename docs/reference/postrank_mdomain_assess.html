@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Assess a Fixed Multidomain Report — postrank_mdomain_assess • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Assess a Fixed Multidomain Report — postrank_mdomain_assess"><meta name="description" content="Evaluate the actual supplied states using complete finite-law support,
+conditional fixed-sample iid assurance, or descriptive MCMC diagnostics."><meta property="og:description" content="Evaluate the actual supplied states using complete finite-law support,
+conditional fixed-sample iid assurance, or descriptive MCMC diagnostics."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul></div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Assess a Fixed Multidomain Report</h1>
+
+      <div class="d-none name"><code>postrank_mdomain_assess.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>Evaluate the actual supplied states using complete finite-law support,
+conditional fixed-sample iid assurance, or descriptive MCMC diagnostics.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_mdomain_assess</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>,</span>
+<span>  <span class="va">grades</span>,</span>
+<span>  decision <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mcmc"</span>, <span class="st">"iid"</span>, <span class="st">"exact"</span><span class="op">)</span>,</span>
+<span>  design <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  beta <span class="op">=</span> <span class="st">"1/20"</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-input">input<a class="anchor" aria-label="anchor" href="#arg-input"></a></dt>
+<dd><p>The actual <code><a href="postrank_mdomain_input.html">postrank_mdomain_input()</a></code> law or history to assess.</p></dd>
+
+
+<dt id="arg-grades">grades<a class="anchor" aria-label="anchor" href="#arg-grades"></a></dt>
+<dd><p>A named unit by domain matrix, a verified
+<code>postrank_mdomain_evaluation</code>, or a successful <code>postrank_mdomain_fit</code>.
+A stored card supplies its fixed grades and decision. Its report, decision
+and target-law hashes must match assessment of the actual <code>input</code>.</p></dd>
+
+
+<dt id="arg-decision">decision<a class="anchor" aria-label="anchor" href="#arg-decision"></a></dt>
+<dd><p>A <code><a href="postrank_mdomain_decision.html">postrank_mdomain_decision()</a></code> recipe. <code>NULL</code> uses the
+stored card's decision when <code>grades</code> is a card or fit, and the documented
+default decision for a matrix. A supplied recipe must preserve a stored
+card's exact decision contract.</p></dd>
+
+
+<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
+<dd><p>Explicit assessment route: <code>"mcmc"</code> requires MCMC payloads;
+<code>"iid"</code> requires a declared joint iid equal-weight input; <code>"exact"</code>
+requires finite-law payloads. Representations are never relabeled.</p></dd>
+
+
+<dt id="arg-design">design<a class="anchor" aria-label="anchor" href="#arg-design"></a></dt>
+<dd><p>For iid assurance, the native frozen validation record
+described below. For MCMC or finite-law assessment, an optional caller
+record (for example <code>list(role = "assessment_history")</code>) retained as
+supplied. Sampling claims remain producer declarations.</p></dd>
+
+
+<dt id="arg-beta">beta<a class="anchor" aria-label="anchor" href="#arg-beta"></a></dt>
+<dd><p>Exact numerical error budget in <code>(0,1)</code> for the iid count rule,
+distinct from the decision's scientific joint-event cap <code>alpha</code>.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Named options. All methods accept <code>keep_traces = TRUE</code>. MCMC
+accepts <code>batch_size = 50L</code> and <code>run_id = input$input_id</code>. iid accepts
+exact-count workload caps <code>max_S = 10000L</code>, <code>max_bits = 1000000L</code>, and
+<code>max_work = 50000000</code>. Other options raise a typed error.</p></dd>
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A <code>postrank_mdomain_assessment</code> containing <code>evaluation</code>, the public
+fixed-card evaluation of the actual input; <code>native</code>, the unchanged native
+iid validation, MCMC diagnostic, or finite-law evaluation; <code>method</code>, native
+<code>status</code>, <code>grades</code>, bound <code>decision</code>, <code>spec_hashes</code>, retained <code>design</code>,
+<code>risk</code>, <code>risk_exact</code>, <code>J</code>, <code>J_exact</code>, <code>joint_certificate</code>,
+<code>certificate_scope</code>, <code>assurance</code>, and consistency receipts. The certificate
+concerns only the specified joint event. Mean guards, report optimality,
+scientific sampling claims and model calibration are not certified.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Before collecting or inspecting iid validation states, freeze the
+report, decision, target law, sample size and numerical budget. A public
+card exposes <code>card$receipts$validation_spec_hashes</code>, a named list containing
+<code>report</code>, <code>decision</code>, and <code>target_law</code> hashes. Set <code>design$spec_hashes</code> to
+that saved list; constructing this record after seeing validation states
+does not establish prior freezing.</p>
+<p>The iid design is passed unchanged to the native validator. It requires:</p><ul><li><p><code>spec_hashes</code> matching the frozen three-field list, and
+<code>beta_exact</code>, the canonical rational string matching <code>beta</code>.</p></li>
+<li><p><code>iid_whole_states</code>, <code>independent_of_exploration</code>,
+<code>frozen_before_validation</code>, <code>fixed_sample_size</code>, <code>no_validation_reuse</code>,
+and <code>no_optional_stopping</code>, each exactly <code>TRUE</code>.</p></li>
+<li><p>Nonblank strings <code>iid_mechanism</code>, <code>independence_justification</code>,
+<code>exploration_history_id</code>, <code>frozen_record_id</code>, and <code>validation_batch_id</code>.</p></li>
+<li><p><code>fixed_S</code>, the predeclared positive numeric integer equal to the
+relevant validation trace length; <code>validation_state_ids</code>, the actual
+relevant state IDs in supplied order; and <code>exploration_state_ids</code>, a
+unique character vector disjoint from validation IDs, possibly empty.</p></li>
+</ul><p>Input producer selection/validation IDs are also checked when supplied.
+Hashes, source records and disjoint IDs check consistency; they do not
+prove independence or that freezing occurred before validation. Duplicate
+target values are permitted. The strict joint event is evaluated on whole
+states, never on randomly paired domain margins. The exact rational
+binomial tail decides acceptance; its floating upper bound is display only.
+Failure to certify is <code>"inconclusive"</code>, not a proof of infeasibility.
+<code>assurance$numerical_guarantee</code> and
+<code>assurance$conditional_iid_guarantee_available</code> are true only for an
+accepted iid count bound, conditional on the retained declared assumptions;
+<code>numerical_guarantee_conditional</code> and <code>numerical_guarantee_conditions</code>
+identify that scope. <code>fixed_evaluation_numerical_guarantee</code> retains the
+underlying empirical evaluation's separate flag. No unconditional target-law
+guarantee or intended-posterior/model-calibration certificate is inferred.
+Analytically zero events and <code>alpha = 1</code> need no sampling certificate;
+disabled joint protection supplies no joint certificate.</p>
+<p>MCMC output is an empirical diagnostic. Its native record preserves
+supplied chain order, hit counts, zero runs and fixed batches, including
+final partial batches. No iid/binomial inference, convergence certificate,
+independent-replicate claim, or held-out interpretation is inferred.
+Observed zero hits differ from a structurally zero event. Finite-law
+assessment evaluates all supplied support of the declared law; <code>"exact"</code>
+identifies that route and does not turn floating masses into rational
+arithmetic. Rational/approximate arithmetic and producer declarations are
+reported separately. Display and summary methods consume stored results.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"gmp"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">units</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">targets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>need <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>definition <span class="op">=</span> <span class="st">"Fictional priority coordinate"</span>,</span></span>
+<span class="r-in"><span>    units <span class="op">=</span> <span class="st">"score"</span>, orientation <span class="op">=</span> <span class="st">"larger_is_higher"</span>,</span></span>
+<span class="r-in"><span>    transformations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, equality_classes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="st">"A"</span>, B <span class="op">=</span> <span class="st">"B"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    equality_provenance <span class="op">=</span> <span class="st">"Distinct units have no structural identity."</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">provenance</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>input_id <span class="op">=</span> <span class="st">"exploration"</span>, law_id <span class="op">=</span> <span class="st">"fictional-iid-law"</span>,</span></span>
+<span class="r-in"><span>    proper_law <span class="op">=</span> <span class="cn">TRUE</span>, producer <span class="op">=</span> <span class="st">"Independent example generator"</span>,</span></span>
+<span class="r-in"><span>    joint_generation <span class="op">=</span> <span class="st">"Each row is one complete state of both units."</span>,</span></span>
+<span class="r-in"><span>    sampling_assumptions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>iid_whole_states <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">make_states</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ids</span>, <span class="va">reverse</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ids</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ids</span><span class="op">)</span>, <span class="fl">2L</span>, <span class="fl">1L</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">ids</span>, <span class="va">units</span>, <span class="st">"need"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">x</span><span class="op">[</span>, <span class="fl">1L</span>, <span class="fl">1L</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">reverse</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">x</span><span class="op">[</span>, <span class="fl">2L</span>, <span class="fl">1L</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">reverse</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">x</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span>  <span class="va">exploration_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"explore-1"</span>, <span class="st">"explore-2"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">exploration</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_mdomain_input.html">postrank_mdomain_input</a></span><span class="op">(</span><span class="fu">make_states</span><span class="op">(</span><span class="va">exploration_ids</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    targets <span class="op">=</span> <span class="va">targets</span>, provenance <span class="op">=</span> <span class="va">provenance</span>,</span></span>
+<span class="r-in"><span>    representation <span class="op">=</span> <span class="st">"iid_equal_weight_draws"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">G</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">2L</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">units</span>, <span class="st">"need"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_mdomain_decision.html">postrank_mdomain_decision</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="st">"1/10"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">card</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_mdomain_evaluate.html">postrank_mdomain_evaluate</a></span><span class="op">(</span><span class="va">exploration</span>, <span class="va">G</span>, <span class="va">d</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Record this fixed contract before generating validation states.</span></span></span>
+<span class="r-in"><span>  <span class="va">S</span> <span class="op">&lt;-</span> <span class="fl">59L</span></span></span>
+<span class="r-in"><span>  <span class="va">validation_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"validate-"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">design</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>spec_hashes <span class="op">=</span> <span class="va">card</span><span class="op">$</span><span class="va">receipts</span><span class="op">$</span><span class="va">validation_spec_hashes</span>,</span></span>
+<span class="r-in"><span>    beta_exact <span class="op">=</span> <span class="st">"1/20"</span>, fixed_S <span class="op">=</span> <span class="va">S</span>,</span></span>
+<span class="r-in"><span>    iid_whole_states <span class="op">=</span> <span class="cn">TRUE</span>, independent_of_exploration <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>    frozen_before_validation <span class="op">=</span> <span class="cn">TRUE</span>, fixed_sample_size <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>    no_validation_reuse <span class="op">=</span> <span class="cn">TRUE</span>, no_optional_stopping <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>    iid_mechanism <span class="op">=</span> <span class="st">"Independent Bernoulli draws for complete states."</span>,</span></span>
+<span class="r-in"><span>    independence_justification <span class="op">=</span> <span class="st">"Fresh RNG draws after the fixed record."</span>,</span></span>
+<span class="r-in"><span>    exploration_history_id <span class="op">=</span> <span class="st">"example-exploration"</span>,</span></span>
+<span class="r-in"><span>    frozen_record_id <span class="op">=</span> <span class="st">"example-fixed-59"</span>, validation_batch_id <span class="op">=</span> <span class="st">"example-validation"</span>,</span></span>
+<span class="r-in"><span>    exploration_state_ids <span class="op">=</span> <span class="va">exploration_ids</span>, validation_state_ids <span class="op">=</span> <span class="va">validation_ids</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">120</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">validation_states</span> <span class="op">&lt;-</span> <span class="fu">make_states</span><span class="op">(</span><span class="va">validation_ids</span>, <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">.01</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">provenance</span><span class="op">$</span><span class="va">input_id</span> <span class="op">&lt;-</span> <span class="st">"validation"</span></span></span>
+<span class="r-in"><span>  <span class="va">validation</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_mdomain_input.html">postrank_mdomain_input</a></span><span class="op">(</span><span class="va">validation_states</span>, targets <span class="op">=</span> <span class="va">targets</span>,</span></span>
+<span class="r-in"><span>    provenance <span class="op">=</span> <span class="va">provenance</span>, representation <span class="op">=</span> <span class="st">"iid_equal_weight_draws"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">assessed</span> <span class="op">&lt;-</span> <span class="fu">postrank_mdomain_assess</span><span class="op">(</span><span class="va">validation</span>, <span class="va">card</span>, method <span class="op">=</span> <span class="st">"iid"</span>, design <span class="op">=</span> <span class="va">design</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">assessed</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Complete finite support is assessed through its declared-law route.</span></span></span>
+<span class="r-in"><span>  <span class="va">finite_provenance</span> <span class="op">&lt;-</span> <span class="va">provenance</span></span></span>
+<span class="r-in"><span>  <span class="va">finite_provenance</span><span class="op">$</span><span class="va">sampling_assumptions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    finite_support_origin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"The two listed states and exact masses"</span>,</span></span>
+<span class="r-in"><span>      <span class="st">"define the complete fictional law."</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">finite</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_mdomain_input.html">postrank_mdomain_input</a></span><span class="op">(</span><span class="fu">make_states</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"law-1"</span>, <span class="st">"law-2"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    targets <span class="op">=</span> <span class="va">targets</span>, provenance <span class="op">=</span> <span class="va">finite_provenance</span>,</span></span>
+<span class="r-in"><span>    representation <span class="op">=</span> <span class="st">"exact_finite_law"</span>, masses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"99/100"</span>, <span class="st">"1/100"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">postrank_mdomain_assess</span><span class="op">(</span><span class="va">finite</span>, <span class="va">G</span>, decision <span class="op">=</span> <span class="va">d</span>, method <span class="op">=</span> <span class="st">"exact"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Fixed multidomain report assessment</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Method: exact; status: evaluated_declared_finite_law</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Risk: 1/100; joint probability: 1/100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Joint certificate: yes; scope: specified declared-finite-law joint event only</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Sampling assumptions verified: no; model calibration certified: no</span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer></div>
+
+
+
+
+
+  </body></html>
+

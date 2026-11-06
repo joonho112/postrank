@@ -1,0 +1,23 @@
+intro: Choose a practical guide, explore a case study, or follow the methods in order.
+start: Begin with a small analysis that assigns one grade per unit, shared across the criteria. Then learn how to read results and make figures.
+descriptions:
+  a1-getting-started: Run a complete analysis with one criterion, then with several criteria supporting a common grade.
+  a5-your-posterior-results: Prepare your own posterior results and the scientific declarations needed for analysis.
+  a6-reading-exporting-results: Read grades, losses and status records, and export the results you need.
+  a7-figures-sensitivity: Make the common-grade figures and examine changes in analysis settings.
+  a2-cde-accountability: Compare chronic absence across selected California schools.
+  a3-krw-race-gender: Examine race and gender contact gaps at large employers.
+  a4-alabama-opportunity: Study historical income and incarceration outcomes across Alabama counties.
+  m1-ranking-and-loss: Connect posterior comparisons, integer grades and the cost of withholding a direction.
+  m2-several-criteria: Understand weights, competing goals and the consequences of a common grading.
+  m3-posterior-inputs: Match posterior representations and pairwise probabilities to the calculations they support.
+  m4-ties-and-withholding: Distinguish true target ties from comparisons left undisclosed.
+  m5-computing-grades: Choose settings and interpret computation status, bounds and gaps.
+  m6-uncertainty-diagnostics: Read Monte Carlo diagnostics and their numerical limits.
+  mdomain-quickstart: Build, evaluate, select and plot a report with a grade in each domain.
+  mdomain-decisions: See when domain choices separate and when joint posterior protection changes the chosen profile.
+  quickstart: Follow the retained posterior-draw example through a common grading.
+  inputs-and-producers: Work with strict input declarations and externally produced posterior information.
+  baselines-and-the-cost-of-a-common-grade: Compare common grades with simpler score orders and criterion-specific burdens.
+  figure-gallery: Browse the seven common-grade plots and their display options.
+  migration-from-0-9: Adapt scripts written for the earlier 0.9 interface.

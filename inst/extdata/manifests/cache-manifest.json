@@ -1,0 +1,1016 @@
+{
+  "manifest_schema_version": "1",
+  "package_version": "1.1.0",
+  "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+  "created_at": "2026-10-30T14:15:54Z",
+  "assets": {
+    "tutorial_one": {
+      "key": "tutorial_one",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 1,
+      "call": "postrank(pr_tutorial$one, weights = c(score_A = 1), tau = .2, G_max = 3L, backend = \"highs\", control = postrank_control(time_limit = 60, threads = 1L, seed = 1304L))",
+      "object_class": "postrank_analysis",
+      "data_object": null,
+      "input_identity": "1029257218c55178ffb91d8b9ea0cd86efeef4e3d0f4be5da7676d8d8677cc33",
+      "problem_identity": "4d87e4819dabd5c4ff953b68c4802846821a83bd333fb8ede06697dde991bee4",
+      "status": "optimal",
+      "risk_absolute_gap": 0,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 1
+      },
+      "file": "extdata/cached/tutorial_one.rds",
+      "bytes": 6768,
+      "sha256": "d17d862470a3dc3a25dc5ed58f6bbb8ccb6fa6be21d6110f9bdbae9d2eb8c525",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "tutorial_two": {
+      "key": "tutorial_two",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 1,
+      "call": "postrank(pr_tutorial$two, weights = c(score_A = .5, score_B = .5), tau = .2, G_max = 3L, backend = \"highs\", control = postrank_control(time_limit = 60, threads = 1L, seed = 1304L))",
+      "object_class": "postrank_analysis",
+      "data_object": null,
+      "input_identity": "83c9e6459b4ba70c1660ba40ee4dff5efdc1b760be9800efe6815ccc67e09127",
+      "problem_identity": "31cca015e6a1fe5e560a366957bdd3696e2dc50bcde82c65d6982495cfbb33de",
+      "status": "optimal",
+      "risk_absolute_gap": 0,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 1
+      },
+      "file": "extdata/cached/tutorial_two.rds",
+      "bytes": 7100,
+      "sha256": "bf9138a8cdbdcb5737b56372f744b062fbf8cfacf37ef8f19514fe8d52d658c9",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "tutorial_frontier": {
+      "key": "tutorial_frontier",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 5,
+      "call": "postrank_frontier(tutorial_two, tau = c(.05, .1, .2, .3, .4), backend = \"highs\", control = postrank_control(time_limit = 60, threads = 1L, seed = 1304L))",
+      "object_class": "postrank_frontier",
+      "data_object": null,
+      "input_identity": "83c9e6459b4ba70c1660ba40ee4dff5efdc1b760be9800efe6815ccc67e09127",
+      "problem_identity": null,
+      "status": null,
+      "risk_absolute_gap": null,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 0
+      },
+      "file": "extdata/cached/tutorial_frontier.rds",
+      "bytes": 1932,
+      "sha256": "20d1a50cb3b2476617d5bacf1601d919e00ef9b034dd305157ecbfd86837b67e",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "tutorial_commonality": {
+      "key": "tutorial_commonality",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 2,
+      "call": "postrank_commonality_cost(tutorial_two, backend = \"highs\", control = postrank_control(time_limit = 60, threads = 1L, seed = 1304L))",
+      "object_class": "postrank_commonality_cost",
+      "data_object": null,
+      "input_identity": "83c9e6459b4ba70c1660ba40ee4dff5efdc1b760be9800efe6815ccc67e09127",
+      "problem_identity": null,
+      "status": null,
+      "risk_absolute_gap": null,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 0
+      },
+      "file": "extdata/cached/tutorial_commonality.rds",
+      "bytes": 1740,
+      "sha256": "cdb2695ef3a7f823b0ba246597f326a767a31c07d549c107c63dce9e42c4cc2e",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "tutorial_sensitivity": {
+      "key": "tutorial_sensitivity",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 7,
+      "call": "postrank_sensitivity(tutorial_two, postrank_settings_grid(tutorial_two$settings, tau = c(.1, .3), G_max = c(2L, 4L), weights = list(A_heavy = c(score_A = .8, score_B = .2), B_heavy = c(score_A = .2, score_B = .8))), backend = \"highs\", control = postrank_control(time_limit = 60, threads = 1L, seed = 1304L))",
+      "object_class": "postrank_sensitivity",
+      "data_object": null,
+      "input_identity": null,
+      "problem_identity": null,
+      "status": null,
+      "risk_absolute_gap": null,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 7
+      },
+      "file": "extdata/cached/tutorial_sensitivity.rds",
+      "bytes": 10336,
+      "sha256": "18d930f56ae73d8fc9115514064322baf5cbbcc8e3e8777e8bbc66e1ed79b669",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "analysis_30x3": {
+      "key": "analysis_30x3",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 1,
+      "call": "postrank(pr_example_draws, weights = c(poverty = .5, frl = .25, snap = .25), tau = .25, G_max = 4L, backend = \"highs\")",
+      "object_class": "postrank_analysis",
+      "data_object": "pr_example_draws",
+      "input_identity": "d22550eafe18a9e626cf80490fc4944559a5fe8cdd4f6ad1ff87824774d8018f",
+      "problem_identity": "6a2e151171f83c96268b3ea2b78fe93f0695657fd21ffbafe9a3a3ef1e230452",
+      "status": "optimal",
+      "risk_absolute_gap": 0,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 1
+      },
+      "file": "extdata/cached/analysis_30x3.rds",
+      "bytes": 27140,
+      "sha256": "961ab8e088009f63a6e022c16be461d81124646e78642f6887b22ead52c489e2",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "analysis_30x3_tau35": {
+      "key": "analysis_30x3_tau35",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 1,
+      "call": "postrank(pr_example_draws, weights = c(poverty = .5, frl = .25, snap = .25), tau = .35, G_max = 4L, backend = \"highs\")",
+      "object_class": "postrank_analysis",
+      "data_object": "pr_example_draws",
+      "input_identity": "d22550eafe18a9e626cf80490fc4944559a5fe8cdd4f6ad1ff87824774d8018f",
+      "problem_identity": "13ff4183962a60eb2ce9073c78702db3e5ee5c3b77a843ec6f5af122ce54d71f",
+      "status": "optimal",
+      "risk_absolute_gap": 5.55111512312578e-17,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 1
+      },
+      "file": "extdata/cached/analysis_30x3_tau35.rds",
+      "bytes": 28160,
+      "sha256": "37d73cc0e4e243fa9e546915fc4689777926fd31f27ab311901c77f99f1d5f3c",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "gaussian_analysis_30x3": {
+      "key": "gaussian_analysis_30x3",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 1,
+      "call": "postrank(pr_example_gaussian, weights = c(poverty = .5, frl = .25, snap = .25), tau = .25, G_max = 4L, backend = \"highs\")",
+      "object_class": "postrank_analysis",
+      "data_object": "pr_example_gaussian",
+      "input_identity": "0b488bcc654c532a007a195b07e6268083442971c37b661528bc2d2aa687bb46",
+      "problem_identity": "b46113dcc70c24b485fc45dba7738841a4d63e512ad49951ec8c6fc1b90b30f3",
+      "status": "optimal",
+      "risk_absolute_gap": 0,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 1
+      },
+      "file": "extdata/cached/gaussian_analysis_30x3.rds",
+      "bytes": 41420,
+      "sha256": "f54537f5990c9d534c6208243d7cc9383d3435e2cf8406eb966f5f10e0e4f1ff",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "frontier_30x3": {
+      "key": "frontier_30x3",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 8,
+      "call": "postrank_frontier(analysis_30x3, tau = seq(.10, .45, by = .05), backend = \"highs\")",
+      "object_class": "postrank_frontier",
+      "data_object": null,
+      "input_identity": "d22550eafe18a9e626cf80490fc4944559a5fe8cdd4f6ad1ff87824774d8018f",
+      "problem_identity": null,
+      "status": null,
+      "risk_absolute_gap": null,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 0
+      },
+      "file": "extdata/cached/frontier_30x3.rds",
+      "bytes": 2052,
+      "sha256": "896ce314a90cb4fe4b45a50c89b7a923a7f04868d131311d1b91c1d13d8437f3",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "commonality_30x3": {
+      "key": "commonality_30x3",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 3,
+      "call": "postrank_commonality_cost(analysis_30x3, backend = \"highs\")",
+      "object_class": "postrank_commonality_cost",
+      "data_object": null,
+      "input_identity": "d22550eafe18a9e626cf80490fc4944559a5fe8cdd4f6ad1ff87824774d8018f",
+      "problem_identity": null,
+      "status": null,
+      "risk_absolute_gap": null,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 0
+      },
+      "file": "extdata/cached/commonality_30x3.rds",
+      "bytes": 1740,
+      "sha256": "67a8877a3a8ce081d6016a4187be4368d44db57de5516b88e8b98d209be00555",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "commonality_30x3_tau35": {
+      "key": "commonality_30x3_tau35",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 3,
+      "call": "postrank_commonality_cost(analysis_30x3_tau35, backend = \"highs\")",
+      "object_class": "postrank_commonality_cost",
+      "data_object": null,
+      "input_identity": "d22550eafe18a9e626cf80490fc4944559a5fe8cdd4f6ad1ff87824774d8018f",
+      "problem_identity": null,
+      "status": null,
+      "risk_absolute_gap": null,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 0
+      },
+      "file": "extdata/cached/commonality_30x3_tau35.rds",
+      "bytes": 1780,
+      "sha256": "879f9036f26f4b1dcdc89af5fe3ea8a3e8a8d2acbf588bbbaae447c419cff24b",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "comparison_30x3_tau35": {
+      "key": "comparison_30x3_tau35",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 0,
+      "call": "postrank_compare(analysis_30x3_tau35)",
+      "object_class": "postrank_comparison",
+      "data_object": null,
+      "input_identity": "d22550eafe18a9e626cf80490fc4944559a5fe8cdd4f6ad1ff87824774d8018f",
+      "problem_identity": null,
+      "status": null,
+      "risk_absolute_gap": null,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 0
+      },
+      "file": "extdata/cached/comparison_30x3_tau35.rds",
+      "bytes": 2176,
+      "sha256": "afafdaef4eb22642a5b1aa6a47487bb8884d1f9a27b8772423c82ac0cdd4110b",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "comparison_30x3": {
+      "key": "comparison_30x3",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 0,
+      "call": "postrank_compare(analysis_30x3)",
+      "object_class": "postrank_comparison",
+      "data_object": null,
+      "input_identity": "d22550eafe18a9e626cf80490fc4944559a5fe8cdd4f6ad1ff87824774d8018f",
+      "problem_identity": null,
+      "status": null,
+      "risk_absolute_gap": null,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 0
+      },
+      "file": "extdata/cached/comparison_30x3.rds",
+      "bytes": 1972,
+      "sha256": "fa5f6a11ab65f49f455976f6ac315638444f9615aaa67dd6a83eadef0534774d",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "toy_analysis": {
+      "key": "toy_analysis",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 1,
+      "call": "postrank(postrank_toy, weights = c(need_A = .6, need_B = .4), tau = .25, G_max = 3L, backend = \"highs\")",
+      "object_class": "postrank_analysis",
+      "data_object": "postrank_toy",
+      "input_identity": "9e7e1006f4d53c1bf75b4bbeb89fdf72c24afc2b24ecfb6832c86acc66692331",
+      "problem_identity": "45c5f990202d9df3b60143a186177338ff1c47bc428db7e07c10e3252af37aba",
+      "status": "optimal",
+      "risk_absolute_gap": 0,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 1
+      },
+      "file": "extdata/cached/toy_analysis.rds",
+      "bytes": 7024,
+      "sha256": "ee8383287a8d7c828b253962ea63dd46c505473f1bc921aea35ca3b3ab165dde",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "toy_minimax": {
+      "key": "toy_minimax",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 1,
+      "call": "postrank_solve(postrank_problem(postrank_pairwise(postrank_toy), w, .25, 3L, objective = \"minimax\"), backend = \"highs\")",
+      "object_class": "postrank_fit",
+      "data_object": null,
+      "input_identity": "9e7e1006f4d53c1bf75b4bbeb89fdf72c24afc2b24ecfb6832c86acc66692331",
+      "problem_identity": "dcfbdd2191a7e1f7d25148f293eb65116e3ca427645d29123243ce2fa3844140",
+      "status": "optimal",
+      "risk_absolute_gap": 0,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 1
+      },
+      "file": "extdata/cached/toy_minimax.rds",
+      "bytes": 6132,
+      "sha256": "08869f60e23024e9fb5ff1ee2171276f34788f6363a6459cd6eeb014732d7b9c",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "toy_frontier": {
+      "key": "toy_frontier",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 3,
+      "call": "postrank_frontier(postrank_pairwise(postrank_toy), w, tau = c(.15, .25, .4), G_max = 3L, backend = \"highs\")",
+      "object_class": "postrank_frontier",
+      "data_object": null,
+      "input_identity": "9e7e1006f4d53c1bf75b4bbeb89fdf72c24afc2b24ecfb6832c86acc66692331",
+      "problem_identity": null,
+      "status": null,
+      "risk_absolute_gap": null,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 0
+      },
+      "file": "extdata/cached/toy_frontier.rds",
+      "bytes": 1644,
+      "sha256": "254309bb9ebc76290a9c4638948f563c305b3c1812d85f6181e1e715ea4fecc8",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "toy_commonality": {
+      "key": "toy_commonality",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 2,
+      "call": "postrank_commonality_cost(toy_analysis, backend = \"highs\")",
+      "object_class": "postrank_commonality_cost",
+      "data_object": null,
+      "input_identity": "9e7e1006f4d53c1bf75b4bbeb89fdf72c24afc2b24ecfb6832c86acc66692331",
+      "problem_identity": null,
+      "status": null,
+      "risk_absolute_gap": null,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 0
+      },
+      "file": "extdata/cached/toy_commonality.rds",
+      "bytes": 1680,
+      "sha256": "7b3bfffc4e1842955e3aca41b85988ba4dd90f7538bb62ee5a179de08c24a490",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "toy_crossfit": {
+      "key": "toy_crossfit",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 60,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 2,
+      "call": "postrank_crossfit(postrank_toy, fit = toy_analysis$fit, backend = \"highs\")",
+      "object_class": "postrank_crossfit",
+      "data_object": null,
+      "input_identity": "9e7e1006f4d53c1bf75b4bbeb89fdf72c24afc2b24ecfb6832c86acc66692331",
+      "problem_identity": null,
+      "status": null,
+      "risk_absolute_gap": null,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 0
+      },
+      "file": "extdata/cached/toy_crossfit.rds",
+      "bytes": 3784,
+      "sha256": "b423160a827acfbe54cdb40b965a5de0fa82b0714bef650fd50a1358bc95451c",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "case_cde_12": {
+      "key": "case_cde_12",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 30,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 1,
+      "call": "postrank(pr_case_cde$input, weights = setNames(rep(1/1, 1), pr_case_cde$input$criterion_ids), tau = 0.2, G_max = 3L, level = 0.9, backend = \"highs\", control = postrank_control(time_limit = 30, threads = 1L, seed = 1304L), fragility = FALSE)",
+      "object_class": "postrank_analysis",
+      "data_object": null,
+      "input_identity": "cb31241dfa428b8ddb06ffa611532b37fa6f499b4b75693f2f24e73aa2fbf13b",
+      "problem_identity": "50d66be661ec1ce621c77d1e48d14976b2d9a251ab3c98565d28ee050da13e76",
+      "status": "optimal",
+      "risk_absolute_gap": 1.38777878078145e-17,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 1
+      },
+      "case_data": "pr_case_cde",
+      "data_distribution": "public-source-maintainer-confirmed",
+      "data_notice": "extdata/case-studies/DATA-NOTICE.md",
+      "file": "extdata/cached/case_cde_12.rds",
+      "bytes": 11396,
+      "sha256": "1515afc2bc457ca4a63488abcabfda5b9cc4ca925c8c250071a81dff61aaed93",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "case_krw_signed97": {
+      "key": "case_krw_signed97",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 30,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 1,
+      "call": "postrank(pr_case_krw$input, weights = setNames(rep(1/2, 2), pr_case_krw$input$criterion_ids), tau = 0.25, G_max = 4L, level = 0.9, backend = \"highs\", control = postrank_control(time_limit = 30, threads = 1L, seed = 1304L), fragility = FALSE)",
+      "object_class": "postrank_analysis",
+      "data_object": null,
+      "input_identity": "469243f72fc8d7a881ec5a7f9c3a5fda3617e7b5a2b1a735b6d769befeb1b0ee",
+      "problem_identity": "24ab3fffb21e51bd19d256532a72fd51cfd4c2482dba88294fc4c7da3bbf9ba4",
+      "status": "optimal",
+      "risk_absolute_gap": 0,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 1
+      },
+      "case_data": "pr_case_krw",
+      "data_distribution": "CC-BY-NC",
+      "data_notice": "extdata/case-studies/DATA-NOTICE.md",
+      "file": "extdata/cached/case_krw_signed97.rds",
+      "bytes": 263244,
+      "sha256": "f704f827d16b6d547516da54addf0b6e1964115259f2e5eb6db38f3edf085af8",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    },
+    "case_alabama67": {
+      "key": "case_alabama67",
+      "cache_schema_version": "1",
+      "package_version": "1.1.0",
+      "source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+      "created_at": "2026-10-30T14:15:54Z",
+      "r_version": "R version 4.6.0 (2026-04-24)",
+      "backend": "highs",
+      "backend_version": "1.12.0.3",
+      "seed": 1304,
+      "control": {
+        "time_limit": 30,
+        "threads": 1,
+        "seed": 1304,
+        "absolute_risk_gap": 1e-08,
+        "relative_gap": 0,
+        "strategy": "staged"
+      },
+      "solves": 1,
+      "call": "postrank(pr_case_alabama$input, weights = setNames(rep(1/2, 2), pr_case_alabama$input$criterion_ids), tau = 0.2, G_max = 5L, level = 0.95, backend = \"highs\", control = postrank_control(time_limit = 30, threads = 1L, seed = 1304L), fragility = FALSE)",
+      "object_class": "postrank_analysis",
+      "data_object": null,
+      "input_identity": "a12826d5a8a466d540ec8ae54278672f377f2530da340defec250ee7e5bf8766",
+      "problem_identity": "224e3681c0a98fd2bb57c7e1b3095aef2dc34895176055f26791cd4c01770ff8",
+      "status": "optimal",
+      "risk_absolute_gap": 1.11022302462516e-16,
+      "redactions": {
+        "field": "backend$wrapper_path",
+        "replacement": "<R_LIBS>/<package>",
+        "count": 1
+      },
+      "case_data": "pr_case_alabama",
+      "data_distribution": "CC-BY-4.0",
+      "data_notice": "extdata/case-studies/DATA-NOTICE.md",
+      "file": "extdata/cached/case_alabama67.rds",
+      "bytes": 70296,
+      "sha256": "8baacaf2449fc14cc91f546403bdc2583e0d8fc232eb7954de736fc4fa60d088",
+      "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+      "public_preparation": {
+        "prepared_at": "2026-10-30T16:09:41Z",
+        "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+        "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+        "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+      },
+      "pilot_removal_preparation": {
+        "prepared_at": "2026-10-30T16:42:17Z",
+        "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+        "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+      }
+    }
+  },
+  "total_bytes": 499516,
+  "public_preparation": {
+    "prepared_at": "2026-10-30T16:09:41Z",
+    "computation_source_id": "d86f09c4d9fb67aa5b4d5c805c74a972cb559198dabe4f90794a1380ffd7c998",
+    "scope": "Public source packaging; cached numerical objects and original solve timestamps preserved.",
+    "numerical_equivalence": "All retained R expressions and all bundled input data match the working source."
+  },
+  "pilot_removal_preparation": {
+    "prepared_at": "2026-10-30T16:42:17Z",
+    "previous_source_id": "07158dd456322c44568628272a5cab5e0c8e7d9e911e49f051aa6c1a82f648a8",
+    "scope": "Remove pilot summary data and documentation; retained inputs, executable functions and cached numerical results unchanged."
+  }
+}

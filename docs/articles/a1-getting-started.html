@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Analysis with one or several criteria • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Analysis with one or several criteria">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="active nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-article">
+
+
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Analysis with one or several criteria</h1>
+            
+      
+      <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/a1-getting-started.Rmd" class="external-link"><code>vignettes/a1-getting-started.Rmd</code></a></small>
+      <div class="d-none name"><code>a1-getting-started.Rmd</code></div>
+    </div>
+
+    
+    
+<p>We consider the assignment of six sites to ordered groups when their
+scores are uncertain. A complete ranking specifies a direction for every
+pair. In postrank, comparisons may instead be withheld by assigning
+sites to the same grade. The loss balances posterior expected
+wrong-direction errors against the cost of withholding. This formulation
+applies to one criterion or to several criteria.</p>
+<p>The analysis first uses one score and then includes a second score
+for the same sites. Grade 1 has highest priority. A shared grade
+withholds the comparison between two sites without asserting equality of
+their scores.</p>
+<div class="section level2">
+<h2 id="begin-with-a-small-posterior-input">Posterior input<a class="anchor" aria-label="anchor" href="#begin-with-a-small-posterior-input"></a>
+</h2>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joonho112/postrank" class="external-link">postrank</a></span><span class="op">)</span></span>
+<span><span class="va">sites</span> <span class="op">&lt;-</span> <span class="va">pr_tutorial</span></span></code></pre></div>
+<p>The example comprises six fictional sites, A through F, with
+specified score means and standard deviations. Each score has a normal
+distribution with standard deviation 0.2 in illustrative standardized
+units. Sites are independent, as are the two scores within a site.
+Higher scores receive higher priority on both criteria. These
+distributions define a teaching example; they are not fitted to
+observations from actual sites.</p>
+<p><code>sites$one</code> contains the first score.
+<code>sites$two</code> adds the second score while retaining the same
+distribution for the first. Both inputs contain analytic comparison
+probabilities and the information required for marginal posterior
+intervals. In an application, the targets, directions and dependence
+assumptions must first be specified, as described in <a href="a5-your-posterior-results.html">Analysis of supplied posterior
+results</a>.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Site <span class="op">=</span> <span class="va">sites</span><span class="op">$</span><span class="va">units</span><span class="op">$</span><span class="va">label</span>, <span class="va">sites</span><span class="op">$</span><span class="va">law</span><span class="op">$</span><span class="va">means</span><span class="op">)</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="cn">FALSE</span>, digits <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Site"</span>, <span class="st">"Score A mean"</span>, <span class="st">"Score B mean"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Site</th>
+<th align="right">Score A mean</th>
+<th align="right">Score B mean</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Site A</td>
+<td align="right">1.20</td>
+<td align="right">0.7</td>
+</tr>
+<tr class="even">
+<td align="left">Site B</td>
+<td align="right">0.95</td>
+<td align="right">0.4</td>
+</tr>
+<tr class="odd">
+<td align="left">Site C</td>
+<td align="right">0.25</td>
+<td align="right">0.9</td>
+</tr>
+<tr class="even">
+<td align="left">Site D</td>
+<td align="right">0.15</td>
+<td align="right">0.6</td>
+</tr>
+<tr class="odd">
+<td align="left">Site E</td>
+<td align="right">-0.50</td>
+<td align="right">-0.5</td>
+</tr>
+<tr class="even">
+<td align="left">Site F</td>
+<td align="right">-0.80</td>
+<td align="right">-0.7</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level2">
+<h2 id="choose-what-the-first-report-should-say">Loss and grade constraints<a class="anchor" aria-label="anchor" href="#choose-what-the-first-report-should-say"></a>
+</h2>
+<p>The first analysis specifies two reporting choices.
+<code>G_max = 3</code> permits at most three grades, including solutions
+with fewer grades. <code>tau = 0.2</code> is the loss incurred by
+withholding a pair, whereas an incorrect disclosed direction has loss
+one before averaging over pairs. Decreasing <code>tau</code> therefore
+reduces the relative cost of withholding. The supported range is
+<code>0 &lt; tau &lt;= 0.5</code>.</p>
+<p>The following call computes the analysis using HiGHS and requires the
+optional <code>highs</code> package. It is displayed without execution.
+The results and figures below use prepared analyses obtained with the
+same calls and inputs; consequently, rendering this article does not
+require an optimizer.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank.html">postrank</a></span><span class="op">(</span><span class="va">sites</span><span class="op">$</span><span class="va">one</span>, tau <span class="op">=</span> <span class="fl">0.2</span>, G_max <span class="op">=</span> <span class="fl">3</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="../reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">60</span>, threads <span class="op">=</span> <span class="fl">1</span>, seed <span class="op">=</span> <span class="fl">1304</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>For a single criterion, the criterion weight is automatically one, so
+the loss involves no averaging across criteria.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">one</span></span>
+<span><span class="co">#&gt; &lt;postrank_analysis&gt;  6 entities in 3 grades (sizes 2 / 2 / 2)</span></span>
+<span><span class="co">#&gt;   One criterion: score_A.</span></span>
+<span><span class="co">#&gt;   Posterior loss: 0.0417.</span></span>
+<span><span class="co">#&gt;   Disclosed 12 of 15 pairs (80.0%); withheld 3.</span></span>
+<span><span class="co">#&gt;   Expected error among disclosed pairs: score_A 0.002.</span></span>
+<span><span class="co">#&gt;   Solver: Optimal within solver tolerances.</span></span>
+<span><span class="co">#&gt;   Optimization gap: 0; requested absolute gap 1e-08.</span></span>
+<span><span class="co">#&gt;   Prepared: report card.</span></span>
+<span><span class="co">#&gt;   Grade 1 has highest priority; a shared grade withholds the comparison.</span></span>
+<span><span class="co">#&gt;   grade 1 (2): A, B</span></span>
+<span><span class="co">#&gt;   grade 2 (2): C, D</span></span>
+<span><span class="co">#&gt;   grade 3 (2): E, F</span></span>
+<span><span class="co">#&gt;   !  1 warning recorded: Reported lower bound exceeded the validated action ris...</span></span>
+<span><span class="co">#&gt;   i summary(x) explains the loss, settings and bounds; get_grades(x) returns</span></span>
+<span><span class="co">#&gt;     all grades.</span></span></code></pre></div>
+<p>The result uses 3 grades and discloses 12 of the 15 possible pairs.
+Sites A and B are assigned to grade 1, C and D to grade 2, and E and F
+to grade 3. Since A has a smaller grade number than C, the report places
+A above C. The comparison of A with B is withheld; their order of
+presentation within the grade has no inferential interpretation.</p>
+<p>The posterior expected number of errors among disclosed pairs is
+0.025. Dividing by the 12 disclosed pairs yields 0.0021 expected errors
+per disclosed pair. This average summarizes the selected directions;
+individual pairs may have different posterior error probabilities.</p>
+<p>The loss also includes the cost of the 3 withheld pairs:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_profile.html">get_profile</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span>
+<span><span class="op">(</span><span class="va">p</span><span class="op">$</span><span class="va">E</span> <span class="op">+</span> <span class="fl">0.2</span> <span class="op">*</span> <span class="op">(</span><span class="fl">15</span> <span class="op">-</span> <span class="fl">12</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">15</span></span>
+<span><span class="co">#&gt; [1] 0.04165164</span></span>
+<span><span class="fu"><a href="../reference/get_risk.html">get_risk</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $risk</span></span>
+<span><span class="co">#&gt; [1] 0.04165164</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $lower_bound</span></span>
+<span><span class="co">#&gt; [1] 0.04165164</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $gap</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $status</span></span>
+<span><span class="co">#&gt; [1] "optimal"</span></span></code></pre></div>
+<p>The resulting loss is 0.0417. Assigning all sites to a single grade
+would withhold every comparison and give loss 0.2 under this loss
+definition. Expected errors per disclosed pair would then be undefined,
+since the denominator would be zero. A report can therefore disclose
+selected directions while withholding the remaining comparisons.</p>
+<p>The prepared result includes a small floating-point correction to the
+solver bound. The reported lower bound exceeded the independently
+evaluated action loss by an amount within the numerical tolerance. The
+recorded gap is zero after correction. This gap concerns optimization
+conditional on the supplied probabilities; it provides neither a measure
+of posterior uncertainty nor model validation. The warning and further
+details are retained in <code>summary(one)</code>.</p>
+</div>
+<div class="section level2">
+<h2 id="read-estimates-alongside-grades">Posterior summaries and grades<a class="anchor" aria-label="anchor" href="#read-estimates-alongside-grades"></a>
+</h2>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_report_card.html">postrank_plot_report_card</a></span><span class="op">(</span><span class="va">one</span>,</span>
+<span>  entity_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="va">sites</span><span class="op">$</span><span class="va">units</span><span class="op">$</span><span class="va">label</span>, <span class="va">sites</span><span class="op">$</span><span class="va">units</span><span class="op">$</span><span class="va">entity_id</span><span class="op">)</span>,</span>
+<span>  criterion_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="st">"Score A (standardized units)"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<a href="a1-getting-started_files/figure-html/a1-one-card-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Six fictional sites: score A means and 90% equal-tail marginal posterior intervals. Higher scores have higher priority; the grade strips show which comparisons are withheld." target="_blank" rel="noopener"><img src="a1-getting-started_files/figure-html/a1-one-card-1.png" class="r-plt" alt="Six fictional sites: score A means and 90% equal-tail marginal posterior intervals. Higher scores have higher priority; the grade strips show which comparisons are withheld." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a1-getting-started_files/figure-html/a1-one-card-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Six fictional sites: score A means and 90% equal-tail marginal posterior intervals. Higher scores have higher priority; the grade strips show which comparisons are withheld.">Open full-size figure</a></span><p class="caption">
+Six fictional sites: score A means and 90% equal-tail marginal posterior
+intervals. Higher scores have higher priority; the grade strips show
+which comparisons are withheld.
+</p>
+</div>
+<p>The points and marginal 90% intervals describe scores under the
+specified normal laws, whereas the grade strips represent the selected
+comparisons. The intervals have neither simultaneous coverage across
+sites nor an interpretation as intervals for grade labels. Interval
+overlap alone cannot recover the grading decision, which also depends on
+the withholding cost and grade cap. The complete grade table is
+available through <code>as.data.frame(one)</code>, and the named grade
+vector through <code>get_grades(one)</code>.</p>
+</div>
+<div class="section level2">
+<h2 id="add-a-second-criterion">Analysis with two criteria<a class="anchor" aria-label="anchor" href="#add-a-second-criterion"></a>
+</h2>
+<p>We next include score B. Although sites C and D have lower score A
+means than A and B, their score B means exceed that of B. A common
+grading must therefore accommodate different directions of comparison.
+We assign equal weights to the criteria and retain the withholding cost
+and grade cap.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">two</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank.html">postrank</a></span><span class="op">(</span><span class="va">sites</span><span class="op">$</span><span class="va">two</span>,</span>
+<span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">0.5</span>, score_B <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>  tau <span class="op">=</span> <span class="fl">0.2</span>, G_max <span class="op">=</span> <span class="fl">3</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="../reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">60</span>, threads <span class="op">=</span> <span class="fl">1</span>, seed <span class="op">=</span> <span class="fl">1304</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">two</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   entity_id grade</span></span>
+<span><span class="co">#&gt; 1         A     1</span></span>
+<span><span class="co">#&gt; 2         B     1</span></span>
+<span><span class="co">#&gt; 3         C     1</span></span>
+<span><span class="co">#&gt; 4         D     1</span></span>
+<span><span class="co">#&gt; 5         E     2</span></span>
+<span><span class="co">#&gt; 6         F     3</span></span>
+<span><span class="fu"><a href="../reference/get_profile.html">get_profile</a></span><span class="op">(</span><span class="va">two</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion"</span>, <span class="st">"weight"</span>, <span class="st">"E"</span>, <span class="st">"E_over_N"</span>, <span class="st">"risk"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;   criterion weight         E   E_over_N       risk</span></span>
+<span><span class="co">#&gt; 1   score_A    0.5 0.1596996 0.01774440 0.09064664</span></span>
+<span><span class="co">#&gt; 2   score_B    0.5 0.2405960 0.02673289 0.09603973</span></span></code></pre></div>
+<p>The common report assigns A through D to grade 1, E to grade 2 and F
+to grade 3. It discloses 9 of 15 pairs and withholds 6. The
+criterion-specific error profiles differ despite equal weights. The
+weights determine contributions to expected loss, rather than requiring
+equal error rates.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_report_card.html">postrank_plot_report_card</a></span><span class="op">(</span><span class="va">two</span>,</span>
+<span>  entity_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="va">sites</span><span class="op">$</span><span class="va">units</span><span class="op">$</span><span class="va">label</span>, <span class="va">sites</span><span class="op">$</span><span class="va">units</span><span class="op">$</span><span class="va">entity_id</span><span class="op">)</span>,</span>
+<span>  criterion_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="st">"Score A (standardized units)"</span>,</span>
+<span>    score_B <span class="op">=</span> <span class="st">"Score B (standardized units)"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<a href="a1-getting-started_files/figure-html/a1-two-card-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: The same sites with two criteria: 90% marginal intervals in illustrative standardized units. Both panels use one common grading; higher score values have higher priority in each panel." target="_blank" rel="noopener"><img src="a1-getting-started_files/figure-html/a1-two-card-1.png" class="r-plt" alt="The same sites with two criteria: 90% marginal intervals in illustrative standardized units. Both panels use one common grading; higher score values have higher priority in each panel." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a1-getting-started_files/figure-html/a1-two-card-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: The same sites with two criteria: 90% marginal intervals in illustrative standardized units. Both panels use one common grading; higher score values have higher priority in each panel.">Open full-size figure</a></span><p class="caption">
+The same sites with two criteria: 90% marginal intervals in illustrative
+standardized units. Both panels use one common grading; higher score
+values have higher priority in each panel.
+</p>
+</div>
+<p>The change in grouping results from including the second criterion
+while holding the first score’s distribution fixed. The two scalar
+losses average errors over different sets of criteria and therefore
+cannot be interpreted as competing measures of accuracy. Comparisons of
+alternative gradings require evaluation under common posterior inputs,
+weights and withholding cost.</p>
+<p>The posterior support for a disclosed direction may differ between
+criteria, even though both use the same grades. Criterion-specific
+expected errors are therefore relevant to assessing the common report.
+Applications are given for <a href="a2-cde-accountability.html">school
+chronic absence</a>, with one criterion, <a href="a3-krw-race-gender.html">race and gender at employers</a>, and <a href="a4-alabama-opportunity.html">income and incarceration in
+Alabama</a>. <a href="a6-reading-exporting-results.html">Reading and
+exporting results</a> describes the result tables and computation
+states, while <a href="a7-figures-sensitivity.html">Figures and
+sensitivity analysis</a> examines changes in weights, costs and grade
+caps.</p>
+<p>The methodological articles explain the <a href="m1-ranking-and-loss.html">one-criterion loss and its KRW
+correspondence</a> and the <a href="m2-several-criteria.html">different
+goals available with several criteria</a>.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

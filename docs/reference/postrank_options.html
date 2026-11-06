@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Session Options for Solving and Reporting — postrank_options • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Session Options for Solving and Reporting — postrank_options"><meta name="description" content="Session options specify the default backend, progress messages and report
+language. They are read at call time and are not set when the package is
+loaded. A temporary change can be reversed by options(old), as illustrated
+below."><meta property="og:description" content="Session options specify the default backend, progress messages and report
+language. They are read at call time and are not set when the package is
+loaded. A temporary change can be reversed by options(old), as illustrated
+below."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul></div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Session Options for Solving and Reporting</h1>
+
+      <div class="d-none name"><code>postrank_options.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>Session options specify the default backend, progress messages and report
+language. They are read at call time and are not set when the package is
+loaded. A temporary change can be reversed by <code>options(old)</code>, as illustrated
+below.</p>
+    </div>
+
+
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+
+<dl><dt><code>postrank.backend</code></dt>
+<dd><p>Unset by default. The backend used when an
+optimization function is called with <code>backend = NULL</code>: the explicit <code>backend</code>
+argument takes precedence, followed by this option, then <code>"gurobi"</code>. The value must be
+<code>"gurobi"</code> or <code>"highs"</code>; anything else raises <code>invalid_backend</code>. If the
+resolved backend is not installed or not usable the call stops with both
+remedies; postrank never switches to another backend.</p></dd>
+
+<dt><code>postrank.lang</code></dt>
+<dd><p>Default <code>"en"</code>. Official report and summary text is
+English only. Language-sensitive views (<code><a href="postrank_report.html">postrank_report()</a></code> and the
+<code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> methods) reject any other value with <code>unsupported_language</code>.
+<code><a href="postrank_report.html">postrank_report()</a></code> has a <code>lang</code> argument, and an explicit <code>lang = "en"</code>
+there overrides the option; the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> methods have no such argument
+and always read the option. <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and the formatters do not read it.</p></dd>
+
+<dt><code>postrank.verbose</code></dt>
+<dd><p>Default <code>FALSE</code>. A logical scalar controlling
+start and completion messages from <code><a href="postrank_solve.html">postrank_solve()</a></code> and the main solve
+in <code><a href="postrank.html">postrank()</a></code>. It is read when solving. An explicit <code>verbose = TRUE</code>
+or <code>verbose = FALSE</code> in the control overrides it; <code>verbose = NULL</code>
+inherits it. Nested diagnostic and grid solves produce no progress messages.
+This option does not change numerical settings, results, or the separate solver
+<code>output</code> control.</p></dd>
+
+
+</dl><p>The environment variable <code>POSTRANK_TEST_GUROBI</code> is for the package's own
+test suite only: set to <code>"true"</code>, it enables the tests that run the licensed
+Gurobi backend. Ordinary use never reads it.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="postrank_solve.html">postrank_solve()</a></code>, <code><a href="postrank.html">postrank()</a></code>, <code><a href="postrank_report.html">postrank_report()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"postrank.backend"</span><span class="op">)</span>             <span class="co"># when unset, solving verbs default to "gurobi"</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-in"><span><span class="va">old</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>postrank.backend <span class="op">=</span> <span class="st">"highs"</span><span class="op">)</span> <span class="co"># select HiGHS for this session</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"postrank.backend"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "highs"</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="va">old</span><span class="op">)</span></span></span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer></div>
+
+
+
+
+
+  </body></html>
+

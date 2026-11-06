@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Posterior ranking, grades, and loss • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Posterior ranking, grades, and loss">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-article">
+
+
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Posterior ranking, grades, and loss</h1>
+            
+      
+      <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/m1-ranking-and-loss.Rmd" class="external-link"><code>vignettes/m1-ranking-and-loss.Rmd</code></a></small>
+      <div class="d-none name"><code>m1-ranking-and-loss.Rmd</code></div>
+    </div>
+
+    
+    
+<p>A posterior distribution represents uncertainty about the targets,
+whereas a grading rule determines which pairwise comparisons are
+disclosed. We consider this decision for one criterion, using the loss
+implemented in postrank. We then examine the restrictions imposed by an
+ordered grading and establish the conditions under which the scalar
+problem has the same minimizers as the report-card objective of Kline,
+Rose, and Walters (2024).</p>
+<p>The <a href="a1-getting-started.html">introductory article</a>
+describes the corresponding analysis. Here the assumptions and the
+relationship between the objectives are examined by finite enumeration,
+without model fitting or an optimization backend.</p>
+<div class="section level2">
+<h2 id="targets-and-a-report-are-different-objects">Targets and reporting actions<a class="anchor" aria-label="anchor" href="#targets-and-a-report-are-different-objects"></a>
+</h2>
+<p>Let
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>θ</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\theta_i</annotation></semantics></math>
+denote the target for entity
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>,
+oriented so that larger values have higher reporting priority. Depending
+on the application, priority may refer to a favorable outcome or to
+greater need for attention. This interpretation is specified before
+grading. The supplied posterior is a joint law for the targets,
+conditional on the observed information and the model from which it was
+obtained.</p>
+<p>A report assigns ordered integer grades
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>g</mi><mi>i</mi></msub><annotation encoding="application/x-tex">g_i</annotation></semantics></math>.
+<strong>Grade 1 has highest priority</strong>:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mi>i</mi></msub><mo>&lt;</mo><msub><mi>g</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">g_i&lt;g_j</annotation></semantics></math>
+publishes that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+is above
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>.
+The relation
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mi>i</mi></msub><mo>=</mo><msub><mi>g</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">g_i=g_j</annotation></semantics></math>
+withholds their comparison. It asserts neither equal latent targets nor
+practical equivalence. Labels can be compressed to consecutive occupied
+grades without changing any pair relation.</p>
+<p>With
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+entities there are
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><mi>n</mi><mn>2</mn></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">M=\binom n2</annotation></semantics></math>
+unordered pairs. Let
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">N(g)</annotation></semantics></math>
+be the number assigned different grades. Each disclosed pair has one
+published direction, so it is counted once even when a formula sums over
+ordered indices. For a fixed report, define</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mi>i</mi></msub><mo>≤</mo><msub><mi>θ</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><mi>E</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><munder><mo>∑</mo><mrow><mi>i</mi><mo>≠</mo><mi>j</mi></mrow></munder><mn mathvariant="bold">𝟏</mn><mo stretchy="false" form="prefix">{</mo><msub><mi>g</mi><mi>i</mi></msub><mo>&lt;</mo><msub><mi>g</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">}</mo><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
+e_{ij}=\Pr(\theta_i\leq\theta_j),\qquad
+E(g)=\sum_{i\ne j}\mathbf1\{g_i&lt;g_j\}e_{ij}.
+</annotation></semantics></math></p>
+<p>Thus
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>E</mi><annotation encoding="application/x-tex">E</annotation></semantics></math>
+is the posterior expected number of wrong-direction disclosures. The
+basic input domain requires zero probability of equality for every
+distinct entity pair, giving
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>+</mo><msub><mi>e</mi><mrow><mi>j</mi><mi>i</mi></mrow></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">e_{ij}+e_{ji}=1</annotation></semantics></math>.
+The diagonal is not a comparison. Positive equality mass needs the
+separate interpretation and input domain in <a href="m4-ties-and-withholding.html">True ties and withheld
+comparisons</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="price-a-wrong-direction-and-a-withheld-comparison">Directional-error and withholding loss<a class="anchor" aria-label="anchor" href="#price-a-wrong-direction-and-a-withheld-comparison"></a>
+</h2>
+<p>An incorrect disclosed direction has cost one; withholding a pair has
+cost
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>.
+The normalized posterior expected loss is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mi>τ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><mi>E</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>τ</mi><mo stretchy="false" form="prefix">{</mo><mi>M</mi><mo>−</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo></mrow><mi>M</mi></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
+R_\tau(g)=\frac{E(g)+\tau\{M-N(g)\}}{M}.
+</annotation></semantics></math></p>
+<p>The public API accepts
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>&lt;</mo><mi>τ</mi><mo>≤</mo><mn>1</mn><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">0&lt;\tau\leq1/2</annotation></semantics></math>,
+with smaller values assigning a lower cost to withholding. The parameter
+specifies a preference over reporting consequences. It is therefore
+distinct from posterior uncertainty, a confidence level, and a
+pair-specific error constraint. A grade cap restricts the available
+reports without altering the loss.</p>
+<p>The interpretation depends on the denominator. The quantity
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mi>/</mi><mi>M</mi></mrow><annotation encoding="application/x-tex">E/M</annotation></semantics></math>
+averages expected errors over all pairs, whereas
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mi>/</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">E/N</annotation></semantics></math>,
+defined for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">N&gt;0</annotation></semantics></math>,
+averages over disclosed pairs. Risk additionally accounts for withheld
+comparisons. An all-withheld report has
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">N=0</annotation></semantics></math>,
+risk
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>,
+and undefined
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mi>/</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">E/N</annotation></semantics></math>.
+This report is an admissible action and must be distinguished from a
+computation that returns no grades.</p>
+<p>For an isolated pair, the posterior expected costs are as
+follows:</p>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Action</th>
+<th align="left">Posterior expected cost</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Publish
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+above
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
+</td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">e_{ij}</annotation></semantics></math></td>
+</tr>
+<tr class="even">
+<td align="left">Publish
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
+above
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+</td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mrow><mi>j</mi><mi>i</mi></mrow></msub><mo>=</mo><mn>1</mn><mo>−</mo><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">e_{ji}=1-e_{ij}</annotation></semantics></math></td>
+</tr>
+<tr class="odd">
+<td align="left">Withhold the comparison</td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math></td>
+</tr>
+</tbody>
+</table>
+<p>For
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>&lt;</mo><mn>1</mn><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">\tau&lt;1/2</annotation></semantics></math>,
+a direction is uniquely preferred when its error probability is below
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>.
+When that error equals
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>,
+publishing that direction and withholding have equal expected cost. At
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><msub><mi>e</mi><mrow><mi>j</mi><mi>i</mi></mrow></msub><mo>=</mo><mi>τ</mi><mo>=</mo><mn>1</mn><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">e_{ij}=e_{ji}=\tau=1/2</annotation></semantics></math>,
+all three actions tie. These comparisons solve the isolated-pair
+problem. A set of such local decisions need not be expressible as
+grades.</p>
+</div>
+<div class="section level2">
+<h2 id="a-small-law-where-local-decisions-cannot-form-grades">Pairwise decisions and coherent grades<a class="anchor" aria-label="anchor" href="#a-small-law-where-local-decisions-cannot-form-grades"></a>
+</h2>
+<p>Consider three fictional entities A, B and C. Each row below
+specifies a complete target state, and the associated masses define a
+finite joint law. The states contain no latent equalities. The
+calculation therefore uses the full law rather than a Monte Carlo
+approximation.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span>ABC <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">3</span>, B <span class="op">=</span> <span class="fl">2</span>, C <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>                ACB <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">3</span>, B <span class="op">=</span> <span class="fl">1</span>, C <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>                BAC <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">2</span>, B <span class="op">=</span> <span class="fl">3</span>, C <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>                CBA <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">1</span>, B <span class="op">=</span> <span class="fl">2</span>, C <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">mass_numerator</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12L</span>, <span class="fl">3L</span>, <span class="fl">3L</span>, <span class="fl">2L</span><span class="op">)</span></span>
+<span><span class="va">probability</span> <span class="op">&lt;-</span> <span class="va">mass_numerator</span> <span class="op">/</span> <span class="fl">20</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>State <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">states</span><span class="op">)</span>, <span class="va">states</span>,</span>
+<span>  Probability <span class="op">=</span> <span class="va">probability</span><span class="op">)</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">State</th>
+<th align="right">A</th>
+<th align="right">B</th>
+<th align="right">C</th>
+<th align="right">Probability</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">ABC</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">0.60</td>
+</tr>
+<tr class="even">
+<td align="left">ACB</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">0.15</td>
+</tr>
+<tr class="odd">
+<td align="left">BAC</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">0.15</td>
+</tr>
+<tr class="even">
+<td align="left">CBA</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">0.10</td>
+</tr>
+</tbody>
+</table>
+<p>Summing the masses of states supporting each comparison gives the
+error probabilities for publishing A above B, B above C, and A above
+C:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">states</span><span class="op">)</span></span>
+<span><span class="va">error</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="cn">NA_real_</span>, <span class="fl">3</span>, <span class="fl">3</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">ids</span>, <span class="va">ids</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="va">i</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">error</span><span class="op">[</span><span class="va">i</span>, <span class="va">j</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">probability</span> <span class="op">*</span> <span class="op">(</span><span class="va">states</span><span class="op">[</span>, <span class="va">i</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="va">states</span><span class="op">[</span>, <span class="va">j</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">pairs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Direction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A above B"</span>, <span class="st">"B above C"</span>, <span class="st">"A above C"</span><span class="op">)</span>,</span>
+<span>  Error <span class="op">=</span> <span class="va">error</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">pairs</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Direction</th>
+<th align="right">Error</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">A above B</td>
+<td align="right">0.25</td>
+</tr>
+<tr class="even">
+<td align="left">B above C</td>
+<td align="right">0.25</td>
+</tr>
+<tr class="odd">
+<td align="left">A above C</td>
+<td align="right">0.10</td>
+</tr>
+</tbody>
+</table>
+<p>Set
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mn>1</mn><mi>/</mi><mn>5</mn></mrow><annotation encoding="application/x-tex">\tau=1/5</annotation></semantics></math>.
+The local rule withholds A versus B and B versus C, because their
+smaller directional error is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mn>4</mn><mo>&gt;</mo><mn>1</mn><mi>/</mi><mn>5</mn></mrow><annotation encoding="application/x-tex">1/4&gt;1/5</annotation></semantics></math>,
+while it publishes A above C, with error
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mn>10</mn></mrow><annotation encoding="application/x-tex">1/10</annotation></semantics></math>.
+But two shared grades would imply
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mi>A</mi></msub><mo>=</mo><msub><mi>g</mi><mi>B</mi></msub><mo>=</mo><msub><mi>g</mi><mi>C</mi></msub></mrow><annotation encoding="application/x-tex">g_A=g_B=g_C</annotation></semantics></math>.
+The local pattern is therefore infeasible as a grade report, despite
+having a transitive majority order A above B above C.</p>
+<p>This finite construction illustrates the phenomenon in KRW’s Example
+1 (pp. 2481–2482); their original example uses independent normal
+beliefs. The companion theory’s <a href="https://joonho112.github.io/postrank-theory-book/chapters/10-krw-foundation.html#sec-pair-versus-grade">pair-versus-grade
+section</a> develops the finite example and its exact risks.</p>
+<div class="section level3">
+<h3 id="check-every-coherent-report">Enumeration of coherent reports<a class="anchor" aria-label="anchor" href="#check-every-coherent-report"></a>
+</h3>
+<p>For three labeled entities, the 13 ordered partitions can be
+enumerated by retaining consecutive occupied labels. The calculation
+below sums wrong-direction events over the complete states. It requires
+neither an optimization backend nor independence of errors for different
+pairs.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">actions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, B <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, C <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">keep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">actions</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">actions</span> <span class="op">&lt;-</span> <span class="va">actions</span><span class="op">[</span><span class="va">keep</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
+<span><span class="va">tau</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">/</span> <span class="fl">5</span></span>
+<span><span class="va">lambda</span> <span class="op">&lt;-</span> <span class="va">tau</span> <span class="op">/</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">tau</span><span class="op">)</span></span>
+<span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">disclosed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/outer.html" class="external-link">outer</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">g</span>, <span class="st">"&lt;"</span><span class="op">)</span></span>
+<span>  <span class="va">wrong</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">states</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">theta</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">disclosed</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/outer.html" class="external-link">outer</a></span><span class="op">(</span><span class="va">theta</span>, <span class="va">theta</span>, <span class="st">"&lt;="</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">N</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">disclosed</span><span class="op">)</span></span>
+<span>  <span class="va">E_numerator</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">mass_numerator</span> <span class="op">*</span> <span class="va">wrong</span><span class="op">)</span></span>
+<span>  <span class="va">C_numerator</span> <span class="op">&lt;-</span> <span class="fl">20</span> <span class="op">*</span> <span class="va">N</span> <span class="op">-</span> <span class="va">E_numerator</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>N <span class="op">=</span> <span class="va">N</span>, E_numerator <span class="op">=</span> <span class="va">E_numerator</span>,</span>
+<span>    risk_numerator <span class="op">=</span> <span class="fl">5</span> <span class="op">*</span> <span class="va">E_numerator</span> <span class="op">+</span> <span class="fl">20</span> <span class="op">*</span> <span class="op">(</span><span class="fl">3</span> <span class="op">-</span> <span class="va">N</span><span class="op">)</span>,</span>
+<span>    krw_numerator <span class="op">=</span> <span class="fl">4</span> <span class="op">*</span> <span class="va">E_numerator</span> <span class="op">-</span> <span class="va">C_numerator</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">exact</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">actions</span>, <span class="fl">1</span>, <span class="va">counts</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">risk</span> <span class="op">&lt;-</span> <span class="va">exact</span><span class="op">[</span>, <span class="st">"risk_numerator"</span><span class="op">]</span> <span class="op">/</span> <span class="fl">300</span></span>
+<span><span class="va">krw_risk</span> <span class="op">&lt;-</span> <span class="va">exact</span><span class="op">[</span>, <span class="st">"krw_numerator"</span><span class="op">]</span> <span class="op">/</span> <span class="fl">240</span></span>
+<span><span class="va">best</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">exact</span><span class="op">[</span>, <span class="st">"risk_numerator"</span><span class="op">]</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">exact</span><span class="op">[</span>, <span class="st">"risk_numerator"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Grades <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">actions</span>, <span class="fl">1</span>, <span class="va">paste</span>, collapse <span class="op">=</span> <span class="st">"/"</span><span class="op">)</span>,</span>
+<span>  N <span class="op">=</span> <span class="va">exact</span><span class="op">[</span>, <span class="st">"N"</span><span class="op">]</span>, E <span class="op">=</span> <span class="va">exact</span><span class="op">[</span>, <span class="st">"E_numerator"</span><span class="op">]</span> <span class="op">/</span> <span class="fl">20</span>,</span>
+<span>  E_over_N <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">exact</span><span class="op">[</span>, <span class="st">"N"</span><span class="op">]</span> <span class="op">&gt;</span> <span class="fl">0</span>,</span>
+<span>    <span class="va">exact</span><span class="op">[</span>, <span class="st">"E_numerator"</span><span class="op">]</span> <span class="op">/</span> <span class="op">(</span><span class="fl">20</span> <span class="op">*</span> <span class="va">exact</span><span class="op">[</span>, <span class="st">"N"</span><span class="op">]</span><span class="op">)</span>, <span class="cn">NA_real_</span><span class="op">)</span>,</span>
+<span>  Risk <span class="op">=</span> <span class="va">risk</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">result</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">Risk</span>, <span class="va">result</span><span class="op">$</span><span class="va">Grades</span><span class="op">)</span>, <span class="op">]</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">4</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Grades</th>
+<th align="right">N</th>
+<th align="right">E</th>
+<th align="right">E_over_N</th>
+<th align="right">Risk</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">1/1/2</td>
+<td align="right">2</td>
+<td align="right">0.35</td>
+<td align="right">0.1750</td>
+<td align="right">0.1833</td>
+</tr>
+<tr class="even">
+<td align="left">1/2/2</td>
+<td align="right">2</td>
+<td align="right">0.35</td>
+<td align="right">0.1750</td>
+<td align="right">0.1833</td>
+</tr>
+<tr class="odd">
+<td align="left">1/1/1</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">NA</td>
+<td align="right">0.2000</td>
+</tr>
+<tr class="even">
+<td align="left">1/2/3</td>
+<td align="right">3</td>
+<td align="right">0.60</td>
+<td align="right">0.2000</td>
+<td align="right">0.2000</td>
+</tr>
+<tr class="odd">
+<td align="left">1/3/2</td>
+<td align="right">3</td>
+<td align="right">1.10</td>
+<td align="right">0.3667</td>
+<td align="right">0.3667</td>
+</tr>
+<tr class="even">
+<td align="left">2/1/3</td>
+<td align="right">3</td>
+<td align="right">1.10</td>
+<td align="right">0.3667</td>
+<td align="right">0.3667</td>
+</tr>
+<tr class="odd">
+<td align="left">1/2/1</td>
+<td align="right">2</td>
+<td align="right">1.00</td>
+<td align="right">0.5000</td>
+<td align="right">0.4000</td>
+</tr>
+<tr class="even">
+<td align="left">2/1/2</td>
+<td align="right">2</td>
+<td align="right">1.00</td>
+<td align="right">0.5000</td>
+<td align="right">0.4000</td>
+</tr>
+<tr class="odd">
+<td align="left">2/1/1</td>
+<td align="right">2</td>
+<td align="right">1.65</td>
+<td align="right">0.8250</td>
+<td align="right">0.6167</td>
+</tr>
+<tr class="even">
+<td align="left">2/2/1</td>
+<td align="right">2</td>
+<td align="right">1.65</td>
+<td align="right">0.8250</td>
+<td align="right">0.6167</td>
+</tr>
+<tr class="odd">
+<td align="left">2/3/1</td>
+<td align="right">3</td>
+<td align="right">1.90</td>
+<td align="right">0.6333</td>
+<td align="right">0.6333</td>
+</tr>
+<tr class="even">
+<td align="left">3/1/2</td>
+<td align="right">3</td>
+<td align="right">1.90</td>
+<td align="right">0.6333</td>
+<td align="right">0.6333</td>
+</tr>
+<tr class="odd">
+<td align="left">3/2/1</td>
+<td align="right">3</td>
+<td align="right">2.40</td>
+<td align="right">0.8000</td>
+<td align="right">0.8000</td>
+</tr>
+</tbody>
+</table>
+<p>The integer numerators retain exact comparisons for this specified
+rational example. Both <strong>1/1/2 and 1/2/2</strong> minimize risk at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>11</mn><mi>/</mi><mn>60</mn></mrow><annotation encoding="application/x-tex">11/60</annotation></semantics></math>,
+approximately 0.1833. Each discloses two pairs, has expected error count
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>7</mn><mi>/</mi><mn>20</mn></mrow><annotation encoding="application/x-tex">7/20</annotation></semantics></math>,
+and gives
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mi>/</mi><mi>N</mi><mo>=</mo><mn>7</mn><mi>/</mi><mn>40</mn></mrow><annotation encoding="application/x-tex">E/N=7/40</annotation></semantics></math>.
+One includes B above C and the other A above B, each with error
+probability
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mn>4</mn></mrow><annotation encoding="application/x-tex">1/4</annotation></semantics></math>.
+Thus an individually disclosed pair can have error greater than
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>
+in an optimal coherent report.</p>
+<p>The infeasible set of pairwise decisions has average cost
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mn>6</mn></mrow><annotation encoding="application/x-tex">1/6</annotation></semantics></math>,
+which is below the minimum over coherent reports by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mn>60</mn></mrow><annotation encoding="application/x-tex">1/60</annotation></semantics></math>.
+It thus supplies a lower bound from a relaxed problem, although it
+cannot itself be represented by a grading. Since the coherent problem
+has two minimizers, returning one grade vector would not establish
+uniqueness.</p>
+<p>The same probabilities can be supplied to the package to evaluate
+each fixed action. This numerical input is compared with the independent
+reference calculation based on the finite law and its integer
+masses.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_probabilities.html">postrank_probabilities</a></span><span class="op">(</span><span class="va">error</span>, criterion <span class="op">=</span> <span class="st">"priority"</span>,</span>
+<span>  event <span class="op">=</span> <span class="st">"directional_error"</span>, zero_ties <span class="op">=</span> <span class="cn">TRUE</span>, margin <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>kind <span class="op">=</span> <span class="st">"analytic_reference"</span>,</span>
+<span>    description <span class="op">=</span> <span class="st">"Exact four-state enumeration with masses 12/20,3/20,3/20,2/20"</span>,</span>
+<span>    conditioning <span class="op">=</span> <span class="st">"The complete fixed finite target law shown in this article"</span><span class="op">)</span>,</span>
+<span>  targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>priority <span class="op">=</span> <span class="st">"Fictional target values; larger means higher reporting priority"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">evaluated</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">actions</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/postrank_evaluate.html">postrank_evaluate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">ids</span><span class="op">)</span>, <span class="va">input</span>,</span>
+<span>    weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>priority <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, tau <span class="op">=</span> <span class="va">tau</span><span class="op">)</span><span class="op">$</span><span class="va">primary_risk</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">evaluated</span> <span class="op">-</span> <span class="va">risk</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1.110223e-16</span></span></code></pre></div>
+<p><code><a href="../reference/postrank_evaluate.html">postrank_evaluate()</a></code> scores supplied grades; it does not
+check that they obey an additional cap or error budget. Here all 13
+actions belong to the explicit unrestricted three-entity family by
+construction.</p>
+<p>An aggregate inequality does follow if the all-withheld report is
+feasible and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>g</mi><mo>*</mo></msup><annotation encoding="application/x-tex">g^*</annotation></semantics></math>
+exactly minimizes this same posterior loss:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mi>τ</mi></msub><mo stretchy="false" form="prefix">(</mo><msup><mi>g</mi><mo>*</mo></msup><mo stretchy="false" form="postfix">)</mo><mo>≤</mo><mi>τ</mi><mspace width="1.0em"></mspace><mo>⇒</mo><mspace width="1.0em"></mspace><mi>E</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>g</mi><mo>*</mo></msup><mo stretchy="false" form="postfix">)</mo><mo>≤</mo><mi>τ</mi><mi>N</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>g</mi><mo>*</mo></msup><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
+R_\tau(g^*)\leq\tau\quad\Longrightarrow\quad
+E(g^*)\leq\tau N(g^*).
+</annotation></semantics></math></p>
+<p>For positive disclosure this bounds the <em>average</em> posterior
+error fraction, as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>7</mn><mi>/</mi><mn>40</mn><mo>&lt;</mo><mn>1</mn><mi>/</mi><mn>5</mn></mrow><annotation encoding="application/x-tex">7/40&lt;1/5</annotation></semantics></math>
+illustrates. An exact requirement of more than one occupied grade
+excludes the all-withheld benchmark. Numerical optimization gaps and
+Monte Carlo error also require separate treatment. The inequality is not
+a bound for a different population law or proof that the model is
+calibrated.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="match-the-scalar-krw-objective">Correspondence with the scalar KRW objective<a class="anchor" aria-label="anchor" href="#match-the-scalar-krw-objective"></a>
+</h2>
+<p>KRW rewards a correctly disclosed pair by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>,
+penalizes an incorrect pair by one, and gives a withheld pair payoff
+zero. Their original numerical grades run in the opposite direction:
+larger
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>d</mi><mi>i</mi></msub><annotation encoding="application/x-tex">d_i</annotation></semantics></math>
+denotes more discrimination. After reversing occupied labels,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>i</mi></msub><mo>=</mo><mi>G</mi><mo>+</mo><mn>1</mn><mo>−</mo><msub><mi>g</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">d_i=G+1-g_i</annotation></semantics></math>,
+both conventions publish the same relations. Negating and averaging the
+pair payoffs gives the loss</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>L</mi><mrow><mi>K</mi><mo>,</mo><mi>λ</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>θ</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>D</mi><mo>&lt;</mo></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>θ</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>λ</mi><mi>C</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>θ</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo><mi>/</mi><mi>M</mi><mo>,</mo></mrow><annotation encoding="application/x-tex">
+L_{K,\lambda}(g,\theta)=\{D_{&lt;}(g,\theta)-\lambda C(g,\theta)\}/M,
+</annotation></semantics></math></p>
+<p>where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mo>&lt;</mo></msub><annotation encoding="application/x-tex">D_{&lt;}</annotation></semantics></math>
+counts strictly wrong disclosed directions and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>
+counts correct ones. Their definitions and constrained formulation
+appear in <a href="https://doi.org/10.1257/aer.20230700" class="external-link">Kline, Rose and
+Walters (2024)</a>, Section II, pp. 2477–2482, equations (1)–(6).</p>
+<p>Under zero pairwise equality probability, wrong and correct counts
+sum to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>.
+Substitution gives</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mfrac><mi>τ</mi><mrow><mn>1</mn><mo>−</mo><mi>τ</mi></mrow></mfrac><mo>,</mo><mspace width="2.0em"></mspace><mi>τ</mi><mo>=</mo><mfrac><mi>λ</mi><mrow><mn>1</mn><mo>+</mo><mi>λ</mi></mrow></mfrac><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>R</mi><mi>τ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>τ</mi><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>τ</mi><mo stretchy="false" form="postfix">)</mo><msub><mi>R</mi><mrow><mi>K</mi><mo>,</mo><mi>λ</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\lambda=\frac{\tau}{1-\tau},\qquad
+\tau=\frac{\lambda}{1+\lambda},\qquad
+R_\tau(g)=\tau+(1-\tau)R_{K,\lambda}(g).
+</annotation></semantics></math></p>
+<p>The positive multiplier preserves the <strong>whole set of
+minimizers</strong> when both objectives use the same posterior, labeled
+entities, target directions and nonempty action family. This applies to
+a shared restricted family as well as to all ordered partitions;
+changing the family can change its optimum. No independence of pair
+error indicators is needed.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">risk</span> <span class="op">-</span> <span class="op">(</span><span class="va">tau</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">tau</span><span class="op">)</span> <span class="op">*</span> <span class="va">krw_risk</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 5.551115e-17</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">best</span>, <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">exact</span><span class="op">[</span>, <span class="st">"krw_numerator"</span><span class="op">]</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">exact</span><span class="op">[</span>, <span class="st">"krw_numerator"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>tau <span class="op">=</span> <span class="va">tau</span>, lambda <span class="op">=</span> <span class="va">lambda</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    tau lambda </span></span>
+<span><span class="co">#&gt;   0.20   0.25</span></span></code></pre></div>
+<p>Thus
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mn>.25</mn></mrow><annotation encoding="application/x-tex">\lambda=.25</annotation></semantics></math>
+corresponds to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mn>.20</mn></mrow><annotation encoding="application/x-tex">\tau=.20</annotation></semantics></math>,
+rather than
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mn>.25</mn></mrow><annotation encoding="application/x-tex">\tau=.25</annotation></semantics></math>.
+The KRW risk can be negative because it rewards correct publication; its
+raw scale is not the normalized withholding loss. The detailed <a href="https://joonho112.github.io/postrank-theory-book/chapters/10-krw-foundation.html#sec-scalar-reduction">affine
+derivation</a> keeps the grade orientation, normalization and
+latent-equality condition explicit.</p>
+<p>The algebraic endpoint
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\tau=0</annotation></semantics></math>
+corresponds to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\lambda=0</annotation></semantics></math>;
+it is outside the current postrank API. At
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mn>1</mn><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">\tau=1/2</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\lambda=1</annotation></semantics></math>.
+An uncertain pair with two equally likely strict orders then gives the
+same expected cost for publication in either direction and for
+withholding. A fine grade at that boundary does not by itself
+demonstrate strong evidence for its directions.</p>
+<p>If latent equality has positive mass, strict and weak errors differ.
+For a disclosed equality, the basic weak-error convention counts an
+error, whereas both KRW strict counts are zero. An additional
+action-dependent term then appears, so the displayed equivalence does
+not follow without further conditions. The <a href="m4-ties-and-withholding.html">tie-aware article</a> describes the
+separate equality-neutral route without changing the source paper’s
+assumptions.</p>
+<div class="section level3">
+<h3 id="compare-implementations-on-the-same-problem">Comparison between implementations<a class="anchor" aria-label="anchor" href="#compare-implementations-on-the-same-problem"></a>
+</h3>
+<p>The scalar <code><a href="https://joonho112.github.io/gradepath/reference/gp_grade.html" class="external-link">gradepath::gp_grade()</a></code> procedure jointly
+optimizes the report. Its unrestricted problem corresponds to postrank
+when both allow up to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+grades, impose no additional error-budget or exact-count constraint, and
+use the corresponding parameter values, probability orientation and
+target law. Optimizing contiguous cuts in a fixed score order is a more
+restricted problem. Similarly, a smaller grade cap changes the feasible
+family unless it is imposed in both implementations.</p>
+<p>Probability floors and other adjustments can alter the coefficients
+and must therefore be matched in comparisons between implementations.
+The resulting pair relations and reevaluated losses provide the relevant
+comparison. With multiple minimizers, different reports can attain the
+same minimum. Neither a raw backend status nor agreement on one grading
+establishes equality of the entire solution sets.</p>
+<p><a href="m5-computing-grades.html">Computing grades and choosing
+settings</a> describes fixed-order and joint optimization, together with
+incumbents, lower bounds and numerical gaps. <a href="m2-several-criteria.html">Several criteria and competing goals</a>
+extends the additive loss to multiple criteria and distinguishes
+composite targets. The <a href="a2-cde-accountability.html">school
+example</a> applies the single-criterion analysis to uncertain absence
+probabilities.</p>
+</div>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

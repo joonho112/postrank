@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Evaluate the Posterior Loss of Supplied Grades — postrank_evaluate • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Evaluate the Posterior Loss of Supplied Grades — postrank_evaluate"><meta name="description" content="Disclosed comparisons, expected directional errors and loss are calculated
+for an existing grade vector without optimization. Smaller grades indicate
+higher priority. Equal grades withhold a direction without asserting
+equality of the latent targets. The resulting quantities are conditional on
+the supplied posterior probabilities and chosen loss."><meta property="og:description" content="Disclosed comparisons, expected directional errors and loss are calculated
+for an existing grade vector without optimization. Smaller grades indicate
+higher priority. Equal grades withhold a direction without asserting
+equality of the latent targets. The resulting quantities are conditional on
+the supplied posterior probabilities and chosen loss."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul></div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Evaluate the Posterior Loss of Supplied Grades</h1>
+
+      <div class="d-none name"><code>postrank_evaluate.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>Disclosed comparisons, expected directional errors and loss are calculated
+for an existing grade vector without optimization. Smaller grades indicate
+higher priority. Equal grades withhold a direction without asserting
+equality of the latent targets. The resulting quantities are conditional on
+the supplied posterior probabilities and chosen loss.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_evaluate</span><span class="op">(</span></span>
+<span>  <span class="va">grade</span>,</span>
+<span>  <span class="va">pairwise</span>,</span>
+<span>  weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tau <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  objective <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"weighted"</span>, <span class="st">"minimax"</span><span class="op">)</span>,</span>
+<span>  minimax_criteria <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  settings <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-grade">grade<a class="anchor" aria-label="anchor" href="#arg-grade"></a></dt>
+<dd><p>Numeric vector of positive integer grades, named in exactly
+the input's entity order. Occupied labels are renumbered consecutively.</p></dd>
+
+
+<dt id="arg-pairwise">pairwise<a class="anchor" aria-label="anchor" href="#arg-pairwise"></a></dt>
+<dd><p>A <code>postrank_pairwise</code>, <code>postrank_coefficients</code>, or
+<code><a href="postrank_probabilities.html">postrank_probabilities()</a></code> object. Gaussian/mixture coefficients and
+supplied probabilities currently support weighted expected risk only.</p></dd>
+
+
+<dt id="arg-weights">weights<a class="anchor" aria-label="anchor" href="#arg-weights"></a></dt>
+<dd><p>Nonnegative finite criterion-named weights summing to one.
+Supply every criterion exactly once, including weight 1 for a single
+criterion, unless using <code>settings</code>. Weights are not normalized automatically.</p></dd>
+
+
+<dt id="arg-tau">tau<a class="anchor" aria-label="anchor" href="#arg-tau"></a></dt>
+<dd><p>Cost of a withheld comparison, with <code>0 &lt; tau &lt;= 0.5</code>.</p></dd>
+
+
+<dt id="arg-objective">objective<a class="anchor" aria-label="anchor" href="#arg-objective"></a></dt>
+<dd><p><code>"weighted"</code> or <code>"minimax"</code>. The latter uses the largest
+expected criterion risk, not an expectation of statewise maximum loss.</p></dd>
+
+
+<dt id="arg-minimax-criteria">minimax_criteria<a class="anchor" aria-label="anchor" href="#arg-minimax-criteria"></a></dt>
+<dd><p>Optional nonempty criterion subset for minimax;
+<code>NULL</code> uses all criteria. Only allowed with <code>objective = "minimax"</code>.</p></dd>
+
+
+<dt id="arg-settings">settings<a class="anchor" aria-label="anchor" href="#arg-settings"></a></dt>
+<dd><p>Optional <code><a href="postrank_settings.html">postrank_settings()</a></code> supplying weights, tau,
+objective and minimax criteria instead of the separate arguments.
+Explicitly supplying both is a <code>settings_conflict</code> error.</p></dd>
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>An unclassed list with the canonical <code>grade</code>, occupied count <code>G</code>,
+total unordered pairs <code>M</code>, disclosed pairs <code>N</code>, and directed disclosure
+matrix <code>x</code>. <code>disclosure_rate = N/M</code> and <code>abstention_rate = (M-N)/M</code>.
+Criterion-named <code>E</code>, <code>E_over_M</code>, <code>E_over_N</code> and <code>criterion_risk</code> give
+expected error counts, their two normalizations and loss including
+withholding. <code>weighted_risk</code>, <code>minimax_risk</code> and <code>primary_risk</code> distinguish
+the weighted, largest selected-criterion and requested objectives.
+<code>weighted_raw_objective = sum(weights * E) - tau * N</code> is in centered raw
+units. <code>objective</code>, <code>minimax_criteria</code>, <code>settings</code>, <code>schema_version</code> and
+input/pairwise identities record what was evaluated.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>For criterion k, risk is <code>(E_k + tau * (M - N)) / M</code>.
+When all comparisons are withheld, N=0, conditional error ratios
+<code>E_over_N</code> are <code>NA</code>, and risk is tau. This is a valid action, distinct
+from a solve with no validated grade.</p>
+<p>Evaluation does not check membership in a grade-cap, exact-grade or
+error-budget family, even when those restrictions appear in <code>settings</code>.
+Use <code><a href="postrank_problem.html">postrank_problem()</a></code> to specify that family; <code><a href="postrank_compare.html">postrank_compare()</a></code>
+records membership separately when comparing actions.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="postrank_problem.html">postrank_problem()</a></code>, <code><a href="postrank_settings.html">postrank_settings()</a></code>, <code><a href="get_profile.html">get_profile()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">grade</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">1L</span>, B <span class="op">=</span> <span class="fl">1L</span>, C <span class="op">=</span> <span class="fl">2L</span>, D <span class="op">=</span> <span class="fl">2L</span>, E <span class="op">=</span> <span class="fl">3L</span>, F <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ev</span> <span class="op">&lt;-</span> <span class="fu">postrank_evaluate</span><span class="op">(</span><span class="va">grade</span>, <span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span>,</span></span>
+<span class="r-in"><span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ev</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"N"</span>, <span class="st">"M"</span>, <span class="st">"E_over_N"</span>, <span class="st">"primary_risk"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $N</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $M</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $E_over_N</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    score_A </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.00206455 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $primary_risk</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04165164</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="va">held</span> <span class="op">&lt;-</span> <span class="fu">postrank_evaluate</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fl">6</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">grade</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">held</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"N"</span>, <span class="st">"E_over_N"</span>, <span class="st">"primary_risk"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $N</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $E_over_N</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> score_A </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      NA </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $primary_risk</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer></div>
+
+
+
+
+
+  </body></html>
+

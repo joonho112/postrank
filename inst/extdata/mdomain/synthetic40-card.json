@@ -1,0 +1,430 @@
+{
+  "schema_version": "postrank-frozen-synthetic40-card-v1",
+  "purpose": "Frozen output illustration only; not raw input, a fitted object, or a new validation.",
+  "attribution": {
+    "author": "JoonHo Lee",
+    "copyright": "Copyright 2026 JoonHo Lee",
+    "title": "From Noisy Indicators to Pre-K Funding Priorities",
+    "source_url": "https://github.com/joonho112/need-based-prek-funding-tutorial",
+    "content_license": "CC BY 4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "original_code_license": "MIT; no original tutorial code is copied in this asset.",
+    "changes": "Extracted two selected grade matrices and aggregate card/diagnostic counts; retained fictional IDs and domain/chain identities; excluded posterior states, geography, source school records and catchments."
+  },
+  "original_source": {
+    "repository_commit": "ff223082b27c8af92f762c20f49092f06b19a913",
+    "relative_path": "results/synthetic/joint_draws.rds",
+    "sha256": "bd36f6c0bad7d8d5abb540899b8d8ddca536e2705410118ddfc76d6b6bb5c590",
+    "original_dimensions": {
+      "retained_iterations": 4000,
+      "chains": 4,
+      "units": 40,
+      "domains": 2
+    },
+    "representation": "mcmc_equal_weight_draws",
+    "state_id_recipe": "synthetic40:chain=<chain_id>:iteration=<original_iteration>",
+    "original_iterations": [
+      2001,
+      6000
+    ],
+    "selection_chain_ids": [
+      "1",
+      "2"
+    ],
+    "diagnostic_chain_ids": [
+      "3",
+      "4"
+    ],
+    "states_per_role": 8000,
+    "chain_split_establishes_independence": false
+  },
+  "targets": {
+    "S": "Student-composition economic need; existing latent references and new-site conditional predictions.",
+    "C": "Catchment-community economic need for the declared community profile.",
+    "orientation": "larger_is_higher",
+    "grade_orientation": "smaller_is_higher_priority",
+    "S_identity_classes": 40,
+    "C_identity_classes": 38,
+    "C_identity_pairs": [
+      [
+        "S05",
+        "S06"
+      ],
+      [
+        "S21",
+        "S22"
+      ]
+    ]
+  },
+  "design": {
+    "original_units": 40,
+    "original_pairs": 780,
+    "column_counts": {
+      "S": 7,
+      "C": 7
+    },
+    "candidate_product": 49,
+    "max_grades": 3,
+    "cut_positions": [
+      10,
+      20,
+      30
+    ],
+    "order_rule": "Decreasing selection-state posterior mean, then original unit order.",
+    "candidate_order_uses_selection_states": true,
+    "weights": [
+      "1/2",
+      "1/2"
+    ],
+    "tau": "1/10",
+    "q": "1/20",
+    "alpha": "1/20",
+    "scope": "all original pairs"
+  },
+  "cases": [
+    {
+      "case_id": "main-alpha-1_20",
+      "t": "1/20",
+      "N_S": 0,
+      "N_C": 500,
+      "risk_exact": "170039/2496000",
+      "selection_J_exact": "0",
+      "diagnostic_J_exact": "0",
+      "selection_union_hits": 0,
+      "selection_any_error_hits": 1871,
+      "diagnostic_union_hits": 0,
+      "diagnostic_any_error_hits": 1877,
+      "optimizer_count": 1,
+      "feasible_candidates": 7,
+      "C_grade_sizes": [
+        10,
+        10,
+        20
+      ],
+      "first_strict_exceedance_count": 26
+    },
+    {
+      "case_id": "sensitivity-t-wide",
+      "t": "1/10",
+      "N_S": 300,
+      "N_C": 500,
+      "risk_exact": "716341/12480000",
+      "selection_J_exact": "133/4000",
+      "diagnostic_J_exact": "229/8000",
+      "diagnostic_risk_exact": "717433/12480000",
+      "selection_union_hits": 266,
+      "diagnostic_union_hits": 229,
+      "optimizer_count": 1,
+      "feasible_candidates": 14
+    }
+  ],
+  "wide_profiles": {
+    "occupancy_rows_C_columns_S": [
+      [
+        6,
+        4
+      ],
+      [
+        4,
+        6
+      ],
+      [
+        0,
+        20
+      ]
+    ],
+    "unique_disclosed_pairs": 548,
+    "crossed_pairs": 16,
+    "occupied_cells": 5,
+    "total_cells": 6
+  },
+  "assurance": {
+    "arithmetic": "Exact rational arithmetic on supplied equal-weight empirical measures.",
+    "numerical_guarantee": false,
+    "intended_posterior_feasibility_certified": false,
+    "independent_validation_claim": false,
+    "original_analysis_executed_in_vignette": false
+  },
+  "grades": [
+    {
+      "unit_id": "S01",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S02",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S03",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S04",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S05",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S06",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S07",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S08",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S09",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S10",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S11",
+      "primary_S": 1,
+      "primary_C": 2,
+      "wide_S": 1,
+      "wide_C": 2
+    },
+    {
+      "unit_id": "S12",
+      "primary_S": 1,
+      "primary_C": 2,
+      "wide_S": 1,
+      "wide_C": 2
+    },
+    {
+      "unit_id": "S13",
+      "primary_S": 1,
+      "primary_C": 1,
+      "wide_S": 1,
+      "wide_C": 1
+    },
+    {
+      "unit_id": "S14",
+      "primary_S": 1,
+      "primary_C": 1,
+      "wide_S": 1,
+      "wide_C": 1
+    },
+    {
+      "unit_id": "S15",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S16",
+      "primary_S": 1,
+      "primary_C": 2,
+      "wide_S": 1,
+      "wide_C": 2
+    },
+    {
+      "unit_id": "S17",
+      "primary_S": 1,
+      "primary_C": 1,
+      "wide_S": 1,
+      "wide_C": 1
+    },
+    {
+      "unit_id": "S18",
+      "primary_S": 1,
+      "primary_C": 1,
+      "wide_S": 2,
+      "wide_C": 1
+    },
+    {
+      "unit_id": "S19",
+      "primary_S": 1,
+      "primary_C": 1,
+      "wide_S": 2,
+      "wide_C": 1
+    },
+    {
+      "unit_id": "S20",
+      "primary_S": 1,
+      "primary_C": 1,
+      "wide_S": 2,
+      "wide_C": 1
+    },
+    {
+      "unit_id": "S21",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S22",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S23",
+      "primary_S": 1,
+      "primary_C": 2,
+      "wide_S": 2,
+      "wide_C": 2
+    },
+    {
+      "unit_id": "S24",
+      "primary_S": 1,
+      "primary_C": 2,
+      "wide_S": 1,
+      "wide_C": 2
+    },
+    {
+      "unit_id": "S25",
+      "primary_S": 1,
+      "primary_C": 1,
+      "wide_S": 2,
+      "wide_C": 1
+    },
+    {
+      "unit_id": "S26",
+      "primary_S": 1,
+      "primary_C": 1,
+      "wide_S": 1,
+      "wide_C": 1
+    },
+    {
+      "unit_id": "S27",
+      "primary_S": 1,
+      "primary_C": 1,
+      "wide_S": 1,
+      "wide_C": 1
+    },
+    {
+      "unit_id": "S28",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S29",
+      "primary_S": 1,
+      "primary_C": 2,
+      "wide_S": 2,
+      "wide_C": 2
+    },
+    {
+      "unit_id": "S30",
+      "primary_S": 1,
+      "primary_C": 2,
+      "wide_S": 2,
+      "wide_C": 2
+    },
+    {
+      "unit_id": "S31",
+      "primary_S": 1,
+      "primary_C": 2,
+      "wide_S": 2,
+      "wide_C": 2
+    },
+    {
+      "unit_id": "S32",
+      "primary_S": 1,
+      "primary_C": 1,
+      "wide_S": 1,
+      "wide_C": 1
+    },
+    {
+      "unit_id": "S33",
+      "primary_S": 1,
+      "primary_C": 2,
+      "wide_S": 2,
+      "wide_C": 2
+    },
+    {
+      "unit_id": "S34",
+      "primary_S": 1,
+      "primary_C": 2,
+      "wide_S": 2,
+      "wide_C": 2
+    },
+    {
+      "unit_id": "S35",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S36",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S37",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S38",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S39",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    },
+    {
+      "unit_id": "S40",
+      "primary_S": 1,
+      "primary_C": 3,
+      "wide_S": 2,
+      "wide_C": 3
+    }
+  ]
+}

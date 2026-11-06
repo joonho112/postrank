@@ -1,0 +1,134 @@
+url: https://joonho112.github.io/postrank/
+
+template:
+  bootstrap: 5
+  math-rendering: mathml
+  light-switch: false
+  bslib:
+    primary: "#17645E"
+
+navbar:
+  structure:
+    left: [intro, vignettes, reference, news]
+    right: [search, github]
+  components:
+    intro:
+      text: Introduction
+      href: articles/a1-getting-started.html
+    vignettes:
+      text: Vignettes
+      href: articles/index.html
+    news:
+      text: News
+      href: news/index.html
+    github:
+      icon: fa-github
+      href: https://github.com/joonho112/postrank
+      aria-label: GitHub
+
+articles:
+- title: Start here
+  desc: Follow a small analysis from supplied posterior information to grades, exported results and figures.
+  navbar: ~
+  contents:
+  - a1-getting-started
+  - a5-your-posterior-results
+  - a6-reading-exporting-results
+  - a7-figures-sensitivity
+- title: Applied examples
+  desc: Explore one-criterion and common-grading analyses in three case studies.
+  navbar: ~
+  contents:
+  - a2-cde-accountability
+  - a3-krw-race-gender
+  - a4-alabama-opportunity
+- title: Methods
+  desc: Understand the loss, competing criteria, posterior requirements, withholding, computation and numerical uncertainty.
+  navbar: ~
+  contents:
+  - m1-ranking-and-loss
+  - m2-several-criteria
+  - m3-posterior-inputs
+  - m4-ties-and-withholding
+  - m5-computing-grades
+  - m6-uncertainty-diagnostics
+- title: Multidomain profiles
+  desc: Assign each unit a separate grade in each domain. Extend the common-grade workflow with joint protection and crossed priorities.
+  navbar: ~
+  contents:
+  - mdomain-quickstart
+  - mdomain-decisions
+- title: Additional examples
+  desc: Work through the retained examples, producer declarations and comparisons with simpler grading rules.
+  navbar: ~
+  contents:
+  - quickstart
+  - inputs-and-producers
+  - baselines-and-the-cost-of-a-common-grade
+- title: Reference aids
+  desc: Browse the common-grade figure gallery or update scripts written for the earlier interface.
+  navbar: ~
+  contents:
+  - figure-gallery
+  - migration-from-0-9
+
+reference:
+- title: Multidomain profiles
+  desc: Separate domain grades, additive risk and direct joint protection within a declared candidate bank; exact finite-law evaluation, conditional iid assessment, MCMC diagnostics and stored report views.
+  contents:
+  - has_concept("multidomain")
+- title: Tie-aware mode (opt-in)
+  desc: Separate equality-neutral input, coefficients and guarded weighted at-most-G label-MIP. Legacy reports and guarantees are unsupported here.
+  contents:
+  - has_concept("tie-aware")
+- title: Input
+  desc: Posterior draws, their required declarations and the strict constructors for one or several criteria.
+  contents:
+  - has_concept("input")
+- title: Coefficients
+  desc: Prepared directional-error probabilities, typed posterior laws and their input-specific capabilities.
+  contents:
+  - has_concept("coefficients")
+- title: Settings and control
+  desc: The declared policy (weights, tau, grade cap) and the computation controls.
+  contents:
+  - has_concept("settings")
+- title: Decision
+  desc: The one-call analysis, the decision problem, the solver and fixed-grade evaluation.
+  contents:
+  - has_concept("decision")
+- title: Baselines and comparison
+  desc: Score orders with optimal or quantile cuts, compared with the joint rule on one posterior and loss.
+  contents:
+  - has_concept("baselines")
+- title: Criterion summaries and settings grids
+  desc: Criterion-specific losses, tau frontiers and specified settings grids.
+  contents:
+  - has_concept("grids")
+- title: Diagnostics
+  desc: Descriptive diagnostics for cross-fitting, Monte Carlo fragility and decision traces. These diagnostics do not provide certificates.
+  contents:
+  - has_concept("diagnostics")
+- title: Reporting and accessors
+  desc: Report cards, the standalone English report, accessors and console formatters.
+  contents:
+  - has_concept("reporting")
+- title: Visualization
+  desc: Seven graphical summaries, their underlying tables, and plotting themes and grade palettes.
+  contents:
+  - has_concept("visualization")
+- title: Reference calculations (conditional)
+  desc: Conditional IID reference bounds and protection envelopes; they issue no general guarantee.
+  contents:
+  - has_concept("reference")
+- title: Data and examples
+  desc: Synthetic posterior inputs and the three applied case studies.
+  contents:
+  - has_concept("data")
+- title: Package and options
+  contents:
+  - postrank-package
+  - postrank_options
+
+news:
+  releases: []

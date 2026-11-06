@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Find Grades and Report Their Optimization Bounds — postrank_solve • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Find Grades and Report Their Optimization Bounds — postrank_solve"><meta name="description" content="A grading is sought within the family specified by postrank_problem().
+Returned grades must satisfy an independent feasibility check. The fit
+retains the candidate, its directly recomputed posterior risk, the reported
+lower bound and the termination status. These records distinguish the
+available action from the numerical conclusions about optimality."><meta property="og:description" content="A grading is sought within the family specified by postrank_problem().
+Returned grades must satisfy an independent feasibility check. The fit
+retains the candidate, its directly recomputed posterior risk, the reported
+lower bound and the termination status. These records distinguish the
+available action from the numerical conclusions about optimality."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul></div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Find Grades and Report Their Optimization Bounds</h1>
+
+      <div class="d-none name"><code>postrank_solve.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>A grading is sought within the family specified by <code><a href="postrank_problem.html">postrank_problem()</a></code>.
+Returned grades must satisfy an independent feasibility check. The fit
+retains the candidate, its directly recomputed posterior risk, the reported
+lower bound and the termination status. These records distinguish the
+available action from the numerical conclusions about optimality.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_solve</span><span class="op">(</span><span class="va">problem</span>, backend <span class="op">=</span> <span class="cn">NULL</span>, control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, strategy <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-problem">problem<a class="anchor" aria-label="anchor" href="#arg-problem"></a></dt>
+<dd><p>A <code>postrank_problem</code> specifying the supplied probabilities,
+loss, grade limit and any supported error-budget or exact-count constraints.</p></dd>
+
+
+<dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
+<dd><p><code>NULL</code> (default), <code>"gurobi"</code> or <code>"highs"</code>. An explicit choice
+takes precedence; otherwise <code>getOption("postrank.backend")</code> is used, then Gurobi if unset.
+The chosen name and source (<code>"explicit"</code>, <code>"option"</code> or <code>"default"</code>) are
+recorded in <code>fit$backend</code>. HiGHS must be chosen explicitly or through the
+option. A missing, failed or timed-out backend is never replaced automatically.</p></dd>
+
+
+<dt id="arg-control">control<a class="anchor" aria-label="anchor" href="#arg-control"></a></dt>
+<dd><p>A <code><a href="postrank_control.html">postrank_control()</a></code> object or named list of time, thread,
+seed, gap and tolerance controls. <code>engine</code> contains staged-search options.
+Package progress messages and native solver logs have separate switches.</p></dd>
+
+
+<dt id="arg-strategy">strategy<a class="anchor" aria-label="anchor" href="#arg-strategy"></a></dt>
+<dd><p><code>NULL</code> uses <code>control$strategy</code>, or <code>"staged"</code> if absent.
+An explicit <code>"staged"</code> or <code>"label_mip"</code> overrides the control object's choice.</p></dd>
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A <code>postrank_fit</code>. <code>incumbent_validated</code> identifies whether <code>grade</code>
+and <code>evaluation</code> are available; <code>solution_validation</code> retains the independent
+check. <code>status</code> contains <code>raw_code</code>, <code>raw_message</code>, <code>normalized</code> and
+<code>termination_reason</code>. <code>objective</code> contains <code>primary_action_risk</code>,
+<code>risk_upper_bound</code>, <code>risk_lower_bound</code>, <code>risk_absolute_gap</code>, raw objective
+values and their conversion, and the <code>bound_source</code>.
+<code>problem</code>, <code>settings</code>, <code>backend</code>, <code>engine</code>, warnings and numerical issues
+preserve the calculation's context. Minimax refinement adds <code>minimax_refine</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="candidate-feasibility-and-optimization-bounds">Candidate feasibility and optimization bounds<a class="anchor" aria-label="anchor" href="#candidate-feasibility-and-optimization-bounds"></a></h2>
+
+
+<p>A validated candidate's recomputed primary risk is the upper bound U.
+A usable lower bound L concerns the whole declared problem; the absolute
+risk gap is U-L. For minimax, U is the grade's largest included criterion
+risk, not a possibly slack auxiliary variable. A weighted raw gap must be
+converted using <code>R = tau + Z/M</code>; a raw relative gap is not the same as a
+relative gap in risk.</p>
+<p><code>optimal</code> is a numerical conclusion subject to recorded gap controls and
+tolerances. A backend's optimal label becomes <code>feasible_not_certified</code>
+if a valid candidate lacks a usable bound or has an excessive gap.
+A <code>time_limit</code> result may
+or may not contain a validated grade. With no validated grade, action risk
+and gap are unavailable, even if a useful lower bound remains. This is
+different from a valid one-grade report withholding all comparisons.</p>
+<p>Inconsistent bounds can be rejected while independently validated grades
+remain available. Small bound inversions within the recorded objective
+tolerance may instead be clamped with a warning. Inspect <code>bound_source</code>,
+numerical issues and warnings; these are not exact numerical certificates,
+posterior uncertainty intervals, or proof of a unique optimal grade.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="search-strategies">Search strategies<a class="anchor" aria-label="anchor" href="#search-strategies"></a></h2>
+
+
+<p><code>"label_mip"</code> sends the integer-label model to the selected backend.
+<code>"staged"</code> first constructs candidates using contiguous cuts of several
+priority orders and local search. It then solves a linear relaxation with
+comparison constraints, including separated triangle inequalities and
+disclosure-count bounds implied by the grade limits. This can bound the
+full problem even though the initial candidate searches use fixed orders.
+If a gap remains and the size/settings permit, it runs a strengthened
+label MIP. Gurobi can use the candidate as a MIP start.</p>
+<p>Staged-search defaults in <code>control$engine</code> are <code>local_search_passes = 20</code>,
+<code>local_search_starts = 5</code>, <code>max_cut_rounds = 60</code>, <code>cuts_per_round = NULL</code>
+(meaning <code>max(200, 10 * n)</code>), <code>lp_time_share = .5</code>, <code>mip = "auto"</code> and
+<code>mip_max_n = 200</code>. <code>mip</code> may also be <code>"always"</code> or <code>"never"</code>; <code>"auto"</code>
+runs the MIP only up to <code>mip_max_n</code>. With a possible MIP stage, the LP gets
+<code>lp_time_share</code> of the remaining budget. Otherwise it can use the remainder
+less a reserve for candidate construction and validation: the largest of
+one second, 1% of the time limit and twice the initial candidate-stage time.
+It receives at least the usual LP share. <code>fit$engine$stages</code> records what
+ran, including the LP <code>time_budget</code> and <code>time_budget_rule</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="interpretation-of-minimax-refinement">Interpretation of minimax refinement<a class="anchor" aria-label="anchor" href="#interpretation-of-minimax-refinement"></a></h2>
+
+
+<p>With <code>minimax_refine = "weighted"</code>, the first stage minimizes the largest
+selected criterion risk. A second stage minimizes the original weighted
+risk while retaining the first-stage criterion caps. If any weight is zero,
+a third stage minimizes uniform criterion risk while also retaining a cap
+on the original weighted objective. No weight perturbation is used.
+Centered/scaled internal calculations retain the original public risk units.</p>
+<p>Stage 1 receives three quarters of the time budget. Refinement shares
+the remainder, with at least one second in total after stage 1; with zero
+weights, stage 2 initially receives half and stage 3 the time left.
+Heuristic fallbacks share their stage's deadline. Construction and
+validation add overhead, so <code>time_limit</code> is not a strict wall-clock bound.
+The final primary status and lower bound come from stage 1 and are checked
+against the released action. A candidate that breaches primary caps or
+worsens the original weighted objective beyond machine rounding is excluded.</p>
+<p><code>fit$minimax_refine</code> records stage results, budgets and the released action.
+<code>lexicographic_certified</code> requires primary and original-weighted
+certification for that action; <code>pareto_certified</code> also requires the
+zero-weight third stage when applicable. These flags remain subject to
+solver gaps and floating-point tolerances. Skipped or uncertified refinement
+is reported with a warning when a first-stage action is available.
+<code>minimax_refine = "none"</code> keeps the first-stage action.
+<code>fit$backend$options</code> retains the first-stage options.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="postrank_problem.html">postrank_problem()</a></code>, <code><a href="postrank_control.html">postrank_control()</a></code>,
+<code><a href="validate_postrank_solution.html">validate_postrank_solution()</a></code>, <code><a href="get_risk.html">get_risk()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">problem</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_problem.html">postrank_problem</a></span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  tau <span class="op">=</span> <span class="fl">.2</span>, G_max <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"highs"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">postrank_solve</span><span class="op">(</span><span class="va">problem</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span></span>
+<span class="r-in"><span>    control <span class="op">=</span> <span class="fu"><a href="postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">fit</span><span class="op">$</span><span class="va">status</span><span class="op">$</span><span class="va">normalized</span></span></span>
+<span class="r-in"><span>  <span class="va">fit</span><span class="op">$</span><span class="va">objective</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"risk_lower_bound"</span>, <span class="st">"risk_upper_bound"</span>, <span class="st">"risk_absolute_gap"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $risk_lower_bound</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04165164</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $risk_upper_bound</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04165164</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $risk_absolute_gap</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer></div>
+
+
+
+
+
+  </body></html>
+

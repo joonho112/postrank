@@ -1,0 +1,696 @@
+{
+  "compatibility_schema_version": "1",
+  "reader_package_version": "1.2.0",
+  "origin_package_version": "1.1.0",
+  "origin_source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+  "origin_cache_manifest_sha256": "26a3c067229d000be41c624975c2b8f777b0d2f887e96555694399808a2aae28",
+  "origin_source_manifest_sha256": "fbc44fcc363bb01f7f9e9d7697be479ad0ca1a2b1d5af1b04876992df8f251cd",
+  "compatible_source_id": "d95656cdfb0b9663bd804a919e635f171b74579b74dafb61f6b2d9777fdfd61d",
+  "compatible_source_entries": [
+    {
+      "path": "DESCRIPTION",
+      "sha256": "f9fb5a72b36f1d9e75eac222352fa46693f06c4ae95952a82ffda85246d5f16f"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "dad9deef569c7147ac055333b786a980716cc46a9c5b8f66569fbe6f663d2941"
+    },
+    {
+      "path": "R/accessors.R",
+      "sha256": "2556a6792e9730e4aba6ebc12e578f28f6fb1bd11a4ae99799d377649b0fc8e4"
+    },
+    {
+      "path": "R/as-postrank-posterior.R",
+      "sha256": "e9479d3d7ae6288e4fc8c82d8ed82052b6c2c9c9d893bbf1f962f267cb431dd5"
+    },
+    {
+      "path": "R/backend-availability.R",
+      "sha256": "0b3763835aabf3a1b5b03f753dc9c0a496fa76b0343363cb09b69760e2cd3f19"
+    },
+    {
+      "path": "R/backend-gurobi.R",
+      "sha256": "0c6bc2a7f81815ebd80761b2d78d472f6e9bc9f2e3599bd20e94188cb142b8c3"
+    },
+    {
+      "path": "R/backend-highs.R",
+      "sha256": "e5ab7e38e355a86bbca0e4bad41d8199b5d1f6e80083eeec12a32a91614111e3"
+    },
+    {
+      "path": "R/baselines.R",
+      "sha256": "e7202fa5d3d211290c9130f9374134ceed577a393b90d1780e694a913de2ebbe"
+    },
+    {
+      "path": "R/cache.R",
+      "sha256": "eaa7eee90606155e7c528868f4abffe348d4c9df4d8cd933c52f7226463403e0"
+    },
+    {
+      "path": "R/canonical-grade.R",
+      "sha256": "fd524e71da9b7ed865bb5cc0e049a35a6db03bd5d46b080b0a1ffe879fb8dcfd"
+    },
+    {
+      "path": "R/coefficient-diagnostics.R",
+      "sha256": "c403ef0e53e753920815dc36094b67683ad9f1a41926a0ea2e1ef67cde91c7af"
+    },
+    {
+      "path": "R/coefficient-gaussian.R",
+      "sha256": "55abe6f3a7020023911c869524707e5a561df2bade3aa6c5b848556695be3476"
+    },
+    {
+      "path": "R/coefficient-identity.R",
+      "sha256": "919cb5079022ffa07789272d6bcf6501d82be4e0b945b19e50f1abf0a60e6aeb"
+    },
+    {
+      "path": "R/coefficient-mixture.R",
+      "sha256": "1fc00b968f42e46e06dd38363513db6dfe0515e9c20e92aed4c13d15ad339422"
+    },
+    {
+      "path": "R/coefficient-problem-adapter.R",
+      "sha256": "8380befeb246d5fe419b9d4461ecf1f85cbac611d9ba99104b2e6889a596438a"
+    },
+    {
+      "path": "R/coefficient-validation.R",
+      "sha256": "481760f221124b35b03d6eccceb50e8e46f7ce1797f02d304ec0fb59a9065e72"
+    },
+    {
+      "path": "R/compare.R",
+      "sha256": "1dd536160e40b80cacda7d063de8fa2ffa9980ffb877ac213fe99e912c13a1d6"
+    },
+    {
+      "path": "R/control.R",
+      "sha256": "9c103e911e90205dcc25975cd263685c6af7db4066cb995ec831561485e2c08b"
+    },
+    {
+      "path": "R/data-case-alabama.R",
+      "sha256": "956a8c16b342500f84106bba20168aea96fd6dc41301797d40c7048b72632ec1"
+    },
+    {
+      "path": "R/data-case-cde.R",
+      "sha256": "aaa35cc5b4901a545ff3f460b149d9509d4ce5fcc62f32c387e2d32711cbf55a"
+    },
+    {
+      "path": "R/data-case-krw.R",
+      "sha256": "726f512dc3a601d2856d594b985e6279fe8944040415662bb2dc674b4cd2715f"
+    },
+    {
+      "path": "R/data-tutorial.R",
+      "sha256": "9cf8ed9bfb8e8fa42187b15100dad4a16d7a0f3cc10815c69592ad6554cc5cb3"
+    },
+    {
+      "path": "R/data.R",
+      "sha256": "9622b26fe864362e15713ee5f9b719348d687d2d5f44389e837ff21ff8b8333e"
+    },
+    {
+      "path": "R/decision-frontier.R",
+      "sha256": "35b56cf13988ae723ff4b44dc83103b04ba37207a3c1bf4754b97dc48d05b79b"
+    },
+    {
+      "path": "R/decision-traces.R",
+      "sha256": "4f166f8297d3319e6eb1aac6a3eb1b793c352905858c63420eb87e3ec24e5db8"
+    },
+    {
+      "path": "R/diagnose-mcmc.R",
+      "sha256": "cb0f333a5f59ac4bd0253165a825da734a6d1713ffdd073ebd35074ff25fd189"
+    },
+    {
+      "path": "R/diagnose-regime.R",
+      "sha256": "b643bf4ef985bc5618034845ee62434e3d2d02dfab8eb4bcf915708c3c81cd11"
+    },
+    {
+      "path": "R/diagnose-stability.R",
+      "sha256": "777c126ecb7c6e7307d9f87fd8e006b04bff996efb4e4471d1e00357d3eaab13"
+    },
+    {
+      "path": "R/draws-builder.R",
+      "sha256": "5e56e5615e8e037e98b4e20f4e25c388aa501b03c964b000a7a9f8f58ba3a3fa"
+    },
+    {
+      "path": "R/draws-class.R",
+      "sha256": "cb82968c9832a3128fc8089b4fcd4e187e1ba7edcdc364ccaa7b1697f9e784f4"
+    },
+    {
+      "path": "R/draws-criterionwise.R",
+      "sha256": "3e3a8d737c4a2b045cc0a85bc7265e731e0f0491a73dc5cc2e1c8275be298280"
+    },
+    {
+      "path": "R/draws-exact.R",
+      "sha256": "98563453a23e247c33709c3d45abe5e73ce69b2d6ce5228c1567ea7cc225ade2"
+    },
+    {
+      "path": "R/draws-friendly.R",
+      "sha256": "b83321e6b8b2ef3dfa87ade334a1a55058dee7527b8292e986f1668e249a7f9b"
+    },
+    {
+      "path": "R/draws-joint.R",
+      "sha256": "de108adc08dbf08773cb0b62b70043c45f2822506feec54f8873f63ca592291a"
+    },
+    {
+      "path": "R/draws-serialization.R",
+      "sha256": "27f598dfb690d0cf55cea2f98d88a3e4369f329d50721e2a7d98bb4cdec207a3"
+    },
+    {
+      "path": "R/draws-subset.R",
+      "sha256": "49ea2217b1a43fc687f1a863a03c33bb6f6a9fb0c5de80fa54d7c5fd7f93122d"
+    },
+    {
+      "path": "R/engine-dp.R",
+      "sha256": "e7e61c680b6167fb038919a8b205c02b55bceba7dcc1a5ea891254b8aa8dd6c7"
+    },
+    {
+      "path": "R/engine-local-search.R",
+      "sha256": "990ce054e9fc6638eacd1e59b109f405c55235c513a49840c10a826a30a63570"
+    },
+    {
+      "path": "R/engine-lp.R",
+      "sha256": "b2982a884ebff0861cf86eab9552741a61ec3535a1f6866c31784fec411db2c4"
+    },
+    {
+      "path": "R/engine-solve.R",
+      "sha256": "a4b2b2885c302ca71c9e13f51b7f0689c2e106c63c862d6306cbbce6bb8af8a1"
+    },
+    {
+      "path": "R/engine-spec.R",
+      "sha256": "e56085dd063bca3a63d351f45184f60fe0d53a30263d9fff99074349897bc041"
+    },
+    {
+      "path": "R/evaluate-grade.R",
+      "sha256": "0d66fc2a813859d2e48f0abc0b4362c5a81eaf488a597b141d7d3819914aab4c"
+    },
+    {
+      "path": "R/guarantee-status.R",
+      "sha256": "5f3a213246221c368517740f080274f50c68e4beb7ff96ef1c7ef7aa24265f94"
+    },
+    {
+      "path": "R/iid-coefficient-bounds.R",
+      "sha256": "66825054264aa2d3551b97eeca1ab52b7cc1abb0f1af6af3c19ff1dcff1f667e"
+    },
+    {
+      "path": "R/mc-diagnostics.R",
+      "sha256": "612ba03c5ee8a189cae26fcb29cb490ffa28decfc3fd7a058e08c2fd91b16228"
+    },
+    {
+      "path": "R/mdomain-action.R",
+      "sha256": "cefc36757f7c5631c366b6668cb4e5f8c8a0ed9dea9001723eb21000b737b5f7"
+    },
+    {
+      "path": "R/mdomain-assess.R",
+      "sha256": "903c5f41b652fd931cc26a8dce180b992b9503f92ac72dfff37d7a181760b2d8"
+    },
+    {
+      "path": "R/mdomain-capabilities.R",
+      "sha256": "f6e185634d3821d5308ca5f217f3498c23fd7391cf9954cc7ba8ed118efdb1bd"
+    },
+    {
+      "path": "R/mdomain-core-action.R",
+      "sha256": "4756089f07ad510928547262bc8c42b50e069877e4a94970a261fe537a9907c9"
+    },
+    {
+      "path": "R/mdomain-core-candidates.R",
+      "sha256": "490bbe8b9138379d69602f05d96c9df2f1ef20d28849e14300c2fd6d4739f8d9"
+    },
+    {
+      "path": "R/mdomain-core-decision.R",
+      "sha256": "22de8de0f30fea24a81d0ea186c1b4b060246617e69fb0cc58d262e5d4a80b1e"
+    },
+    {
+      "path": "R/mdomain-core-diagnose-mcmc.R",
+      "sha256": "a9eb169f2d4ad117f0278e5fa255271185e7aa78e8a545b3b9e3e13a474ff491"
+    },
+    {
+      "path": "R/mdomain-core-evaluate-expected.R",
+      "sha256": "cec3009a45038ba0e50424cd6e542d6c1e1bcff195c40e5d02273651b765760d"
+    },
+    {
+      "path": "R/mdomain-core-evaluate-joint.R",
+      "sha256": "6db5d18cba010dab670182c5d42bf5f74f9ddd3036d193b40fed6e6d47af2593"
+    },
+    {
+      "path": "R/mdomain-core-input-summary.R",
+      "sha256": "5548d8693ab95ed045987d79b9c17d2f8b6fbd508bff2ebc314ec300fa16c7b5"
+    },
+    {
+      "path": "R/mdomain-core-input.R",
+      "sha256": "1ad2538a3e768af633910720fe5fa01b33693e5cd2e1ea28bb16a7795d8705c3"
+    },
+    {
+      "path": "R/mdomain-core-oracle.R",
+      "sha256": "d7174a56a60d3d9131a5cb0f075c7bdbcdd23b6c4245f8148c61bb6d3c22e985"
+    },
+    {
+      "path": "R/mdomain-core-solve-candidates.R",
+      "sha256": "ab132bf32f582e5586667b5e0bed25caf149ddcc1ca251d9a5db7cc86989830a"
+    },
+    {
+      "path": "R/mdomain-core-validate-iid.R",
+      "sha256": "4e1b6a3548b68a50967b89d7eb9bd6c3551da7846aa61a676dfebf7bae4df720"
+    },
+    {
+      "path": "R/mdomain-decision.R",
+      "sha256": "8e130481b262242e4bb258dcd798a7e1c3ec313235f7f2a7c76b37cea4deedfb"
+    },
+    {
+      "path": "R/mdomain-evaluate.R",
+      "sha256": "584b1b829702180bad5812dce23c48010fe18c351bec683c1e79feac575eeb70"
+    },
+    {
+      "path": "R/mdomain-family.R",
+      "sha256": "c6577f65861b6117ab4ba6512a188407658edde21cca2615d4abd58bbfcce841"
+    },
+    {
+      "path": "R/mdomain-input.R",
+      "sha256": "2787b76e5eac62c32cbd71e69246400d2e27583dcfae7eaed7e5d6d3f7981321"
+    },
+    {
+      "path": "R/mdomain-joint-input.R",
+      "sha256": "7793cbcd122f6241227f7733c393174a37ef651534425460384618de4f34ad30"
+    },
+    {
+      "path": "R/mdomain-methods.R",
+      "sha256": "04ba82d24fbd7096a75fac116a03719248305e80afb905be41fefcbbda8d7ab1"
+    },
+    {
+      "path": "R/mdomain-numbers.R",
+      "sha256": "35d62a2798e1794595af8ca4d313624d6738fb670249157435806534349f0035"
+    },
+    {
+      "path": "R/mdomain-plot-cells.R",
+      "sha256": "09eedb462d7a88de50d90eb0f07dda61e03e500a3fe9096f2c851c327f231dcb"
+    },
+    {
+      "path": "R/mdomain-plot-data.R",
+      "sha256": "b5f64df20492fd10d1fc14b2dd42056e55735949778a3ed3667cedd2707c1529"
+    },
+    {
+      "path": "R/mdomain-plot-grades.R",
+      "sha256": "54fcffde377bff75885701f03ae2883d972b3cc69d08e2ce5ce920982ee1d5ab"
+    },
+    {
+      "path": "R/mdomain-plot-pair.R",
+      "sha256": "bb96f7c98d4b551d9524b69e46a3def180bb1154d6a4c4ab2720ce89d5de9ce4"
+    },
+    {
+      "path": "R/mdomain-plot.R",
+      "sha256": "4813cbd8c08bd54402c35510c9dfc6a15e25eb6565e141d38fe08c178da6a758"
+    },
+    {
+      "path": "R/mdomain-solve.R",
+      "sha256": "5d6163630b59ad789425cfb3aab5207e109009d7eb233e9e8e596e35e4e002ac"
+    },
+    {
+      "path": "R/minimax-refine.R",
+      "sha256": "334a31a7dd1b31aff6f004160bbf38f8c48d781ab0ba98ac058fea49a153514f"
+    },
+    {
+      "path": "R/normalize-solver-result.R",
+      "sha256": "6b4e3d80ca56bb7150f3a5550280bdf1d81e5385bbebec6ebf3919353394a2a2"
+    },
+    {
+      "path": "R/options.R",
+      "sha256": "8939a1391b0483452bd148b1a5b185da6128269ed88cc8b773639d3c30e96018"
+    },
+    {
+      "path": "R/pairwise-blocks.R",
+      "sha256": "b9c79b872d759c5dfe6ceab891c11fe28816d8795f70aba3b036910007a29671"
+    },
+    {
+      "path": "R/pairwise-dispatch.R",
+      "sha256": "4639a6cbde4dd852fb2d3418b9991184a18a77ef4f62d9920d1d880c3ac985da"
+    },
+    {
+      "path": "R/pairwise-exact.R",
+      "sha256": "33eee73451d58b17a32a24c18560b8703ad5337750749c0a4d902fea9c10ea7f"
+    },
+    {
+      "path": "R/pairwise-reference.R",
+      "sha256": "068fb365d7712abf351cfe7202dd5c2387e063870feef82d20fb0c1b3fe73fdf"
+    },
+    {
+      "path": "R/plots-card.R",
+      "sha256": "88965fdb9c37cc70d8d120f0b5585d343267075837479ac76fdf51bb3a3ea445"
+    },
+    {
+      "path": "R/plots-compare.R",
+      "sha256": "8aeece7346f9636365d1d2ca7629ee06b7fec73c0067dce9e53f42c90bbf84cd"
+    },
+    {
+      "path": "R/plots-data.R",
+      "sha256": "76247e780828a4b83ca703a3e5bc13cfd9346e50b6031d2a8e23c4b0f7562f97"
+    },
+    {
+      "path": "R/plots-frontier.R",
+      "sha256": "4768289f7c76bc5a58915ed0aa0dd175d773aa177b97f37826f04e7b360b0adf"
+    },
+    {
+      "path": "R/plots-pairwise.R",
+      "sha256": "bad7a7a2177ffd942f524166660e62f23271b803136c13ef411ae99204815f3f"
+    },
+    {
+      "path": "R/plots-profile.R",
+      "sha256": "f35238eadb57d80a734f0edf9dbf92d16c70d7ec402e707dcb13d1ac7b43f862"
+    },
+    {
+      "path": "R/plots-relations.R",
+      "sha256": "18b5a8896446f144576298c7b6e2be38f767685330c266da3f91af6e9978d6bb"
+    },
+    {
+      "path": "R/plots-utils.R",
+      "sha256": "0614fdb7a299b1f125b1da11547b89beeaa9e17870937107f5ff551c00638e01"
+    },
+    {
+      "path": "R/posterior-summaries.R",
+      "sha256": "2438ac1128838d155cebeb261901eff52021aa9667118ed1e8b3904ef788b4b2"
+    },
+    {
+      "path": "R/postrank-analysis.R",
+      "sha256": "fedbc4e489d36a866b5355f0c257149bc8b674016018058335ed3b08b42d4e33"
+    },
+    {
+      "path": "R/postrank-diagnose.R",
+      "sha256": "69ac763c866fd0c4408a5c0e8386793c612e021ea9125ad91823421973c240b7"
+    },
+    {
+      "path": "R/postrank-package.R",
+      "sha256": "53126a668d956708b7f0e915278e5c6342026b6040fcba3fe9b4487d46a6bb63"
+    },
+    {
+      "path": "R/postrank-report.R",
+      "sha256": "01c6a0393c52856602a66cb42ac8fc1646671cd5428a973649700a5dddfe9e7e"
+    },
+    {
+      "path": "R/postrank-solve.R",
+      "sha256": "3b873856996de1190e2df40c66c931ea8ef7684c9c8f345d2bbaad04451cf244"
+    },
+    {
+      "path": "R/print-methods.R",
+      "sha256": "5c20991c3c2a15a9b915da1a1a87585a4afb2c74bc9862c5cbf1451f54fa02f8"
+    },
+    {
+      "path": "R/probabilities.R",
+      "sha256": "8331daa40716081f8bb92143af5852f078a38f3bd8554609dda2cd7d2a9eb238"
+    },
+    {
+      "path": "R/problem-class.R",
+      "sha256": "99599419eaa94aa882a97199340f935966ae84e62f015f05a04e9f871638f836"
+    },
+    {
+      "path": "R/problem-encoding.R",
+      "sha256": "e022acb5dd48c55b2e42beff1bcd831ef954b166dbfd924ad86434099881bcdc"
+    },
+    {
+      "path": "R/problem-exact-grades.R",
+      "sha256": "137ad5ee9abc7b7af87222d5ee413f4d5a810985da3b6c2ad397506170f7fa8a"
+    },
+    {
+      "path": "R/problem-minimax.R",
+      "sha256": "28432b771573b4a9eca906ce3468f3b62cf02ab852af72d188875393bb37cece"
+    },
+    {
+      "path": "R/problem-protection.R",
+      "sha256": "209a3aaabe3c6c2bb28f1f4da5b357d2a4682f0a92f9babdaf36e8ea9ea79fe4"
+    },
+    {
+      "path": "R/problem-weighted.R",
+      "sha256": "d7731945ef8334e1c33654f9d03e0dad077ebdf62d47707d5a2e56182dedf69d"
+    },
+    {
+      "path": "R/protection-constraint-settings.R",
+      "sha256": "a5954de463597d9845fc6c6852da2d354de976690439753f37ae9958c81acfa6"
+    },
+    {
+      "path": "R/protection-envelopes.R",
+      "sha256": "3dfd798a4ffb807c370b9e48dfd64e07423f7da1078b93fee6b0a3a9e07a9d19"
+    },
+    {
+      "path": "R/report-card.R",
+      "sha256": "4e0e29a1ae6dfb06a980668de5bd15715b66151aff5f6b708f0e9ec6bcbd9292"
+    },
+    {
+      "path": "R/risk-regret-bounds.R",
+      "sha256": "24ed147a40790c1026fca6f4aea4950ff11bdedbb7f55439fae88f16ce4489f9"
+    },
+    {
+      "path": "R/sensitivity.R",
+      "sha256": "fe3413cd2928c7c42d6a7eb704447f1a51e9a048a86f62c98ac107a238b6d577"
+    },
+    {
+      "path": "R/settings.R",
+      "sha256": "fc6c564f8166eec54442f936a22c6dc81c7192bc60d464c2cc0657e3e829333d"
+    },
+    {
+      "path": "R/solution-class.R",
+      "sha256": "36868b6aa91d906dbee9342b1fcc2ed876e28ce7060941115515ec20dc0d2ed8"
+    },
+    {
+      "path": "R/solution-identity.R",
+      "sha256": "85718f9d39cd143e96c96c15e8ad8c7bfe400d54622563513f89cc82da4e872c"
+    },
+    {
+      "path": "R/theme.R",
+      "sha256": "509bc9afe354456792fedc2866c7a5b4c91755f8f11ecb1efc9c6f03aa8a21bb"
+    },
+    {
+      "path": "R/tie-backend.R",
+      "sha256": "974a1888b0077ba3f4dde17dc9546214909d77b2e29cc0f371f2284661a5751f"
+    },
+    {
+      "path": "R/tie-evaluate.R",
+      "sha256": "adbbf947c0e0f6374664a31bc69e7d027af18feef72e1f24a23362c3b6a59df5"
+    },
+    {
+      "path": "R/tie-input.R",
+      "sha256": "b3fe2ea6356303ab9feb70ac316ab565714e585b069bf593f36df664cfbbd873"
+    },
+    {
+      "path": "R/tie-json-scan.R",
+      "sha256": "a4d1d6ee9a80b3e8983ce3f65d85abd87c2630cc9a34a2729a1fb3f7a2c098a2"
+    },
+    {
+      "path": "R/tie-normalize.R",
+      "sha256": "059324367235313ed983dead32ae72c2bde8fe8149b1788df77f34154de4f26b"
+    },
+    {
+      "path": "R/tie-pairwise.R",
+      "sha256": "8ad12e624fb2e81e9c257fd2bf8fc991d9d840c042089fd3e5c20b48bf2d3104"
+    },
+    {
+      "path": "R/tie-problem.R",
+      "sha256": "95d02593754ba4906071b83568abe30fe018be7b0fdb083e3a7e932776b003dd"
+    },
+    {
+      "path": "R/tie-serialization.R",
+      "sha256": "a5d781e1a4fecac246303bd972f82111ec491c9e83f554400d98a3107d02fb34"
+    },
+    {
+      "path": "R/tie-solution.R",
+      "sha256": "fece876d66a395292c12fb07f473b3d6626764f2cd72e9ada7f0e0baab939081"
+    },
+    {
+      "path": "R/tie-solve.R",
+      "sha256": "ff4e91d9883e0465017edab281028d25c00516b0cae0ed81ecead6a0d87aba3c"
+    },
+    {
+      "path": "R/utils-cli.R",
+      "sha256": "fa80a459db3d7f7706fb9080b0bb2cc90f9cdb37acd72f1d271e6ab6a3e2d7e2"
+    },
+    {
+      "path": "R/utils-digest.R",
+      "sha256": "d25ee1cb7a506ed349404d115567e7f1f2408ca6ad95172261a3d1764374d192"
+    },
+    {
+      "path": "R/validate-draw-history.R",
+      "sha256": "e50e1f8d98e0af5b72b39a6ab9413960af26642e229c65f54ccab5910a1ad798"
+    },
+    {
+      "path": "R/validate-draws-common.R",
+      "sha256": "129e1d5ae7d065d744f3e60972968447e28dc08f3c88360c5f89c795bf0c121a"
+    },
+    {
+      "path": "R/validate-solution.R",
+      "sha256": "7f556b9a679e1a23ba0d10a272340fc43a061b54c90801182b2b6ed750a1604a"
+    },
+    {
+      "path": "data/postrank_toy.rda",
+      "sha256": "f36ea376f7d78d0ca4c8f1b814954740df1bcd0ea2e9dca670e78dca978f1d2a"
+    },
+    {
+      "path": "data/pr_case_alabama.rda",
+      "sha256": "fa5a83cd5dfd4d11011e2925052a497e5b55942009a614d312ae13b4e6b49f8f"
+    },
+    {
+      "path": "data/pr_case_cde.rda",
+      "sha256": "30ad51890b30e5d205f8db7ccb872d71508e7f03fccbb38b698d5a7f3b0493e6"
+    },
+    {
+      "path": "data/pr_case_krw.rda",
+      "sha256": "1c6d6ed56e197d3428284e948008968a31d81f9357d40ceb0fb5d0185ab1afe5"
+    },
+    {
+      "path": "data/pr_example_draws.rda",
+      "sha256": "06d440f36e4b0d59dfbb4b66ea3cddf1b248d6d633a3e75fdbbae38eb31a3cfe"
+    },
+    {
+      "path": "data/pr_example_gaussian.rda",
+      "sha256": "24f120e9a5dd146353c6709b6ffbe7a76240507378ea87c5d709caa56a9a6479"
+    },
+    {
+      "path": "data/pr_toy_mcmc.rda",
+      "sha256": "0eca85566b01346c783e37c2c3d82be150edd32cb0394598389fdac781309be5"
+    },
+    {
+      "path": "data/pr_tutorial.rda",
+      "sha256": "d02ab18a37d5b2cc4972ba2788b4b0b6273ba8b2adbd8bb7e4a57e5c3a8b3b46"
+    },
+    {
+      "path": "inst/extdata/case-studies/DATA-NOTICE.md",
+      "sha256": "e3ace77d38e997e64e17a0a6787364465d653ce905800fd2361b58c84408afc8"
+    },
+    {
+      "path": "inst/scripts/_vignette-setup.R",
+      "sha256": "438fd14c9328baeb4ab46ff2c5f2923e6e03cf93acae2c39db97719fb3618376"
+    },
+    {
+      "path": "inst/scripts/build-cached-assets.R",
+      "sha256": "1b36263bc0cc20cf9793274f1990ee3c9a0b152cce30f412ce163a6441823158"
+    },
+    {
+      "path": "inst/scripts/validate-cache-reader-compatibility.R",
+      "sha256": "5a6813cc5901068257c77451f5ba343f030b2e101f36672a71c76a66cf5b61ee"
+    }
+  ],
+  "unchanged_origin_paths": ["R/accessors.R", "R/as-postrank-posterior.R", "R/backend-availability.R", "R/backend-gurobi.R", "R/backend-highs.R", "R/baselines.R", "R/cache.R", "R/canonical-grade.R", "R/coefficient-diagnostics.R", "R/coefficient-gaussian.R", "R/coefficient-identity.R", "R/coefficient-mixture.R", "R/coefficient-problem-adapter.R", "R/coefficient-validation.R", "R/compare.R", "R/control.R", "R/data-case-alabama.R", "R/data-case-cde.R", "R/data-case-krw.R", "R/data-tutorial.R", "R/data.R", "R/decision-frontier.R", "R/decision-traces.R", "R/diagnose-mcmc.R", "R/diagnose-regime.R", "R/diagnose-stability.R", "R/draws-builder.R", "R/draws-class.R", "R/draws-criterionwise.R", "R/draws-exact.R", "R/draws-friendly.R", "R/draws-joint.R", "R/draws-serialization.R", "R/draws-subset.R", "R/engine-dp.R", "R/engine-local-search.R", "R/engine-lp.R", "R/engine-solve.R", "R/engine-spec.R", "R/evaluate-grade.R", "R/guarantee-status.R", "R/iid-coefficient-bounds.R", "R/mc-diagnostics.R", "R/minimax-refine.R", "R/normalize-solver-result.R", "R/options.R", "R/pairwise-blocks.R", "R/pairwise-dispatch.R", "R/pairwise-exact.R", "R/pairwise-reference.R", "R/plots-card.R", "R/plots-compare.R", "R/plots-data.R", "R/plots-frontier.R", "R/plots-pairwise.R", "R/plots-profile.R", "R/plots-relations.R", "R/plots-utils.R", "R/posterior-summaries.R", "R/postrank-analysis.R", "R/postrank-diagnose.R", "R/postrank-package.R", "R/postrank-report.R", "R/postrank-solve.R", "R/print-methods.R", "R/probabilities.R", "R/problem-class.R", "R/problem-encoding.R", "R/problem-exact-grades.R", "R/problem-minimax.R", "R/problem-protection.R", "R/problem-weighted.R", "R/protection-constraint-settings.R", "R/protection-envelopes.R", "R/report-card.R", "R/risk-regret-bounds.R", "R/sensitivity.R", "R/settings.R", "R/solution-class.R", "R/solution-identity.R", "R/theme.R", "R/tie-backend.R", "R/tie-evaluate.R", "R/tie-input.R", "R/tie-json-scan.R", "R/tie-normalize.R", "R/tie-pairwise.R", "R/tie-problem.R", "R/tie-serialization.R", "R/tie-solution.R", "R/tie-solve.R", "R/utils-cli.R", "R/utils-digest.R", "R/validate-draw-history.R", "R/validate-draws-common.R", "R/validate-solution.R", "data/postrank_toy.rda", "data/pr_case_alabama.rda", "data/pr_case_cde.rda", "data/pr_case_krw.rda", "data/pr_example_draws.rda", "data/pr_example_gaussian.rda", "data/pr_toy_mcmc.rda", "data/pr_tutorial.rda"],
+  "allowed_origin_differences": ["DESCRIPTION", "LICENSE", "inst/extdata/case-studies/DATA-NOTICE.md", "inst/scripts/_vignette-setup.R"],
+  "added_source_paths": ["R/mdomain-action.R", "R/mdomain-assess.R", "R/mdomain-capabilities.R", "R/mdomain-core-action.R", "R/mdomain-core-candidates.R", "R/mdomain-core-decision.R", "R/mdomain-core-diagnose-mcmc.R", "R/mdomain-core-evaluate-expected.R", "R/mdomain-core-evaluate-joint.R", "R/mdomain-core-input-summary.R", "R/mdomain-core-input.R", "R/mdomain-core-oracle.R", "R/mdomain-core-solve-candidates.R", "R/mdomain-core-validate-iid.R", "R/mdomain-decision.R", "R/mdomain-evaluate.R", "R/mdomain-family.R", "R/mdomain-input.R", "R/mdomain-joint-input.R", "R/mdomain-methods.R", "R/mdomain-numbers.R", "R/mdomain-plot-cells.R", "R/mdomain-plot-data.R", "R/mdomain-plot-grades.R", "R/mdomain-plot-pair.R", "R/mdomain-plot.R", "R/mdomain-solve.R", "inst/scripts/validate-cache-reader-compatibility.R"],
+  "reader_sha256": "438fd14c9328baeb4ab46ff2c5f2923e6e03cf93acae2c39db97719fb3618376",
+  "validation": {
+    "status": "complete",
+    "assets": {
+      "analysis_30x3": {
+        "object_class": "postrank_analysis",
+        "sha256": "961ab8e088009f63a6e022c16be461d81124646e78642f6887b22ead52c489e2",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present", ".pr_validate_analysis"]
+      },
+      "analysis_30x3_tau35": {
+        "object_class": "postrank_analysis",
+        "sha256": "37d73cc0e4e243fa9e546915fc4689777926fd31f27ab311901c77f99f1d5f3c",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present", ".pr_validate_analysis"]
+      },
+      "case_alabama67": {
+        "object_class": "postrank_analysis",
+        "sha256": "8baacaf2449fc14cc91f546403bdc2583e0d8fc232eb7954de736fc4fa60d088",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present", ".pr_validate_analysis"]
+      },
+      "case_cde_12": {
+        "object_class": "postrank_analysis",
+        "sha256": "1515afc2bc457ca4a63488abcabfda5b9cc4ca925c8c250071a81dff61aaed93",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present", ".pr_validate_analysis"]
+      },
+      "case_krw_signed97": {
+        "object_class": "postrank_analysis",
+        "sha256": "f704f827d16b6d547516da54addf0b6e1964115259f2e5eb6db38f3edf085af8",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present", ".pr_validate_analysis"]
+      },
+      "commonality_30x3": {
+        "object_class": "postrank_commonality_cost",
+        "sha256": "67a8877a3a8ce081d6016a4187be4368d44db57de5516b88e8b98d209be00555",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present"]
+      },
+      "commonality_30x3_tau35": {
+        "object_class": "postrank_commonality_cost",
+        "sha256": "879f9036f26f4b1dcdc89af5fe3ea8a3e8a8d2acbf588bbbaae447c419cff24b",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present"]
+      },
+      "comparison_30x3": {
+        "object_class": "postrank_comparison",
+        "sha256": "fa5f6a11ab65f49f455976f6ac315638444f9615aaa67dd6a83eadef0534774d",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present", ".pr_validate_comparison"]
+      },
+      "comparison_30x3_tau35": {
+        "object_class": "postrank_comparison",
+        "sha256": "afafdaef4eb22642a5b1aa6a47487bb8884d1f9a27b8772423c82ac0cdd4110b",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present", ".pr_validate_comparison"]
+      },
+      "frontier_30x3": {
+        "object_class": "postrank_frontier",
+        "sha256": "896ce314a90cb4fe4b45a50c89b7a923a7f04868d131311d1b91c1d13d8437f3",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present"]
+      },
+      "gaussian_analysis_30x3": {
+        "object_class": "postrank_analysis",
+        "sha256": "f54537f5990c9d534c6208243d7cc9383d3435e2cf8406eb966f5f10e0e4f1ff",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present", ".pr_validate_analysis"]
+      },
+      "toy_analysis": {
+        "object_class": "postrank_analysis",
+        "sha256": "ee8383287a8d7c828b253962ea63dd46c505473f1bc921aea35ca3b3ab165dde",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present", ".pr_validate_analysis"]
+      },
+      "toy_commonality": {
+        "object_class": "postrank_commonality_cost",
+        "sha256": "7b3bfffc4e1842955e3aca41b85988ba4dd90f7538bb62ee5a179de08c24a490",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present"]
+      },
+      "toy_crossfit": {
+        "object_class": "postrank_crossfit",
+        "sha256": "b423160a827acfbe54cdb40b965a5de0fa82b0714bef650fd50a1358bc95451c",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present"]
+      },
+      "toy_frontier": {
+        "object_class": "postrank_frontier",
+        "sha256": "254309bb9ebc76290a9c4638948f563c305b3c1812d85f6181e1e715ea4fecc8",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present"]
+      },
+      "toy_minimax": {
+        "object_class": "postrank_fit",
+        "sha256": "08869f60e23024e9fb5ff1ee2171276f34788f6363a6459cd6eeb014732d7b9c",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present", ".pr_validate_problem"]
+      },
+      "tutorial_commonality": {
+        "object_class": "postrank_commonality_cost",
+        "sha256": "cdb2695ef3a7f823b0ba246597f326a767a31c07d549c107c63dce9e42c4cc2e",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present"]
+      },
+      "tutorial_frontier": {
+        "object_class": "postrank_frontier",
+        "sha256": "20d1a50cb3b2476617d5bacf1601d919e00ef9b034dd305157ecbfd86837b67e",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present"]
+      },
+      "tutorial_one": {
+        "object_class": "postrank_analysis",
+        "sha256": "d17d862470a3dc3a25dc5ed58f6bbb8ccb6fa6be21d6110f9bdbae9d2eb8c525",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present", ".pr_validate_analysis"]
+      },
+      "tutorial_sensitivity": {
+        "object_class": "postrank_sensitivity",
+        "sha256": "18d930f56ae73d8fc9115514064322baf5cbbcc8e3e8777e8bbc66e1ed79b669",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present"]
+      },
+      "tutorial_two": {
+        "object_class": "postrank_analysis",
+        "sha256": "bf9138a8cdbdcb5737b56372f744b062fbf8cfacf37ef8f19514fe8d52d658c9",
+        "reader_validated": true,
+        "checks": ["file_bytes_sha256", "envelope_key_class", "restore_stub_input_identity_if_present", ".pr_validate_analysis"]
+      }
+    },
+    "method": "Actual reader asset validation followed by all 21 full cross-version reads in isolated staging; no solves."
+  },
+  "validated_at": "2026-11-06T05:47:03Z"
+}

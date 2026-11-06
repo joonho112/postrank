@@ -1,0 +1,131 @@
+{
+  "schema_version": "tie-aware-input-0.1",
+  "input_kind": "exact_finite_posterior",
+  "dependence_mode": "joint_model",
+  "requested_functional": "expected_rank_loss",
+  "entity_ids": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "criterion_ids": [
+    "S",
+    "C"
+  ],
+  "targets": [
+    {
+      "criterion_id": "S",
+      "estimand": "Synthetic site target",
+      "entity_population": "Fixed synthetic entities",
+      "time_reference": "Synthetic fixture",
+      "units": "arbitrary",
+      "source_transform": "identity",
+      "identification_basis": "Explicit labeled coordinates",
+      "orientation": "higher_priority"
+    },
+    {
+      "criterion_id": "C",
+      "estimand": "Synthetic site target",
+      "entity_population": "Fixed synthetic entities",
+      "time_reference": "Synthetic fixture",
+      "units": "arbitrary",
+      "source_transform": "identity",
+      "identification_basis": "Explicit labeled coordinates",
+      "orientation": "higher_priority"
+    }
+  ],
+  "context": {
+    "cohort_id": "synthetic-test",
+    "data_version": "1",
+    "data_conditioning": "Synthetic fixture definition",
+    "model_summary": "Two-state hand-specified T11 software validation law; no model was fitted."
+  },
+  "identification": {
+    "status": "identified_declared",
+    "note": "Coordinates explicitly labeled in synthetic fixture"
+  },
+  "tie_policy": {
+    "rule": "equality_neutral",
+    "declared": true,
+    "justification": "Software fixture declares genuine exact target equality, without rounding or jitter.",
+    "observed_tie_action": "accept_declared_exact_equality"
+  },
+  "provenance": {
+    "producer": "postrank software tests",
+    "artifact_id": "tie-aware-T11-complete-law",
+    "artifact_hash": "39f4c32f79f16e1154b30692d03fbafae1ed1980938281bbb21ed0b727a62a13",
+    "construction_note": "Hand-specified finite software example. No scientific population or empirical posterior is represented.",
+    "created_at": "2026-10-19T00:00:00-05:00"
+  },
+  "finite_law": {
+    "denominator": 5,
+    "value_representation": "safe_integer",
+    "states": [
+      {
+        "state_id": "state-1",
+        "mass_numerator": 3,
+        "theta": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            1
+          ]
+        ]
+      },
+      {
+        "state_id": "state-2",
+        "mass_numerator": 2,
+        "theta": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            1,
+            1
+          ]
+        ]
+      }
+    ],
+    "law_definition": "Complete T11 two-state law: S=(0,0,2,3) with mass3/5 or (0,0,2,1) with mass2/5; C=(0,0,0,1).",
+    "not_empirical_posterior_relabeling": true
+  },
+  "equality": {
+    "basis": "exact_finite_law",
+    "justification": "Derive equality from every positive-mass law state.",
+    "criterion_classes": {
+      "S": {
+        "A": "A",
+        "B": "A",
+        "C": "C",
+        "D": "D"
+      },
+      "C": {
+        "A": "A",
+        "B": "A",
+        "C": "A",
+        "D": "D"
+      }
+    }
+  }
+}

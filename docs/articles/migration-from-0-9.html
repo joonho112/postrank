@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Moving from the earlier 0.9 interface • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Moving from the earlier 0.9 interface">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-article">
+
+
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Moving from the earlier 0.9 interface</h1>
+            
+      
+      <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/migration-from-0-9.Rmd" class="external-link"><code>vignettes/migration-from-0-9.Rmd</code></a></small>
+      <div class="d-none name"><code>migration-from-0-9.Rmd</code></div>
+    </div>
+
+    
+    
+<p>The current version retains the posterior loss and strict input
+definitions of the earlier 0.9 interface. The changes concern
+one-criterion analyses, result extraction and presentation. This article
+describes their implications for existing scripts, using stored results
+without further optimization. The candidate has not been published.</p>
+<div class="section level2">
+<h2 id="choose-the-table-you-need">Result tables<a class="anchor" aria-label="anchor" href="#choose-the-table-you-need"></a>
+</h2>
+<p><code>as.data.frame(analysis)</code> now returns exactly
+<code>entity_id</code> and <code>grade</code> in input entity order.
+This stable table supports joins and exports. The row order is not a
+ranking: grade 1 has highest priority, and rows in the same grade have
+their comparison withheld.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   entity_id grade</span></span>
+<span><span class="co">#&gt; 1         A     1</span></span>
+<span><span class="co">#&gt; 2         B     1</span></span>
+<span><span class="co">#&gt; 3         C     2</span></span>
+<span><span class="co">#&gt; 4         D     2</span></span>
+<span><span class="co">#&gt; 5         E     3</span></span>
+<span><span class="co">#&gt; 6         F     3</span></span></code></pre></div>
+<p>Posterior means, interval endpoints and relation counts are available
+through an explicit request for the report card:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">card</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">one</span>, what <span class="op">=</span> <span class="st">"report_card"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">card</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] "entity_id"             "grade"                 "sort_rank"            </span></span>
+<span><span class="co">#&gt;  [4] "n_above"               "n_below"               "n_withheld"           </span></span>
+<span><span class="co">#&gt;  [7] "mean_score_A"          "lower_score_A"         "upper_score_A"        </span></span>
+<span><span class="co">#&gt; [10] "expected_rank_score_A"</span></span></code></pre></div>
+<p>The report card retains the row order and columns used for reporting.
+Its intervals are marginal posterior intervals for the targets, not
+uncertainty intervals for grade assignments. The interval level and
+source are recorded in <code>one$report_card</code>. An input carrying
+supplied intervals cannot reconstruct other levels; CDE and KRW provide
+90%, while Alabama provides 95%.</p>
+<p>The two table forms can be exported separately:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">two</span><span class="op">)</span>, <span class="st">"grades.csv"</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">two</span>, what <span class="op">=</span> <span class="st">"report_card"</span><span class="op">)</span>,</span>
+<span>  <span class="st">"report-card.csv"</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="start-with-one-criterion-then-declare-several-weights">One-criterion and multiple-criterion weights<a class="anchor" aria-label="anchor" href="#start-with-one-criterion-then-declare-several-weights"></a>
+</h2>
+<p>For a one-criterion <code><a href="../reference/postrank.html">postrank()</a></code> analysis, the weight
+defaults to one and may be omitted. This default applies to the one-call
+analysis. Lower-level functions such as <code><a href="../reference/postrank_problem.html">postrank_problem()</a></code>
+and <code><a href="../reference/postrank_evaluate.html">postrank_evaluate()</a></code> still take the weights their
+signatures require.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank.html">postrank</a></span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span>, tau <span class="op">=</span> <span class="fl">.2</span>, G_max <span class="op">=</span> <span class="fl">3L</span>, backend <span class="op">=</span> <span class="st">"highs"</span><span class="op">)</span></span>
+<span><span class="va">two</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank.html">postrank</a></span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">two</span>,</span>
+<span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">.5</span>, score_B <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.2</span>, G_max <span class="op">=</span> <span class="fl">3L</span>,</span>
+<span>  backend <span class="op">=</span> <span class="st">"highs"</span><span class="op">)</span></span></code></pre></div>
+<p>Both tutorial inputs retain the same six sites and the same score-A
+law. The two-criterion call changes the decision loss by adding score B.
+Loss weights are declared preferences, not empirical reliability
+weights. Typed settings provide a reusable policy specification. The
+policy is supplied through either <code>settings</code> or the
+corresponding separate arguments; conflicting specifications are
+rejected.</p>
+</div>
+<div class="section level2">
+<h2 id="keep-computation-choices-explicit">Computational controls and status<a class="anchor" aria-label="anchor" href="#keep-computation-choices-explicit"></a>
+</h2>
+<p>The default backend remains Gurobi. An explicit <code>backend</code>
+argument takes precedence over the <code>postrank.backend</code> option.
+If the option is unset, Gurobi is used. HiGHS is an explicit
+alternative, and an unavailable selection does not trigger a
+fallback.</p>
+<p>Progress messages are suppressed by default. A control with
+<code>verbose = NULL</code> reads <code>postrank.verbose</code> when
+solving; explicit <code>TRUE</code> or <code>FALSE</code> overrides the
+option. This affects progress messages, not numerical controls or
+results. The separate <code>output</code> control governs solver
+output.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">quiet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank.html">postrank</a></span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span>, tau <span class="op">=</span> <span class="fl">.2</span>, G_max <span class="op">=</span> <span class="fl">3L</span>,</span>
+<span>  backend <span class="op">=</span> <span class="st">"highs"</span>, control <span class="op">=</span> <span class="va">quiet</span><span class="op">)</span></span></code></pre></div>
+<p>An ordinary fit is characterized by its validated grade, normalized
+status and numerical bound. A backend’s optimal label is qualified as
+feasible but uncertified when a usable lower bound or sufficiently small
+gap is missing. Raw status is retained. A time limit remains a
+time-limit status; a missing incumbent remains missing and is not
+replaced with an all-withheld grade.</p>
+<p>Withholding every pair is a feasible action in an ordinary at-most-G
+problem. It has risk <code>tau</code> and no defined <code>E/N</code>
+because <code>N = 0</code>. An all-withheld grading is therefore
+distinguishable from a failed optimization with no validated action.</p>
+</div>
+<div class="section level2">
+<h2 id="request-display-choices-without-changing-the-result">Display settings<a class="anchor" aria-label="anchor" href="#request-display-choices-without-changing-the-result"></a>
+</h2>
+<p>Report-card plots now limit the default display to 30 rows, spreading
+the selection across occupied grades. An explicit entity selection can
+show more. Display labels are separate from stable entity IDs. Mean
+ordering requires a single displayed criterion or an explicit
+<code>order_by</code> naming the criterion that defines the order, on
+the plot or when preparing a card.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_report_card.html">postrank_plot_report_card</a></span><span class="op">(</span><span class="va">two</span>, max_rows <span class="op">=</span> <span class="fl">6L</span>, ncol <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/postrank_plot_report_card.html">postrank_plot_report_card</a></span><span class="op">(</span><span class="va">two</span>, entities <span class="op">=</span> <span class="va">pr_tutorial</span><span class="op">$</span><span class="va">units</span><span class="op">$</span><span class="va">entity_id</span>,</span>
+<span>  entity_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="st">"Site Alpha"</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/postrank_plot_report_card.html">postrank_plot_report_card</a></span><span class="op">(</span><span class="va">one</span>, order <span class="op">=</span> <span class="st">"mean"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/postrank_plot_report_card.html">postrank_plot_report_card</a></span><span class="op">(</span><span class="va">two</span>, order <span class="op">=</span> <span class="st">"mean"</span>, order_by <span class="op">=</span> <span class="st">"score_A"</span><span class="op">)</span></span></code></pre></div>
+<p>The plotting functions use prepared results. Pairwise-probability
+plots show the stored directional-error matrix; they do not estimate new
+probabilities. <code><a href="../reference/postrank_plot_data.html">postrank_plot_data()</a></code> returns the underlying
+tables for further analysis without applying the plot’s display
+selection. See the <a href="figure-gallery.html">figure gallery</a> and
+<a href="a7-figures-sensitivity.html">Figures and sensitivity
+analysis</a>.</p>
+<p>The exported <code>format_postrank_*_cli()</code> wrappers remain
+supported and match <code><a href="https://rdrr.io/r/base/format.html" class="external-link">format()</a></code> with the same arguments. The
+call <code>format(x, width = 72, tier = 2)</code> returns reusable text,
+whereas accessors provide values for calculations.
+<code>summary(x, details = TRUE)</code> includes the detailed stored
+summary fields in its console display. The console display does not
+define a schema for extracting values programmatically.</p>
+</div>
+<div class="section level2">
+<h2 id="use-supplied-probabilities-without-inventing-draws">Supplied comparison probabilities<a class="anchor" aria-label="anchor" href="#use-supplied-probabilities-without-inventing-draws"></a>
+</h2>
+<p><code><a href="../reference/postrank_probabilities.html">postrank_probabilities()</a></code> accepts already calculated
+tie-free pairwise probabilities with an explicit event, zero-tie
+declaration, zero margin, conditioning, target descriptions and source
+kind. It keeps raw values and any permitted numerical correction.
+Optional means and intervals must refer to those same oriented targets.
+These inputs do not provide a sample size, ESS, MCSE or
+integration-error certificate.</p>
+<p>Its initial decision scope is weighted at-most-G, including
+fixed-order cuts. Native Gaussian and mixture problems have the same
+decision scope, although their fixed-order cuts also accept an exact
+grade count. Draw inputs support additional validated modes. The help
+for each operation specifies the available modes, which cannot be
+inferred from the coefficient dimensions alone.</p>
+<p>Genuine equality uses the separate <code>postrank_tie_*</code> domain
+and its capability record. It does not reinterpret ordinary objects. Its
+strict wrong-event and distinct-event withholding loss can have
+all-withhold risk R0 below <code>tau</code>; raw disclosure and
+distinct-opportunity ratios have different denominators. Tie-aware fits
+also qualify a raw optimal label when the usable bound is missing or its
+gap is too wide. Their relative-gap scale uses the action risk minus R0,
+preserving that separate loss offset. See <a href="m4-ties-and-withholding.html">True ties and withheld
+comparisons</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="keep-historical-inputs-and-results-identifiable">Historical inputs and result provenance<a class="anchor" aria-label="anchor" href="#keep-historical-inputs-and-results-identifiable"></a>
+</h2>
+<p>The definitions of earlier strict constructors, schemas and
+scientific payload identities are unchanged. Declaration checks do not
+retrospectively establish the validity of, or modify, the scientific
+statements attached to an older object. Existing result views represent
+absent historical information as unavailable. A new calculation is
+required for quantities that were not stored.</p>
+<p>Prepared documentation assets are tied to their generating package
+version and source manifest. Reading an asset does not alter its
+provenance. Source changes require regeneration of the affected assets
+through the builder. This is separate from the archived research results
+inside case objects: their producer versions remain historical
+facts.</p>
+<p>The three case-study inputs retain their individual source conditions
+and attribution. The CDE input preserves its source identification, KRW
+retains the source’s CC-BY-NC notice with no license version
+substituted, and Alabama retains CC BY 4.0 attribution and change
+notices. The code license does not override these third-party source
+conditions.</p>
+</div>
+<div class="section level2">
+<h2 id="find-the-earlier-articles">Earlier articles<a class="anchor" aria-label="anchor" href="#find-the-earlier-articles"></a>
+</h2>
+<p>The three earlier articles, <code>quickstart</code>,
+<code>inputs-and-producers</code> and
+<code>baselines-and-the-cost-of-a-common-grade</code>, retain their
+distinct examples and link to the Applied and Methods series where
+appropriate. <a href="a1-getting-started.html">Getting started</a>
+introduces the current interface; the Applied and Methods series provide
+further practical and methodological detail.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

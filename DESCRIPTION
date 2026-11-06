@@ -1,0 +1,73 @@
+Package: postrank
+Type: Package
+Title: Posterior Ranking with Integer Grades
+Version: 1.2.0
+Authors@R:
+    person("JoonHo", "Lee", email = "jlee296@ua.edu",
+           role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0009-0006-4019-8703"))
+Description: Assigns integer grades to entities using posterior information
+    for one or several criteria, a specified directional loss and a cost for
+    withheld comparisons. A common grading is obtained when several criteria
+    are considered. Multidomain profiles instead retain a separate grade per
+    domain, using additive losses and direct joint-event protection over a
+    declared finite candidate family. Exact policy arithmetic, fixed-report
+    iid assessment and descriptive MCMC diagnostics are provided for profiles.
+    Inputs include validated equal-weight draws, exact finite laws,
+    conditional Gaussian laws, shared-state Gaussian mixtures and previously
+    calculated tie-free comparison probabilities. Model estimation is conducted separately. Optional modes
+    add error budgets, minimax decisions, exact grade counts and a separate
+    equality-neutral loss where supported. The default solver is 'Gurobi';
+    'HiGHS' is an explicit alternative. Data loading and the display of stored
+    results do not require either backend. Results retain validated grades,
+    numerical solver bounds, criterion profiles and input-aware diagnostics.
+    Seven common-grade 'ggplot2' figures and three profile views, English reports,
+    applied and methodological
+    articles and three case studies are provided
+    for interpretation. The method builds on the integer-grade report card of
+    Kline, Rose and Walters (2024) <doi:10.1257/aer.20230700>.
+License: file LICENSE
+Config/postrank/Data-Distribution: public-source-case-studies
+Config/postrank/Data-Notice: extdata/case-studies/DATA-NOTICE.md
+URL: https://github.com/joonho112/postrank,
+    https://joonho112.github.io/postrank/
+BugReports: https://github.com/joonho112/postrank/issues
+Depends:
+    R (>= 4.1.0)
+Imports:
+    cli,
+    digest,
+    ggplot2 (>= 3.5.0),
+    grDevices,
+    jsonlite,
+    Matrix,
+    methods,
+    scales,
+    stats,
+    utils
+Suggests:
+    callr,
+    ggrepel,
+    gmp,
+    gurobi,
+    highs,
+    knitr,
+    patchwork,
+    posterior,
+    rmarkdown,
+    svglite,
+    testthat (>= 3.0.0),
+    vdiffr,
+    withr
+SystemRequirements: Optional MIP backends: Gurobi (>= 10, licensed) via the
+    'gurobi' package, or explicitly selected HiGHS via the 'highs' package.
+Encoding: UTF-8
+Language: en-US
+LazyData: true
+LazyDataCompression: xz
+NeedsCompilation: no
+VignetteBuilder: knitr
+Roxygen: list(markdown = TRUE)
+Config/testthat/edition: 3
+Config/Needs/website: pkgdown
+Config/roxygen2/version: 8.1.0

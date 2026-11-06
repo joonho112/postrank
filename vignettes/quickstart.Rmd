@@ -1,0 +1,236 @@
+---
+title: "Common grading from posterior draws"
+output:
+  rmarkdown::html_vignette:
+    math_method: mathml
+vignette: >
+  %\VignetteIndexEntry{Common grading from posterior draws}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This retained example considers three criteria and preserves the original
+article URL. [Getting started](a1-getting-started.html) introduces a smaller
+one-criterion example and its extension to two criteria for the same sites.
+[Reading and exporting results](a6-reading-exporting-results.html) describes
+the current table and report interfaces.
+
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4.5, dpi = 96, out.width = "100%")
+```
+
+postrank assigns a common integer grade to each entity using posterior
+information on several criteria. Grade 1 denotes the highest-priority
+group. A common grade withholds the comparison between two entities when
+its expected disclosure cost is not justified under the declared loss;
+it does not assert equality of their targets. The analysis starts from
+supplied posterior draws or coefficients and involves no model fitting.
+
+We describe seven stages of analysis for the bundled example. The solver
+results were previously computed by the package maintainer and are read
+from caches bound to their source and settings. Building the article
+therefore requires no solver executions.
+
+```{r load}
+library(postrank)
+source(system.file("scripts", "_vignette-setup.R", package = "postrank", mustWork = TRUE), local = TRUE)
+```
+
+## 1. Entities, criteria and orientation
+
+`pr_example_draws` holds 4,000 joint posterior draws for 30 sites on three
+criteria. The criteria are named `poverty`, `frl` and `snap` for illustration
+only. The values are synthetic latent needs drawn from a fixed known law
+and are not empirical measurements.
+
+```{r entities}
+dim(pr_example_draws$joint_draws$tensor$values)   # draw x entity x criterion
+head(pr_example_draws$entity_ids)
+pr_example_draws$criterion_ids
+vapply(pr_example_draws$targets, `[[`, "", "orientation")
+```
+
+Larger target values mean higher priority on every criterion, so a smaller
+grade label means a higher-priority block.
+
+## 2. The typed input and its declarations
+
+A `postrank_draws` object carries the draws together with eight required
+scientific declarations (targets, context, provenance, origin, identification,
+tie justification, joint generation and sampling provenance).
+
+```{r declarations}
+pr_example_draws
+validate_postrank_draws(pr_example_draws)$valid
+pr_example_draws$targets[[1]][c("criterion_id", "estimand", "units")]
+```
+
+Validation checks the completeness of declarations, finiteness of values,
+and consistency of identifiers and dimensions. The truth of the scientific
+declarations and the adequacy of the posterior model require separate
+assessment. `vignette("inputs-and-producers", package = "postrank")`
+describes construction of an input object from a supplied array.
+
+## 3. Policy and computation are separate
+
+The decision settings specify criterion weights `w`, withholding cost
+`tau` and the maximum number of grades `G_max`. These define the loss and
+admissible reports. Computational controls specify the resources and
+stopping criteria used by the solver. They can therefore be varied while
+the decision problem is held fixed.
+
+```{r policy}
+settings <- postrank_settings(weights = c(poverty = .5, frl = .25, snap = .25), tau = .35, G_max = 4L)
+settings
+control <- postrank_control(time_limit = 60, threads = 1L, seed = 1304L)
+control
+```
+
+The declared loss charges, for every pair of entities, the weighted posterior
+probability of a wrong-direction comparison when the pair is ordered and `tau`
+when it is withheld. Its average over pairs is the risk `R`; withholding every
+comparison (the *all-withheld* action) has risk exactly `tau`.
+
+## 4. The analysis
+
+`postrank()` builds the pairwise error probabilities, solves for a common grade
+and validates the incumbent. With `backend` omitted it uses
+`getOption("postrank.backend")` and then Gurobi; it never switches to another
+solver on failure. The call below selects HiGHS explicitly. It is the call that
+produced the cached result, shown here but not run:
+
+```{r reproduce, eval = FALSE}
+a35 <- postrank(pr_example_draws, settings = settings, backend = "highs", control = control)
+```
+
+```{r analysis}
+a35 <- load_or_compute("analysis_30x3_tau35")
+a35
+```
+
+`r cache_note("analysis_30x3_tau35")`
+
+The same posterior under `tau = .25` (the cached asset `analysis_30x3`) gives a
+different action: every comparison is withheld.
+
+```{r all-tie}
+a25 <- load_or_compute("analysis_30x3")
+a25
+```
+
+At `tau = .25`, the validated incumbent withholds all comparisons among
+the 30 sites. Under this loss, posterior imprecision and disagreement
+between criteria are consistent with the absence of a lower-loss partition in the search. The all-withheld action is an admissible decision, without implying
+equality of the sites. Since changing `tau` changes the loss, the resulting
+risks do not provide a common scale for ranking these two settings.
+
+## 5. Grades, profiles and the report card
+
+```{r grades}
+table(get_grades(a35))
+get_profile(a35)
+```
+
+`E_over_N` is the expected number of wrong-direction disclosed pairs per
+disclosed pair on each criterion. When nothing is disclosed it is `NA`, not 0:
+
+```{r profile-na}
+get_profile(a25)[, c("criterion", "E", "E_over_N", "risk")]
+```
+
+The report card lists each entity's grade, how many entities it is disclosed
+above and below, and its posterior means and central intervals:
+
+```{r card}
+a35$report_card
+```
+
+```{r fig-card, fig.height = 7.5, fig.alt = "Marginal target intervals and grades for the additional 30-site three-criterion example."}
+autoplot(a35)
+```
+
+```{r fig-profile, fig.height = 3.2, fig.alt = "Expected errors per disclosed pair for each criterion in the prepared 30-site common report."}
+postrank_plot_profile(a35)
+```
+
+A posterior mean can lie outside its equal-tail interval when the posterior is
+skewed; the figure draws the stored values unchanged.
+
+## 6. Pair relations
+
+`get_relations()` returns the disclosed relation of every ordered pair: `1` if
+the row entity is placed above the column entity, `-1` below and `0` withheld.
+
+```{r relations}
+rel <- get_relations(a35)
+rel[1:5, 1:5]
+table(rel[upper.tri(rel)])
+```
+
+```{r fig-relations, fig.height = 6.5, fig.alt = "Disclosed and withheld pair relations for the prepared 30-site common report."}
+postrank_plot_relations(a35, labels = "none")
+```
+
+A relation map represents one action under specified decision settings.
+Maps obtained under different `tau` values or criterion weights describe
+the resulting changes in disclosure. Their comparison does not establish
+a preferred policy, since the corresponding losses differ.
+
+## 7. Status, bounds, extras and provenance
+
+```{r risk}
+get_risk(a35)
+```
+
+The released grade is a validated incumbent. Its risk is the upper bound; the
+lower bound is the solver's. A zero gap means the solver found no better grade
+within its tolerances for these coefficients; it is not a numerical
+certificate, the number of optimal grades is unknown, and the gap says nothing
+about Monte Carlo or model uncertainty.
+
+`postrank()` adds optional extras and records why each one is or is not
+available. By default the report card is on, Monte Carlo fragility is computed
+for joint IID or MCMC input, and cross-fitting and full diagnostics are off.
+
+```{r extras}
+do.call(rbind, lapply(a35$extras, function(e) data.frame(requested = e$requested, available = e$available,
+  reason = if (is.null(e$reason)) "" else e$reason)))
+a35$fragility$summary[c("pairs", "traced", "fragile", "fragile_disclosed", "fragile_tied")]
+```
+
+A pair is flagged as fragile when the estimated weighted loss from disclosure
+in the better direction differs from `tau` by less than two Monte Carlo
+standard errors. Additional draws may change which of these two losses is
+estimated to be smaller. The flags are descriptive and pairwise, and a fragile pair need not
+change the jointly chosen grade.
+
+The generic call `format(a35, width = 72, tier = 2)` produces a character
+vector for console output, which can be written with `cat(..., sep = "\n")`.
+The named class-specific formatters remain supported throughout 0.9.x;
+structured accessors provide the interface for subsequent calculations.
+
+A standalone English HTML report combines the grades, decision summary,
+criterion profiles, declarations and provenance. Output is restricted to
+the specified file, and existing files cannot be overwritten.
+
+Matching diagnostics already stored in the analysis are included when
+available. The report leaves missing diagnostics unavailable; it does not
+calculate them, regenerate the report card or solve again. Typed coefficient
+diagnostics are also supported, with their conditional-risk scope and NA
+reasons preserved (see the input vignette).
+
+```{r report-example}
+path <- tempfile(fileext = ".html")
+rep <- postrank_report(a35$fit, analysis = a35, output_file = path)
+rep
+unlink(path)
+```
+
+## Related articles {#where-next}
+
+* `vignette("inputs-and-producers", package = "postrank")`: strict inputs,
+  declarations, Gaussian coefficients and external producers.
+* `vignette("baselines-and-the-cost-of-a-common-grade", package = "postrank")`:
+  expected-rank and composite baselines and the criterion burden of one common
+  grade.

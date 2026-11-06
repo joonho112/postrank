@@ -1,0 +1,801 @@
+{
+  "schema": "p1-applied-tiny-oracle-v1",
+  "scope": "NARROW executable oracle fixture, not the full draws-schema.json input validator or a production API",
+  "semantics": {
+    "theta_layout": "state -> entity -> criterion; larger target means higher priority",
+    "grade_direction": "smaller grade means higher priority",
+    "posterior": "positive integer state masses divided by the common denominator; coherent tie-free finite law",
+    "rationals": "weights, tau, and q are exact canonical integer or integer/fraction strings",
+    "relation_key": "comma-separated sign(g_j-g_i) for i<j in lexicographic pair order",
+    "minimax_expected": "maximum of posterior expected criterion losses, not expectation of statewise maximum"
+  },
+  "limits": {
+    "max_n": 4,
+    "max_K": 3,
+    "max_states": 12,
+    "max_cases": 6,
+    "max_settings_per_case": 8,
+    "max_abs_target": 1000000,
+    "max_denominator": 1000000,
+    "max_rational_component": 1000000,
+    "json_safe_integer_max": 9007199254740991
+  },
+  "cases": [
+    {
+      "id": "k1_krw_nonlocal",
+      "description": "K=1 finite law, including KRW affine parity and tau=0 boundary.",
+      "n": 3,
+      "K": 1,
+      "entity_ids": [
+        "site1",
+        "site2",
+        "site3"
+      ],
+      "criterion_ids": [
+        "criterion1"
+      ],
+      "denominator": 5,
+      "states": [
+        {
+          "mass": 3,
+          "theta": [
+            [
+              3
+            ],
+            [
+              2
+            ],
+            [
+              1
+            ]
+          ]
+        },
+        {
+          "mass": 2,
+          "theta": [
+            [
+              2
+            ],
+            [
+              1
+            ],
+            [
+              3
+            ]
+          ]
+        }
+      ],
+      "settings": [
+        {
+          "id": "primary",
+          "mode": "weighted",
+          "weights": [
+            "1"
+          ],
+          "tau": "1/4",
+          "Gmax": 3,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "more_disclosure",
+          "mode": "weighted",
+          "weights": [
+            "1"
+          ],
+          "tau": "2/5",
+          "Gmax": 3,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "tau_half",
+          "mode": "weighted",
+          "weights": [
+            "1"
+          ],
+          "tau": "1/2",
+          "Gmax": 3,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "boundary_tau_zero",
+          "mode": "weighted",
+          "weights": [
+            "1"
+          ],
+          "tau": "0",
+          "Gmax": 3,
+          "boundary_tau_zero": true,
+          "protect": []
+        },
+        {
+          "id": "Gmax_two",
+          "mode": "weighted",
+          "weights": [
+            "1"
+          ],
+          "tau": "2/5",
+          "Gmax": 2,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "Gmax_one",
+          "mode": "weighted",
+          "weights": [
+            "1"
+          ],
+          "tau": "2/5",
+          "Gmax": 1,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "exact_two",
+          "mode": "weighted",
+          "weights": [
+            "1"
+          ],
+          "tau": "2/5",
+          "Gmax": 3,
+          "boundary_tau_zero": false,
+          "protect": [],
+          "exact_G": 2
+        },
+        {
+          "id": "protected",
+          "mode": "weighted",
+          "weights": [
+            "1"
+          ],
+          "tau": "2/5",
+          "Gmax": 3,
+          "boundary_tau_zero": false,
+          "protect": [
+            {
+              "criterion": 1,
+              "q": "1/5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aligned_two_criteria",
+      "description": "Two criteria have identical statewise orders but different scales; one pair is uncertain.",
+      "n": 3,
+      "K": 2,
+      "entity_ids": [
+        "site1",
+        "site2",
+        "site3"
+      ],
+      "criterion_ids": [
+        "criterion1",
+        "criterion2"
+      ],
+      "denominator": 4,
+      "states": [
+        {
+          "mass": 3,
+          "theta": [
+            [
+              3,
+              30
+            ],
+            [
+              2,
+              20
+            ],
+            [
+              1,
+              10
+            ]
+          ]
+        },
+        {
+          "mass": 1,
+          "theta": [
+            [
+              3,
+              30
+            ],
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              20
+            ]
+          ]
+        }
+      ],
+      "settings": [
+        {
+          "id": "primary",
+          "mode": "weighted",
+          "weights": [
+            "1/2",
+            "1/2"
+          ],
+          "tau": "1/4",
+          "Gmax": 3,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "Gmax_two",
+          "mode": "weighted",
+          "weights": [
+            "1/2",
+            "1/2"
+          ],
+          "tau": "2/5",
+          "Gmax": 2,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "exact_two",
+          "mode": "weighted",
+          "weights": [
+            "1/2",
+            "1/2"
+          ],
+          "tau": "1/4",
+          "Gmax": 3,
+          "boundary_tau_zero": false,
+          "protect": [],
+          "exact_G": 2
+        },
+        {
+          "id": "zero_weight_protected",
+          "mode": "weighted",
+          "weights": [
+            "1",
+            "0"
+          ],
+          "tau": "2/5",
+          "Gmax": 3,
+          "boundary_tau_zero": false,
+          "protect": [
+            {
+              "criterion": 2,
+              "q": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "balanced_conflict",
+      "description": "Every pair has opposed criterion orders; equal weighted directional error is one half.",
+      "n": 3,
+      "K": 2,
+      "entity_ids": [
+        "site1",
+        "site2",
+        "site3"
+      ],
+      "criterion_ids": [
+        "criterion1",
+        "criterion2"
+      ],
+      "denominator": 1,
+      "states": [
+        {
+          "mass": 1,
+          "theta": [
+            [
+              3,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              1,
+              3
+            ]
+          ]
+        }
+      ],
+      "settings": [
+        {
+          "id": "primary",
+          "mode": "weighted",
+          "weights": [
+            "1/2",
+            "1/2"
+          ],
+          "tau": "1/4",
+          "Gmax": 3,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "tau_half",
+          "mode": "weighted",
+          "weights": [
+            "1/2",
+            "1/2"
+          ],
+          "tau": "1/2",
+          "Gmax": 3,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "minimax",
+          "mode": "minimax_expected",
+          "weights": [
+            "1/2",
+            "1/2"
+          ],
+          "tau": "1/4",
+          "Gmax": 3,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "minimax_tau_half",
+          "mode": "minimax_expected",
+          "weights": [
+            "1/2",
+            "1/2"
+          ],
+          "tau": "1/2",
+          "Gmax": 3,
+          "boundary_tau_zero": false,
+          "protect": []
+        }
+      ]
+    },
+    {
+      "id": "uniform_order_uncertainty",
+      "description": "Uniform distribution over all six strict orders, with pairwise error one half.",
+      "n": 3,
+      "K": 1,
+      "entity_ids": [
+        "site1",
+        "site2",
+        "site3"
+      ],
+      "criterion_ids": [
+        "criterion1"
+      ],
+      "denominator": 6,
+      "states": [
+        {
+          "mass": 1,
+          "theta": [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              3
+            ]
+          ]
+        },
+        {
+          "mass": 1,
+          "theta": [
+            [
+              1
+            ],
+            [
+              3
+            ],
+            [
+              2
+            ]
+          ]
+        },
+        {
+          "mass": 1,
+          "theta": [
+            [
+              2
+            ],
+            [
+              1
+            ],
+            [
+              3
+            ]
+          ]
+        },
+        {
+          "mass": 1,
+          "theta": [
+            [
+              2
+            ],
+            [
+              3
+            ],
+            [
+              1
+            ]
+          ]
+        },
+        {
+          "mass": 1,
+          "theta": [
+            [
+              3
+            ],
+            [
+              1
+            ],
+            [
+              2
+            ]
+          ]
+        },
+        {
+          "mass": 1,
+          "theta": [
+            [
+              3
+            ],
+            [
+              2
+            ],
+            [
+              1
+            ]
+          ]
+        }
+      ],
+      "settings": [
+        {
+          "id": "primary",
+          "mode": "weighted",
+          "weights": [
+            "1"
+          ],
+          "tau": "1/4",
+          "Gmax": 3,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "tau_half",
+          "mode": "weighted",
+          "weights": [
+            "1"
+          ],
+          "tau": "1/2",
+          "Gmax": 3,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "protected",
+          "mode": "weighted",
+          "weights": [
+            "1"
+          ],
+          "tau": "1/4",
+          "Gmax": 3,
+          "boundary_tau_zero": false,
+          "protect": [
+            {
+              "criterion": 1,
+              "q": "1/4"
+            }
+          ]
+        },
+        {
+          "id": "exact_two_protected_infeasible",
+          "mode": "weighted",
+          "weights": [
+            "1"
+          ],
+          "tau": "1/4",
+          "Gmax": 3,
+          "boundary_tau_zero": false,
+          "protect": [
+            {
+              "criterion": 1,
+              "q": "1/4"
+            }
+          ],
+          "exact_G": 2
+        }
+      ]
+    },
+    {
+      "id": "four_site_three_criteria",
+      "description": "Four sites and three criteria exercise ordered-partition geometry and an asymmetric finite law.",
+      "n": 4,
+      "K": 3,
+      "entity_ids": [
+        "site1",
+        "site2",
+        "site3",
+        "site4"
+      ],
+      "criterion_ids": [
+        "criterion1",
+        "criterion2",
+        "criterion3"
+      ],
+      "denominator": 6,
+      "states": [
+        {
+          "mass": 3,
+          "theta": [
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              3,
+              1,
+              4
+            ],
+            [
+              2,
+              4,
+              2
+            ],
+            [
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "mass": 2,
+          "theta": [
+            [
+              4,
+              2,
+              1
+            ],
+            [
+              2,
+              1,
+              4
+            ],
+            [
+              3,
+              4,
+              3
+            ],
+            [
+              1,
+              3,
+              2
+            ]
+          ]
+        },
+        {
+          "mass": 1,
+          "theta": [
+            [
+              3,
+              4,
+              2
+            ],
+            [
+              4,
+              1,
+              3
+            ],
+            [
+              2,
+              3,
+              1
+            ],
+            [
+              1,
+              2,
+              4
+            ]
+          ]
+        }
+      ],
+      "settings": [
+        {
+          "id": "primary",
+          "mode": "weighted",
+          "weights": [
+            "1/2",
+            "1/3",
+            "1/6"
+          ],
+          "tau": "1/4",
+          "Gmax": 4,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "Gmax_two",
+          "mode": "weighted",
+          "weights": [
+            "1/2",
+            "1/3",
+            "1/6"
+          ],
+          "tau": "2/5",
+          "Gmax": 2,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "more_disclosure",
+          "mode": "weighted",
+          "weights": [
+            "1/2",
+            "1/3",
+            "1/6"
+          ],
+          "tau": "2/5",
+          "Gmax": 4,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "minimax",
+          "mode": "minimax_expected",
+          "weights": [
+            "1/2",
+            "1/3",
+            "1/6"
+          ],
+          "tau": "2/5",
+          "Gmax": 4,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "exact_two_protected",
+          "mode": "weighted",
+          "weights": [
+            "1/2",
+            "1/3",
+            "1/6"
+          ],
+          "tau": "2/5",
+          "Gmax": 4,
+          "boundary_tau_zero": false,
+          "protect": [
+            {
+              "criterion": 3,
+              "q": "1/3"
+            }
+          ],
+          "exact_G": 2
+        }
+      ]
+    },
+    {
+      "id": "deterministic_minority_protection",
+      "description": "Minority-only q=0 permits the reverse direction but makes all-tie optimal; exact-G infeasibility requires both opposed criteria protected at q=0.",
+      "n": 2,
+      "K": 2,
+      "entity_ids": [
+        "site1",
+        "site2"
+      ],
+      "criterion_ids": [
+        "criterion1",
+        "criterion2"
+      ],
+      "denominator": 1,
+      "states": [
+        {
+          "mass": 1,
+          "theta": [
+            [
+              2,
+              1
+            ],
+            [
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "settings": [
+        {
+          "id": "primary",
+          "mode": "weighted",
+          "weights": [
+            "3/4",
+            "1/4"
+          ],
+          "tau": "2/5",
+          "Gmax": 2,
+          "boundary_tau_zero": false,
+          "protect": []
+        },
+        {
+          "id": "minority_zero_budget",
+          "mode": "weighted",
+          "weights": [
+            "3/4",
+            "1/4"
+          ],
+          "tau": "2/5",
+          "Gmax": 2,
+          "boundary_tau_zero": false,
+          "protect": [
+            {
+              "criterion": 2,
+              "q": "0"
+            }
+          ]
+        },
+        {
+          "id": "both_zero_budgets",
+          "mode": "weighted",
+          "weights": [
+            "3/4",
+            "1/4"
+          ],
+          "tau": "2/5",
+          "Gmax": 2,
+          "boundary_tau_zero": false,
+          "protect": [
+            {
+              "criterion": 1,
+              "q": "0"
+            },
+            {
+              "criterion": 2,
+              "q": "0"
+            }
+          ]
+        },
+        {
+          "id": "exact_two_both_zero_infeasible",
+          "mode": "weighted",
+          "weights": [
+            "3/4",
+            "1/4"
+          ],
+          "tau": "2/5",
+          "Gmax": 2,
+          "boundary_tau_zero": false,
+          "protect": [
+            {
+              "criterion": 1,
+              "q": "0"
+            },
+            {
+              "criterion": 2,
+              "q": "0"
+            }
+          ],
+          "exact_G": 2
+        },
+        {
+          "id": "minimax",
+          "mode": "minimax_expected",
+          "weights": [
+            "3/4",
+            "1/4"
+          ],
+          "tau": "2/5",
+          "Gmax": 2,
+          "boundary_tau_zero": false,
+          "protect": []
+        }
+      ]
+    }
+  ]
+}

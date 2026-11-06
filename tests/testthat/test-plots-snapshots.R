@@ -1,0 +1,25 @@
+# T-fig-06: shipped figure SVGs and degenerate cases. Snapshot
+# updates are reviewed and enumerated, never accepted wholesale (PR-DEC-15-B).
+test_that("shipped figure snapshots", {
+  skip_if_not_installed("vdiffr")
+  skip_on_cran()
+  a <- pr_cached("analysis_30x3_tau35"); a0 <- pr_cached("analysis_30x3")
+  vdiffr::expect_doppelganger("fig-report-card", postrank_plot_report_card(a))
+  vdiffr::expect_doppelganger("fig-report-card-all-tie", postrank_plot_report_card(a0))
+  vdiffr::expect_doppelganger("fig-relations", postrank_plot_relations(a))
+  er <- postrank_cuts(postrank_expected_rank(a$pairwise, a$settings$weights), a$pairwise, a$settings)
+  vdiffr::expect_doppelganger("fig-relations-identical-change-map", postrank_plot_relations(a, er))
+  vdiffr::expect_doppelganger("fig-criterion-profile", postrank_plot_profile(a))
+  vdiffr::expect_doppelganger("fig-criterion-profile-all-tie", postrank_plot_profile(a0))
+  fr <- pr_cached("frontier_30x3")
+  vdiffr::expect_doppelganger("fig-frontier", postrank_plot_frontier(fr, highlight = .35))
+  fr1 <- fr; fr1$table <- fr$table[fr$table$tau <= .25, , drop = FALSE]
+  vdiffr::expect_doppelganger("fig-frontier-all-tie-rows", postrank_plot_frontier(fr1))
+  vdiffr::expect_doppelganger("fig-commonality", postrank_plot_commonality(pr_cached("commonality_30x3_tau35")))
+  vdiffr::expect_doppelganger("fig-commonality-all-tie", postrank_plot_commonality(pr_cached("commonality_30x3")))
+  cmp <- pr_cached("comparison_30x3_tau35")
+  vdiffr::expect_doppelganger("fig-method-comparison", postrank_plot_compare(cmp))
+  vdiffr::expect_doppelganger("fig-method-comparison-relations", postrank_plot_compare(cmp, view = "relations"))
+  vdiffr::expect_doppelganger("fig-pairwise-error-k1", postrank_plot_pairwise(pr_cached("case_cde_12")))
+  vdiffr::expect_doppelganger("fig-pairwise-error-k2", postrank_plot_pairwise(pr_cached("case_krw_signed97"), max_entities = 6, ncol = 1))
+})

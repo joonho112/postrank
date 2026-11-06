@@ -1,0 +1,375 @@
+---
+title: "A complete core workflow with explicit posterior inputs"
+author: "JoonHo Lee"
+output:
+  rmarkdown::html_vignette:
+    mathjax: null
+vignette: >
+  %\VignetteIndexEntry{A complete core workflow with explicit posterior inputs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+has_highs <- requireNamespace("highs", quietly = TRUE)
+```
+
+`postrank` constructs one common grade action from posterior directional-error
+probabilities. Larger targets and smaller grades mean higher priority. Equal
+grades withhold a comparison; they do not establish latent equality.
+
+Model-independent core calculations always execute in this guide. Solver
+chunks run only when the optional HiGHS package is installed; otherwise they are
+shown without output. No Stan installation or scientific dataset is needed.
+Gurobi examples are never executed here.
+
+## A complete installed input
+
+The newly authored example has 32 independent states from a specified proper
+toy Normal law, three opaque IDs and two criteria. It is not an observed-data
+fit, Alabama result or copied book oracle. The generator fixes S, seed and the
+illustrative alpha allocation before generation.
+
+```{r load-example}
+library(postrank)
+path <- system.file("examples", "synthetic-iid.json",
+                    package = "postrank", mustWork = TRUE)
+draws <- read_postrank_draws(path)
+draws$entity_ids
+draws$criterion_ids
+dim(draws$joint_draws$tensor$values)
+draws$validation[c("valid", "schema_checked", "source_values_checked",
+                   "jointness_verified", "convergence_verified")]
+```
+
+The receipt separates semantic checks from scientific facts. R validation does
+not run a general Draft 2020-12 validator or verify scientific jointness and
+convergence. Input schema `applied-0.1`, derived API schema `0.1.0` and package
+version are separate identifiers.
+
+```{r inspect-generator}
+generator <- system.file("examples", "make-synthetic-input.R",
+                         package = "postrank", mustWork = TRUE)
+source(generator)
+payload <- make_postrank_synthetic_input()
+rebuilt <- as_postrank_draws(payload)
+stopifnot(identical(rebuilt$joint_draws$tensor$values,
+                    draws$joint_draws$tensor$values))
+names(payload)
+payload$targets[[1]]
+```
+
+Sourcing defines the function without drawing values or writing files; the
+function also preserves the caller RNG state. For your own data, replace the
+targets, orientation, context, source origin, joint-state declaration and
+original sampling history with facts. A bare array is insufficient. IDs are
+character labels. Missing/nonfinite targets, unresolved identification,
+observed entity ties and contradictory histories are rejected, without jitter
+or hidden reordering.
+
+Supported regimes are equal-weight joint states, criterionwise site-joint
+states with their own sample counts, and explicit finite posterior laws with
+safe-integer values and rational masses. Criterionwise expected loss does not
+imply a joint cross-criterion trace. Finite-law arithmetic uses optional `gmp`;
+it is not empirical draws renamed as an exact posterior. The optional
+`posterior` adapter requires explicit variable and source-coordinate maps.
+
+## Directional errors and a fixed action
+
+`e[i,j,k]` estimates `P(theta[i,k] <= theta[j,k])`: the error when i is placed
+above j. Diagonal NA sentinels are excluded; exact 0/1 values are not clipped.
+
+```{r pairwise}
+pairwise <- postrank_pairwise(draws, method = "blocks", block_size = 2L)
+pairwise$sample_sizes
+pairwise$e[, , "need_A"]
+weights <- c(need_A = .6, need_B = .4)
+grade <- setNames(c(1L, 2L, 2L), draws$entity_ids)
+evaluation <- postrank_evaluate(grade, pairwise, weights, tau = .25)
+evaluation[c("E_over_M", "E_over_N", "disclosure_rate", "weighted_risk")]
+```
+
+This user-supplied action places `001` above the others and withholds their
+mutual comparison. It is not optimized. With M available unordered pairs and
+N disclosed directions, risk is `(sum(weights*E)+tau*(M-N))/M`. `E_over_M`
+and `E_over_N` have different denominators. Criterion-named weights are explicit
+loss preferences and are not automatically normalized.
+
+```{r all-abstain}
+all_tie <- setNames(rep(1L, length(draws$entity_ids)), draws$entity_ids)
+abstained <- postrank_evaluate(all_tie, pairwise, weights, tau = .25)
+stopifnot(abstained$N == 0, all(is.na(abstained$E_over_N)),
+          abstained$weighted_risk == .25)
+abstained[c("N", "E_over_N", "weighted_risk")]
+```
+
+All-abstain has risk tau. A zero error numerator does not imply an error-free
+ranking. Canonical positive-integer labels preserve the public pair relations.
+
+## Build one shared problem
+
+Building a model executes no optimizer.
+
+```{r problems}
+problem <- postrank_problem(pairwise, weights, tau = .25, G_max = 3L)
+protected <- postrank_problem(pairwise, weights, .25, 3L,
+                              q = c(need_B = .2))
+exact_two <- postrank_problem(pairwise, weights, .25, 3L, exact_G = 2L)
+minimax <- postrank_problem(pairwise, weights, .25, 3L, objective = "minimax")
+stopifnot(identical(problem$input_identity, pairwise$input_identity))
+problem$objective_units
+minimax$objective_units
+```
+
+The main space permits at most G_max occupied grades. Exact-G requires exactly
+G nonempty grades. Protection uses `E_k <= q_k*N`, even for zero-weight
+criteria. Minimax minimizes the maximum of **expected criterion risks**, not
+the expected draw-level maximum. Weighted risk is auxiliary for minimax.
+
+Gurobi is the research default; HiGHS is an explicit alternative consuming the
+same sparse problem. No failure triggers fallback. Availability reads metadata,
+not a runtime/license test.
+
+```{r backend-metadata}
+availability <- postrank_backend_available("highs")
+availability[c("installed", "available_for_attempt")]
+```
+
+Choose the desired native call. The Gurobi call is shown only.
+
+```{r solve-example, eval=FALSE, purl=FALSE}
+fit_gurobi <- postrank_solve(problem, backend = "gurobi",
+  control = list(time_limit = 10, threads = 1L, seed = 1304L,
+                 absolute_risk_gap = 1e-6, relative_gap = 0))
+```
+
+With HiGHS installed, the staged strategy (the default) solves the problem in
+three stages:
+
+1. Order dynamic programming and local search find a validated incumbent.
+2. A weak-order linear relaxation with lazily added triangle inequalities gives
+   a lower bound.
+3. A strengthened label MIP runs only if a gap remains and the problem is
+   small (`control$engine$mip_max_n`, 200 entities by default).
+
+`strategy = "label_mip"` passes the label model unchanged.
+
+```{r solve-highs, eval=has_highs}
+control <- list(time_limit = 10, threads = 1L, seed = 1304L)
+fit <- postrank_solve(problem, backend = "highs", control = control)
+fit$status$normalized
+fit$grade
+unlist(fit$objective[c("risk_upper_bound", "risk_lower_bound",
+                       "risk_absolute_gap")])
+fit$objective$bound_source
+unlist(fit$engine$stages$lp[c("status", "rounds", "cuts")])
+```
+
+The released grade is the independently validated incumbent. The upper bound is
+its risk and the lower bound comes from the relaxation (or the MIP stage), so a
+zero gap means the solver found no better grade for these coefficients, within
+its tolerances; it is not a numerical certificate. A bound source ending in
+`_clamped` means the reported bound exceeded the action's risk by no more than
+the objective tolerance and was set equal to it; the fit warns, and warns again
+if that excess is larger than the gap controls. A problem found infeasible
+reports no lower bound. The gap says nothing about
+Monte Carlo error in the coefficients or about the model.
+
+Check raw/normalized status, incumbent existence, independent primal validation,
+residuals and actual risk U/L/gap. Missing bounds remain NA. Weighted raw Z uses
+`risk=tau+Z/M`; minimax t is already in risk units. Relative MIP gap is not
+posterior regret. One incumbent does not enumerate every optimum.
+
+The development machine required an explicitly selected project-local Gurobi
+linkage repair for R 4.6, preserving the original host install. This is not a
+general ABI guarantee. In that checkout the opt-in helper is
+`checks/activate-project-runtime.R`, sourced in a fresh R session before loading
+Gurobi. The package never activates libraries or relinks binaries; other systems
+need their own compatible runtime and applicable license.
+
+## Minimax as a secondary mode
+
+Minimax refinement preserves the declared order of objectives: first the selected
+criteria's maximum risk, then the **original** weighted risk. Original zero or
+tiny positive weights are not replaced by a uniform perturbation. If there are
+zero weights, a third stage minimizes uniformly weighted criterion risk while
+preserving both preceding objectives; this resolves Pareto ties.
+
+The internal weighted objective and cap are positively rescaled so small weights
+are not lost to native absolute objective tolerances. Public risk units stay the
+same. `fit$minimax_refine$lexicographic_certified` certifies the actual released
+action for the primary and original weighted objectives.
+`fit$minimax_refine$pareto_certified` additionally requires the third stage when
+needed. Both are numerical statements under the recorded gaps and tolerances,
+not formal certificates. If a stage is unavailable or uncertified, the result
+records the reason and retains a validated action without claiming that stage.
+
+Stage 1 receives a limit of three quarters of `time_limit`. The later stages and
+fallbacks share the remaining budget; `fit$minimax_refine$time_limits` and the
+stage optimization records expose the actual limits and scaling.
+A selected criterion whose directional error probabilities are all at least tau
+is degenerate: no action brings its risk below tau, so the minimax value is at
+least tau, and equals tau (attained by all-tie) when all-tie is allowed. The
+problem records such criteria and the fit warns about them.
+
+```{r minimax-highs, eval=has_highs}
+mm <- postrank_solve(minimax, backend = "highs", control = control)
+mm$minimax_refine[c("mode", "applied", "improved", "reason")]
+minimax$minimax_diagnostics$degenerate_criteria
+```
+
+## Side outputs: commonality cost and the tau frontier
+
+The cost of a common grade compares each criterion's risk under the common grade
+with that criterion's own minimum under the same tau and grade count. The
+frontier tabulates disclosure and criterion error ratios over a tau grid. With
+exact optima the number of disclosed pairs never falls as tau rises.
+
+```{r side-outputs, eval=has_highs}
+postrank_commonality_cost(fit, backend = "highs", control = control)$table[
+  , c("criterion_id", "common_grade_risk", "own_best_risk", "cost_lower")]
+frontier <- postrank_frontier(pairwise, weights, tau = c(.1, .25, .4),
+                              G_max = 3L, backend = "highs", control = control)
+frontier$table[, c("tau", "status", "N", "disclosure_rate",
+                   "E_over_N_need_A", "E_over_N_need_B")]
+```
+
+## Practical Monte Carlo diagnostics
+
+Two diagnostics show how much the Monte Carlo draws themselves move the decision.
+Both are descriptive and give no finite-sample guarantee.
+
+- Cross-fitting picks a grade on one half of the draws and evaluates it on the
+  other half. For MCMC the halves are groups of whole chains.
+- The fragility table flags pairs whose disclose-or-tie margin is within two
+  Monte Carlo standard errors.
+
+```{r mc-diagnostics, eval=has_highs}
+cf <- postrank_crossfit(draws, fit = fit, backend = "highs", control = control)
+cf
+postrank_mc_fragility(draws, fit = fit)$summary
+```
+
+Posterior draws held in an `S x n x K` array can enter through
+`postrank_draws_from_array()`. Its scientific declarations remain required
+arguments, and for MCMC so is the chain layout (`chains`, `warmup_per_chain`,
+`thin`); slot IDs, the draw index, the variable map and the chain history are
+generated from them.
+
+## Diagnostics and reporting
+
+```{r diagnostics}
+diagnostics <- postrank_diagnose(draws, grade = grade,
+  settings = list(weights = weights, tau = .25, G_max = 3L))
+diagnostics$summaries$weighted_total_loss$diagnostics$mcse_mean
+stopifnot(!diagnostics$convergence_verified,
+          !diagnostics$finite_sample_certificate)
+```
+
+These are descriptive IID standard errors for the toy fixture, not certificates.
+For MCMC, optional `posterior` supplies Rhat, mean/bulk/tail ESS and MCSE.
+Original chains/transitions, unequal counts, constant flags, raw NA/NaN,
+warnings and errors are preserved. Unsupported metrics have explicit reasons;
+unequal chains are not truncated. An all-abstain constant loss does not diagnose
+target exploration. Joint loss is formed state by state to retain covariance;
+criterionwise input does not fabricate total-loss MCSE. ESS is not an IID S.
+After selecting a grade on the same draws, MCSE is post-selection descriptive.
+
+```{r report-example, eval=FALSE, purl=FALSE}
+if (isTRUE(fit$incumbent_validated)) {
+  d <- postrank_diagnose(draws, fit = fit)
+  postrank_report(fit, diagnostics = d,
+                  output_file = "a-new-grade-report.html", lang = "en")
+}
+```
+
+Reports separate posterior uncertainty, MC error, solver gap and policy
+settings. Existing output files are not silently overwritten.
+
+## Fixed-S IID reference calculations
+
+This section is an appendix tool: a conditional reference for designs whose
+sample sizes and alpha were fixed before sampling. The practical Monte Carlo
+diagnostics above are the routine checks. The shipped generator fixed S=32, alpha=.05 and .025/.025 allocations before
+generation. For real data these declarations must describe the actual design;
+checking boxes after adaptive sampling does not establish that design.
+
+```{r iid-reference}
+design <- list(sample_sizes_fixed_before_sampling = TRUE,
+               alpha_fixed_before_sampling = TRUE, adaptive_stopping = FALSE,
+               planned_sample_sizes = c(need_A = 32L, need_B = 32L),
+               declaration_note = "Fixed in the shipped toy generator before generation.")
+bounds <- postrank_iid_bounds(draws, alpha = .05,
+  alpha_by_criterion = c(need_A = .025, need_B = .025), design = design)
+bounds[c("epsilon", "guarantee_status", "bound_computed", "numerically_verified",
+          "finite_sample_certificate", "guarantee_issued")]
+stopifnot(!bounds$numerically_verified, !bounds$finite_sample_certificate)
+postrank_guarantee_capabilities()
+```
+
+Radii use M unordered pairs and actual criterion counts. They are
+`theoretical_floating_reference`, with no verified outward enclosure or general
+solver-bound certifier. `bound_computed=TRUE` issues no guarantee. Fixed-space
+weighted regret uses `2*delta_w+eta` only with matching input, a validated
+incumbent and the actual whole-problem absolute risk gap. Missing/rejected gaps
+give `not_established`; q and minimax are outside that formula. q inner/outer
+analysis is separately diagnostic, keeps thresholds outside [0,1] unclipped,
+and never replaces the whole outer lower bound with an inner lower bound.
+General MCMC, optional-stopping and minimax regret certificates are disabled.
+
+## Serialization and repository producers
+
+```{r roundtrip}
+copy_path <- tempfile(fileext = ".json")
+write_postrank_draws(draws, copy_path)
+roundtrip <- read_postrank_draws(copy_path)
+stopifnot(identical(roundtrip$joint_draws$tensor$values,
+                    draws$joint_draws$tensor$values))
+unlink(copy_path)
+```
+
+The strict JSON reader rejects decoded duplicate keys, malformed numbers,
+unsafe integer metadata and invalid Unicode surrogates. Coordinates and
+singleton axes are preserved. Reading does not assert general schema QA.
+
+The installed core has 24 public functions. Repository `producers/R` modules
+are separately sourced and are excluded from the installed package. The
+reviewed Normal HB supports K=2, full observation, known SPD measurement V
+and distinct sampled heterogeneity Sigma. It preserves independent
+mu~N2(0,4I), Sigma~IW2(5,2I) priors. The checkout workflow below is displayed
+only; supply actual labeled inputs and scientific metadata from its contract.
+
+```{r stan-repository-workflow, eval=FALSE, purl=FALSE}
+for (file in sort(list.files("producers/R", pattern = "[.]R$", full.names = TRUE)))
+  source(file)
+bundle <- postrank_normal_hb_data(y, V, entity_ids, criterion_ids, measurement)
+config <- jsonlite::fromJSON("config/stan-runtime.json")
+run <- run_postrank_stan("producers/stan/normal_hb.stan", bundle,
+                         "results/a-new-unique-attempt", config, "my-reviewed-HB-run")
+sampler_diagnostics <- diagnose_postrank_stan(run)
+stan_draws <- export_postrank_stan_draws(run, scientific_metadata)
+```
+
+A known successful receipt binds reviewed source, actual JSON data, executable,
+CSV hashes and original chain/transition histories. Target and shared HB states
+are compared with raw CSV decoding. Structural export does not prove sampler
+adequacy or model validity. Unknown imports, VB, Pathfinder and optimization
+are not accepted as known MCMC. NUTS remains MCMC and warnings remain visible.
+
+The repository's four single-cell engineering runs and bounded benchmark test
+connectivity and failures, not statistical superiority or pilot precision.
+Actual Alabama fitting/grading was not performed. Consult the README, phase
+logs and reports for actual evidence and original-failure/recovery denominators.
+
+## Citation and attribution
+
+Use `citation("postrank")` for the versioned local software record and for
+Kline, Rose and Walters (2024), whose posterior comparisons and integer grades
+the method builds on. The weighted multicriteria risk equals their risk under
+the mixture belief that picks a criterion with probability equal to its weight.
+This is an applied validity check, not a new theorem. The postrank record
+itself has no DOI and implies no CRAN publication. New code is MIT licensed. Preserved book oracles
+have separate local-reuse provenance; external redistribution rights were not
+established. Dependency licenses do not establish a license for those scripts.
+The installed toy example contains no copied oracle values.

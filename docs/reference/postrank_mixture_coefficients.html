@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Average Comparisons Across Shared Gaussian States — postrank_mixture_coefficients • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Average Comparisons Across Shared Gaussian States — postrank_mixture_coefficients">
+<meta name="description" content="Means and directional-error probabilities are obtained by averaging
+conditional Gaussian laws over supplied shared states. Each state is common
+to all entities. Consequently, averaging over the states can retain
+dependence between entities that are independent conditional on a state. The
+model and shared states are supplied externally; the package neither fits
+nor samples the model.">
+<meta property="og:description" content="Means and directional-error probabilities are obtained by averaging
+conditional Gaussian laws over supplied shared states. Each state is common
+to all entities. Consequently, averaging over the states can retain
+dependence between entities that are independent conditional on a state. The
+model and shared states are supplied externally; the package neither fits
+nor samples the model.">
+<meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Average Comparisons Across Shared Gaussian States</h1>
+
+      <div class="d-none name"><code>postrank_mixture_coefficients.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>Means and directional-error probabilities are obtained by averaging
+conditional Gaussian laws over supplied shared states. Each state is common
+to all entities. Consequently, averaging over the states can retain
+dependence between entities that are independent conditional on a state. The
+model and shared states are supplied externally; the package neither fits
+nor samples the model.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_mixture_coefficients</span><span class="op">(</span></span>
+<span>  <span class="va">components</span>,</span>
+<span>  <span class="va">weights</span>,</span>
+<span>  <span class="va">state_index</span>,</span>
+<span>  <span class="va">source_regime</span>,</span>
+<span>  <span class="va">conditional_independence</span>,</span>
+<span>  <span class="va">provenance</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a>
+</h2>
+
+
+<dl>
+<dt id="arg-components">components<a class="anchor" aria-label="anchor" href="#arg-components"></a>
+</dt>
+<dd><p>Nonempty named list of state records, each with exactly
+<code>mu</code>, <code>Sigma</code>, <code>means</code>, and <code>covariance</code>. <code>mu</code> is a criterion-named vector;
+<code>Sigma</code> is a symmetric positive definite matrix with dimension names
+<code>criterion_i</code> and <code>criterion_j</code>. Conditional <code>means</code> and <code>covariance</code> use
+the entity and criterion axes described in
+<code><a href="postrank_gaussian_coefficients.html">postrank_gaussian_coefficients()</a></code>. Within-entity covariance may connect
+criteria; between-entity dependence enters through the shared state.</p></dd>
+
+
+<dt id="arg-weights">weights<a class="anchor" aria-label="anchor" href="#arg-weights"></a>
+</dt>
+<dd><p>Nonnegative state-named probability weights in component
+order, summing to one within <code>1e-12</code>. They are not normalized automatically.
+These mixture masses describe the law, not criterion-loss weights.</p></dd>
+
+
+<dt id="arg-state-index">state_index<a class="anchor" aria-label="anchor" href="#arg-state-index"></a>
+</dt>
+<dd><p>Plain data.frame in component order. A fixed finite
+mixture has only <code>state_id</code>; hyperparameter MCMC has <code>state_id</code>, <code>chain_id</code>,
+and original <code>iteration</code>, with unique positive integer chain/iteration
+coordinates. Chain coordinates are inapplicable to a fixed mixture.</p></dd>
+
+
+<dt id="arg-source-regime">source_regime<a class="anchor" aria-label="anchor" href="#arg-source-regime"></a>
+</dt>
+<dd><p><code>"fixed_finite_mixture"</code> for an explicitly supplied
+finite mixture, or <code>"hyperparameter_mcmc"</code> for retained shared-state MCMC
+output. The MCMC regime requires uniform weights over retained states.</p></dd>
+
+
+<dt id="arg-conditional-independence">conditional_independence<a class="anchor" aria-label="anchor" href="#arg-conditional-independence"></a>
+</dt>
+<dd><p>Explicitly <code>"entities_given_shared_h"</code>.
+Independence is conditional on the same state for all entities; it is not
+inferred from marginal moments.</p></dd>
+
+
+<dt id="arg-provenance">provenance<a class="anchor" aria-label="anchor" href="#arg-provenance"></a>
+</dt>
+<dd><p>Named list with <code>producer_id</code>, <code>producer_version</code>,
+<code>posterior_id</code>, <code>input_payload_sha256</code>, <code>source_sha256</code>, and <code>config_sha256</code>;
+<code>model_sha256</code> is optional. Supply actual source descriptions and lowercase
+SHA-256 digests. These records do not authenticate the scientific source.</p></dd>
+
+</dl>
+</div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
+</h2>
+    <p>A <code>postrank_coefficients</code> object with mixture <code>means</code>, directional
+probabilities <code>e</code>, the supplied states and provenance, and supported-operation
+indicators. No target draws or target sample sizes are generated.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
+</h2>
+    <p><span>Each conditional probability is the error for reporting entity i above
+entity j: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>≤</mo><msub><mi>θ</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>∣</mo><mi>h</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(\theta_{i,k}\leq\theta_{j,k}\mid h)</annotation></semantics></math>. Positive variances
+and conditional independence make pairwise equality have probability zero.
+The output has </span><code>NA</code> diagonals because self-comparisons are unused.</p>
+<p>The constructor averages conditional probabilities and means using
+compensated summation. It does not replace the mixture with a moment-matched
+Gaussian. A finite mixture of continuous Gaussian target laws is also
+different from a finite law of target atoms; these coefficients use
+floating-point arithmetic, not exact rational finite-law masses.</p>
+<p><code>mu</code>, <code>Sigma</code>, and the conditional moments are supplied declarations. Their
+structural checks do not establish that one dataset or a converged sampler
+produced them. Empirical Bayes quantities held fixed remain conditioned on;
+only uncertainty represented by the supplied states is averaged over.</p>
+<p>The native <code><a href="postrank_problem.html">postrank_problem()</a></code> route supports weighted expected loss with
+an upper grade-count limit, not minimax, <code>q</code> protections, or exact-G there.
+<code><a href="postrank_coefficient_diagnose.html">postrank_coefficient_diagnose()</a></code> can describe conditional expected-risk
+variation across states; MCMC metrics additionally require original history.
+Neither those metrics nor this calculation certify numerical or model error.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
+</h2>
+    <div class="dont-index"><p><code><a href="postrank_gaussian_coefficients.html">postrank_gaussian_coefficients()</a></code>, <code><a href="validate_postrank_coefficients.html">validate_postrank_coefficients()</a></code>,
+<code><a href="postrank_coefficient_capabilities.html">postrank_coefficient_capabilities()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># A specified one-criterion law, not the output of a fitted model or sampler.</span></span></span>
+<span class="r-in"><span><span class="va">state</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">ks</span> <span class="op">&lt;-</span> <span class="st">"score"</span>; <span class="va">ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score <span class="op">=</span> <span class="va">d</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    Sigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>      dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>criterion_i <span class="op">=</span> <span class="va">ks</span>, criterion_j <span class="op">=</span> <span class="va">ks</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    means <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">d</span>, <span class="fl">.4</span><span class="op">)</span>, <span class="fl">2</span>, <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>      dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>entity <span class="op">=</span> <span class="va">ids</span>, criterion <span class="op">=</span> <span class="va">ks</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    covariance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fl">.5</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>criterion_i <span class="op">=</span> <span class="va">ks</span>, criterion_j <span class="op">=</span> <span class="va">ks</span>, entity <span class="op">=</span> <span class="va">ids</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">components</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>low <span class="op">=</span> <span class="fu">state</span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span>, high <span class="op">=</span> <span class="fu">state</span><span class="op">(</span><span class="fl">.5</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">config</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>low <span class="op">=</span> <span class="fl">.5</span>, high <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  state_index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>state_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"low"</span>, <span class="st">"high"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  source_regime <span class="op">=</span> <span class="st">"fixed_finite_mixture"</span>,</span></span>
+<span class="r-in"><span>  conditional_independence <span class="op">=</span> <span class="st">"entities_given_shared_h"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">provenance</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>producer_id <span class="op">=</span> <span class="st">"postrank_mixture_coefficients help example"</span>,</span></span>
+<span class="r-in"><span>  producer_version <span class="op">=</span> <span class="st">"1"</span>, posterior_id <span class="op">=</span> <span class="st">"specified-two-state-normal-law"</span>,</span></span>
+<span class="r-in"><span>  input_payload_sha256 <span class="op">=</span> <span class="fu">digest</span><span class="fu">::</span><span class="fu"><a href="https://eddelbuettel.github.io/digest/man/digest.html" class="external-link">digest</a></span><span class="op">(</span><span class="va">components</span>, algo <span class="op">=</span> <span class="st">"sha256"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  source_sha256 <span class="op">=</span> <span class="fu">digest</span><span class="fu">::</span><span class="fu"><a href="https://eddelbuettel.github.io/digest/man/digest.html" class="external-link">digest</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/body.html" class="external-link">body</a></span><span class="op">(</span><span class="va">state</span><span class="op">)</span>, algo <span class="op">=</span> <span class="st">"sha256"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  config_sha256 <span class="op">=</span> <span class="fu">digest</span><span class="fu">::</span><span class="fu"><a href="https://eddelbuettel.github.io/digest/man/digest.html" class="external-link">digest</a></span><span class="op">(</span><span class="va">config</span>, algo <span class="op">=</span> <span class="st">"sha256"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">postrank_mixture_coefficients</span><span class="op">(</span><span class="va">components</span>, <span class="va">config</span><span class="op">$</span><span class="va">weights</span>,</span></span>
+<span class="r-in"><span>  <span class="va">config</span><span class="op">$</span><span class="va">state_index</span>, <span class="va">config</span><span class="op">$</span><span class="va">source_regime</span>, <span class="va">config</span><span class="op">$</span><span class="va">conditional_independence</span>,</span></span>
+<span class="r-in"><span>  <span class="va">provenance</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">x</span><span class="op">$</span><span class="va">e</span><span class="op">[</span>, , <span class="st">"score"</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         entity_j</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> entity_i         A         B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        A        NA 0.6897078</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        B 0.3102922        NA</span>
+<span class="r-in"><span><span class="fu"><a href="validate_postrank_coefficients.html">validate_postrank_coefficients</a></span><span class="op">(</span><span class="va">x</span>, recompute <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

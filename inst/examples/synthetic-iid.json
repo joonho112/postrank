@@ -1,0 +1,820 @@
+{
+  "schema_version": "applied-0.1",
+  "input_kind": "equal_weight_draws",
+  "dependence_mode": "joint_model",
+  "requested_functional": "expected_rank_loss",
+  "entity_ids": [
+    "001",
+    "site-B",
+    "site C"
+  ],
+  "criterion_ids": [
+    "need_A",
+    "need_B"
+  ],
+  "targets": [
+    {
+      "criterion_id": "need_A",
+      "estimand": "Toy latent site need under the explicitly specified independent Normal target law",
+      "entity_population": "Three labeled synthetic entities",
+      "time_reference": "Single fixed software example",
+      "units": "toy real-valued need units",
+      "source_transform": "identity",
+      "identification_basis": "Direct specified target coordinates; no fitted factor model",
+      "orientation": "higher_priority"
+    },
+    {
+      "criterion_id": "need_B",
+      "estimand": "Toy latent site need under the explicitly specified independent Normal target law",
+      "entity_population": "Three labeled synthetic entities",
+      "time_reference": "Single fixed software example",
+      "units": "toy real-valued need units",
+      "source_transform": "identity",
+      "identification_basis": "Direct specified target coordinates; no fitted factor model",
+      "orientation": "higher_priority"
+    }
+  ],
+  "context": {
+    "cohort_id": "new-authored-toy-normal-example",
+    "data_version": "toy-normal-0.1",
+    "data_conditioning": "No observed dataset: a declared proper toy Normal target distribution used only for software illustration.",
+    "model_summary": "Independent Normal coordinates, SD .6, fixed means in generator; IID states; S=32, seed=20261019. Before generation alpha=0.05 and allocation=0.025,0.025 were fixed. This is not empirical evidence about a scientific posterior."
+  },
+  "identification": {
+    "status": "identified_declared",
+    "note": "The toy law defines every labeled target directly."
+  },
+  "tie_policy": {
+    "rule": "pairwise_tie_free",
+    "declared": true,
+    "justification": "Continuous independent Normal target coordinates have zero probability of exact pairwise equality; observed ties are still rejected.",
+    "observed_tie_action": "reject_and_review"
+  },
+  "provenance": {
+    "producer": "Newly authored postrank synthetic Normal example generator",
+    "artifact_id": "toy-normal-fixed-S-0.1",
+    "artifact_hash": "f3cb812edbffb36cfa74b2d15a9683e580d002615cd4f63fd831701d634fc421",
+    "construction_note": "Complete 32 by 3 by 2 R array from the explicit seed/means/SD in examples/make-synthetic-input.R; original array hash is source_hash. No upstream oracle values reused.",
+    "created_at": "2026-10-19T00:00:00Z"
+  },
+  "joint_draws": {
+    "tensor": {
+      "axis_order": [
+        "draw",
+        "entity",
+        "criterion"
+      ],
+      "shape": {
+        "S": 32,
+        "n": 3,
+        "K": 2
+      },
+      "dimnames": {
+        "draw": [
+          "toy_draw_001",
+          "toy_draw_002",
+          "toy_draw_003",
+          "toy_draw_004",
+          "toy_draw_005",
+          "toy_draw_006",
+          "toy_draw_007",
+          "toy_draw_008",
+          "toy_draw_009",
+          "toy_draw_010",
+          "toy_draw_011",
+          "toy_draw_012",
+          "toy_draw_013",
+          "toy_draw_014",
+          "toy_draw_015",
+          "toy_draw_016",
+          "toy_draw_017",
+          "toy_draw_018",
+          "toy_draw_019",
+          "toy_draw_020",
+          "toy_draw_021",
+          "toy_draw_022",
+          "toy_draw_023",
+          "toy_draw_024",
+          "toy_draw_025",
+          "toy_draw_026",
+          "toy_draw_027",
+          "toy_draw_028",
+          "toy_draw_029",
+          "toy_draw_030",
+          "toy_draw_031",
+          "toy_draw_032"
+        ],
+        "entity": [
+          "001",
+          "site-B",
+          "site C"
+        ],
+        "criterion": [
+          "need_A",
+          "need_B"
+        ]
+      },
+      "values": [
+        [
+          [
+            1.3025357050289383,
+            -0.59459342159373374
+          ],
+          [
+            0.024559976559889347,
+            0.72811261330022503
+          ],
+          [
+            -0.17785874445211525,
+            0.19810326673435219
+          ]
+        ],
+        [
+          [
+            0.80985674818089581,
+            -0.31196047100514357
+          ],
+          [
+            0.057449935305030189,
+            1.3198123578505321
+          ],
+          [
+            -1.144502874903,
+            -0.13590160556496858
+          ]
+        ],
+        [
+          [
+            1.4327832028394116,
+            -1.2241244207947126
+          ],
+          [
+            0.42816266625529603,
+            1.0416892817413594
+          ],
+          [
+            -1.8903341909771767,
+            1.5163417134607478
+          ]
+        ],
+        [
+          [
+            1.7171588640936855,
+            -1.5035905059079357
+          ],
+          [
+            1.0934886691540784,
+            -0.065005708166947965
+          ],
+          [
+            -0.13684260021215422,
+            0.49211074412540956
+          ]
+        ],
+        [
+          [
+            1.880512788669193,
+            -0.60566383946642455
+          ],
+          [
+            0.43081552122853228,
+            0.52807080930156902
+          ],
+          [
+            -1.2361065984428621,
+            -0.36435812268930612
+          ]
+        ],
+        [
+          [
+            -0.60181226344207406,
+            -0.49274298886349577
+          ],
+          [
+            0.69955824251434851,
+            1.6099168520382918
+          ],
+          [
+            -1.0341789014311584,
+            -0.12169283246863759
+          ]
+        ],
+        [
+          [
+            -0.066497913971416273,
+            -0.154657366141463
+          ],
+          [
+            0.22106939083739657,
+            0.4962882707927459
+          ],
+          [
+            -0.79612958871116657,
+            -0.16579873042421939
+          ]
+        ],
+        [
+          [
+            1.5449311362578302,
+            -0.46092821621396934
+          ],
+          [
+            0.029189356667565308,
+            0.59727386500810797
+          ],
+          [
+            -2.5335097158951401,
+            1.226836593089305
+          ]
+        ],
+        [
+          [
+            0.31535095843893046,
+            -1.3094684436988653
+          ],
+          [
+            -0.016024892229139217,
+            0.14916275372379201
+          ],
+          [
+            -1.3977468505562858,
+            -0.33177319091008339
+          ]
+        ],
+        [
+          [
+            1.0418063403778024,
+            -0.24095299295288836
+          ],
+          [
+            1.1829599565877607,
+            1.4118692401801187
+          ],
+          [
+            0.18830196433639573,
+            -0.25082687013833171
+          ]
+        ],
+        [
+          [
+            0.32384544597112114,
+            -0.79840561529779752
+          ],
+          [
+            0.38175079768826481,
+            0.47966473663926912
+          ],
+          [
+            -1.0804532757215366,
+            -0.45723919714706057
+          ]
+        ],
+        [
+          [
+            0.78091846254826125,
+            -1.0972064734163076
+          ],
+          [
+            -0.82845182934852202,
+            1.3613654282492642
+          ],
+          [
+            -1.1632897941878584,
+            0.94862977520727287
+          ]
+        ],
+        [
+          [
+            0.34772469615528312,
+            0.66457006495502757
+          ],
+          [
+            0.75783953513298175,
+            1.6377523882006961
+          ],
+          [
+            -0.55749118723766455,
+            -0.38940510886218832
+          ]
+        ],
+        [
+          [
+            0.5204054839323573,
+            -0.79830154751949001
+          ],
+          [
+            0.75582725504316861,
+            0.77515073296569414
+          ],
+          [
+            -0.088093033858073905,
+            0.19366403860689652
+          ]
+        ],
+        [
+          [
+            -0.0011854063952713451,
+            -0.99811889829763245
+          ],
+          [
+            0.52755680449395148,
+            0.58225536895683128
+          ],
+          [
+            -0.72168375563116605,
+            -0.20713756805494477
+          ]
+        ],
+        [
+          [
+            1.3384950426239528,
+            -0.85021853717491902
+          ],
+          [
+            -0.79332807351634094,
+            0.36686453052738799
+          ],
+          [
+            -1.5776552736093716,
+            0.13026695320715379
+          ]
+        ],
+        [
+          [
+            0.99564083930982816,
+            -1.201829173931718
+          ],
+          [
+            0.38737842275476442,
+            1.7790862364192812
+          ],
+          [
+            0.13797886279125576,
+            0.33859641229726806
+          ]
+        ],
+        [
+          [
+            0.82225849164577303,
+            -0.665663253727106
+          ],
+          [
+            -0.69581260650150811,
+            0.5671773317896287
+          ],
+          [
+            -1.7819894977458426,
+            0.55953515905396478
+          ]
+        ],
+        [
+          [
+            1.8909999578771792,
+            -0.81014664519252899
+          ],
+          [
+            0.67102138796730382,
+            1.4189020031856017
+          ],
+          [
+            -0.66664666739494971,
+            0.38412249220532008
+          ]
+        ],
+        [
+          [
+            -0.26573009589532232,
+            -0.1289372111052525
+          ],
+          [
+            -0.051035866398797952,
+            1.2271700828163368
+          ],
+          [
+            -0.99908169953247228,
+            0.44380437094442216
+          ]
+        ],
+        [
+          [
+            1.703586920914443,
+            -0.71898703101114203
+          ],
+          [
+            0.72692524570730443,
+            1.637243689260738
+          ],
+          [
+            0.11926022206229168,
+            0.69719180506277578
+          ]
+        ],
+        [
+          [
+            1.3370387419085761,
+            -0.12909277313402798
+          ],
+          [
+            -1.1558013099085729,
+            0.42120316201209279
+          ],
+          [
+            -0.94403171821506815,
+            -0.6955984240408627
+          ]
+        ],
+        [
+          [
+            0.26689236960407414,
+            -1.1523088691715817
+          ],
+          [
+            0.069301402527007824,
+            1.1930111272303281
+          ],
+          [
+            -1.5095785280405996,
+            -0.48279463606356121
+          ]
+        ],
+        [
+          [
+            2.0453714252103654,
+            -0.45198966486586434
+          ],
+          [
+            0.38449899215616101,
+            -0.31304314580228748
+          ],
+          [
+            0.38269455055071716,
+            -1.2280855064578622
+          ]
+        ],
+        [
+          [
+            0.90302173467750546,
+            -0.31181364148253693
+          ],
+          [
+            0.68248734192424476,
+            0.68952978841872525
+          ],
+          [
+            -1.1686487280340083,
+            -0.52678414595600553
+          ]
+        ],
+        [
+          [
+            0.53956142137690499,
+            -0.089843100212473839
+          ],
+          [
+            0.054828611166838598,
+            0.85449855954365794
+          ],
+          [
+            -0.63792586614691471,
+            0.68299788252552118
+          ]
+        ],
+        [
+          [
+            1.3355032043293555,
+            -0.41011970568359102
+          ],
+          [
+            0.3031857926648277,
+            0.61473586685059478
+          ],
+          [
+            -0.6268613189503156,
+            -0.13167507039334167
+          ]
+        ],
+        [
+          [
+            1.5896268579712416,
+            -0.69833545326303426
+          ],
+          [
+            -0.0090288266431052602,
+            0.76382562299765133
+          ],
+          [
+            -0.49587610811316757,
+            -0.42569952208062317
+          ]
+        ],
+        [
+          [
+            0.78930691318704715,
+            -0.18546037628415005
+          ],
+          [
+            0.10787816240606808,
+            1.0112173513008671
+          ],
+          [
+            -1.0771826164162615,
+            0.68196677899633251
+          ]
+        ],
+        [
+          [
+            1.3290056475496839,
+            -0.39393730069031008
+          ],
+          [
+            -1.4355205753091962,
+            0.94842594042678829
+          ],
+          [
+            -1.1382392477382761,
+            0.74514284125113861
+          ]
+        ],
+        [
+          [
+            0.56774000503798472,
+            -0.53147148516840848
+          ],
+          [
+            -0.083740207476878908,
+            1.0489885996060293
+          ],
+          [
+            -0.81440021407024799,
+            -0.070341448908671847
+          ]
+        ],
+        [
+          [
+            1.843118260547844,
+            -0.61013890089919443
+          ],
+          [
+            -0.68840828207723292,
+            0.86668043204644418
+          ],
+          [
+            -1.7319784657620392,
+            -0.90964914768301663
+          ]
+        ]
+      ]
+    },
+    "origin": {
+      "source_id": "toy-normal-full-array-0.1",
+      "fit_id": "toy-law-no-fitted-data-0.1",
+      "model_id": "specified-independent-normal-0.1",
+      "source_format": "R array",
+      "source_artifact": "Fresh complete R array from examples/make-synthetic-input.R",
+      "source_hash": "f3cb812edbffb36cfa74b2d15a9683e580d002615cd4f63fd831701d634fc421",
+      "vector_generation_provenance": "Every draw slot stores the entire labeled site/criterion vector from one IID toy state.",
+      "within_criterion_joint_declared": true
+    },
+    "sampling": {
+      "regime": "iid",
+      "target_distribution": "declared_posterior",
+      "equal_weight": true,
+      "warmup_status": "not_applicable",
+      "sampling_provenance": "Fixed-S independent states from a specified proper toy Normal law; not a fitted scientific posterior.",
+      "chain_history": []
+    },
+    "draw_index": [
+      {
+        "slot_id": "toy_draw_001",
+        "original_draw_id": "toy_original_1",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_002",
+        "original_draw_id": "toy_original_2",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_003",
+        "original_draw_id": "toy_original_3",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_004",
+        "original_draw_id": "toy_original_4",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_005",
+        "original_draw_id": "toy_original_5",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_006",
+        "original_draw_id": "toy_original_6",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_007",
+        "original_draw_id": "toy_original_7",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_008",
+        "original_draw_id": "toy_original_8",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_009",
+        "original_draw_id": "toy_original_9",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_010",
+        "original_draw_id": "toy_original_10",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_011",
+        "original_draw_id": "toy_original_11",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_012",
+        "original_draw_id": "toy_original_12",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_013",
+        "original_draw_id": "toy_original_13",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_014",
+        "original_draw_id": "toy_original_14",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_015",
+        "original_draw_id": "toy_original_15",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_016",
+        "original_draw_id": "toy_original_16",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_017",
+        "original_draw_id": "toy_original_17",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_018",
+        "original_draw_id": "toy_original_18",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_019",
+        "original_draw_id": "toy_original_19",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_020",
+        "original_draw_id": "toy_original_20",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_021",
+        "original_draw_id": "toy_original_21",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_022",
+        "original_draw_id": "toy_original_22",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_023",
+        "original_draw_id": "toy_original_23",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_024",
+        "original_draw_id": "toy_original_24",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_025",
+        "original_draw_id": "toy_original_25",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_026",
+        "original_draw_id": "toy_original_26",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_027",
+        "original_draw_id": "toy_original_27",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_028",
+        "original_draw_id": "toy_original_28",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_029",
+        "original_draw_id": "toy_original_29",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_030",
+        "original_draw_id": "toy_original_30",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_031",
+        "original_draw_id": "toy_original_31",
+        "chain_id": null,
+        "iteration": null
+      },
+      {
+        "slot_id": "toy_draw_032",
+        "original_draw_id": "toy_original_32",
+        "chain_id": null,
+        "iteration": null
+      }
+    ],
+    "variable_map": [
+      {
+        "entity_id": "001",
+        "criterion_id": "need_A",
+        "source_target_variable_id": "theta[1,1]",
+        "derivation_note": "Direct labeled coordinate from the complete synthetic R array; identity transform."
+      },
+      {
+        "entity_id": "site-B",
+        "criterion_id": "need_A",
+        "source_target_variable_id": "theta[2,1]",
+        "derivation_note": "Direct labeled coordinate from the complete synthetic R array; identity transform."
+      },
+      {
+        "entity_id": "site C",
+        "criterion_id": "need_A",
+        "source_target_variable_id": "theta[3,1]",
+        "derivation_note": "Direct labeled coordinate from the complete synthetic R array; identity transform."
+      },
+      {
+        "entity_id": "001",
+        "criterion_id": "need_B",
+        "source_target_variable_id": "theta[1,2]",
+        "derivation_note": "Direct labeled coordinate from the complete synthetic R array; identity transform."
+      },
+      {
+        "entity_id": "site-B",
+        "criterion_id": "need_B",
+        "source_target_variable_id": "theta[2,2]",
+        "derivation_note": "Direct labeled coordinate from the complete synthetic R array; identity transform."
+      },
+      {
+        "entity_id": "site C",
+        "criterion_id": "need_B",
+        "source_target_variable_id": "theta[3,2]",
+        "derivation_note": "Direct labeled coordinate from the complete synthetic R array; identity transform."
+      }
+    ],
+    "cross_criterion_joint_provenance": "Complete synthetic states retain all three entities and both criteria together; no marginal reordering."
+  }
+}

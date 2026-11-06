@@ -1,0 +1,67 @@
+/* Let long formulas scroll within their own line on narrow screens. */
+math[display="block"] {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.figure-full-size-link {
+  margin-top: .25rem;
+}
+
+/* postrank · Ivory & teal: colours only; standard pkgdown structure and typography. */
+:root, [data-bs-theme="light"] {
+  --bs-body-bg: #fdfbf6;
+  --bs-body-bg-rgb: 253, 251, 246;
+  --bs-body-color: #343b36;
+  --bs-body-color-rgb: 52, 59, 54;
+  --bs-heading-color: #3e5148;
+  --bs-link-color: #3c6657;
+  --bs-link-color-rgb: 60, 102, 87;
+  --bs-link-hover-color: #2c4b40;
+  --bs-link-hover-color-rgb: 44, 75, 64;
+  --bs-border-color: #dfdfd3;
+  --bs-code-color: #3c6657;
+}
+nav.navbar.bg-light {
+  background-color: #f3f1e8 !important;
+  --bs-navbar-color: #485449;
+  --bs-navbar-hover-color: #3c6657;
+  --bs-navbar-active-color: #3c6657;
+  --bs-navbar-brand-color: #3e5148;
+  --bs-navbar-brand-hover-color: #3c6657;
+}
+.navbar-nav {
+  --bs-nav-link-color: #485449;
+  --bs-nav-link-hover-color: #3c6657;
+}
+.dropdown-menu {
+  --bs-dropdown-bg: #fdfbf6;
+  --bs-dropdown-link-color: #343b36;
+  --bs-dropdown-link-hover-color: #3c6657;
+  --bs-dropdown-link-hover-bg: #e8ece2;
+  --bs-dropdown-link-active-bg: #3c6657;
+}
+pre {
+  background-color: #f3f2eb;
+  border-color: #dfdfd3;
+  border-radius: .3rem;
+}
+
+
+/* One catalogue for the vignette reading paths. */
+.vignette-intro { font-size: 1.125rem; max-width: 43rem; }
+.vignette-start {
+  margin: 1.4rem 0 1.25rem;
+  padding: 1rem 1.2rem;
+  border-left: .25rem solid var(--bs-link-color);
+  border-radius: .25rem;
+  background: #f3f2eb;
+}
+.vignette-start-label { margin: 0 0 .2rem; font-weight: 600; }
+.vignette-start-link { display: inline-block; margin-bottom: .4rem; font-weight: 600; }
+.vignette-categories { display: flex; flex-wrap: wrap; gap: .45rem .6rem; margin: 1.25rem 0 2rem; }
+.vignette-categories a { border: 1px solid var(--bs-border-color); border-radius: 1.25rem; padding: .3rem .75rem; text-decoration: none; font-size: .9rem; }
+.vignette-categories a:hover, .vignette-categories a:focus { background: #e8ece2; border-color: var(--bs-link-color); }
+.vignette-section { margin-top: 2.25rem; scroll-margin-top: 6rem; }
+.vignette-section-description { color: #59615c; max-width: 44rem; }
+.vignette-list dt { margin-top: 1rem; line-height: 1.45; font-weight: 600; }
+.vignette-list dd { margin: .2rem 0 .85rem; color: #59615c; max-width: 44rem; }

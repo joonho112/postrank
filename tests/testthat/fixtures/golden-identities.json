@@ -1,0 +1,26 @@
+{
+  "schema": "postrank-golden-identities-1",
+  "created_at_utc": "2026-10-24T22:48:15Z",
+  "note": "Legacy identity recipes (9002/9003) on sealed 0.9.0 fixtures; regenerate only with a reviewed fixture change.",
+  "postrank_toy": {
+    "input_identity": "9e7e1006f4d53c1bf75b4bbeb89fdf72c24afc2b24ecfb6832c86acc66692331",
+    "pairwise_identity": "ea4a8d22aa8689171c1651497987068baa16b7dec2c568301b3b61e88058c37f",
+    "problem_identity": "45c5f990202d9df3b60143a186177338ff1c47bc428db7e07c10e3252af37aba",
+    "fixed_grade": {
+      "001": 1,
+      "site-B": 2,
+      "site C": 2
+    },
+    "relation_identity": "64049e85b12ba10b55a45669935e4d5d185ff058632ebaf2d874a770f248cdfb"
+  },
+  "pr_example_draws": {
+    "input_identity": "d22550eafe18a9e626cf80490fc4944559a5fe8cdd4f6ad1ff87824774d8018f",
+    "pairwise_identity": "ae20aa4c1234b327fac76aa8d366e89a0b19a97b8063d2ac20f4b15ff2fc6b47",
+    "problem_identity": "6a2e151171f83c96268b3ea2b78fe93f0695657fd21ffbafe9a3a3ef1e230452",
+    "relation_identity": "98f70636bea2fb5db969d46e641c35eb4f13d2f6e350f5aacbc475526abef7db"
+  },
+  "pr_example_gaussian": {
+    "coefficient_identity": "0b488bcc654c532a007a195b07e6268083442971c37b661528bc2d2aa687bb46",
+    "problem_identity": "b46113dcc70c24b485fc45dba7738841a4d63e512ad49951ec8c6fc1b90b30f3"
+  }
+}

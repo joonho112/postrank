@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Historical Economic Opportunity in 67 Alabama Counties — pr_case_alabama • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Historical Economic Opportunity in 67 Alabama Counties — pr_case_alabama"><meta name="description" content="A compact example combining income and incarceration outcomes for children
+born in 1978–1983, at parent income percentile 25, with race and gender
+pooled. Income ranks use household incomes from 2014–2015; incarceration
+is measured on April 1, 2010. The example favors higher income and lower
+incarceration. It describes historical conditional outcomes, not current
+county conditions or the causal effect of a policy."><meta property="og:description" content="A compact example combining income and incarceration outcomes for children
+born in 1978–1983, at parent income percentile 25, with race and gender
+pooled. Income ranks use household incomes from 2014–2015; incarceration
+is measured on April 1, 2010. The example favors higher income and lower
+incarceration. It describes historical conditional outcomes, not current
+county conditions or the causal effect of a policy."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul></div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Historical Economic Opportunity in 67 Alabama Counties</h1>
+
+      <div class="d-none name"><code>pr_case_alabama.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>A compact example combining income and incarceration outcomes for children
+born in 1978–1983, at parent income percentile 25, with race and gender
+pooled. Income ranks use household incomes from 2014–2015; incarceration
+is measured on April 1, 2010. The example favors higher income and lower
+incarceration. It describes historical conditional outcomes, not current
+county conditions or the causal effect of a policy.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">pr_case_alabama</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
+    <p>A named list with five elements:</p><dl><dt>input</dt>
+<dd><p>A validated <code>postrank_probabilities</code> input for all 67
+counties and both criteria, from selected numerical pool A. It includes
+genuine marginal posterior means and fixed 95% equal-tail intervals.</p></dd>
+
+<dt>units</dt>
+<dd><p>67 rows in input order, with county IDs and names, published
+estimates and standard errors, oriented point scales, and source fields.
+The published population count is descriptive; it is not a binomial
+denominator for the fitted model.</p></dd>
+
+<dt>alternatives</dt>
+<dd><p><code>pool_B</code> supplies probabilities from a separate
+numerical run; <code>income</code> and <code>incarceration</code> are one-criterion
+inputs from pool A. All retain their same-target marginal summaries.</p></dd>
+
+<dt>reference</dt>
+<dd><p>Archived settings, seven grade vectors, A/B evaluations,
+single-criterion solver results, commonality comparisons, and numerical
+precision information. These were computed with postrank 0.9.0 and
+HiGHS 1.12.0.3; they are not fresh fits by the installed package.</p></dd>
+
+<dt>provenance</dt>
+<dd><p>Source-relative filenames and hashes, outcome dates,
+directions, model conditioning, attribution and CC BY 4.0 notice.</p></dd>
+
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="source">Source<a class="anchor" aria-label="anchor" href="#source"></a></h2>
+    <p>Raj Chetty, John Friedman, Nathaniel Hendren, Maggie R. Jones and
+Sonya R. Porter (2022), <em>Replication Data for: The Opportunity Atlas:
+Mapping the Childhood Roots of Social Mobility</em>, Harvard Dataverse V1.0,
+<a href="https://doi.org/10.7910/DVN/NKCQM1" class="external-link">doi:10.7910/DVN/NKCQM1</a>
+. Source: Opportunity Insights and U.S. Census Bureau.
+Selected CSV: <a href="https://opportunityinsights.org/wp-content/uploads/2018/10/county_outcomes_simple.csv" class="external-link">https://opportunityinsights.org/wp-content/uploads/2018/10/county_outcomes_simple.csv</a>.
+Observations and documented derivatives are available under
+<a href="https://creativecommons.org/licenses/by/4.0/" class="external-link">CC BY 4.0</a>.
+Changes include Alabama filtering, county identifiers and names, point
+scales, incarceration orientation, separate M1 posterior summaries, and
+compact package inputs. Attribution and earlier change notices are retained
+in <code>provenance$rights</code>. No endorsement is implied.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The two criteria were fitted separately using the published
+conditional estimates and total standard errors, with Gaussian observation
+models and logistic-normal partial pooling. Their comparison probabilities
+support additive expected loss; they do not supply a joint posterior across
+criteria. The retained probabilities are Monte Carlo estimates, including
+observed zeros and ones, not exact posterior-certainty statements.</p>
+<p>A and B use the same observations and model. They are separate numerical
+pools, not independent observational replications. Pool A uses 16,000
+retained draws per criterion and pool B uses 8,000 in the source study;
+those draws are not included here and the supplied inputs do not claim
+retained samples or newly computed diagnostics. B failed the source's
+sensitive-pair MCSE target of .005 in 486 directional criterion rows
+(maximum .00586708). Its fixed-action risk precision was assessed separately.
+The archived MCSEs came from the original chains; they cannot be recalculated
+from these probability summaries. Constant-trace pair MCSE is unavailable.</p>
+<p>The archived common grades use weights .5/.5, withholding cost .20, and
+at most five grades. Their grade vector equals the expected-rank cut
+baseline B3 in this example. B3 optimizes within a fixed score order; the
+common optimization's lower bound has a different scope. Numerical solver
+gaps do not measure Monte Carlo error or posterior uncertainty.</p>
+<p>To use the supplied marginal intervals in <code><a href="postrank.html">postrank()</a></code> or
+<code><a href="postrank_report_card.html">postrank_report_card()</a></code>, request <code>level = .95</code>; intervals at
+other levels cannot be recovered from the stored summaries. A negative
+incarceration target has higher priority when original incarceration is
+lower. This direction differs from the source project's later policy-v2
+needs analysis, which is not included.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="../articles/a4-alabama-opportunity.html">vignette("a4-alabama-opportunity", package = "postrank")</a></code>,
+<code><a href="postrank_probabilities.html">postrank_probabilities()</a></code>, <code><a href="postrank_report_card.html">postrank_report_card()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">pr_case_alabama</span></span></span>
+<span class="r-in"><span><span class="va">x</span><span class="op">$</span><span class="va">units</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"entity_id"</span>, <span class="st">"county_name"</span>, <span class="st">"income_estimate_points"</span>,</span></span>
+<span class="r-in"><span>          <span class="st">"incarceration_estimate_points"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    entity_id       county_name income_estimate_points</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      01001    Autauga County               36.16662</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      01003    Baldwin County               38.88471</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      01005    Barbour County               34.93856</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      01007       Bibb County               36.33907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5      01009     Blount County               39.18788</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      01011    Bullock County               34.56590</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      01013     Butler County               35.72486</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8      01015    Calhoun County               36.18467</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9      01017   Chambers County               34.05749</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10     01019   Cherokee County               36.54216</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11     01021    Chilton County               38.80566</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12     01023    Choctaw County               39.69731</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13     01025     Clarke County               38.43071</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14     01027       Clay County               40.67803</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15     01029   Cleburne County               41.24786</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16     01031     Coffee County               38.67109</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17     01033    Colbert County               37.32456</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18     01035    Conecuh County               36.79720</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19     01037      Coosa County               35.26630</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20     01039  Covington County               40.55416</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21     01041   Crenshaw County               40.94989</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22     01043    Cullman County               40.45547</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23     01045       Dale County               38.08032</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24     01047     Dallas County               33.59591</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25     01049     DeKalb County               39.64774</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26     01051     Elmore County               37.79939</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27     01053   Escambia County               36.77946</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28     01055     Etowah County               36.48461</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29     01057    Fayette County               40.14124</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30     01059   Franklin County               40.57241</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31     01061     Geneva County               39.07105</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32     01063     Greene County               32.80988</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33     01065       Hale County               35.58530</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34     01067      Henry County               35.83888</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35     01069    Houston County               35.78941</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36     01071    Jackson County               39.40713</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37     01073  Jefferson County               34.39328</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38     01075      Lamar County               42.91585</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39     01077 Lauderdale County               39.63314</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40     01079   Lawrence County               38.76409</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41     01081        Lee County               36.43400</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42     01083  Limestone County               36.66204</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43     01085    Lowndes County               32.95280</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44     01087      Macon County               31.51837</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45     01089    Madison County               36.34087</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46     01091    Marengo County               37.04521</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47     01093     Marion County               39.46356</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48     01095   Marshall County               38.71275</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49     01097     Mobile County               35.89604</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50     01099     Monroe County               36.83310</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 51     01101 Montgomery County               32.73328</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 52     01103     Morgan County               36.94260</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 53     01105      Perry County               33.66066</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54     01107    Pickens County               36.96542</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55     01109       Pike County               36.58015</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56     01111   Randolph County               37.27583</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57     01113    Russell County               33.11930</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 58     01115  St. Clair County               39.96482</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59     01117     Shelby County               41.37784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 60     01119     Sumter County               34.42878</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 61     01121  Talladega County               35.62244</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 62     01123 Tallapoosa County               36.50265</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 63     01125 Tuscaloosa County               35.64417</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 64     01127     Walker County               37.56627</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 65     01129 Washington County               41.84945</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 66     01131     Wilcox County               34.92828</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 67     01133    Winston County               38.81479</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    incarceration_estimate_points</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                      3.0568201</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                      2.2593379</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                      3.3516064</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                      3.1666659</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                      2.0527514</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                      1.9160038</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7                      2.2641044</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                      2.6158130</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9                      2.1025730</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10                     2.2722345</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11                     2.4616089</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12                     1.6524242</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13                     0.8765213</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14                     1.3831642</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15                     3.3694934</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16                     2.0128127</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17                     1.6486695</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18                     2.5915811</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19                     5.4470308</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20                     3.3456240</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21                     0.4156141</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22                     1.6264709</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23                     2.7194157</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24                     1.7692221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25                     1.4112711</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26                     2.1436155</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27                     2.9329097</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28                     3.2291852</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29                     2.9594278</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30                     1.4650149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31                     2.0717705</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32                     1.9655667</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33                     1.3388982</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34                     4.1606449</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35                     3.3435084</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36                     1.6184419</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37                     3.3812899</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38                     1.9769415</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39                     1.4968146</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40                     1.2946686</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41                     3.2386627</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42                     2.1279225</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43                     1.9019283</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44                     2.8751468</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45                     3.4139868</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46                     1.7205138</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47                     1.1958894</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48                     2.2106096</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49                     3.0182857</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50                     1.8446466</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 51                     3.8189784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 52                     2.9585253</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 53                     2.2606874</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54                     1.3777658</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55                     3.1929813</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56                     2.7786372</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57                     4.4859175</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 58                     1.8427383</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59                     2.9622365</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 60                     2.6894433</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 61                     3.1609647</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 62                     2.4581661</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 63                     2.7525434</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 64                     1.6979430</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 65                     1.7598644</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 66                     1.5689397</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 67                     1.9895431</span>
+<span class="r-in"><span><span class="fu"><a href="postrank_posterior_means.html">postrank_posterior_means</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">input</span>, level <span class="op">=</span> <span class="fl">.95</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        criterion</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> entity    income incarceration</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   01001 36.20615     -2.881527</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   01003 38.84718     -2.233233</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   01005 35.06699     -3.013570</span>
+<span class="r-in"><span><span class="va">ev</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_evaluate.html">postrank_evaluate</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">actions</span><span class="op">$</span><span class="va">P</span>, <span class="va">x</span><span class="op">$</span><span class="va">input</span>,</span></span>
+<span class="r-in"><span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>income <span class="op">=</span> <span class="fl">.5</span>, incarceration <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ev</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G"</span>, <span class="st">"N"</span>, <span class="st">"M"</span>, <span class="st">"primary_risk"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $G</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $N</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1249</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $M</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2211</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $primary_risk</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.1503937</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer></div>
+
+
+
+
+
+  </body></html>
+

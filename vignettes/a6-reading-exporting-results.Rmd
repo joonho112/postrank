@@ -1,0 +1,299 @@
+---
+title: "Reading and exporting results"
+output:
+  rmarkdown::html_vignette:
+    math_method: mathml
+vignette: >
+  %\VignetteIndexEntry{Reading and exporting results}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r a6-setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", out.width = "100%")
+options(width = 82)
+```
+
+An analysis result records grade membership, disclosed and withheld pairs,
+expected loss and the numerical evidence for optimality. These components
+have distinct interpretations and should remain associated when results are
+exported. We describe the console summaries and result tables, followed by
+formats for retaining an analysis or producing a readable report.
+
+The examples use the six fictional sites in
+[Analysis with one or several criteria](a1-getting-started.html). Their normal score distributions
+are specified, with larger scores receiving higher priority. The first
+analysis uses one criterion and the second adds a criterion for the same
+sites. The prepared results below require neither optimization nor model
+fitting during rendering.
+
+```{r a6-load}
+library(postrank)
+sites <- pr_tutorial
+```
+
+```{r a6-prepared, include=FALSE}
+source(system.file("scripts", "_vignette-setup.R", package = "postrank",
+  mustWork = TRUE), local = TRUE)
+one <- load_or_compute("tutorial_one")
+two <- load_or_compute("tutorial_two")
+fmt <- function(x, digits = 4) formatC(x, format = "f", digits = digits)
+```
+
+The objects `one` and `two` are prepared analyses corresponding to the calls
+in the introductory analysis. The same inspection and export functions apply to other
+analyses returned by `postrank()`.
+
+## Console output and interpretation {#read-the-result-before-taking-a-column}
+
+```{r a6-print}
+print(one)
+```
+
+The initial display gives the numbers of entities and grades, disclosed
+and withheld pair counts, and computation status. Grade 1 has highest
+priority; a shared grade withholds a comparison without declaring score
+equality. Since the reported loss depends on the weights, withholding cost
+and permitted grades, these settings are part of the interpretation of any
+exported risk.
+
+```{r a6-summary}
+summary(one)
+```
+
+The summary adds settings, criterion-specific results, bounds and recorded
+warnings. Monte Carlo fragility is unsupported here because the input
+specifies an analytic normal law rather than target draws. An unsupported
+diagnostic differs from one that was available but not requested. Neither
+state implies a zero value, and the summary does not calculate missing
+results.
+
+The first prepared solve includes a small floating-point correction to its
+lower bound. The summary retains the warning despite a zero reported gap
+after correction. Further source records and identifiers are available by
+requesting detailed output:
+
+```{r a6-details}
+detailed <- summary(one, details = TRUE)
+```
+
+Printing `detailed` displays the additional records identifying the input
+and computation. Numerical extraction uses the accessors below rather than
+parsing the console representation.
+
+## Grade and report-card tables {#take-a-stable-grade-table}
+
+```{r a6-basic-table}
+grade_table <- as.data.frame(one)
+grade_table
+```
+
+The default table has two columns: character `entity_id` and integer
+`grade`. Rows follow the original input order. A fit, its enclosing
+analysis, and a score-cut baseline use this same basic form. Optional
+report cards do not change the default columns.
+
+```{r a6-table-checks}
+identical(grade_table$entity_id, sites$one$entity_ids)
+identical(grade_table, as.data.frame(one$fit))
+```
+
+The `entity_id` column provides the key for joining results to other tables.
+Row numbers and potentially changing display names do not serve this role.
+A separately sorted copy may be used for presentation while the original
+table retains its correspondence with input order.
+
+The report-card table is requested explicitly:
+
+```{r a6-card-table}
+card <- as.data.frame(one, what = "report_card")
+knitr::kable(card[c("entity_id", "grade", "mean_score_A",
+  "lower_score_A", "upper_score_A")], digits = 3, row.names = FALSE,
+  col.names = c("Entity", "Grade", "Mean", "Interval lower", "Interval upper"))
+```
+
+The table contains prepared score means and
+`r fmt(100 * one$report_card$level, 0)`% equal-tail marginal intervals under
+the specified normal law. These describe score uncertainty rather than
+uncertainty in grade labels. Expected ranks and disclosed and withheld
+comparison counts are also included. Selection by column name avoids
+dependence on column positions.
+
+Report-card rows are ordered by grade and their recorded secondary order.
+That can differ from input order, as the two-criterion example shows:
+
+```{r a6-order}
+list(
+  input_order = as.data.frame(two)$entity_id,
+  report_card_order = as.data.frame(two, what = "report_card")$entity_id
+)
+```
+
+If a report card was not prepared, `what = "report_card"` reports the reason
+for its absence, while the ordinary grade table may remain available.
+Pairwise probabilities can suffice for grading without identifying marginal
+intervals. Supplied intervals retain their original level, such as the 95%
+intervals in the [Alabama case](a4-alabama-opportunity.html). Table conversion
+neither creates missing summaries nor changes an interval's level.
+
+For code written before version 1.0, the explicit `what = "report_card"`
+replaces the former behavior in which an analysis could return its full
+card by default. The default table therefore retains the two-column
+structure described above.
+
+## Grades, pair relations and loss {#extract-grades-pair-relations-and-loss}
+
+```{r a6-accessors}
+grades <- get_grades(one)
+grades
+relations <- get_relations(one)
+relations[c("A", "B", "C"), c("A", "B", "C")]
+```
+
+The grade vector is named by entity ID. In the relation matrix, `[i, j]` is
+1 if row entity `i` is disclosed above column entity `j`, −1 for the reverse
+direction and 0 for withholding. The diagonal is zero. Thus A versus B is
+withheld and A is disclosed above C. Matrix entries represent reporting
+decisions rather than posterior probabilities.
+
+```{r a6-profile}
+profile <- get_profile(one)
+knitr::kable(profile[c("criterion", "weight", "E", "E_over_M",
+  "E_over_N", "risk")], digits = 5, row.names = FALSE)
+risk <- get_risk(one)
+risk
+```
+
+`E` is the posterior expected number of wrong-direction comparisons among
+the disclosed pairs. `E_over_N` divides by the number of disclosed pairs;
+`E_over_M` divides by all possible pairs. The criterion's `risk` also
+includes the cost of withholding. For this one-criterion example, the
+criterion loss and the overall loss are the same:
+
+```{r a6-loss}
+N <- sum(relations[upper.tri(relations)] != 0L)
+M <- choose(length(grades), 2)
+loss_from_parts <- (profile$E + one$settings$tau * (M - N)) / M
+c(from_parts = loss_from_parts, stored = risk$risk)
+```
+
+For several criteria, `get_profile(two)` returns one row per criterion;
+equal weights can yield different error rates. `get_risk()` returns a list
+containing `risk`, `lower_bound`, `gap` and `status`. The risk is the primary
+objective of the specified problem: a weighted average of criterion losses
+in these examples, or a worst-criterion objective in minimax analyses.
+Comparison of reported losses therefore requires their objective definitions.
+
+For the same one-criterion input, the following calculation evaluates the
+fixed action withholding every pair, without a new optimization:
+
+```{r a6-all-withheld}
+withheld <- postrank_evaluate(
+  setNames(rep(1L, length(grades)), names(grades)), sites$one,
+  weights = c(score_A = 1), tau = one$settings$tau
+)
+withheld[c("N", "E_over_N", "primary_risk")]
+```
+
+Since no comparisons are disclosed, `E_over_N` is `NA` and the loss equals
+the withholding cost. This is a valid grading with an undefined error
+proportion, distinct from a computation that returned no valid grade vector.
+
+## Computation status and numerical results {#keep-computation-status-with-the-numbers}
+
+The prepared examples have `optimal` status. In other analyses, computation
+may terminate before establishing optimality. Whether validated grades exist
+must also be considered when interpreting status. The table describes
+possible states; it does not report additional solver executions.
+
+| Recorded state | Interpretation |
+|---|---|
+| `optimal`, with validated grades | Optimal within the recorded solver tolerances. The bound, gap and any numerical warnings provide the accompanying numerical evidence. |
+| `feasible_not_certified`, with validated grades | A usable grading was found, but the available bound or gap does not establish the requested optimality. |
+| `time_limit`, with validated grades | The time limit was reached; the stored grading can be read and evaluated, with its remaining gap or missing bound disclosed. |
+| `time_limit`, without validated grades | There is no grading to interpret. The termination status and any usable lower bound can still be reported. |
+| `infeasible` | The solver reports that the requested constraints cannot be satisfied. This is not a one-grade, all-withheld result. |
+
+Results with `numerical_error`, `unknown` or an unexpected `unbounded`
+status require examination of recorded warnings and validation details
+before an action is used. Normalized status records the package's
+interpretation separately from the backend message. A gap quantifies
+optimization uncertainty conditional on the supplied probabilities, rather
+than posterior uncertainty about a population quantity.
+
+In the absence of validated grades, `get_grades()` and `get_relations()`
+return `NULL`. The basic table and criterion profile have zero rows with
+their usual columns. `get_risk()` retains status and any usable lower bound,
+whereas action risk and gap are `NA`. An empty result thus requires
+interpretation of the recorded status; assigning all entities to grade 1
+would introduce an action that the computation did not return.
+
+## Tabular export and object storage {#save-a-table-and-preserve-an-analysis}
+
+CSV stores tabular output, whereas RDS retains the complete R object,
+including settings, summaries and computation records. The examples use a
+new temporary directory to avoid overwriting existing files:
+
+```{r a6-export-folder}
+export_dir <- tempfile("postrank-exports-")
+dir.create(export_dir)
+csv_file <- file.path(export_dir, "grades.csv")
+rds_file <- file.path(export_dir, "analysis.rds")
+```
+
+```{r a6-csv}
+write.csv(grade_table, csv_file, row.names = FALSE)
+csv_again <- read.csv(csv_file,
+  colClasses = c(entity_id = "character", grade = "integer"))
+identical(csv_again, grade_table)
+```
+
+A character ID column preserves leading zeros in identifiers such as
+`"01001"`, and `row.names = FALSE` omits an additional row-index column.
+Interval definitions, settings and solver status must be exported
+separately when CSV is used for a report table.
+
+```{r a6-rds}
+saveRDS(one, rds_file)
+restored <- readRDS(rds_file)
+identical(get_grades(restored), grades)
+identical(get_risk(restored), risk)
+identical(as.data.frame(restored, what = "report_card"), card)
+```
+
+Reading the RDS restores the prepared object without rerunning the
+optimizer. Reproducibility additionally requires the package version and
+source input. RDS is an R object format whose compatibility with every
+future software version cannot be assumed.
+
+## Standalone HTML reports {#write-a-standalone-html-report}
+
+Supplying a fit together with its matching analysis includes the prepared
+posterior report card alongside grades, loss, status and available
+diagnostics:
+
+```{r a6-html-report}
+html_file <- file.path(export_dir, "grades-report.html")
+report <- postrank_report(one$fit, analysis = one,
+  output_file = html_file, lang = "en")
+report
+basename(report$output_file)
+```
+
+The English HTML report embeds its figures for offline reading and uses
+stored results throughout. Missing intervals or diagnostics retain their
+recorded reasons for unavailability. An existing destination is refused,
+so each saved version requires a new filename. Setting `figures = FALSE`
+produces text and tables without embedded figures.
+
+The temporary directory persists for the current R session. Longer-term
+storage requires a new destination within the project. RDS retains the
+analysis for subsequent R use, HTML provides a readable report and CSV
+provides selected tables for other software.
+
+Figure dimensions, labels and entity selection are described in
+[Figures and sensitivity analysis](a7-figures-sensitivity.html). Input
+assumptions are discussed in
+[Analysis of supplied posterior results](a5-your-posterior-results.html).
+
+[Computing grades and choosing settings](m5-computing-grades.html) develops the meaning of solver bounds and admissible reports. [Monte Carlo uncertainty and diagnostics](m6-uncertainty-diagnostics.html) covers the distinct numerical uncertainty in the posterior inputs.

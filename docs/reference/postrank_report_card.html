@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Prepare an Entity Report Card with Posterior Intervals — postrank_report_card • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Prepare an Entity Report Card with Posterior Intervals — postrank_report_card">
+<meta name="description" content="A validated grading is combined with marginal posterior summaries in an
+entity-level report card. The table contains every entity, its grade, counts
+of comparisons reported above or below it or withheld, and each criterion's
+posterior mean, interval and expected rank. The table is used for detailed
+reporting and plotting; postrank_tables supplies the basic two-column
+grade table.">
+<meta property="og:description" content="A validated grading is combined with marginal posterior summaries in an
+entity-level report card. The table contains every entity, its grade, counts
+of comparisons reported above or below it or withheld, and each criterion's
+posterior mean, interval and expected rank. The table is used for detailed
+reporting and plotting; postrank_tables supplies the basic two-column
+grade table.">
+<meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Prepare an Entity Report Card with Posterior Intervals</h1>
+
+      <div class="d-none name"><code>postrank_report_card.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>A validated grading is combined with marginal posterior summaries in an
+entity-level report card. The table contains every entity, its grade, counts
+of comparisons reported above or below it or withheld, and each criterion's
+posterior mean, interval and expected rank. The table is used for detailed
+reporting and plotting; <a href="postrank_tables.html">postrank_tables</a> supplies the basic two-column
+grade table.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_report_card</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  draws <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  level <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"expected_rank"</span>, <span class="st">"mean"</span>, <span class="st">"label"</span><span class="op">)</span>,</span>
+<span>  order_by <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a>
+</h2>
+
+
+<dl>
+<dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a>
+</dt>
+<dd><p>A <code>postrank_fit</code> or <code>postrank_analysis</code> with a validated grade.</p></dd>
+
+
+<dt id="arg-draws">draws<a class="anchor" aria-label="anchor" href="#arg-draws"></a>
+</dt>
+<dd><p>Optional source input: <code>postrank_draws</code>,
+<code>postrank_coefficients</code>, or <code>postrank_probabilities</code> with supplied marginal
+intervals. It must have the same input identity as the fit.</p></dd>
+
+
+<dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a>
+</dt>
+<dd><p>Central posterior interval level in <code>(0, 1)</code>; default <code>0.90</code>.
+For supplied marginal summaries, it must exactly match their stored level.</p></dd>
+
+
+<dt id="arg-order">order<a class="anchor" aria-label="anchor" href="#arg-order"></a>
+</dt>
+<dd><p>Secondary sort key within each grade: <code>"expected_rank"</code>
+(weighted expected rank, default), <code>"mean"</code> (one criterion's posterior
+mean, larger first) or <code>"label"</code> (entity ID).</p></dd>
+
+
+<dt id="arg-order-by">order_by<a class="anchor" aria-label="anchor" href="#arg-order-by"></a>
+</dt>
+<dd><p>Criterion used with <code>order = "mean"</code>. Required with several
+criteria, optional with one. Leave <code>NULL</code> for other ordering rules.</p></dd>
+
+</dl>
+</div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
+</h2>
+    <p>A <code>postrank_report_card</code> with the full table in <code>data</code>. Its other
+fields record <code>level</code>, <code>interval_source</code>, <code>secondary_order</code>, <code>settings</code>,
+<code>grade_identity</code>, <code>input_identity</code>, <code>schema_version</code>, <code>provenance</code> and
+<code>warnings</code>. A selected mean-ordering criterion is recorded in
+<code>provenance$ordering_criterion</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
+</h2>
+    <p>The table is ordered first by grade, then the secondary key, with
+entity ID breaking remaining ties. Grade 1 has highest priority. Shared
+grades withhold comparisons and do not establish latent equality.
+<code>n_above</code> counts other entities this entity is reported above; <code>n_below</code>
+counts those it is reported below. Together with <code>n_withheld</code>, they sum
+to n-1 for each row. Columns <code>mean_</code>, <code>lower_</code>, <code>upper_</code> and
+<code>expected_rank_</code><span> are suffixed with the criterion ID. Expected rank is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>+</mo><msub><mo>∑</mo><mrow><mi>j</mi><mo>≠</mo><mi>i</mi></mrow></msub><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">1 + \sum_{j \ne i} e_{ij,k}</annotation></semantics></math>. Weighted ranks can set the row order;
+means in different units are never added for this purpose.</span></p>
+<p>The source comes from <code>draws</code>, then the analysis input, then a typed
+coefficient or supplied-probability object stored in the fit. A bare
+pairwise object contains no marginal posterior law, so supply its
+original input through <code>draws</code>. Matching cached summaries are reused;
+otherwise this function computes summaries from the source. It does not
+solve for new grades. Figures and table conversion subsequently read the
+prepared card without recomputing these summaries.</p>
+<p>Intervals describe the supplied marginal posterior, not Monte Carlo
+error or the probability that a grade is correct. A mean can lie outside
+an equal-tail interval. Supplied probability matrices require genuine
+same-target marginal intervals at their recorded level: a posterior law
+or chain history is not inferred from the matrices. Without a validated
+grade, the function stops with <code>no_validated_incumbent</code>.</p>
+<p>The card always contains all entities. Row limits and display labels in
+<code><a href="postrank_plot_report_card.html">postrank_plot_report_card()</a></code> affect only the figure.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
+</h2>
+    <div class="dont-index"><p><code><a href="postrank.html">postrank()</a></code>, <code><a href="postrank_posterior_means.html">postrank_posterior_means()</a></code>, <a href="postrank_tables.html">postrank_tables</a></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
+</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"highs"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">one</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank.html">postrank</a></span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span>, tau <span class="op">=</span> <span class="fl">.2</span>, G_max <span class="op">=</span> <span class="fl">3L</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span></span>
+<span class="r-in"><span>    control <span class="op">=</span> <span class="fu"><a href="postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>, fragility <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">card</span> <span class="op">&lt;-</span> <span class="fu">postrank_report_card</span><span class="op">(</span><span class="va">one</span>, level <span class="op">=</span> <span class="fl">.8</span>, order <span class="op">=</span> <span class="st">"mean"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">card</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">card</span><span class="op">$</span><span class="va">interval_source</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "gaussian_analytic"</span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

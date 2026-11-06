@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Common grading from posterior draws • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Common grading from posterior draws">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-article">
+
+
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Common grading from posterior draws</h1>
+            
+      
+      <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/quickstart.Rmd" class="external-link"><code>vignettes/quickstart.Rmd</code></a></small>
+      <div class="d-none name"><code>quickstart.Rmd</code></div>
+    </div>
+
+    
+    
+<p>This retained example considers three criteria and preserves the
+original article URL. <a href="a1-getting-started.html">Getting
+started</a> introduces a smaller one-criterion example and its extension
+to two criteria for the same sites. <a href="a6-reading-exporting-results.html">Reading and exporting
+results</a> describes the current table and report interfaces.</p>
+<p>postrank assigns a common integer grade to each entity using
+posterior information on several criteria. Grade 1 denotes the
+highest-priority group. A common grade withholds the comparison between
+two entities when its expected disclosure cost is not justified under
+the declared loss; it does not assert equality of their targets. The
+analysis starts from supplied posterior draws or coefficients and
+involves no model fitting.</p>
+<p>We describe seven stages of analysis for the bundled example. The
+solver results were previously computed by the package maintainer and
+are read from caches bound to their source and settings. Building the
+article therefore requires no solver executions.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joonho112/postrank" class="external-link">postrank</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"scripts"</span>, <span class="st">"_vignette-setup.R"</span>, package <span class="op">=</span> <span class="st">"postrank"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="entities-criteria-and-orientation">1. Entities, criteria and orientation<a class="anchor" aria-label="anchor" href="#entities-criteria-and-orientation"></a>
+</h2>
+<p><code>pr_example_draws</code> holds 4,000 joint posterior draws for
+30 sites on three criteria. The criteria are named <code>poverty</code>,
+<code>frl</code> and <code>snap</code> for illustration only. The values
+are synthetic latent needs drawn from a fixed known law and are not
+empirical measurements.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">pr_example_draws</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">tensor</span><span class="op">$</span><span class="va">values</span><span class="op">)</span>   <span class="co"># draw x entity x criterion</span></span>
+<span><span class="co">#&gt; [1] 4000   30    3</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pr_example_draws</span><span class="op">$</span><span class="va">entity_ids</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "site001" "site002" "site003" "site004" "site005" "site006"</span></span>
+<span><span class="va">pr_example_draws</span><span class="op">$</span><span class="va">criterion_ids</span></span>
+<span><span class="co">#&gt; [1] "poverty" "frl"     "snap"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">pr_example_draws</span><span class="op">$</span><span class="va">targets</span>, <span class="va">`[[`</span>, <span class="st">""</span>, <span class="st">"orientation"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "higher_priority" "higher_priority" "higher_priority"</span></span></code></pre></div>
+<p>Larger target values mean higher priority on every criterion, so a
+smaller grade label means a higher-priority block.</p>
+</div>
+<div class="section level2">
+<h2 id="the-typed-input-and-its-declarations">2. The typed input and its declarations<a class="anchor" aria-label="anchor" href="#the-typed-input-and-its-declarations"></a>
+</h2>
+<p>A <code>postrank_draws</code> object carries the draws together with
+eight required scientific declarations (targets, context, provenance,
+origin, identification, tie justification, joint generation and sampling
+provenance).</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pr_example_draws</span></span>
+<span><span class="co">#&gt; &lt;postrank_draws&gt;  30 entities with posterior input</span></span>
+<span><span class="co">#&gt;   3 criteria: poverty, frl, snap.</span></span>
+<span><span class="co">#&gt;   4000 retained IID draws; each draw contains all entities and criteria.</span></span>
+<span><span class="co">#&gt;   The input structure has been checked. The declared sampling history and</span></span>
+<span><span class="co">#&gt;     statistical model have not been independently verified.</span></span>
+<span><span class="co">#&gt;   i  summary(x) describes the targets; details = TRUE adds source records.</span></span>
+<span><span class="fu"><a href="../reference/validate_postrank_draws.html">validate_postrank_draws</a></span><span class="op">(</span><span class="va">pr_example_draws</span><span class="op">)</span><span class="op">$</span><span class="va">valid</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="va">pr_example_draws</span><span class="op">$</span><span class="va">targets</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion_id"</span>, <span class="st">"estimand"</span>, <span class="st">"units"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $criterion_id</span></span>
+<span><span class="co">#&gt; [1] "poverty"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $estimand</span></span>
+<span><span class="co">#&gt; [1] "Synthetic latent need on the 'poverty' criterion under the frozen A8-recipe known-Gaussian posterior law (an illustration, not a real poverty measure)"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $units</span></span>
+<span><span class="co">#&gt; [1] "standardized latent units (prior variance 1)"</span></span></code></pre></div>
+<p>Validation checks the completeness of declarations, finiteness of
+values, and consistency of identifiers and dimensions. The truth of the
+scientific declarations and the adequacy of the posterior model require
+separate assessment.
+<code><a href="../articles/inputs-and-producers.html">vignette("inputs-and-producers", package = "postrank")</a></code>
+describes construction of an input object from a supplied array.</p>
+</div>
+<div class="section level2">
+<h2 id="policy-and-computation-are-separate">3. Policy and computation are separate<a class="anchor" aria-label="anchor" href="#policy-and-computation-are-separate"></a>
+</h2>
+<p>The decision settings specify criterion weights <code>w</code>,
+withholding cost <code>tau</code> and the maximum number of grades
+<code>G_max</code>. These define the loss and admissible reports.
+Computational controls specify the resources and stopping criteria used
+by the solver. They can therefore be varied while the decision problem
+is held fixed.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_settings.html">postrank_settings</a></span><span class="op">(</span>weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>poverty <span class="op">=</span> <span class="fl">.5</span>, frl <span class="op">=</span> <span class="fl">.25</span>, snap <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.35</span>, G_max <span class="op">=</span> <span class="fl">4L</span><span class="op">)</span></span>
+<span><span class="va">settings</span></span>
+<span><span class="co">#&gt; &lt;postrank_settings&gt;  Choices for the grading decision</span></span>
+<span><span class="co">#&gt;   Loss: the weighted average of criterion losses.</span></span>
+<span><span class="co">#&gt;   At most 4 grades; fewer may be used.</span></span>
+<span><span class="co">#&gt;   Withholding cost (tau): 0.35 per withheld pair.</span></span>
+<span><span class="co">#&gt;    Criterion Weight</span></span>
+<span><span class="co">#&gt;    poverty   0.5</span></span>
+<span><span class="co">#&gt;    frl       0.25</span></span>
+<span><span class="co">#&gt;    snap      0.25</span></span>
+<span><span class="co">#&gt;   Tau prices a withheld comparison; it is not an error-rate limit.</span></span>
+<span><span class="co">#&gt;   i  Use these choices with postrank(settings = x).</span></span>
+<span><span class="va">control</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">60</span>, threads <span class="op">=</span> <span class="fl">1L</span>, seed <span class="op">=</span> <span class="fl">1304L</span><span class="op">)</span></span>
+<span><span class="va">control</span></span>
+<span><span class="co">#&gt; &lt;postrank_control&gt;  Computation settings</span></span>
+<span><span class="co">#&gt;   Time limit: 60 seconds; 1 thread.</span></span>
+<span><span class="co">#&gt;   Search: candidate search, relaxation bounds and optional integer optimization.</span></span>
+<span><span class="co">#&gt;   Absolute loss gap: 1e-08; relative objective gap: 0.</span></span>
+<span><span class="co">#&gt;   Progress messages: inherit option (quiet by default).</span></span>
+<span><span class="co">#&gt;   Solver output: off.</span></span>
+<span><span class="co">#&gt;   i  summary(x, details = TRUE) shows the seed, search options and tolerances.</span></span></code></pre></div>
+<p>The declared loss charges, for every pair of entities, the weighted
+posterior probability of a wrong-direction comparison when the pair is
+ordered and <code>tau</code> when it is withheld. Its average over pairs
+is the risk <code>R</code>; withholding every comparison (the
+<em>all-withheld</em> action) has risk exactly <code>tau</code>.</p>
+</div>
+<div class="section level2">
+<h2 id="the-analysis">4. The analysis<a class="anchor" aria-label="anchor" href="#the-analysis"></a>
+</h2>
+<p><code><a href="../reference/postrank.html">postrank()</a></code> builds the pairwise error probabilities,
+solves for a common grade and validates the incumbent. With
+<code>backend</code> omitted it uses
+<code>getOption("postrank.backend")</code> and then Gurobi; it never
+switches to another solver on failure. The call below selects HiGHS
+explicitly. It is the call that produced the cached result, shown here
+but not run:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">a35</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank.html">postrank</a></span><span class="op">(</span><span class="va">pr_example_draws</span>, settings <span class="op">=</span> <span class="va">settings</span>, backend <span class="op">=</span> <span class="st">"highs"</span>, control <span class="op">=</span> <span class="va">control</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">a35</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"analysis_30x3_tau35"</span><span class="op">)</span></span>
+<span><span class="va">a35</span></span>
+<span><span class="co">#&gt; &lt;postrank_analysis&gt;  30 entities in 4 grades (sizes 2 / 14 / 12 / 2)</span></span>
+<span><span class="co">#&gt;   3 criteria: poverty, frl, snap.</span></span>
+<span><span class="co">#&gt;   Posterior loss: 0.3226.</span></span>
+<span><span class="co">#&gt;   Disclosed 276 of 435 pairs (63.4%); withheld 159.</span></span>
+<span><span class="co">#&gt;   Expected error among disclosed pairs: poverty 0.136; frl 0.172; snap 0.784.</span></span>
+<span><span class="co">#&gt;   Solver: Optimal within solver tolerances.</span></span>
+<span><span class="co">#&gt;   Optimization gap: 5.55e-17; requested absolute gap 1e-08.</span></span>
+<span><span class="co">#&gt;   Prepared: report card, fragility.</span></span>
+<span><span class="co">#&gt;   Grade 1 has highest priority; a shared grade withholds the comparison.</span></span>
+<span><span class="co">#&gt;   grade 1 (2): site003, site010</span></span>
+<span><span class="co">#&gt;   grade 2 (14): site005, site008, site011, site012, site014, site017,</span></span>
+<span><span class="co">#&gt;     site019, site021, site023, site025, site027, site028, site029, site030</span></span>
+<span><span class="co">#&gt;   grade 3 (12): site001, site002, site004, site006, site013, site015,</span></span>
+<span><span class="co">#&gt;     site016, site018, site020, site022, site024, site026</span></span>
+<span><span class="co">#&gt;   grade 4 (2): site007, site009</span></span>
+<span><span class="co">#&gt;   i summary(x) explains the loss, settings and bounds; get_grades(x) returns</span></span>
+<span><span class="co">#&gt;     all grades.</span></span></code></pre></div>
+<p>Cached asset <code>analysis_30x3_tau35</code>: built by the
+maintainer with postrank 1.1.0 and the explicitly selected highs backend
+(version 1.12.0.3) at 2026-10-30T14:15:54Z; 1 solve, recorded status
+optimal. Reading it here solves nothing.</p>
+<p>The same posterior under <code>tau = .25</code> (the cached asset
+<code>analysis_30x3</code>) gives a different action: every comparison
+is withheld.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">a25</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"analysis_30x3"</span><span class="op">)</span></span>
+<span><span class="va">a25</span></span>
+<span><span class="co">#&gt; &lt;postrank_analysis&gt;  30 entities in 1 grade; all comparisons withheld</span></span>
+<span><span class="co">#&gt;   3 criteria: poverty, frl, snap.</span></span>
+<span><span class="co">#&gt;   Posterior loss: 0.2500.</span></span>
+<span><span class="co">#&gt;   Disclosed 0 of 435 pairs (0.0%); withheld 435.</span></span>
+<span><span class="co">#&gt;   Expected error among disclosed pairs: NA (N = 0); no pairs were disclosed.</span></span>
+<span><span class="co">#&gt;   A single shared grade withholds every comparison; it is not an error-free</span></span>
+<span><span class="co">#&gt;     ranking.</span></span>
+<span><span class="co">#&gt;   Solver: Optimal within solver tolerances.</span></span>
+<span><span class="co">#&gt;   Optimization gap: 0; requested absolute gap 1e-08.</span></span>
+<span><span class="co">#&gt;   Prepared: report card, fragility.</span></span>
+<span><span class="co">#&gt;   Grade 1 has highest priority; a shared grade withholds the comparison.</span></span>
+<span><span class="co">#&gt;   grade 1 (30): site001, site002, site003, site004, site005, site006,</span></span>
+<span><span class="co">#&gt;     site007, site008, site009, site010, site011, site012, site013, site014 +16</span></span>
+<span><span class="co">#&gt;     more</span></span>
+<span><span class="co">#&gt;   i summary(x) explains the loss, settings and bounds; get_grades(x) returns</span></span>
+<span><span class="co">#&gt;     all grades.</span></span></code></pre></div>
+<p>At <code>tau = .25</code>, the validated incumbent withholds all
+comparisons among the 30 sites. Under this loss, posterior imprecision
+and disagreement between criteria are consistent with the absence of a
+lower-loss partition in the search. The all-withheld action is an
+admissible decision, without implying equality of the sites. Since
+changing <code>tau</code> changes the loss, the resulting risks do not
+provide a common scale for ranking these two settings.</p>
+</div>
+<div class="section level2">
+<h2 id="grades-profiles-and-the-report-card">5. Grades, profiles and the report card<a class="anchor" aria-label="anchor" href="#grades-profiles-and-the-report-card"></a>
+</h2>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="../reference/get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">a35</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  1  2  3  4 </span></span>
+<span><span class="co">#&gt;  2 14 12  2</span></span>
+<span><span class="fu"><a href="../reference/get_profile.html">get_profile</a></span><span class="op">(</span><span class="va">a35</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   criterion weight         E   E_over_M  E_over_N      risk  q budget_slack</span></span>
+<span><span class="co">#&gt; 1   poverty   0.50  37.52875 0.08627299 0.1359737 0.2142040 NA           NA</span></span>
+<span><span class="co">#&gt; 2       frl   0.25  47.36800 0.10889195 0.1716232 0.2368230 NA           NA</span></span>
+<span><span class="co">#&gt; 3      snap   0.25 216.25150 0.49712989 0.7835199 0.6250609 NA           NA</span></span>
+<span><span class="co">#&gt;   is_minimax_max</span></span>
+<span><span class="co">#&gt; 1          FALSE</span></span>
+<span><span class="co">#&gt; 2          FALSE</span></span>
+<span><span class="co">#&gt; 3          FALSE</span></span></code></pre></div>
+<p><code>E_over_N</code> is the expected number of wrong-direction
+disclosed pairs per disclosed pair on each criterion. When nothing is
+disclosed it is <code>NA</code>, not 0:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_profile.html">get_profile</a></span><span class="op">(</span><span class="va">a25</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion"</span>, <span class="st">"E"</span>, <span class="st">"E_over_N"</span>, <span class="st">"risk"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;   criterion E E_over_N risk</span></span>
+<span><span class="co">#&gt; 1   poverty 0       NA 0.25</span></span>
+<span><span class="co">#&gt; 2       frl 0       NA 0.25</span></span>
+<span><span class="co">#&gt; 3      snap 0       NA 0.25</span></span></code></pre></div>
+<p>The report card lists each entity’s grade, how many entities it is
+disclosed above and below, and its posterior means and central
+intervals:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">a35</span><span class="op">$</span><span class="va">report_card</span></span>
+<span><span class="co">#&gt; &lt;postrank_report_card&gt;  30 entities with grades and marginal intervals</span></span>
+<span><span class="co">#&gt;   90.0% central intervals; summaries of the declared posterior.</span></span>
+<span><span class="co">#&gt;    Entity  Grade Above Below Withheld</span></span>
+<span><span class="co">#&gt;    site003 1     28    0      1</span></span>
+<span><span class="co">#&gt;    site010 1     28    0      1</span></span>
+<span><span class="co">#&gt;    site029 2     14    2     13</span></span>
+<span><span class="co">#&gt;    site028 2     14    2     13</span></span>
+<span><span class="co">#&gt;    site027 2     14    2     13</span></span>
+<span><span class="co">#&gt;    site019 2     14    2     13</span></span>
+<span><span class="co">#&gt;    site017 2     14    2     13</span></span>
+<span><span class="co">#&gt;    site012 2     14    2     13</span></span>
+<span><span class="co">#&gt;    site008 2     14    2     13</span></span>
+<span><span class="co">#&gt;    site025 2     14    2     13</span></span>
+<span><span class="co">#&gt;   Showing 10 of 30 rows; the full table is retained in the object.</span></span>
+<span><span class="co">#&gt;   Above and below count disclosed relations; withheld counts entities sharing</span></span>
+<span><span class="co">#&gt;     the grade.</span></span>
+<span><span class="co">#&gt;   i as.data.frame(x) includes every criterion's mean, interval and expected</span></span>
+<span><span class="co">#&gt;     rank.</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">a35</span><span class="op">)</span></span></code></pre></div>
+<p><a href="quickstart_files/figure-html/fig-card-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Marginal target intervals and grades for the additional 30-site three-criterion example." target="_blank" rel="noopener"><img src="quickstart_files/figure-html/fig-card-1.png" class="r-plt" alt="Marginal target intervals and grades for the additional 30-site three-criterion example." width="100%"></a><span class="figure-full-size-link d-block small"><a href="quickstart_files/figure-html/fig-card-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Marginal target intervals and grades for the additional 30-site three-criterion example.">Open full-size figure</a></span></p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_profile.html">postrank_plot_profile</a></span><span class="op">(</span><span class="va">a35</span><span class="op">)</span></span></code></pre></div>
+<p><a href="quickstart_files/figure-html/fig-profile-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Expected errors per disclosed pair for each criterion in the prepared 30-site common report." target="_blank" rel="noopener"><img src="quickstart_files/figure-html/fig-profile-1.png" class="r-plt" alt="Expected errors per disclosed pair for each criterion in the prepared 30-site common report." width="100%"></a><span class="figure-full-size-link d-block small"><a href="quickstart_files/figure-html/fig-profile-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Expected errors per disclosed pair for each criterion in the prepared 30-site common report.">Open full-size figure</a></span></p>
+<p>A posterior mean can lie outside its equal-tail interval when the
+posterior is skewed; the figure draws the stored values unchanged.</p>
+</div>
+<div class="section level2">
+<h2 id="pair-relations">6. Pair relations<a class="anchor" aria-label="anchor" href="#pair-relations"></a>
+</h2>
+<p><code><a href="../reference/get_relations.html">get_relations()</a></code> returns the disclosed relation of every
+ordered pair: <code>1</code> if the row entity is placed above the
+column entity, <code>-1</code> below and <code>0</code> withheld.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_relations.html">get_relations</a></span><span class="op">(</span><span class="va">a35</span><span class="op">)</span></span>
+<span><span class="va">rel</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span>
+<span><span class="co">#&gt;          entity_j</span></span>
+<span><span class="co">#&gt; entity_i  site001 site002 site003 site004 site005</span></span>
+<span><span class="co">#&gt;   site001       0       0      -1       0      -1</span></span>
+<span><span class="co">#&gt;   site002       0       0      -1       0      -1</span></span>
+<span><span class="co">#&gt;   site003       1       1       0       1       1</span></span>
+<span><span class="co">#&gt;   site004       0       0      -1       0      -1</span></span>
+<span><span class="co">#&gt;   site005       1       1      -1       1       0</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">rel</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/lower.tri.html" class="external-link">upper.tri</a></span><span class="op">(</span><span class="va">rel</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  -1   0   1 </span></span>
+<span><span class="co">#&gt; 164 159 112</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_relations.html">postrank_plot_relations</a></span><span class="op">(</span><span class="va">a35</span>, labels <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
+<p><a href="quickstart_files/figure-html/fig-relations-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Disclosed and withheld pair relations for the prepared 30-site common report." target="_blank" rel="noopener"><img src="quickstart_files/figure-html/fig-relations-1.png" class="r-plt" alt="Disclosed and withheld pair relations for the prepared 30-site common report." width="100%"></a><span class="figure-full-size-link d-block small"><a href="quickstart_files/figure-html/fig-relations-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Disclosed and withheld pair relations for the prepared 30-site common report.">Open full-size figure</a></span></p>
+<p>A relation map represents one action under specified decision
+settings. Maps obtained under different <code>tau</code> values or
+criterion weights describe the resulting changes in disclosure. Their
+comparison does not establish a preferred policy, since the
+corresponding losses differ.</p>
+</div>
+<div class="section level2">
+<h2 id="status-bounds-extras-and-provenance">7. Status, bounds, extras and provenance<a class="anchor" aria-label="anchor" href="#status-bounds-extras-and-provenance"></a>
+</h2>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_risk.html">get_risk</a></span><span class="op">(</span><span class="va">a35</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $risk</span></span>
+<span><span class="co">#&gt; [1] 0.322573</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $lower_bound</span></span>
+<span><span class="co">#&gt; [1] 0.322573</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $gap</span></span>
+<span><span class="co">#&gt; [1] 5.551115e-17</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $status</span></span>
+<span><span class="co">#&gt; [1] "optimal"</span></span></code></pre></div>
+<p>The released grade is a validated incumbent. Its risk is the upper
+bound; the lower bound is the solver’s. A zero gap means the solver
+found no better grade within its tolerances for these coefficients; it
+is not a numerical certificate, the number of optimal grades is unknown,
+and the gap says nothing about Monte Carlo or model uncertainty.</p>
+<p><code><a href="../reference/postrank.html">postrank()</a></code> adds optional extras and records why each one
+is or is not available. By default the report card is on, Monte Carlo
+fragility is computed for joint IID or MCMC input, and cross-fitting and
+full diagnostics are off.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">a35</span><span class="op">$</span><span class="va">extras</span>, <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>requested <span class="op">=</span> <span class="va">e</span><span class="op">$</span><span class="va">requested</span>, available <span class="op">=</span> <span class="va">e</span><span class="op">$</span><span class="va">available</span>,</span>
+<span>  reason <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">e</span><span class="op">$</span><span class="va">reason</span><span class="op">)</span><span class="op">)</span> <span class="st">""</span> <span class="kw">else</span> <span class="va">e</span><span class="op">$</span><span class="va">reason</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;             requested available        reason</span></span>
+<span><span class="co">#&gt; report_card      TRUE      TRUE              </span></span>
+<span><span class="co">#&gt; fragility        TRUE      TRUE              </span></span>
+<span><span class="co">#&gt; crossfit        FALSE     FALSE not_requested</span></span>
+<span><span class="co">#&gt; diagnostics     FALSE     FALSE not_requested</span></span>
+<span><span class="va">a35</span><span class="op">$</span><span class="va">fragility</span><span class="op">$</span><span class="va">summary</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pairs"</span>, <span class="st">"traced"</span>, <span class="st">"fragile"</span>, <span class="st">"fragile_disclosed"</span>, <span class="st">"fragile_tied"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $pairs</span></span>
+<span><span class="co">#&gt; [1] 435</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $traced</span></span>
+<span><span class="co">#&gt; [1] 43</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $fragile</span></span>
+<span><span class="co">#&gt; [1] 20</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $fragile_disclosed</span></span>
+<span><span class="co">#&gt; [1] 14</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $fragile_tied</span></span>
+<span><span class="co">#&gt; [1] 6</span></span></code></pre></div>
+<p>A pair is flagged as fragile when the estimated weighted loss from
+disclosure in the better direction differs from <code>tau</code> by less
+than two Monte Carlo standard errors. Additional draws may change which
+of these two losses is estimated to be smaller. The flags are
+descriptive and pairwise, and a fragile pair need not change the jointly
+chosen grade.</p>
+<p>The generic call <code>format(a35, width = 72, tier = 2)</code>
+produces a character vector for console output, which can be written
+with <code>cat(..., sep = "\n")</code>. The named class-specific
+formatters remain supported throughout 0.9.x; structured accessors
+provide the interface for subsequent calculations.</p>
+<p>A standalone English HTML report combines the grades, decision
+summary, criterion profiles, declarations and provenance. Output is
+restricted to the specified file, and existing files cannot be
+overwritten.</p>
+<p>Matching diagnostics already stored in the analysis are included when
+available. The report leaves missing diagnostics unavailable; it does
+not calculate them, regenerate the report card or solve again. Typed
+coefficient diagnostics are also supported, with their conditional-risk
+scope and NA reasons preserved (see the input vignette).</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".html"</span><span class="op">)</span></span>
+<span><span class="va">rep</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_report.html">postrank_report</a></span><span class="op">(</span><span class="va">a35</span><span class="op">$</span><span class="va">fit</span>, analysis <span class="op">=</span> <span class="va">a35</span>, output_file <span class="op">=</span> <span class="va">path</span><span class="op">)</span></span>
+<span><span class="va">rep</span></span>
+<span><span class="co">#&gt; &lt;postrank_report&gt;  Report saved as file42fa2b610f45.html</span></span>
+<span><span class="co">#&gt;   11 sections; 2 available figures.</span></span>
+<span><span class="co">#&gt;   30 entities in 4 grades; disclosed 63.4% of pairs.</span></span>
+<span><span class="co">#&gt;   Optimal within solver tolerances.</span></span>
+<span><span class="co">#&gt;   i  Use output_file in postrank_report() to save the English HTML report.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="where-next">Related articles<a class="anchor" aria-label="anchor" href="#where-next"></a>
+</h2>
+<ul>
+<li>
+<code><a href="../articles/inputs-and-producers.html">vignette("inputs-and-producers", package = "postrank")</a></code>:
+strict inputs, declarations, Gaussian coefficients and external
+producers.</li>
+<li>
+<code><a href="../articles/baselines-and-the-cost-of-a-common-grade.html">vignette("baselines-and-the-cost-of-a-common-grade", package = "postrank")</a></code>:
+expected-rank and composite baselines and the criterion burden of one
+common grade.</li>
+</ul>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

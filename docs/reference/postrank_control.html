@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Choose Computation Limits and Solver Output — postrank_control • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Choose Computation Limits and Solver Output — postrank_control"><meta name="description" content="The computation controls specify the time budget, stopping gaps and search
+strategy for postrank_solve() and related optimization functions. The loss
+and admissible grade reports are specified separately by
+postrank_settings(). Solving functions also accept the control values as a
+named list."><meta property="og:description" content="The computation controls specify the time budget, stopping gaps and search
+strategy for postrank_solve() and related optimization functions. The loss
+and admissible grade reports are specified separately by
+postrank_settings(). Solving functions also accept the control values as a
+named list."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul></div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Choose Computation Limits and Solver Output</h1>
+
+      <div class="d-none name"><code>postrank_control.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p>The computation controls specify the time budget, stopping gaps and search
+strategy for <code><a href="postrank_solve.html">postrank_solve()</a></code> and related optimization functions. The loss
+and admissible grade reports are specified separately by
+<code><a href="postrank_settings.html">postrank_settings()</a></code>. Solving functions also accept the control values as a
+named list.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_control</span><span class="op">(</span></span>
+<span>  time_limit <span class="op">=</span> <span class="fl">60</span>,</span>
+<span>  threads <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1304L</span>,</span>
+<span>  absolute_risk_gap <span class="op">=</span> <span class="fl">1e-08</span>,</span>
+<span>  relative_gap <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"staged"</span>, <span class="st">"label_mip"</span><span class="op">)</span>,</span>
+<span>  engine <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  output <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  tolerances <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-time-limit">time_limit<a class="anchor" aria-label="anchor" href="#arg-time-limit"></a></dt>
+<dd><p>Positive time budget in seconds.</p></dd>
+
+
+<dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
+<dd><p>Positive integer number of solver threads.</p></dd>
+
+
+<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
+<dd><p>Nonnegative integer solver seed; <code>NULL</code> is not accepted.</p></dd>
+
+
+<dt id="arg-absolute-risk-gap">absolute_risk_gap<a class="anchor" aria-label="anchor" href="#arg-absolute-risk-gap"></a></dt>
+<dd><p>Nonnegative absolute stopping gap in normalized
+risk units, converted to the solver objective scale where needed.</p></dd>
+
+
+<dt id="arg-relative-gap">relative_gap<a class="anchor" aria-label="anchor" href="#arg-relative-gap"></a></dt>
+<dd><p>Nonnegative relative stopping gap for the solver
+objective. For weighted problems this centered objective differs from risk;
+inspect the returned absolute risk gap when comparing computations.</p></dd>
+
+
+<dt id="arg-strategy">strategy<a class="anchor" aria-label="anchor" href="#arg-strategy"></a></dt>
+<dd><p><code>"staged"</code> (default) or <code>"label_mip"</code>; see <code><a href="postrank_solve.html">postrank_solve()</a></code>.</p></dd>
+
+
+<dt id="arg-engine">engine<a class="anchor" aria-label="anchor" href="#arg-engine"></a></dt>
+<dd><p>Named list of staged-search options, such as <code>mip</code> and
+<code>mip_max_n</code>; see <code><a href="postrank_solve.html">postrank_solve()</a></code> for their meanings and defaults.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p><code>NULL</code> (default) reads <code>getOption("postrank.verbose", FALSE)</code>
+when solving, not when this control object is created. Explicit <code>TRUE</code> or
+<code>FALSE</code> overrides that option. Controls progress messages from
+<code><a href="postrank_solve.html">postrank_solve()</a></code> and the main solve in <code><a href="postrank.html">postrank()</a></code>; nested diagnostic
+and grid solves produce no progress messages. It does not change numerical results.</p></dd>
+
+
+<dt id="arg-output">output<a class="anchor" aria-label="anchor" href="#arg-output"></a></dt>
+<dd><p>Logical; request the backend's own solver log, separately
+from the package progress messages controlled by <code>verbose</code>.</p></dd>
+
+
+<dt id="arg-tolerances">tolerances<a class="anchor" aria-label="anchor" href="#arg-tolerances"></a></dt>
+<dd><p>Named list overriding the solution validator's
+<code>feasibility</code>, <code>integrality</code> and <code>objective</code> tolerances; see
+<code><a href="validate_postrank_solution.html">validate_postrank_solution()</a></code>.</p></dd>
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A <code>postrank_control</code> named list containing the requested controls,
+validated tolerance defaults, <code>schema_version</code>, <code>provenance</code> and <code>warnings</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Defaults are a 60-second budget, one thread, seed 1304, absolute risk gap
+<code>1e-8</code>, relative gap zero and staged search. Construction, validation and
+refinement can add overhead, so the budget is not a strict total wall-clock
+limit. A small solver gap concerns the supplied numerical problem, not
+posterior uncertainty or model calibration.</p>
+<p>These controls do not choose display detail or alter the decision
+weights. <code>engine</code> accepts <code>mip</code>, <code>mip_max_n</code>, <code>lp_time_share</code>,
+<code>local_search_passes</code>, <code>local_search_starts</code>, <code>max_cut_rounds</code> and
+<code>cuts_per_round</code>. Unknown control names are rejected.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="postrank_settings.html">postrank_settings()</a></code>, <code><a href="postrank_solve.html">postrank_solve()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ctrl</span> <span class="op">&lt;-</span> <span class="fu">postrank_control</span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span>, absolute_risk_gap <span class="op">=</span> <span class="fl">1e-6</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ctrl</span><span class="op">$</span><span class="va">time_limit</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
+<span class="r-in"><span><span class="va">ctrl</span><span class="op">$</span><span class="va">verbose</span>  <span class="co"># NULL inherits the option at solve time</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-in"><span><span class="va">quiet</span> <span class="op">&lt;-</span> <span class="fu">postrank_control</span><span class="op">(</span>verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">quiet</span><span class="op">$</span><span class="va">verbose</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer></div>
+
+
+
+
+
+  </body></html>
+

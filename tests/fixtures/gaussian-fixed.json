@@ -1,0 +1,376 @@
+{
+  "schema": "p1-fixed-gaussian-fixtures-v1",
+  "scope": "hand-declared deterministic mathematical fixtures, not research datasets or posterior draws",
+  "fixtures": [
+    {
+      "fixture_id": "unit-three",
+      "entity_ids": [
+        "i1",
+        "i2",
+        "i3"
+      ],
+      "criterion_ids": [
+        "k1",
+        "k2"
+      ],
+      "mu": [
+        0,
+        0
+      ],
+      "Sigma_rows": [
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "Y_rows": [
+        [
+          -2,
+          2
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          -1
+        ]
+      ],
+      "V_by_entity": [
+        [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ],
+      "expected_means_rows": [
+        [
+          -1.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.5
+        ],
+        [
+          1.0,
+          -0.5
+        ]
+      ],
+      "expected_C_by_entity": [
+        [
+          [
+            0.5,
+            0
+          ],
+          [
+            0,
+            0.5
+          ]
+        ],
+        [
+          [
+            0.5,
+            0
+          ],
+          [
+            0,
+            0.5
+          ]
+        ],
+        [
+          [
+            0.5,
+            0
+          ],
+          [
+            0,
+            0.5
+          ]
+        ]
+      ],
+      "expected_basis": "m=Y/2,C=I/2 by scalar Gaussian precision addition"
+    },
+    {
+      "fixture_id": "tail-three",
+      "entity_ids": [
+        "i1",
+        "i2",
+        "i3"
+      ],
+      "criterion_ids": [
+        "k1",
+        "k2"
+      ],
+      "mu": [
+        0,
+        0
+      ],
+      "Sigma_rows": [
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "Y_rows": [
+        [
+          -16,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          16,
+          0
+        ]
+      ],
+      "V_by_entity": [
+        [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ],
+      "expected_means_rows": [
+        [
+          -8.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          8.0,
+          0.0
+        ]
+      ],
+      "expected_C_by_entity": [
+        [
+          [
+            0.5,
+            0
+          ],
+          [
+            0,
+            0.5
+          ]
+        ],
+        [
+          [
+            0.5,
+            0
+          ],
+          [
+            0,
+            0.5
+          ]
+        ],
+        [
+          [
+            0.5,
+            0
+          ],
+          [
+            0,
+            0.5
+          ]
+        ]
+      ],
+      "expected_basis": "m=Y/2,C=I/2 by scalar Gaussian precision addition"
+    },
+    {
+      "fixture_id": "heterogeneous-three",
+      "entity_ids": [
+        "i1",
+        "i2",
+        "i3"
+      ],
+      "criterion_ids": [
+        "k1",
+        "k2"
+      ],
+      "mu": [
+        0.2,
+        -0.1
+      ],
+      "Sigma_rows": [
+        [
+          1,
+          0.7071067811865476
+        ],
+        [
+          0.7071067811865476,
+          1
+        ]
+      ],
+      "Y_rows": [
+        [
+          -1,
+          2
+        ],
+        [
+          0.5,
+          -0.5
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "V_by_entity": [
+        [
+          [
+            0.2,
+            0.3
+          ],
+          [
+            0.3,
+            1.8
+          ]
+        ],
+        [
+          [
+            1,
+            0.5
+          ],
+          [
+            0.5,
+            1
+          ]
+        ],
+        [
+          [
+            1.8,
+            0.3
+          ],
+          [
+            0.3,
+            0.2
+          ]
+        ]
+      ],
+      "expected_basis": "independent precision-form and dense-block oracle; no stored rounded production output"
+    }
+  ],
+  "mixture_fixture": {
+    "base_fixture_id": "heterogeneous-three",
+    "weights": [
+      0.25,
+      0.75
+    ],
+    "states": [
+      {
+        "mu": [
+          -2,
+          1
+        ],
+        "Sigma_rows": [
+          [
+            0.5,
+            0.1
+          ],
+          [
+            0.1,
+            1
+          ]
+        ],
+        "chain_id": 1,
+        "iteration": 1,
+        "state_id": "fixed-h1"
+      },
+      {
+        "mu": [
+          1,
+          -1
+        ],
+        "Sigma_rows": [
+          [
+            2,
+            -0.4
+          ],
+          [
+            -0.4,
+            0.7
+          ]
+        ],
+        "chain_id": 2,
+        "iteration": 1,
+        "state_id": "fixed-h2"
+      }
+    ]
+  },
+  "tail_reference": {
+    "standard_normal_z": 8,
+    "upper_tail": 6.220960574271784e-16,
+    "role": "floating-point reference only; verify independently by density integration"
+  },
+  "tolerances": {
+    "mean_covariance_abs": 1e-11,
+    "pair_probability_abs": 1e-12,
+    "tail_probability_abs": 1e-25,
+    "log_density_abs": 1e-10
+  },
+  "research_rng_used": false
+}

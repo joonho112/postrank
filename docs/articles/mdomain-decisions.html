@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>When domains can be graded separately • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="When domains can be graded separately">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-article">
+
+
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>When domains can be graded separately</h1>
+            
+      
+      <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/mdomain-decisions.Rmd" class="external-link"><code>vignettes/mdomain-decisions.Rmd</code></a></small>
+      <div class="d-none name"><code>mdomain-decisions.Rmd</code></div>
+    </div>
+
+    
+    
+<p>A multidomain report assigns each unit one grade in each domain.
+Smaller grade labels mean higher reported priority within that domain. A
+tie withholds a direction; it does not assert that the latent targets
+are equal. This article explains when separate domain choices solve the
+reporting problem, and when the dependence between domains changes the
+chosen profile. The executable examples use small, independently
+specified synthetic inputs, run offline, and need no optimization
+backend. The exact and MCMC examples run when the suggested package
+<code>gmp</code> is installed.</p>
+<div class="section level2">
+<h2 id="additive-loss-and-separate-choices">Additive loss and separate choices<a class="anchor" aria-label="anchor" href="#additive-loss-and-separate-choices"></a>
+</h2>
+<p>Let
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>G</mi><mi>d</mi></msub><annotation encoding="application/x-tex">G_d</annotation></semantics></math>
+be the grade column in domain
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>F</mi><mi>d</mi></msub><annotation encoding="application/x-tex">F_d</annotation></semantics></math>
+the number of false disclosed directions in a posterior state, and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>d</mi></msub><annotation encoding="application/x-tex">T_d</annotation></semantics></math>
+the number of withheld pairs. A strict direction at latent equality is
+false. With
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+original units,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><mi>n</mi><mn>2</mn></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">M = {n \choose 2}</annotation></semantics></math>
+remains the loss denominator, even when a card withholds some
+comparisons. The additive expected loss is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo stretchy="false" form="prefix">(</mo><mi>G</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><munder><mo>∑</mo><mi>d</mi></munder><msub><mi>w</mi><mi>d</mi></msub><mo stretchy="false" form="prefix">{</mo><mi>E</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>F</mi><mi>d</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>τ</mi><mi>d</mi></msub><msub><mi>T</mi><mi>d</mi></msub><mo stretchy="false" form="postfix">}</mo><mi>/</mi><mi>M</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">
+R(G) = \sum_d w_d\{E(F_d) + \tau_d T_d\}/M.
+</annotation></semantics></math></p>
+<p>Its domain terms depend only on the corresponding marginal law.
+Suppose the declared family is a Cartesian product of domain banks and
+every constraint is domain specific, such as structural equality, grade
+caps, or an expected-error guard. The feasible family is then also a
+Cartesian product. Minimizing each weighted domain term separately
+minimizes the sum; combining the complete sets of those minimizers gives
+every minimum in that product. For a zero-weight domain, every feasible
+column minimizes its weighted term. This conclusion does not require
+independent posterior domains. A common-grade requirement or another
+constraint linking columns would require a different argument.</p>
+<p>A joint protection requirement changes the feasible set. For example,
+write
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>N</mi><mi>d</mi></msub><annotation encoding="application/x-tex">N_d</annotation></semantics></math>
+for the number of disclosed pairs in the specified scope and require</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>J</mi><mo stretchy="false" form="prefix">(</mo><mi>G</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>P</mi><mo stretchy="false" form="prefix">{</mo><mrow><mtext mathvariant="normal">at least one </mtext><mspace width="0.333em"></mspace></mrow><mi>d</mi><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> has </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>F</mi><mi>d</mi></msub><mo>&gt;</mo><msub><mi>t</mi><mi>d</mi></msub><msub><mi>N</mi><mi>d</mi></msub><mo stretchy="false" form="postfix">}</mo><mo>≤</mo><mi>α</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">
+J(G) = P\{\text{at least one }d\text{ has }F_d &gt; t_d N_d\}
+\leq \alpha.
+</annotation></semantics></math></p>
+<p>This is a union within the <strong>same posterior state</strong>.
+Dependence can change its probability while leaving the marginal errors
+and additive loss unchanged. If
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>N</mi><mi>d</mi></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">N_d=0</annotation></semantics></math>,
+that domain’s exceedance event is structurally false; the corresponding
+error fraction is undefined rather than a measured zero.</p>
+</div>
+<div class="section level2">
+<h2 id="two-units-two-domains-unchanged-marginal-errors">Two units, two domains, unchanged marginal errors<a class="anchor" aria-label="anchor" href="#two-units-two-domains-unchanged-marginal-errors"></a>
+</h2>
+<p>Units A and B have binary priority values. In a normal state A is
+above B in both domains. A reversal exchanges their values. The two
+complete finite laws below differ only in how their reversals occur
+together:</p>
+<table class="table">
+<colgroup>
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Law</th>
+<th align="right">Normal in both</th>
+<th align="right">Reverse domain one only</th>
+<th align="right">Reverse domain two only</th>
+<th align="right">Reverse both</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Coincident</td>
+<td align="right">9/10</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1/10</td>
+</tr>
+<tr class="even">
+<td align="left">Disjoint</td>
+<td align="right">8/10</td>
+<td align="right">1/10</td>
+<td align="right">1/10</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p>In either domain of either law, reporting A above B has error
+probability 1/10. Set equal domain weights, tie loss
+<code>tau = "1/4"</code>, strict threshold <code>t = "0"</code>, and
+joint cap <code>alpha = "3/20"</code>. Character fractions preserve
+these exact policy values.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">units</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span></span>
+<span><span class="va">domains</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"one"</span>, <span class="st">"two"</span><span class="op">)</span></span>
+<span><span class="va">targets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">domains</span>, <span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  definition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Fictional priority in domain"</span>, <span class="va">d</span><span class="op">)</span>,</span>
+<span>  units <span class="op">=</span> <span class="st">"arbitrary priority units"</span>, orientation <span class="op">=</span> <span class="st">"larger_is_higher"</span>,</span>
+<span>  equality_classes <span class="op">=</span> <span class="va">units</span>,</span>
+<span>  equality_provenance <span class="op">=</span> <span class="st">"A and B are distinct modeled targets."</span><span class="op">)</span><span class="op">)</span>, <span class="va">domains</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Each row specifies the reversals in one complete joint state.</span></span>
+<span><span class="va">make_states</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">reverse</span>, <span class="va">ids</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">reverse</span><span class="op">)</span>, <span class="fl">2L</span>, <span class="fl">2L</span><span class="op">)</span>,</span>
+<span>    dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">ids</span>, <span class="va">units</span>, <span class="va">domains</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">d</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">domains</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">x</span><span class="op">[</span>, <span class="st">"A"</span>, <span class="va">d</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">reverse</span><span class="op">[</span>, <span class="va">d</span><span class="op">]</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span>    <span class="va">x</span><span class="op">[</span>, <span class="st">"B"</span>, <span class="va">d</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">reverse</span><span class="op">[</span>, <span class="va">d</span><span class="op">]</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">x</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">make_law</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">id</span>, <span class="va">reverse</span>, <span class="va">masses</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/postrank_mdomain_input.html">postrank_mdomain_input</a></span><span class="op">(</span></span>
+<span>    <span class="fu">make_states</span><span class="op">(</span><span class="va">reverse</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">id</span>, <span class="st">"-"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">reverse</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    targets <span class="op">=</span> <span class="va">targets</span>,</span>
+<span>    provenance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>input_id <span class="op">=</span> <span class="va">id</span>, law_id <span class="op">=</span> <span class="va">id</span>, proper_law <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>      joint_generation <span class="op">=</span> <span class="st">"Complete finite support authored in this article."</span>,</span>
+<span>      sampling_assumptions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>        finite_support_origin <span class="op">=</span> <span class="st">"All support states and exact masses listed here."</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    representation <span class="op">=</span> <span class="st">"exact_finite_law"</span>, masses <span class="op">=</span> <span class="va">masses</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">laws</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  coincident <span class="op">=</span> <span class="fu">make_law</span><span class="op">(</span><span class="st">"coincident"</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"9/10"</span>, <span class="st">"1/10"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  disjoint <span class="op">=</span> <span class="fu">make_law</span><span class="op">(</span><span class="st">"disjoint"</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"8/10"</span>, <span class="st">"1/10"</span>, <span class="st">"1/10"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">policy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_mdomain_decision.html">postrank_mdomain_decision</a></span><span class="op">(</span>tau <span class="op">=</span> <span class="st">"1/4"</span>, t <span class="op">=</span> <span class="st">"0"</span>, alpha <span class="op">=</span> <span class="st">"3/20"</span><span class="op">)</span></span></code></pre></div>
+<p>Declare three columns per domain: withhold, A above B, and B above A.
+Their full Cartesian product has nine candidates. No direction is
+omitted from this stated bank. The optimum claims below concern this
+bank.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">columns</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>withhold <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">1L</span>, B <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span>,</span>
+<span>  A_above_B <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">1L</span>, B <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span>, B_above_A <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">2L</span>, B <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">families</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">laws</span>, <span class="va">postrank_mdomain_family</span>,</span>
+<span>  columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>one <span class="op">=</span> <span class="va">columns</span>, two <span class="op">=</span> <span class="va">columns</span><span class="op">)</span>, max_actions <span class="op">=</span> <span class="fl">9L</span><span class="op">)</span></span>
+<span><span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">laws</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/postrank_mdomain_solve.html">postrank_mdomain_solve</a></span><span class="op">(</span><span class="va">laws</span><span class="op">[[</span><span class="va">id</span><span class="op">]</span><span class="op">]</span>, <span class="va">families</span><span class="op">[[</span><span class="va">id</span><span class="op">]</span><span class="op">]</span>, <span class="va">policy</span>, max_actions <span class="op">=</span> <span class="fl">9L</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">fits</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">laws</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">column_label</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">g</span><span class="op">[</span><span class="fl">1L</span><span class="op">]</span> <span class="op">==</span> <span class="va">g</span><span class="op">[</span><span class="fl">2L</span><span class="op">]</span><span class="op">)</span> <span class="st">"withhold"</span> <span class="kw">else</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">g</span><span class="op">[</span><span class="fl">1L</span><span class="op">]</span> <span class="op">&lt;</span> <span class="va">g</span><span class="op">[</span><span class="fl">2L</span><span class="op">]</span><span class="op">)</span> <span class="st">"A above B"</span> <span class="kw">else</span> <span class="st">"B above A"</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">candidate_display</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">tab</span> <span class="op">&lt;-</span> <span class="va">fit</span><span class="op">$</span><span class="va">candidate_table</span></span>
+<span>  <span class="va">actions</span> <span class="op">&lt;-</span> <span class="va">fit</span><span class="op">$</span><span class="va">solution</span><span class="op">$</span><span class="va">actions</span><span class="op">[</span><span class="va">tab</span><span class="op">$</span><span class="va">action_id</span><span class="op">]</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    one <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">actions</span>, <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span> <span class="fu">column_label</span><span class="op">(</span><span class="va">g</span><span class="op">[</span>, <span class="st">"one"</span><span class="op">]</span><span class="op">)</span>, <span class="st">""</span><span class="op">)</span>,</span>
+<span>    two <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">actions</span>, <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span> <span class="fu">column_label</span><span class="op">(</span><span class="va">g</span><span class="op">[</span>, <span class="st">"two"</span><span class="op">]</span><span class="op">)</span>, <span class="st">""</span><span class="op">)</span>,</span>
+<span>    risk <span class="op">=</span> <span class="va">tab</span><span class="op">$</span><span class="va">risk_exact</span>, joint_probability <span class="op">=</span> <span class="va">tab</span><span class="op">$</span><span class="va">J_exact</span>,</span>
+<span>    feasible <span class="op">=</span> <span class="va">tab</span><span class="op">$</span><span class="va">feasible_for_represented_measure</span>, optimal <span class="op">=</span> <span class="va">tab</span><span class="op">$</span><span class="va">optimal</span>,</span>
+<span>    row.names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu">candidate_display</span><span class="op">(</span><span class="va">fits</span><span class="op">$</span><span class="va">coincident</span><span class="op">)</span>,</span>
+<span>  caption <span class="op">=</span> <span class="st">"All nine candidates: coincident reversals"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>All nine candidates: coincident reversals</caption>
+<thead><tr class="header">
+<th align="left">one</th>
+<th align="left">two</th>
+<th align="left">risk</th>
+<th align="left">joint_probability</th>
+<th align="left">feasible</th>
+<th align="left">optimal</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">withhold</td>
+<td align="left">withhold</td>
+<td align="left">1/4</td>
+<td align="left">0</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">withhold</td>
+<td align="left">A above B</td>
+<td align="left">7/40</td>
+<td align="left">1/10</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">withhold</td>
+<td align="left">B above A</td>
+<td align="left">23/40</td>
+<td align="left">9/10</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">A above B</td>
+<td align="left">withhold</td>
+<td align="left">7/40</td>
+<td align="left">1/10</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">A above B</td>
+<td align="left">A above B</td>
+<td align="left">1/10</td>
+<td align="left">1/10</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">A above B</td>
+<td align="left">B above A</td>
+<td align="left">1/2</td>
+<td align="left">1</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">B above A</td>
+<td align="left">withhold</td>
+<td align="left">23/40</td>
+<td align="left">9/10</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">B above A</td>
+<td align="left">A above B</td>
+<td align="left">1/2</td>
+<td align="left">1</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">B above A</td>
+<td align="left">B above A</td>
+<td align="left">9/10</td>
+<td align="left">9/10</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu">candidate_display</span><span class="op">(</span><span class="va">fits</span><span class="op">$</span><span class="va">disjoint</span><span class="op">)</span>,</span>
+<span>  caption <span class="op">=</span> <span class="st">"All nine candidates: disjoint reversals"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>All nine candidates: disjoint reversals</caption>
+<thead><tr class="header">
+<th align="left">one</th>
+<th align="left">two</th>
+<th align="left">risk</th>
+<th align="left">joint_probability</th>
+<th align="left">feasible</th>
+<th align="left">optimal</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">withhold</td>
+<td align="left">withhold</td>
+<td align="left">1/4</td>
+<td align="left">0</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">withhold</td>
+<td align="left">A above B</td>
+<td align="left">7/40</td>
+<td align="left">1/10</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">withhold</td>
+<td align="left">B above A</td>
+<td align="left">23/40</td>
+<td align="left">9/10</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">A above B</td>
+<td align="left">withhold</td>
+<td align="left">7/40</td>
+<td align="left">1/10</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">A above B</td>
+<td align="left">A above B</td>
+<td align="left">1/10</td>
+<td align="left">1/5</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">A above B</td>
+<td align="left">B above A</td>
+<td align="left">1/2</td>
+<td align="left">9/10</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">B above A</td>
+<td align="left">withhold</td>
+<td align="left">23/40</td>
+<td align="left">9/10</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">B above A</td>
+<td align="left">A above B</td>
+<td align="left">1/2</td>
+<td align="left">9/10</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">B above A</td>
+<td align="left">B above A</td>
+<td align="left">9/10</td>
+<td align="left">1</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+</tr>
+</tbody>
+</table>
+<p>The dual report A above B has expected loss 1/10 under either law.
+Its joint error probability is 1/10 for coincident reversals and 1/5 for
+disjoint reversals. Thus it passes the 3/20 cap only under the
+coincident law. The disjoint law has two tied optima: report A above B
+in either one domain and withhold the other. Each has loss
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mi>/</mi><mn>2</mn><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mi>/</mi><mn>10</mn><mo>+</mo><mn>1</mn><mi>/</mi><mn>4</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>7</mn><mi>/</mi><mn>40</mn></mrow><annotation encoding="application/x-tex">(1/2)(1/10 + 1/4) = 7/40</annotation></semantics></math>
+and joint probability 1/10.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dual</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fl">2L</span>, <span class="fl">1L</span>, <span class="fl">2L</span><span class="op">)</span>, <span class="fl">2L</span>,</span>
+<span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">units</span>, <span class="va">domains</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">dual_evaluations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">laws</span>, <span class="va">postrank_mdomain_evaluate</span>,</span>
+<span>  grades <span class="op">=</span> <span class="va">dual</span>, decision <span class="op">=</span> <span class="va">policy</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">laws</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">id</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">e</span> <span class="op">&lt;-</span> <span class="va">dual_evaluations</span><span class="op">[[</span><span class="va">id</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>law <span class="op">=</span> <span class="va">id</span>, error_one <span class="op">=</span> <span class="va">e</span><span class="op">$</span><span class="va">domain_table</span><span class="op">$</span><span class="va">EF_exact</span><span class="op">[</span><span class="fl">1L</span><span class="op">]</span>,</span>
+<span>    error_two <span class="op">=</span> <span class="va">e</span><span class="op">$</span><span class="va">domain_table</span><span class="op">$</span><span class="va">EF_exact</span><span class="op">[</span><span class="fl">2L</span><span class="op">]</span>, risk <span class="op">=</span> <span class="va">e</span><span class="op">$</span><span class="va">risk_exact</span>,</span>
+<span>    joint_probability <span class="op">=</span> <span class="va">e</span><span class="op">$</span><span class="va">J_exact</span>,</span>
+<span>    feasible <span class="op">=</span> <span class="va">e</span><span class="op">$</span><span class="va">feasible_for_represented_measure</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span><span class="op">)</span>, caption <span class="op">=</span> <span class="st">"The same dual card under the two joint laws"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>The same dual card under the two joint laws</caption>
+<thead><tr class="header">
+<th align="left">law</th>
+<th align="left">error_one</th>
+<th align="left">error_two</th>
+<th align="left">risk</th>
+<th align="left">joint_probability</th>
+<th align="left">feasible</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">coincident</td>
+<td align="left">1/10</td>
+<td align="left">1/10</td>
+<td align="left">1/10</td>
+<td align="left">1/10</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">disjoint</td>
+<td align="left">1/10</td>
+<td align="left">1/10</td>
+<td align="left">1/10</td>
+<td align="left">1/5</td>
+<td align="left">FALSE</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">dual_evaluations</span>,</span>
+<span>  <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">e</span><span class="op">$</span><span class="va">domain_table</span><span class="op">$</span><span class="va">EF_exact</span> <span class="op">==</span> <span class="st">"1/10"</span><span class="op">)</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">optima</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">fits</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">id</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">fit</span> <span class="op">&lt;-</span> <span class="va">fits</span><span class="op">[[</span><span class="va">id</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="va">tab</span> <span class="op">&lt;-</span> <span class="fu">candidate_display</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>law <span class="op">=</span> <span class="va">id</span>, <span class="va">tab</span><span class="op">[</span><span class="va">tab</span><span class="op">$</span><span class="va">optimal</span>, <span class="op">]</span>, row.names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">optima</span>, caption <span class="op">=</span> <span class="st">"The complete optimizer sets in the declared banks"</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<caption>The complete optimizer sets in the declared banks</caption>
+<colgroup>
+<col width="15%">
+<col width="14%">
+<col width="14%">
+<col width="7%">
+<col width="25%">
+<col width="12%">
+<col width="11%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">law</th>
+<th align="left">one</th>
+<th align="left">two</th>
+<th align="left">risk</th>
+<th align="left">joint_probability</th>
+<th align="left">feasible</th>
+<th align="left">optimal</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">coincident</td>
+<td align="left">A above B</td>
+<td align="left">A above B</td>
+<td align="left">1/10</td>
+<td align="left">1/10</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">disjoint</td>
+<td align="left">withhold</td>
+<td align="left">A above B</td>
+<td align="left">7/40</td>
+<td align="left">1/10</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">disjoint</td>
+<td align="left">A above B</td>
+<td align="left">withhold</td>
+<td align="left">7/40</td>
+<td align="left">1/10</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="va">fits</span><span class="op">$</span><span class="va">coincident</span><span class="op">$</span><span class="va">optimizer_count</span> <span class="op">==</span> <span class="fl">1L</span>,</span>
+<span>  <span class="va">fits</span><span class="op">$</span><span class="va">disjoint</span><span class="op">$</span><span class="va">optimizer_count</span> <span class="op">==</span> <span class="fl">2L</span>,</span>
+<span>  <span class="va">fits</span><span class="op">$</span><span class="va">coincident</span><span class="op">$</span><span class="va">evaluation</span><span class="op">$</span><span class="va">risk_exact</span> <span class="op">==</span> <span class="st">"1/10"</span>,</span>
+<span>  <span class="va">fits</span><span class="op">$</span><span class="va">disjoint</span><span class="op">$</span><span class="va">evaluation</span><span class="op">$</span><span class="va">risk_exact</span> <span class="op">==</span> <span class="st">"7/40"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">fits</span>, <span class="kw">function</span><span class="op">(</span><span class="va">f</span><span class="op">)</span> <span class="va">f</span><span class="op">$</span><span class="va">search_scope</span><span class="op">$</span><span class="va">examined_actions</span> <span class="op">==</span> <span class="fl">9L</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Disabling joint protection recovers the separate-choice result: the
+dual report is optimal for both laws. Marginal expected errors and
+expected loss did not change; the union constraint is what coupled the
+feasible choices. An arbitrary pairing or permutation of separate
+marginal draws cannot establish which joint law applies.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">separable_policy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_mdomain_decision.html">postrank_mdomain_decision</a></span><span class="op">(</span>tau <span class="op">=</span> <span class="st">"1/4"</span>, t <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="va">separate_fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">laws</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/postrank_mdomain_solve.html">postrank_mdomain_solve</a></span><span class="op">(</span><span class="va">laws</span><span class="op">[[</span><span class="va">id</span><span class="op">]</span><span class="op">]</span>, <span class="va">families</span><span class="op">[[</span><span class="va">id</span><span class="op">]</span><span class="op">]</span>, <span class="va">separable_policy</span>,</span>
+<span>    max_actions <span class="op">=</span> <span class="fl">9L</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>law <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">laws</span><span class="op">)</span>,</span>
+<span>  optimum_risk <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">separate_fits</span>, <span class="kw">function</span><span class="op">(</span><span class="va">f</span><span class="op">)</span> <span class="va">f</span><span class="op">$</span><span class="va">evaluation</span><span class="op">$</span><span class="va">risk_exact</span>, <span class="st">""</span><span class="op">)</span>,</span>
+<span>  optimizer_count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">separate_fits</span>, <span class="va">`[[`</span>, <span class="fl">1L</span>, <span class="st">"optimizer_count"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">law</th>
+<th align="left">optimum_risk</th>
+<th align="right">optimizer_count</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">coincident</td>
+<td align="left">1/10</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">disjoint</td>
+<td align="left">1/10</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">separate_fits</span>,</span>
+<span>  <span class="kw">function</span><span class="op">(</span><span class="va">f</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">f</span><span class="op">$</span><span class="va">grades</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fl">2L</span>, <span class="fl">1L</span>, <span class="fl">2L</span><span class="op">)</span>, <span class="fl">2L</span><span class="op">)</span><span class="op">)</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="reading-a-frozen-40-site-illustration">Reading a frozen 40-site illustration<a class="anchor" aria-label="anchor" href="#reading-a-frozen-40-site-illustration"></a>
+</h2>
+<p>The installed JSON below is a small, frozen output illustration for
+40 fictional sites from JoonHo Lee’s <a href="https://github.com/joonho112/need-based-prek-funding-tutorial" class="external-link">Need-Based
+Prekindergarten Funding tutorial</a>. Domain S describes
+student-composition economic need and domain C describes
+catchment-community economic need; both use larger values for higher
+need. These are distinct target definitions, including conditional
+predictive S targets for new sites. Sharing a community target does not
+identify student targets: S05/S06 and S21/S22 are declared C identity
+pairs, while all 40 S targets are distinct. The original all-pair
+denominator is 780.</p>
+<p>The original calculation used 8,000 retained states from chains 1–2
+for selection, a declared seven-column bank per domain (49 candidate
+cards), and a fixed-card diagnostic replay on 8,000 states from chains
+3–4. Ordering the candidate columns used the selection states. The two
+cases share equal weights, <code>tau = "1/10"</code>,
+<code>q = "1/20"</code> and <code>alpha = "1/20"</code>; the wide case
+changes <code>t</code> from 5% to 10%. Their distinct case IDs preserve
+that difference.</p>
+<p><strong>This vignette reads the frozen grades and summary counts. It
+does not run the original 40-site analysis, load its posterior archive,
+select a new card, or perform a new validation.</strong> The public <a href="https://github.com/joonho112/need-based-prek-funding-tutorial/blob/ff223082b27c8af92f762c20f49092f06b19a913/appendices/D-reproducibility.qmd" class="external-link">reproducibility
+appendix</a> describes the external tutorial workflow. Source commit,
+relative input path, hash and changes are recorded in the JSON; none is
+an installation-time dependency. Reproducing the multidomain analysis
+separately requires the original identified joint states,
+target/equality map, chain allocation and the stated 7-by-7 candidate
+design, rather than these summaries alone.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">frozen</span> <span class="op">&lt;-</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/jsonlite/reference/read_json.html" class="external-link">read_json</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"mdomain"</span>,</span>
+<span>  <span class="st">"synthetic40-card.json"</span>, package <span class="op">=</span> <span class="st">"postrank"</span><span class="op">)</span>, simplifyVector <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">frozen</span><span class="op">$</span><span class="va">cases</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"case_id"</span>, <span class="st">"t"</span>, <span class="st">"N_S"</span>, <span class="st">"N_C"</span>, <span class="st">"risk_exact"</span>,</span>
+<span>  <span class="st">"selection_J_exact"</span>, <span class="st">"diagnostic_J_exact"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>  caption <span class="op">=</span> <span class="st">"Stored results; rational values refer to the supplied empirical measures"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Stored results; rational values refer to the supplied empirical
+measures</caption>
+<colgroup>
+<col width="22%">
+<col width="5%">
+<col width="4%">
+<col width="4%">
+<col width="18%">
+<col width="21%">
+<col width="22%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">case_id</th>
+<th align="left">t</th>
+<th align="right">N_S</th>
+<th align="right">N_C</th>
+<th align="left">risk_exact</th>
+<th align="left">selection_J_exact</th>
+<th align="left">diagnostic_J_exact</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">main-alpha-1_20</td>
+<td align="left">1/20</td>
+<td align="right">0</td>
+<td align="right">500</td>
+<td align="left">170039/2496000</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+<tr class="even">
+<td align="left">sensitivity-t-wide</td>
+<td align="left">1/10</td>
+<td align="right">300</td>
+<td align="right">500</td>
+<td align="left">716341/12480000</td>
+<td align="left">133/4000</td>
+<td align="left">229/8000</td>
+</tr>
+</tbody>
+</table>
+<p>The primary card withholds every S comparison and discloses 500 C
+comparisons in grades of size 10, 10 and 20. Its selection risk is
+170039/2496000. Strict 5% exceedance among 500 disclosed pairs requires
+at least 26 errors; exactly 25 does not exceed the threshold. No
+selection state exceeded the threshold, although 1,871 had at least one
+error. Hence <code>J = 0</code> describes zero observed exceedances at
+that threshold, and does not say that the card made no errors.</p>
+<p>The wide card discloses 300 S pairs and 500 C pairs. Its selection
+risk is 716341/12480000 and its selection exceedance rate is 266/8000 =
+133/4000. The same fixed card gives 229/8000 in the diagnostic chains.
+Exact fractions here mean exact arithmetic for the represented
+equal-weight empirical measure. Splitting chains and recording disjoint
+state IDs does not establish independence or an iid numerical
+certificate for the intended posterior.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">frozen</span><span class="op">$</span><span class="va">grades</span>,</span>
+<span>  caption <span class="op">=</span> <span class="st">"Frozen grades: smaller numbers indicate higher priority within each domain"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Frozen grades: smaller numbers indicate higher priority within
+each domain</caption>
+<thead><tr class="header">
+<th align="left">unit_id</th>
+<th align="right">primary_S</th>
+<th align="right">primary_C</th>
+<th align="right">wide_S</th>
+<th align="right">wide_C</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">S01</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">S02</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">S03</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">S04</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">S05</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">S06</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">S07</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">S08</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">S09</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">S10</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">S11</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">S12</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">S13</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">S14</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">S15</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">S16</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">S17</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">S18</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">S19</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">S20</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">S21</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">S22</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">S23</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">S24</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">S25</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">S26</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">S27</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">S28</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">S29</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">S30</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">S31</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">S32</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">S33</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">S34</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">S35</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">S36</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">S37</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">S38</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">S39</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">S40</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">wide_grades</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">frozen</span><span class="op">$</span><span class="va">grades</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"wide_S"</span>, <span class="st">"wide_C"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">wide_grades</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">frozen</span><span class="op">$</span><span class="va">grades</span><span class="op">$</span><span class="va">unit_id</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">wide_grades</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">"C"</span><span class="op">)</span></span>
+<span><span class="va">occupancy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span>C <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">wide_grades</span><span class="op">[</span>, <span class="st">"C"</span><span class="op">]</span>, levels <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>,</span>
+<span>                   S <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">wide_grades</span><span class="op">[</span>, <span class="st">"S"</span><span class="op">]</span>, levels <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">occupancy</span>, caption <span class="op">=</span> <span class="st">"Wide card: rows are C grades, columns are S grades"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Wide card: rows are C grades, columns are S grades</caption>
+<thead><tr class="header">
+<th align="right">1</th>
+<th align="right">2</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">6</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="right">6</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">20</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">wide_grades</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S11"</span>, <span class="st">"S18"</span><span class="op">)</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,</span>
+<span>  caption <span class="op">=</span> <span class="st">"A crossed pair: S11 has higher S priority; S18 has higher C priority"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>A crossed pair: S11 has higher S priority; S18 has higher C
+priority</caption>
+<thead><tr class="header">
+<th align="left"></th>
+<th align="right">S</th>
+<th align="right">C</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">S11</td>
+<td align="right">1</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">S18</td>
+<td align="right">2</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>The occupancy rows are (6, 4), (4, 6), and (0, 20): five of six
+profile cells are occupied. Of 548 unique pairs disclosed in at least
+one domain, 16 have opposite directions across domains. S11=(1,2) and
+S18=(2,1) are one such pair. There is no single best ordering of these
+two sites implied by this profile; an application would need an
+additional decision rule to collapse the two domain priorities.</p>
+<p>The derived JSON credits JoonHo Lee and preserves the original
+artificial values’ <a href="https://creativecommons.org/licenses/by/4.0/" class="external-link">CC BY 4.0 terms</a>.
+It retains only fictional IDs, selected grade columns, aggregate counts
+and source identity. No raw posterior states, geographic layers, school
+records or catchment database are bundled. Original tutorial code is
+separately MIT licensed; the source-specific exclusions remain in its <a href="https://github.com/joonho112/need-based-prek-funding-tutorial/blob/ff223082b27c8af92f762c20f49092f06b19a913/RIGHTS.md" class="external-link">rights
+notice</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="inspecting-mcmc-history-for-a-fixed-report">Inspecting MCMC history for a fixed report<a class="anchor" aria-label="anchor" href="#inspecting-mcmc-history-for-a-fixed-report"></a>
+</h2>
+<p>The following independent, tiny synthetic example demonstrates the
+MCMC assessment API. It generates two short Markov histories of unequal
+lengths. The two-state transition probabilities are 1/10 from normal to
+reversed and 2/5 in reverse; the stationary reversal probability is 1/5.
+A whole state reverses both domains together. Original chain order and
+iteration numbers are retained. These short histories illustrate
+diagnostic fields, not a recommended simulation length or evidence about
+the 40-site source.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">simulate_chain</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span>
+<span>  <span class="va">z</span><span class="op">[</span><span class="fl">1L</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">1</span><span class="op">/</span><span class="fl">5</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="va">n</span><span class="op">)</span></span>
+<span>    <span class="va">z</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="va">z</span><span class="op">[</span><span class="va">i</span> <span class="op">-</span> <span class="fl">1L</span><span class="op">]</span><span class="op">)</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">2</span><span class="op">/</span><span class="fl">5</span> <span class="kw">else</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">1</span><span class="op">/</span><span class="fl">10</span></span>
+<span>  <span class="va">z</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1202</span><span class="op">)</span></span>
+<span><span class="va">chains</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>chain_A <span class="op">=</span> <span class="fu">simulate_chain</span><span class="op">(</span><span class="fl">24L</span><span class="op">)</span>, chain_B <span class="op">=</span> <span class="fu">simulate_chain</span><span class="op">(</span><span class="fl">31L</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">chains</span>, use.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">history</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>source_index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span>,</span>
+<span>  chain_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">chains</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/lengths.html" class="external-link">lengths</a></span><span class="op">(</span><span class="va">chains</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  iteration_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">chains</span>, <span class="va">seq_along</span><span class="op">)</span>, use.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">history_input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_mdomain_input.html">postrank_mdomain_input</a></span><span class="op">(</span></span>
+<span>  <span class="fu">make_states</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">z</span>, <span class="va">z</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"markov-"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, targets <span class="op">=</span> <span class="va">targets</span>,</span>
+<span>  provenance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>input_id <span class="op">=</span> <span class="st">"tiny-markov-history"</span>, law_id <span class="op">=</span> <span class="st">"tiny-markov-law"</span>,</span>
+<span>    proper_law <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    joint_generation <span class="op">=</span> <span class="st">"Both domains use the same synthetic binary chain state."</span>,</span>
+<span>    retention <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>warmup_removed <span class="op">=</span> <span class="fl">0L</span>, thinning <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span>,</span>
+<span>    sampling_assumptions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sampler <span class="op">=</span> <span class="st">"Two-state Markov transition simulator."</span>,</span>
+<span>      chain_details <span class="op">=</span> <span class="st">"Lengths 24 and 31; stationary initial draws; seed 1202."</span>,</span>
+<span>      target_assertion <span class="op">=</span> <span class="st">"Stationary reversal probability 1/5 by the specified transitions."</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  representation <span class="op">=</span> <span class="st">"mcmc_equal_weight_draws"</span>, state_origin <span class="op">=</span> <span class="va">history</span><span class="op">)</span></span>
+<span><span class="va">fixed_grades</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fl">2L</span>, <span class="fl">1L</span>, <span class="fl">2L</span><span class="op">)</span>, <span class="fl">2L</span>,</span>
+<span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">units</span>, <span class="va">domains</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">assessment</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_mdomain_assess.html">postrank_mdomain_assess</a></span><span class="op">(</span><span class="va">history_input</span>, <span class="va">fixed_grades</span>, <span class="va">policy</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"mcmc"</span>, batch_size <span class="op">=</span> <span class="fl">10L</span>,</span>
+<span>  design <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>role <span class="op">=</span> <span class="st">"synthetic_method_demonstration"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">chain_table</span> <span class="op">&lt;-</span> <span class="va">assessment</span><span class="op">$</span><span class="va">native</span><span class="op">$</span><span class="va">chain_table</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">chain_table</span><span class="op">[</span><span class="va">chain_table</span><span class="op">$</span><span class="va">event_id</span> <span class="op">==</span> <span class="st">"joint-union"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"chain_id"</span>, <span class="st">"n_retained"</span>, <span class="st">"hit_count"</span>, <span class="st">"rate"</span>, <span class="st">"max_zero_run"</span>,</span>
+<span>    <span class="st">"partial_batch_count"</span><span class="op">)</span><span class="op">]</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="13%">
+<col width="11%">
+<col width="13%">
+<col width="12%">
+<col width="7%">
+<col width="16%">
+<col width="25%">
+</colgroup>
+<thead><tr class="header">
+<th align="left"></th>
+<th align="left">chain_id</th>
+<th align="right">n_retained</th>
+<th align="right">hit_count</th>
+<th align="right">rate</th>
+<th align="right">max_zero_run</th>
+<th align="right">partial_batch_count</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">markov-72</td>
+<td align="left">chain_A</td>
+<td align="right">24</td>
+<td align="right">9</td>
+<td align="right">0.375</td>
+<td align="right">9</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">markov-332</td>
+<td align="left">chain_B</td>
+<td align="right">31</td>
+<td align="right">4</td>
+<td align="right">0.129</td>
+<td align="right">19</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">batch_table</span> <span class="op">&lt;-</span> <span class="va">assessment</span><span class="op">$</span><span class="va">native</span><span class="op">$</span><span class="va">batch_table</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">batch_table</span><span class="op">[</span><span class="va">batch_table</span><span class="op">$</span><span class="va">event_id</span> <span class="op">==</span> <span class="st">"joint-union"</span> <span class="op">&amp;</span> <span class="va">batch_table</span><span class="op">$</span><span class="va">partial</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"chain_id"</span>, <span class="st">"batch_id"</span>, <span class="st">"n_retained"</span>, <span class="st">"hit_count"</span>, <span class="st">"rate"</span>, <span class="st">"partial"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>  caption <span class="op">=</span> <span class="st">"Final partial batches remain in the diagnostic record"</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Final partial batches remain in the diagnostic record</caption>
+<thead><tr class="header">
+<th align="left"></th>
+<th align="left">chain_id</th>
+<th align="right">batch_id</th>
+<th align="right">n_retained</th>
+<th align="right">hit_count</th>
+<th align="right">rate</th>
+<th align="left">partial</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">17</td>
+<td align="left">chain_A</td>
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">21</td>
+<td align="left">chain_B</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">assessment</span><span class="op">$</span><span class="va">assurance</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"certificate_basis"</span>, <span class="st">"numerical_guarantee"</span>,</span>
+<span>  <span class="st">"convergence_established"</span>, <span class="st">"independence_established"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $certificate_basis</span></span>
+<span><span class="co">#&gt; [1] "empirical_diagnostic"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $numerical_guarantee</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $convergence_established</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $independence_established</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="op">!</span><span class="va">assessment</span><span class="op">$</span><span class="va">joint_certificate</span>,</span>
+<span>  <span class="op">!</span><span class="va">assessment</span><span class="op">$</span><span class="va">assurance</span><span class="op">$</span><span class="va">numerical_guarantee</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">assessment</span><span class="op">$</span><span class="va">native</span><span class="op">$</span><span class="va">histories</span><span class="op">$</span><span class="va">chain_id</span>, <span class="va">history</span><span class="op">$</span><span class="va">chain_id</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Use hit counts, long zero runs and batch-to-batch variation to
+inspect how well a run has explored the event relevant to the fixed
+report. A zero-hit history is different from a structurally impossible
+event. Unequal chain rates must be combined using their retained state
+counts; a simple average of their rates changes the empirical measure.
+Batch rates are descriptive and are not independent replicates. This
+route does not supply an iid binomial certificate, a convergence proof,
+or a held-out interpretation. See <code><a href="../reference/postrank_mdomain_assess.html">?postrank_mdomain_assess</a></code>
+for the separate fixed-sample iid route and its required design record,
+and <code><a href="../articles/mdomain-quickstart.html">vignette("mdomain-quickstart")</a></code> for the input-to-report
+workflow.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

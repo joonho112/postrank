@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Analysis of supplied posterior results • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Analysis of supplied posterior results">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-article">
+
+
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Analysis of supplied posterior results</h1>
+            
+      
+      <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/a5-your-posterior-results.Rmd" class="external-link"><code>vignettes/a5-your-posterior-results.Rmd</code></a></small>
+      <div class="d-none name"><code>a5-your-posterior-results.Rmd</code></div>
+    </div>
+
+    
+    
+<p>The posterior representation determines the uncertainty retained by
+an analysis and the calculations available from it. postrank accepts
+joint draws, criterion-specific draws, supported conditional
+distributions and previously calculated comparison probabilities. Model
+fitting precedes this input stage, and dependence omitted from an export
+cannot be recovered by the package.</p>
+<p>We construct a one-criterion input, extend the same example to two
+criteria and obtain an alternative input from analytic probabilities.
+The examples use a specified synthetic law with explicit source
+assumptions. Rendering performs small draw-generation and aggregation
+calculations without an optimizer. In an observed-data application, the
+synthetic generator is replaced by output from the fitted model, with
+declarations describing that model and its sampling history.</p>
+<div class="section level2">
+<h2 id="decide-what-one-row-of-your-export-means">Targets and posterior states<a class="anchor" aria-label="anchor" href="#decide-what-one-row-of-your-export-means"></a>
+</h2>
+<p>Entity IDs identify the same sites, schools, firms or other units
+throughout an analysis. Character labels preserve identifiers with
+leading zeros. Criterion IDs identify the targets, including their
+units, time reference and direction. On the oriented scale, larger
+values receive higher reporting priority, with grade 1 denoting the
+highest-priority group.</p>
+<p>Joint draws have array dimensions draw × entity × criterion. Each
+draw is a joint state of all entities and criteria; its index cannot be
+interpreted as an entity, parameter or arbitrary row from another fit.
+For a single criterion, the final singleton dimension must be retained:
+the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>×</mo><mi>n</mi><mo>×</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">S\times n\times1</annotation></semantics></math>
+array records a criterion axis that R would otherwise drop.</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">What the producer supplies</th>
+<th align="left">Public entry point</th>
+<th align="left">Information to preserve</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Joint target draws</td>
+<td align="left"><code><a href="../reference/postrank_draws.html">postrank_draws()</a></code></td>
+<td align="left">Entity/criterion axes, within-state pairing, sampling
+regime</td>
+</tr>
+<tr class="even">
+<td align="left">Separate criterion matrices</td>
+<td align="left"><code>postrank_draws(..., metadata=)</code></td>
+<td align="left">Joint entity vectors within each criterion and each
+block’s own history</td>
+</tr>
+<tr class="odd">
+<td align="left">A conditional Gaussian law</td>
+<td align="left"><code><a href="../reference/postrank_gaussian_coefficients.html">postrank_gaussian_coefficients()</a></code></td>
+<td align="left">Means, covariance axes, conditional independence and
+source records</td>
+</tr>
+<tr class="even">
+<td align="left">Shared-state Gaussian mixture</td>
+<td align="left"><code><a href="../reference/postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code></td>
+<td align="left">Common hyperstates, weights and conditional
+moments</td>
+</tr>
+<tr class="odd">
+<td align="left">An explicitly specified finite law</td>
+<td align="left"><code><a href="../reference/as_postrank_draws.html">as_postrank_draws()</a></code></td>
+<td align="left">Complete states and exact declared masses</td>
+</tr>
+<tr class="even">
+<td align="left">Comparison probabilities</td>
+<td align="left"><code><a href="../reference/postrank_probabilities.html">postrank_probabilities()</a></code></td>
+<td align="left">Event direction, source assumptions, equality policy
+and numerical corrections</td>
+</tr>
+</tbody>
+</table>
+<p>The last four representations require the specified probability law
+or comparison probabilities to be part of the intended analysis. A few
+retained summaries alone do not identify the corresponding distribution
+of draws.</p>
+</div>
+<div class="section level2">
+<h2 id="a-complete-one-criterion-draw-example">A complete one-criterion draw example<a class="anchor" aria-label="anchor" href="#a-complete-one-criterion-draw-example"></a>
+</h2>
+<p><code>pr_tutorial$law</code> specifies normal distributions for
+fictional sites A through F, with fixed means and variances. Sites are
+independent, and the scores have illustrative standardized units without
+empirical calibration. The resulting small array is generated from this
+specified law, without observations or estimated hyperparameters.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joonho112/postrank" class="external-link">postrank</a></span><span class="op">)</span></span>
+<span><span class="va">law</span> <span class="op">&lt;-</span> <span class="va">pr_tutorial</span><span class="op">$</span><span class="va">law</span></span>
+<span><span class="va">ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">law</span><span class="op">$</span><span class="va">means</span><span class="op">)</span></span>
+<span><span class="va">S</span> <span class="op">&lt;-</span> <span class="fl">512L</span></span>
+<span><span class="va">sd_A</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">law</span><span class="op">$</span><span class="va">covariance</span><span class="op">[</span><span class="st">"score_A"</span>, <span class="st">"score_A"</span>, <span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">725</span><span class="op">)</span></span>
+<span><span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="cn">NA_real_</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">S</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ids</span><span class="op">)</span>, <span class="fl">1L</span><span class="op">)</span>,</span>
+<span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>draw <span class="op">=</span> <span class="cn">NULL</span>, entity <span class="op">=</span> <span class="va">ids</span>, criterion <span class="op">=</span> <span class="st">"score_A"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">ids</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">values</span><span class="op">[</span>, <span class="va">i</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">S</span>, <span class="va">law</span><span class="op">$</span><span class="va">means</span><span class="op">[</span><span class="va">i</span>, <span class="st">"score_A"</span><span class="op">]</span>, <span class="va">sd_A</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">values</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 512   6   1</span></span></code></pre></div>
+<p>The generator produces 512 independent states of 6 sites. For fitted
+posterior output, target draws should be exported at their retained
+precision. Independent simulation from marginal means and standard
+deviations is justified only when independence and normality are
+assumptions of the intended model.</p>
+<p>The array constructor requires eight scientific declarations. The
+following metadata describe this generator; an empirical analysis
+requires declarations appropriate to its model and output.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">declarations</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_declarations.html">postrank_declarations</a></span><span class="op">(</span></span>
+<span>  targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    criterion_id <span class="op">=</span> <span class="st">"score_A"</span>,</span>
+<span>    estimand <span class="op">=</span> <span class="st">"Site-level latent score A in the specified Gaussian law"</span>,</span>
+<span>    entity_population <span class="op">=</span> <span class="st">"Six fictional sites A through F"</span>,</span>
+<span>    time_reference <span class="op">=</span> <span class="st">"Static tutorial scenario; no observed time period"</span>,</span>
+<span>    units <span class="op">=</span> <span class="va">law</span><span class="op">$</span><span class="va">units</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  context <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    cohort_id <span class="op">=</span> <span class="st">"pr-tutorial-six-sites"</span>, data_version <span class="op">=</span> <span class="st">"1"</span>,</span>
+<span>    data_conditioning <span class="op">=</span> <span class="st">"No observations; all means and variances fixed by pr_tutorial$law"</span>,</span>
+<span>    model_summary <span class="op">=</span> <span class="st">"Independent site Gaussian scores with the supplied means and variances"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  provenance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    producer <span class="op">=</span> <span class="st">"A5 tutorial R generator"</span>, artifact_id <span class="op">=</span> <span class="st">"a5-iid-score-A"</span>,</span>
+<span>    construction_note <span class="op">=</span> <span class="st">"512 independent states sampled with rnorm after set.seed(725)"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  origin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    source_id <span class="op">=</span> <span class="st">"pr-tutorial-fixed-law"</span>, fit_id <span class="op">=</span> <span class="st">"hand-specified-law-no-fit"</span>,</span>
+<span>    model_id <span class="op">=</span> <span class="st">"independent-site-Gaussian"</span>, source_format <span class="op">=</span> <span class="st">"R numeric array"</span>,</span>
+<span>    source_artifact <span class="op">=</span> <span class="st">"a5-your-posterior-results.Rmd using pr_tutorial$law"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  identification_note <span class="op">=</span> <span class="st">"Each target is a directly specified coordinate of the fixed law; no latent-label ambiguity remains."</span>,</span>
+<span>  tie_justification <span class="op">=</span> <span class="st">"Independent continuous normal site scores have positive variances, so distinct-site equality has probability zero."</span>,</span>
+<span>  joint_generation <span class="op">=</span> <span class="st">"Each draw contains all six sites from one independent state of the specified score-A law."</span>,</span>
+<span>  sampling_provenance <span class="op">=</span> <span class="st">"Base R rnorm generated IID states with seed 725; no warmup, discarding or thinning was performed."</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_draws.html">postrank_draws</a></span><span class="op">(</span><span class="va">values</span>, regime <span class="op">=</span> <span class="st">"iid"</span>, declarations <span class="op">=</span> <span class="va">declarations</span><span class="op">)</span></span>
+<span><span class="va">draws</span><span class="op">$</span><span class="va">entity_ids</span></span>
+<span><span class="co">#&gt; [1] "A" "B" "C" "D" "E" "F"</span></span>
+<span><span class="va">draws</span><span class="op">$</span><span class="va">criterion_ids</span></span>
+<span><span class="co">#&gt; [1] "score_A"</span></span></code></pre></div>
+<p><code>targets</code> specifies the quantities compared, and
+<code>context</code> the information on which the posterior conditions.
+<code>provenance</code> identifies the exported result, whereas
+<code>origin</code> identifies its producing source and model. The
+remaining declarations describe identification, zero equality
+probability, joint-state construction and sampling. In particular,
+shared effects in a hierarchical model must remain shared within draws.
+Independently shuffling entity draws would change the comparison
+distribution while preserving marginal histograms.</p>
+<p>For a raw criterion on which smaller values receive higher priority,
+<code>orientation = c(rate = "lower")</code> in the high-level array
+constructor negates the criterion and records the transformation. The
+supplied values should therefore remain on the raw rate scale to avoid
+applying the sign change twice. The <a href="a2-cde-accountability.html">school accountability example</a>
+describes the resulting negative-rate target.</p>
+<div class="section level3">
+<h3 id="inspect-the-comparisons-before-choosing-grades">Pairwise comparison probabilities<a class="anchor" aria-label="anchor" href="#inspect-the-comparisons-before-choosing-grades"></a>
+</h3>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pairwise</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_pairwise.html">postrank_pairwise</a></span><span class="op">(</span><span class="va">draws</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">pairwise</span><span class="op">$</span><span class="va">e</span><span class="op">[</span>, , <span class="st">"score_A"</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt;         entity_j</span></span>
+<span><span class="co">#&gt; entity_i     A     B     C     D     E     F</span></span>
+<span><span class="co">#&gt;        A    NA 0.184 0.000 0.000 0.000 0.000</span></span>
+<span><span class="co">#&gt;        B 0.816    NA 0.000 0.000 0.000 0.000</span></span>
+<span><span class="co">#&gt;        C 1.000 1.000    NA 0.395 0.004 0.000</span></span>
+<span><span class="co">#&gt;        D 1.000 1.000 0.605    NA 0.016 0.002</span></span>
+<span><span class="co">#&gt;        E 1.000 1.000 0.996 0.984    NA 0.152</span></span>
+<span><span class="co">#&gt;        F 1.000 1.000 1.000 0.998 0.848    NA</span></span></code></pre></div>
+<p>Entry
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">e_{ij}</annotation></semantics></math>
+estimates
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mi>i</mi></msub><mo>≤</mo><msub><mi>θ</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Pr(\theta_i\leq\theta_j)</annotation></semantics></math>:
+the expected error if entity <code>i</code> is placed above entity
+<code>j</code>. The diagonal is <code>NA</code> because an entity is not
+compared with itself. A finite off-diagonal zero means that the event
+did not occur in these retained draws; it does not prove a zero
+probability in the underlying continuous law.</p>
+<p>The stored array retains the singleton criterion axis. Subsetting by
+<code>larger_array[, , "score_A", drop = FALSE]</code> preserves it.
+Continuous draws should retain their numerical precision: rounding can
+introduce observed ties, which this tie-free route rejects, while jitter
+changes the declared posterior. Models with genuine equality mass use
+the separate input domain specified in
+<code><a href="../reference/as_postrank_tie_draws.html">?as_postrank_tie_draws</a></code>.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="joint-criteria-and-separate-criterion-fits">Joint criteria and separate criterion fits<a class="anchor" aria-label="anchor" href="#joint-criteria-and-separate-criterion-fits"></a>
+</h2>
+<p>We extend the simulation to score B while retaining every score-A
+draw. The tutorial law specifies independence of the scores within
+sites; this assumption is particular to the example.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">two_values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="cn">NA_real_</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">S</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ids</span><span class="op">)</span>, <span class="fl">2L</span><span class="op">)</span>,</span>
+<span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>draw <span class="op">=</span> <span class="cn">NULL</span>, entity <span class="op">=</span> <span class="va">ids</span>, criterion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">law</span><span class="op">$</span><span class="va">means</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">two_values</span><span class="op">[</span>, , <span class="st">"score_A"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">values</span><span class="op">[</span>, , <span class="st">"score_A"</span><span class="op">]</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">ids</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">two_values</span><span class="op">[</span>, <span class="va">i</span>, <span class="st">"score_B"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">S</span>, <span class="va">law</span><span class="op">$</span><span class="va">means</span><span class="op">[</span><span class="va">i</span>, <span class="st">"score_B"</span><span class="op">]</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">law</span><span class="op">$</span><span class="va">covariance</span><span class="op">[</span><span class="st">"score_B"</span>, <span class="st">"score_B"</span>, <span class="va">i</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">two_declarations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">unclass</a></span><span class="op">(</span><span class="va">declarations</span><span class="op">)</span></span>
+<span><span class="va">two_declarations</span><span class="op">$</span><span class="va">targets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  criterion_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">law</span><span class="op">$</span><span class="va">means</span><span class="op">)</span>,</span>
+<span>  estimand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Site-level latent score A"</span>, <span class="st">"Site-level latent score B"</span><span class="op">)</span>,</span>
+<span>  entity_population <span class="op">=</span> <span class="st">"Six fictional sites A through F"</span>,</span>
+<span>  time_reference <span class="op">=</span> <span class="st">"Static tutorial scenario; no observed time period"</span>,</span>
+<span>  units <span class="op">=</span> <span class="va">law</span><span class="op">$</span><span class="va">units</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">two_declarations</span><span class="op">$</span><span class="va">provenance</span><span class="op">$</span><span class="va">artifact_id</span> <span class="op">&lt;-</span> <span class="st">"a5-iid-score-A-and-B"</span></span>
+<span><span class="va">two_declarations</span><span class="op">$</span><span class="va">joint_generation</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Each draw contains all sites and both criteria from one state;"</span>,</span>
+<span>  <span class="st">"sites and criteria are mutually independent under the specified tutorial law."</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">two_draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_draws.html">postrank_draws</a></span><span class="op">(</span><span class="va">two_values</span>, regime <span class="op">=</span> <span class="st">"iid"</span>,</span>
+<span>  declarations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">postrank_declarations</span>, <span class="va">two_declarations</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">two_pairwise</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_pairwise.html">postrank_pairwise</a></span><span class="op">(</span><span class="va">two_draws</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">pairwise</span><span class="op">$</span><span class="va">e</span><span class="op">[</span>, , <span class="st">"score_A"</span><span class="op">]</span>, <span class="va">two_pairwise</span><span class="op">$</span><span class="va">e</span><span class="op">[</span>, , <span class="st">"score_A"</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<p>Row indices from separate criterion fits generally do not identify
+common posterior states. Such output is represented by a named list of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mi>k</mi></msub><mo>×</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">S_k\times n</annotation></semantics></math>
+matrices, each row containing a complete entity vector.
+<code>postrank_draws(matrices, metadata = criterion_metadata)</code>
+accepts these matrices with canonical criterion-wise metadata. Each
+block records its origin, sampling history, original draw coordinates
+and variable map, while the matrix supplies the values. Retained draw
+counts may differ between criteria. The required structure is documented
+in <code><a href="../reference/postrank_draws.html">?postrank_draws</a></code>.</p>
+<p>This representation supports additive criterion-wise expected loss
+without a cross-criterion joint state. Composite ordering probabilities
+and simultaneous correctness probabilities remain unidentified.
+Dependence between entities within each criterion must still be
+retained: aligning unrelated marginal samples is justified only when the
+producing model supports that construction.</p>
+<p>MCMC output requires its sampling history. A regular array layout
+specifies <code>regime = "mcmc"</code>, the number of
+<code>chains</code>, removed <code>warmup_per_chain</code> and
+retained-iteration spacing <code>thin</code>, with
+<code>thin = 1L</code> denoting no thinning. Rows are stored chain by
+chain. A large draw count does not justify reclassifying MCMC output as
+IID. For <code>posterior</code> draws objects or irregular layouts,
+<code><a href="../reference/as_postrank_posterior.html">?as_postrank_posterior</a></code> describes explicit variable mappings
+and source coordinates. The adapter verifies mappings and declared
+history; convergence requires separate assessment.</p>
+</div>
+<div class="section level2">
+<h2 id="a-gaussian-law-can-supply-probabilities-directly">Analytic probabilities under a Gaussian law<a class="anchor" aria-label="anchor" href="#a-gaussian-law-can-supply-probabilities-directly"></a>
+</h2>
+<p>When the intended conditional law is Gaussian, directional
+probabilities can be calculated without simulation. Here the analytic
+calculation uses the same tutorial parameters and their recorded source
+information.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">analytic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_gaussian_coefficients.html">postrank_gaussian_coefficients</a></span><span class="op">(</span></span>
+<span>  means <span class="op">=</span> <span class="va">law</span><span class="op">$</span><span class="va">means</span><span class="op">[</span>, <span class="st">"score_A"</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,</span>
+<span>  covariance <span class="op">=</span> <span class="va">law</span><span class="op">$</span><span class="va">covariance</span><span class="op">[</span><span class="st">"score_A"</span>, <span class="st">"score_A"</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,</span>
+<span>  conditional_independence <span class="op">=</span> <span class="st">"entities_given_shared_h"</span>,</span>
+<span>  provenance <span class="op">=</span> <span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span><span class="op">$</span><span class="va">provenance</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">selected_pairs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fl">2L</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3L</span>, <span class="fl">4L</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5L</span>, <span class="fl">6L</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  row <span class="op">=</span> <span class="va">ids</span><span class="op">[</span><span class="va">selected_pairs</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">]</span>, column <span class="op">=</span> <span class="va">ids</span><span class="op">[</span><span class="va">selected_pairs</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>  draw_estimate <span class="op">=</span> <span class="va">pairwise</span><span class="op">$</span><span class="va">e</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span><span class="op">[</span><span class="va">selected_pairs</span><span class="op">]</span>,</span>
+<span>  analytic <span class="op">=</span> <span class="va">analytic</span><span class="op">$</span><span class="va">e</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span><span class="op">[</span><span class="va">selected_pairs</span><span class="op">]</span></span>
+<span><span class="op">)</span>, digits <span class="op">=</span> <span class="fl">4</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">row</th>
+<th align="left">column</th>
+<th align="right">draw_estimate</th>
+<th align="right">analytic</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">A</td>
+<td align="left">B</td>
+<td align="right">0.1836</td>
+<td align="right">0.1884</td>
+</tr>
+<tr class="even">
+<td align="left">C</td>
+<td align="left">D</td>
+<td align="right">0.3945</td>
+<td align="right">0.3618</td>
+</tr>
+<tr class="odd">
+<td align="left">E</td>
+<td align="left">F</td>
+<td align="right">0.1523</td>
+<td align="right">0.1444</td>
+</tr>
+</tbody>
+</table>
+<p>The two columns concern the same target law but use different
+numerical calculations. The draw estimate varies with the retained
+simulation, whereas the analytic value follows from the normal
+distribution of the difference between conditionally independent site
+scores. Neither calculation refits the model. The Gaussian constructor
+requires named entity and criterion axes, positive-definite covariance
+matrices, an explicit conditional-independence declaration, and source
+records tied to the producer inputs. A different producer requires its
+own records and hashes.</p>
+<p>In a hierarchical model, averaging conditional probabilities over
+common hyperstates can preserve dependence induced by shared
+hyperparameters. <code><a href="../reference/postrank_mixture_coefficients.html">?postrank_mixture_coefficients</a></code> describes
+the constructor, including fixed mixture weights and hyperparameter-MCMC
+coordinates. A single Gaussian with matched moments generally defines a
+different law.</p>
+<p>An exact finite posterior specifies complete states, integer mass
+numerators and a common denominator. It enters through
+<code><a href="../reference/as_postrank_draws.html">as_postrank_draws()</a></code> and can retain rational comparison
+coefficients with the optional <code>gmp</code> package. These masses
+define the probability law; a finite Monte Carlo sample remains an
+approximation even though its storage is finite. The finite-state and
+criterion-block layouts are supplied in
+<code>system.file("schema", "draws-schema.json", package = "postrank")</code>;
+<code><a href="../reference/as_postrank_draws.html">?as_postrank_draws</a></code> and <code><a href="../reference/postrank_pairwise.html">?postrank_pairwise</a></code>
+document construction and aggregation.</p>
+</div>
+<div class="section level2">
+<h2 id="import-probabilities-without-inventing-a-posterior-sample">Externally calculated comparison probabilities<a class="anchor" aria-label="anchor" href="#import-probabilities-without-inventing-a-posterior-sample"></a>
+</h2>
+<p>An external integration routine may provide directional probabilities
+directly. <code><a href="../reference/postrank_probabilities.html">postrank_probabilities()</a></code> accepts a named square
+matrix for one criterion or an entity-by-entity-by-criterion array,
+together with an explicit event definition. The following input uses the
+analytic probabilities above and means and intervals from the same
+normal law.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">means</span> <span class="op">&lt;-</span> <span class="va">law</span><span class="op">$</span><span class="va">means</span><span class="op">[</span>, <span class="st">"score_A"</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
+<span><span class="va">level</span> <span class="op">&lt;-</span> <span class="fl">.9</span></span>
+<span><span class="va">half_width</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">level</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span> <span class="op">*</span> <span class="va">sd_A</span></span>
+<span><span class="va">probability_input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_probabilities.html">postrank_probabilities</a></span><span class="op">(</span></span>
+<span>  <span class="va">analytic</span><span class="op">$</span><span class="va">e</span><span class="op">[</span>, , <span class="st">"score_A"</span><span class="op">]</span>, criterion <span class="op">=</span> <span class="st">"score_A"</span>,</span>
+<span>  event <span class="op">=</span> <span class="st">"directional_error"</span>, zero_ties <span class="op">=</span> <span class="cn">TRUE</span>, margin <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    kind <span class="op">=</span> <span class="st">"analytic_reference"</span>,</span>
+<span>    description <span class="op">=</span> <span class="st">"Normal-CDF comparisons for independent site scores in pr_tutorial$law"</span>,</span>
+<span>    conditioning <span class="op">=</span> <span class="va">law</span><span class="op">$</span><span class="va">conditioning</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="st">"Illustrative standardized site score A; larger is higher priority"</span><span class="op">)</span>,</span>
+<span>  summaries <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    means <span class="op">=</span> <span class="va">means</span>, same_targets <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    description <span class="op">=</span> <span class="st">"Means and central equal-tail intervals from the same fixed normal site laws"</span>,</span>
+<span>    lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sweep.html" class="external-link">sweep</a></span><span class="op">(</span><span class="va">means</span>, <span class="fl">1</span>, <span class="va">half_width</span>, <span class="st">"-"</span><span class="op">)</span>,</span>
+<span>    upper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sweep.html" class="external-link">sweep</a></span><span class="op">(</span><span class="va">means</span>, <span class="fl">1</span>, <span class="va">half_width</span>, <span class="st">"+"</span><span class="op">)</span>, level <span class="op">=</span> <span class="va">level</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">probability_input</span><span class="op">$</span><span class="va">correction</span><span class="op">$</span><span class="va">method</span></span>
+<span><span class="co">#&gt; [1] "none"</span></span></code></pre></div>
+<p>Both entity axes must have the same IDs in the same order. Diagonals
+are <code>NA</code>, off-diagonals lie between zero and one, and reverse
+directions sum to one within the validation tolerance. This route
+requires declared zero equality probability and zero comparison margin.
+Range and complement checks do not prove that an arbitrary collection of
+probabilities comes from a coherent joint posterior or a suitable
+model.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_pairwise.html">postrank_plot_pairwise</a></span><span class="op">(</span><span class="va">probability_input</span>, max_entities <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<a href="a5-your-posterior-results_files/figure-html/a5-probability-map-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Directional-error probabilities from the specified one-criterion normal law. Grey diagonal cells are not comparisons; they are not zero-probability observations." target="_blank" rel="noopener"><img src="a5-your-posterior-results_files/figure-html/a5-probability-map-1.png" class="r-plt" alt="Directional-error probabilities from the specified one-criterion normal law. Grey diagonal cells are not comparisons; they are not zero-probability observations." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a5-your-posterior-results_files/figure-html/a5-probability-map-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Directional-error probabilities from the specified one-criterion normal law. Grey diagonal cells are not comparisons; they are not zero-probability observations.">Open full-size figure</a></span><p class="caption">
+Directional-error probabilities from the specified one-criterion normal
+law. Grey diagonal cells are not comparisons; they are not
+zero-probability observations.
+</p>
+</div>
+<p>Small reverse-complement discrepancies can be corrected by explicitly
+requesting <code>correction = "symmetric"</code> and declaring a
+<code>tolerance</code>. The object retains the raw probabilities and
+maximum adjustment. This adjustment measures the change to the supplied
+values, without bounding quadrature error, Monte Carlo error or model
+uncertainty.</p>
+<p>Supplied summaries must concern the same oriented targets and units
+as the probabilities. The intervals here have level 90%; other levels
+are not identified by their endpoints. The probability input has no
+implied draw count or Monte Carlo standard error, and structural
+validation does not provide a numerical certificate. The <a href="a3-krw-race-gender.html">employer case</a> uses this
+representation with integrated continuous-cell probabilities in place of
+a normal approximation.</p>
+</div>
+<div class="section level2">
+<h2 id="keep-validation-and-model-checking-separate">Structural validation and model assessment<a class="anchor" aria-label="anchor" href="#keep-validation-and-model-checking-separate"></a>
+</h2>
+<p>The high-level array constructor groups the declarations and checks
+their text for generic placeholders. The strict
+<code><a href="../reference/postrank_draws_from_array.html">postrank_draws_from_array()</a></code> constructor accepts the same
+eight declarations separately. Canonical JSON, criterion-wise metadata
+and the <code>posterior</code> bridge apply their respective structural
+and declaration-presence checks; the high-level constructor’s text check
+is not implied by acceptance through these routes. Identification,
+independence and convergence remain scientific assumptions or properties
+requiring assessment beyond constructor validation.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">strict_draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">postrank_draws_from_array</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">values</span>, regime <span class="op">=</span> <span class="st">"iid"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">unclass</a></span><span class="op">(</span><span class="va">declarations</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">draws</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">tensor</span><span class="op">$</span><span class="va">values</span>,</span>
+<span>  <span class="va">strict_draws</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">tensor</span><span class="op">$</span><span class="va">values</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">validation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/validate_postrank_draws.html">validate_postrank_draws</a></span><span class="op">(</span><span class="va">draws</span><span class="op">)</span></span>
+<span><span class="va">validation</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"valid"</span>, <span class="st">"source_values_checked"</span>, <span class="st">"jointness_verified"</span>,</span>
+<span>             <span class="st">"convergence_verified"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $valid</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $source_values_checked</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $jointness_verified</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $convergence_verified</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span></code></pre></div>
+<p>Structural validity complements the producer’s model checks. An
+empirical analysis also requires an identified target, correct sampling
+history, explicit posterior conditioning and an export preserving the
+intended joint states. For empirical-Bayes inputs, estimated prior
+quantities treated as fixed must be specified: the resulting conditional
+uncertainty excludes uncertainty in those estimates unless it has been
+propagated separately.</p>
+<p>The following call specifies the reporting loss and constraints once
+the input is constructed. It is displayed without executing a solver.
+For this weighted at-most-G example, <code>analytic</code> or
+<code>probability_input</code> may replace <code>draws</code>, subject
+to the distinct numerical and diagnostic capabilities of each
+representation.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank.html">postrank</a></span><span class="op">(</span><span class="va">draws</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.25</span>,</span>
+<span>  G_max <span class="op">=</span> <span class="fl">3L</span>, backend <span class="op">=</span> <span class="st">"highs"</span>, level <span class="op">=</span> <span class="fl">.9</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="../reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">30</span><span class="op">)</span>, fragility <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p><a href="a1-getting-started.html">Analysis with one or several
+criteria</a> follows a prepared input through its grades and withheld
+comparisons. <a href="a6-reading-exporting-results.html">Reading and
+exporting results</a> shows how to retain the resulting tables and their
+numerical status.</p>
+<p>The mathematical information requirements are developed in <a href="m3-posterior-inputs.html">Posterior inputs and pairwise
+probabilities</a>. <a href="m4-ties-and-withholding.html">True ties and
+withheld comparisons</a> considers models with genuine equality
+mass.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>

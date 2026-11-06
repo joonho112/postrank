@@ -1,0 +1,338 @@
+---
+title: "Figures and sensitivity analysis"
+output:
+  rmarkdown::html_vignette:
+    math_method: mathml
+vignette: >
+  %\VignetteIndexEntry{Figures and sensitivity analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7,
+  fig.height = 4.8, dpi = 144, out.width = "100%")
+library(postrank)
+source(system.file("scripts", "_vignette-setup.R", package = "postrank",
+  mustWork = TRUE), local = TRUE)
+one <- load_or_compute("tutorial_one")
+two <- load_or_compute("tutorial_two")
+frontier <- load_or_compute("tutorial_frontier")
+sensitivity <- load_or_compute("tutorial_sensitivity")
+commonality <- load_or_compute("tutorial_commonality")
+fmt <- function(x, digits = 4L) formatC(x, format = "f", digits = digits)
+pct <- function(x, digits = 1L) paste0(fmt(100 * x, digits), "%")
+sci <- function(x) formatC(x, format = "e", digits = 2L)
+ev <- two$evaluation
+reference_tau <- two$settings$tau
+reference_cap <- two$settings$G_max
+st <- sensitivity$table
+sg <- sensitivity$grid
+ch <- sensitivity$changes
+ref_row <- match(sensitivity$reference_id, sg$setting_id)
+hi_row <- which(sg$tau > reference_tau)
+cap4_row <- which(sg$G_max > reference_cap)
+heavy_row <- which(sg$w_score_A > two$settings$weights[["score_A"]])
+ct <- commonality$table
+stopifnot(length(hi_row) == 1L, length(cap4_row) == 1L,
+  length(heavy_row) == 1L, identical(st$setting_id, sg$setting_id),
+  identical(ch$setting_id, sg$setting_id), ev$N == st$N[ref_row])
+```
+
+Graphical summaries distinguish uncertainty in entity scores from the
+comparisons disclosed by a grading. Sensitivity analyses additionally
+examine how that grading changes with the withholding cost, criterion
+weights or grade cap.
+
+We use the six fictional sites in
+[Analysis with one or several criteria](a1-getting-started.html). Their scores have specified
+normal laws in illustrative standardized units, with standard deviation
+`r fmt(sqrt(pr_tutorial$law$covariance[1L, 1L, 1L]), 1L)`.
+Sites are independent, as are the scores within each site. These laws are
+not fitted to observations. Larger values receive higher priority on both
+criteria, and grade 1 has highest priority.
+
+The reference analysis assigns equal criterion weights, permits at most
+`r reference_cap` grades and sets the withholding cost `tau` to
+`r fmt(reference_tau, 1L)`. It groups A through D together, followed by E
+and then F. The analyses and settings sweeps were prepared using HiGHS.
+Rendering reads those results, evaluates fixed alternatives and produces
+figures without an optimizer. Optional recomputation calls are displayed
+without execution.
+
+## Graphical representations {#choose-a-figure-by-the-question}
+
+The seven plotting functions return `ggplot` objects based on prepared
+results. A change in graphical representation therefore leaves the selected
+grading unchanged.
+
+| Quantity or comparison | Function and what it shows |
+|:--|:--|
+| Target estimates and uncertainty | `postrank_plot_report_card()`: target means, marginal intervals and grade membership. |
+| Disclosed and withheld pair relations | `postrank_plot_relations()`: selected relations, or changes between two reports. |
+| Error probability for a potential direction | `postrank_plot_pairwise()`: criterion-specific probabilities of an error if the row is placed above the column. |
+| Criterion-specific expected errors | `postrank_plot_profile()`: expected error rates or risk for the selected grades. |
+| Variation with the withholding cost | `postrank_plot_frontier()`: disclosure, error and risk along a prepared cost grid. |
+| Evaluation of alternative grade vectors | `postrank_plot_compare()`: reports evaluated under a common loss, or their relation changes. |
+| Criterion-specific cost of common grades | `postrank_plot_commonality()`: extra criterion risk relative to its own optimized report. |
+
+Report cards and pairwise probabilities summarize the posterior, whereas
+relation maps represent selected reporting actions. A pale pairwise cell
+may support a direction whose comparison is withheld by the grading, and
+shared grades do not assert score equality. This distinction is illustrated
+in the [chronic-absence example](a2-cde-accountability.html).
+
+For large analyses, the displayed subset and its selection rule should be
+specified. Report cards use `entities` and `max_rows`, whereas pairwise
+plots use `entities` and `max_entities`. Named `entity_labels` and
+`criterion_labels` change display labels while retaining identifiers and
+values. Setting `ncol = 1` arranges criterion panels vertically for narrow
+formats. Subset figures still refer to the original report; they do not
+refit or optimize the subset.
+
+## Error rates and denominators {#read-the-error-denominator-first}
+
+```{r labels}
+library(postrank)
+sites <- pr_tutorial
+entity_labels <- setNames(sites$units$label, sites$units$entity_id)
+criterion_labels <- c(score_A = "Score A", score_B = "Score B")
+```
+
+The common grading discloses `r ev$N` of `r ev$M` unordered pairs. Each
+criterion's expected error count is divided by this same number of
+disclosed pairs in the default profile. The resulting rates can differ
+even under equal criterion weights.
+
+```{r profile, fig.height=3.5, fig.cap="Expected wrong-direction errors per disclosed pair for the prepared common grading. Both criteria use the same disclosed comparisons; point size represents criterion weight."}
+profile_plot <- postrank_plot_profile(two, show = "E_over_N",
+  criterion_labels = criterion_labels)
+profile_plot
+```
+
+```{r profile-data}
+profile_data <- postrank_plot_data(two, "profile")
+profile_data[, c("criterion", "weight", "E", "E_over_N", "E_over_M")]
+```
+
+Expected errors per disclosed pair are
+`r pct(profile_data$E_over_N[1L], 2L)` for score A and
+`r pct(profile_data$E_over_N[2L], 2L)` for score B. `E_over_M` instead uses
+all `r ev$M` pairs as its denominator. Both quantities are posterior
+expectations rather than observed error counts. Criterion risk additionally
+includes the cost of the `r ev$M - ev$N` withheld pairs and is displayed by
+`show = "risk"`.
+
+When every comparison is withheld, `E/N` is undefined and the profile
+omits the point with an explanation. The absence of a valid grading is
+likewise represented by its status. Unavailable frontier results interrupt
+lines. Empty panels must therefore be interpreted from these recorded
+states rather than as evidence of agreement or precision.
+
+## Changes to reporting settings {#vary-one-reporting-choice-at-a-time}
+
+The settings grid distinguishes three changes to the decision problem.
+Changing `tau` alters the cost of withholding; changing criterion weights
+alters the relative contribution of errors; changing only the grade cap
+changes the admissible reports under a fixed loss. The posterior score
+distributions remain fixed throughout. Weights combine criterion-specific
+losses rather than defining a composite score to be ranked.
+
+```{r settings-grid}
+grid <- postrank_settings_grid(two$settings,
+  tau = c(.1, .3), G_max = c(2L, 4L),
+  weights = list(
+    A_heavy = c(score_A = .8, score_B = .2),
+    B_heavy = c(score_A = .2, score_B = .8)
+  ))
+```
+
+The default grid varies one supplied axis at a time around the reference,
+giving `r nrow(sg)` settings here rather than their full cross-product.
+The optional call below recomputes these reports from the same posterior
+input. Displayed results use the stored sweep's grid and are matched by
+setting ID.
+
+```{r optional-sensitivity, eval=FALSE}
+sensitivity <- postrank_sensitivity(two, grid, backend = "highs",
+  control = postrank_control(time_limit = 60, threads = 1, seed = 1304))
+```
+
+```{r settings-table, echo=FALSE}
+settings_table <- data.frame(
+  Setting = sg$label, tau = sg$tau, Cap = sg$G_max,
+  `Weights A/B` = paste(fmt(sg$w_score_A, 1L), fmt(sg$w_score_B, 1L), sep = "/"),
+  Grades = st$G, Disclosed = st$N,
+  `A errors/N` = pct(st$E_over_N_score_A, 2L),
+  `B errors/N` = pct(st$E_over_N_score_B, 2L), check.names = FALSE)
+knitr::kable(settings_table, row.names = FALSE,
+  caption = "One choice varies at a time. Errors/N is the posterior expected error proportion among the comparisons disclosed by that row's report.")
+```
+
+Assigning weight `r fmt(sg$w_score_A[heavy_row], 1L)` to score A reduces its
+expected error proportion among disclosed pairs to
+`r pct(st$E_over_N_score_A[heavy_row], 2L)`, while that for score B increases
+to `r pct(st$E_over_N_score_B[heavy_row], 2L)`. This change follows from the
+specified relative importance of errors, with the precision of the score-A
+posterior held fixed. A weight also differs from a constraint limiting an
+error proportion.
+
+Increasing the cap to `r sg$G_max[cap4_row]` gives a report with
+`r st$G[cap4_row]` grades and changes
+`r ev$M - ch$n_same[cap4_row]` pair relations. An additional permitted grade
+need not be occupied. The effect depends on the posterior and loss rather
+than implying a fixed increase in the number of comparisons.
+
+All these stored rows have numerical status `optimal`, with maximum recorded
+risk gap `r sci(max(st$risk_absolute_gap))`.
+`r sum(grepl("clamped", st$bound_source))` rows record a small correction
+where a solver lower bound exceeded the evaluated action loss within the
+objective tolerance. The bound source and warnings remain in the result.
+These are optimization statements about the supplied probabilities, not
+posterior intervals or guarantees about the score model.
+
+## Withholding-cost path {#follow-the-withholding-cost-path}
+
+The withholding-cost path holds criterion weights and the grade cap fixed
+while varying `tau`. The optional call specifies the prepared grid shown
+below.
+
+```{r optional-frontier, eval=FALSE}
+frontier <- postrank_frontier(two, tau = c(.05, .1, .2, .3, .4),
+  backend = "highs",
+  control = postrank_control(time_limit = 60, threads = 1, seed = 1304))
+```
+
+```{r frontier, fig.height=7, fig.cap="Prepared withholding-cost path with fixed equal weights and a fixed grade cap. The dashed line marks the reference cost. Each risk panel value uses its own tau; the lines connect computed settings and are not interpolated grade reports."}
+frontier_plot <- postrank_plot_frontier(frontier, highlight = reference_tau)
+frontier_plot
+```
+
+The disclosure counts along the grid are
+`r paste(frontier$table$N, collapse = ", ")`. A greater withholding cost
+favors additional disclosure. For exact optima under the same posterior,
+weights and admissible reports, the disclosure count is nondecreasing in
+`tau`. The finite grid may omit change points, and numerical solver statuses
+alone do not establish the exact property.
+
+For score B, the error proportion increases from the reference to the next
+withholding cost, then decreases at the final cost as the groups change.
+Neither criterion-specific error proportion is required to be monotone.
+The risk panel evaluates a different loss at each cost; its increase cannot
+be interpreted as deterioration on a common accuracy scale. Lines connect
+evaluated settings for display and do not define fractional grades between
+them.
+
+Nondecreasing disclosure counts do not require nested sets of comparisons.
+At `tau =` `r fmt(sg$tau[hi_row], 1L)`, the report newly discloses
+`r ch$n_new_disclosed[hi_row]` pairs and newly withholds
+`r ch$n_new_withheld[hi_row]` relative to the reference. The net increase is
+`r st$N[hi_row] - ev$N`, although one previously disclosed direction is
+removed.
+
+```{r changes, fig.height=5.2, fig.cap="Relation changes from the reference to the next larger withholding cost. Light gray means unchanged, including pairs withheld by both reports; medium gray marks a newly withheld pair."}
+higher_cost_fit <- sensitivity$fits[[hi_row]]
+changes_plot <- postrank_plot_relations(two, higher_cost_fit,
+  entity_labels = entity_labels)
+changes_plot
+```
+
+## Comparison under a common loss {#compare-alternatives-on-the-same-loss}
+
+Comparison of candidate reports requires evaluation under common posterior
+inputs, weights and withholding cost. The score-A-only grading provides an
+alternative action, but its original single-criterion risk is not directly
+comparable with the common report's two-criterion risk.
+
+```{r compare}
+comparison <- postrank_compare(two,
+  `Score A grades` = get_grades(one),
+  `Withhold all` = setNames(rep(1L, nrow(sites$units)), sites$units$entity_id),
+  baselines = character())
+```
+
+```{r comparison-table, echo=FALSE}
+comparison_table <- data.frame(
+  Report = c("Common grades", "Score A grades", "Withhold all"),
+  Disclosed = comparison$table$N,
+  `Risk at reference settings` = fmt(comparison$table$risk),
+  `Within grade cap` = comparison$table$family_feasible,
+  check.names = FALSE)
+knitr::kable(comparison_table, row.names = FALSE,
+  caption = "Each supplied action is evaluated under the same two-criterion reference loss. Evaluating an action does not optimize it.")
+```
+
+Score A's grades disclose `r comparison$table$N[2L]` pairs and have common-loss
+risk `r fmt(comparison$table$risk[2L])`, compared with
+`r fmt(comparison$table$risk[1L])` for the common grading.
+Both respect the same cap. This comparison concerns these fixed reports and
+the stated loss; it does not establish that one score or weighting policy
+is scientifically preferable. `postrank_plot_compare(comparison)` presents
+these results graphically, retaining each action's computation status and
+scope. The relation view displays changes in pairwise decisions; it does
+not compare the reports' risks.
+
+## Criterion-specific cost of a common grading {#quantify-the-cost-of-sharing-grades}
+
+`postrank_commonality_cost()` measures the additional criterion-specific
+loss associated with a fixed common grading. Each criterion is optimized
+separately at the same withholding cost and grade cap, and its loss is
+compared with its loss under the common action. No additional error-budget
+constraints are imposed here.
+
+```{r optional-commonality, eval=FALSE}
+commonality <- postrank_commonality_cost(two, backend = "highs",
+  control = postrank_control(time_limit = 60, threads = 1, seed = 1304))
+```
+
+```{r commonality, fig.height=3.6, fig.cap="Extra criterion risk from using the common grading. The plotted endpoints are derived from each own-criterion solve's incumbent and lower bound; they are not posterior uncertainty intervals."}
+commonality_plot <- postrank_plot_commonality(commonality)
+commonality_plot
+```
+
+For score A, criterion risk under the common report is
+`r fmt(ct$common_grade_risk[1L])`, compared with
+`r fmt(ct$own_best_risk[1L])` under its best found report, a difference of
+`r fmt(ct$cost_lower[1L])`. The corresponding additional risk for score B is
+`r fmt(ct$cost_lower[2L])`. These differences are in expected-loss units,
+including withholding costs, and do not measure changes in individual
+sites' score uncertainty.
+
+The figure retains uncertainty about numerical optimization separately.
+The common-action risk minus the own incumbent risk gives the lower endpoint
+(truncated at zero); subtracting the own solver lower bound gives the upper
+endpoint when available. A large gap in the criterion-specific optimization
+can therefore leave the additional loss imprecisely determined. Here the
+endpoints nearly coincide. Their width does not
+measure posterior variation, sampling uncertainty or model misspecification,
+and their interpretation inherits the solver bounds' numerical limitations.
+
+## Figure data and export {#save-the-view-together-with-its-meaning}
+
+`postrank_plot_data()` returns the stored values underlying a figure.
+Standard `ggplot2` layers can modify presentation, with label and theme
+changes leaving those values unchanged. The following code writes a PNG
+profile to a temporary directory and, when the optional `svglite` package is
+installed, an SVG version:
+
+```{r save-figures}
+figure_dir <- tempfile("postrank-figures-")
+dir.create(figure_dir)
+ggplot2::ggsave(file.path(figure_dir, "criterion-profile.png"),
+  profile_plot, width = 7, height = 3.5, units = "in", dpi = 300)
+if (requireNamespace("svglite", quietly = TRUE)) {
+  ggplot2::ggsave(file.path(figure_dir, "criterion-profile.svg"),
+    profile_plot, device = svglite::svglite,
+    width = 7, height = 3.5, units = "in")
+}
+```
+
+Figures intended for a report require a permanent output directory and
+inspection at the intended print size. Labels, denominators, selected
+entities and legends should remain legible, with captions identifying the
+target direction and distinguishing posterior intervals, solver bounds and
+withheld comparisons. Retaining the analysis object alongside the figure
+preserves its settings and computation status, as described in
+[Reading and exporting results](a6-reading-exporting-results.html).
+
+[Computing grades and choosing settings](m5-computing-grades.html) describes how these settings alter the action families and objectives. [Several criteria and competing goals](m2-several-criteria.html) gives the mathematical interpretation of the common-grade cost.

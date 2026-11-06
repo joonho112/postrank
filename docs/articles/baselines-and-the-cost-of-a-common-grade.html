@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Baselines and criterion burden • postrank</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Baselines and criterion burden">
+</head>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul>
+</div>
+
+
+  </div>
+</nav><div class="container template-article">
+
+
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Baselines and criterion burden</h1>
+            
+      
+      <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/baselines-and-the-cost-of-a-common-grade.Rmd" class="external-link"><code>vignettes/baselines-and-the-cost-of-a-common-grade.Rmd</code></a></small>
+      <div class="d-none name"><code>baselines-and-the-cost-of-a-common-grade.Rmd</code></div>
+    </div>
+
+    
+    
+<p>This retained 30-site example preserves the original article URL. Two
+bounded fixed-order dynamic programs are evaluated, and native solver
+results are read from prepared assets. <a href="a7-figures-sensitivity.html">Figures and sensitivity analysis</a>
+provides a six-site introduction; <a href="m2-several-criteria.html">Several criteria</a> distinguishes
+criterion-weighted loss from loss for a composite target.</p>
+<p>We compare a common grading with simpler rules and examine the
+additional risk imposed on each criterion by the common decision. All
+rules are evaluated using the same posterior and declared loss. Native
+solver results are read from source-bound caches, while the
+score-and-cut baselines are computed directly by dynamic
+programming.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joonho112/postrank" class="external-link">postrank</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"scripts"</span>, <span class="st">"_vignette-setup.R"</span>, package <span class="op">=</span> <span class="st">"postrank"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">a35</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"analysis_30x3_tau35"</span><span class="op">)</span></span></code></pre></div>
+<p>Cached asset <code>analysis_30x3_tau35</code>: built by the
+maintainer with postrank 1.1.0 and the explicitly selected highs backend
+(version 1.12.0.3) at 2026-10-30T14:15:54Z; 1 solve, recorded status
+optimal. Reading it here solves nothing.</p>
+<div class="section level2">
+<h2 id="fair-baselines-a-score-order-plus-optimal-cuts">Baselines with optimal fixed-order cuts<a class="anchor" aria-label="anchor" href="#fair-baselines-a-score-order-plus-optimal-cuts"></a>
+</h2>
+<p>A baseline orders entities by a specified score and partitions that
+order into at most <code>G_max</code> contiguous grades. The cuts
+minimize the same loss as the joint rule, avoiding an additional
+restriction to arbitrary equal-width partitions. Two score constructions
+are available:</p>
+<ul>
+<li>
+<strong>expected rank</strong>: the weighted posterior expected rank
+of each entity, computed from the same pairwise error
+probabilities;</li>
+<li>
+<strong>composite</strong>: a weighted sum of posterior means on
+declared scales and centers, with no data-based estimation of the
+standardization parameters.</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">er</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_expected_rank.html">postrank_expected_rank</a></span><span class="op">(</span><span class="va">a35</span><span class="op">$</span><span class="va">pairwise</span>, <span class="va">a35</span><span class="op">$</span><span class="va">settings</span><span class="op">$</span><span class="va">weights</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">er</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   site003   site010   site029   site028   site027   site019 </span></span>
+<span><span class="co">#&gt;  9.239438  9.371562 10.953312 11.076812 11.934250 12.872750</span></span>
+<span><span class="va">er_cuts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_cuts.html">postrank_cuts</a></span><span class="op">(</span><span class="va">er</span>, <span class="va">a35</span><span class="op">$</span><span class="va">pairwise</span>, <span class="va">a35</span><span class="op">$</span><span class="va">settings</span><span class="op">)</span></span>
+<span><span class="va">er_cuts</span></span>
+<span><span class="co">#&gt; &lt;postrank_baseline&gt;  30 entities in 4 grades (sizes 2 / 14 / 12 / 2)</span></span>
+<span><span class="co">#&gt;   Score order: expected rank; optimal cuts.</span></span>
+<span><span class="co">#&gt;   Posterior loss: 0.3226. Disclosed 276 of 435 pairs (63.4%); withheld 159.</span></span>
+<span><span class="co">#&gt;   The cuts minimize loss within this score order. Other orders were not</span></span>
+<span><span class="co">#&gt;     searched.</span></span>
+<span><span class="co">#&gt;   Equal scores stay together. Grade 1 has highest priority.</span></span>
+<span><span class="co">#&gt;   i get_grades(x) returns every grade; postrank_compare() compares methods</span></span>
+<span><span class="co">#&gt;     under one loss.</span></span>
+<span><span class="va">means</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_posterior_means.html">postrank_posterior_means</a></span><span class="op">(</span><span class="va">pr_example_draws</span><span class="op">)</span></span>
+<span><span class="va">comp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_composite.html">postrank_composite</a></span><span class="op">(</span><span class="va">means</span>, <span class="va">a35</span><span class="op">$</span><span class="va">settings</span><span class="op">$</span><span class="va">weights</span>, scales <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>poverty <span class="op">=</span> <span class="fl">1</span>, frl <span class="op">=</span> <span class="fl">1</span>, snap <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  centers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>poverty <span class="op">=</span> <span class="fl">0</span>, frl <span class="op">=</span> <span class="fl">0</span>, snap <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/postrank_cuts.html">postrank_cuts</a></span><span class="op">(</span><span class="va">comp</span>, <span class="va">a35</span><span class="op">$</span><span class="va">pairwise</span>, <span class="va">a35</span><span class="op">$</span><span class="va">settings</span>, direction <span class="op">=</span> <span class="st">"descending"</span><span class="op">)</span>   <span class="co"># larger composite = higher priority</span></span>
+<span><span class="co">#&gt; &lt;postrank_baseline&gt;  30 entities in 4 grades (sizes 2 / 14 / 12 / 2)</span></span>
+<span><span class="co">#&gt;   Score order: composite; optimal cuts.</span></span>
+<span><span class="co">#&gt;   Posterior loss: 0.3226. Disclosed 276 of 435 pairs (63.4%); withheld 159.</span></span>
+<span><span class="co">#&gt;   The cuts minimize loss within this score order. Other orders were not</span></span>
+<span><span class="co">#&gt;     searched.</span></span>
+<span><span class="co">#&gt;   Equal scores stay together. Grade 1 has highest priority.</span></span>
+<span><span class="co">#&gt;   i get_grades(x) returns every grade; postrank_compare() compares methods</span></span>
+<span><span class="co">#&gt;     under one loss.</span></span></code></pre></div>
+<p>Named scales and centers are matched to the criterion IDs, so their
+order can differ from the columns of <code>means</code>. A named vector
+must contain every criterion exactly once; use an
+<strong>unnamed</strong> scalar for recycling. Missing, extra or
+duplicated names are errors. With quantile cuts, <code>G_b</code>
+requests a resolution: exact-score ties are never split, and the
+realized grade count must still satisfy <code>G_max</code> and
+<code>exact_G</code> or the call fails.</p>
+<p>A baseline’s optimality is restricted to the partitions of its own
+score order. The joint rule searches every common grade with at most
+<code>G_max</code> levels, so it has a solver bound and a gap; the
+baselines have neither. Every admissible contiguous partition of a score
+order is also a common grade under the same grade and budget
+constraints, so the full family’s minimum risk is never above the
+restricted family’s. This inequality concerns the minima of the two
+families; whether it is strict depends on the particular problem.</p>
+</div>
+<div class="section level2">
+<h2 id="one-comparison-table">One comparison table<a class="anchor" aria-label="anchor" href="#one-comparison-table"></a>
+</h2>
+<p>The function <code><a href="../reference/postrank_compare.html">postrank_compare()</a></code> evaluates the rules
+jointly and requires agreement of the posterior and decision
+settings.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cmp</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"comparison_30x3_tau35"</span><span class="op">)</span></span>
+<span><span class="va">cmp</span></span>
+<span><span class="co">#&gt; &lt;postrank_comparison&gt;  3 methods on one posterior and loss</span></span>
+<span><span class="co">#&gt;   Reference method: joint. The weights and withholding cost are held fixed.</span></span>
+<span><span class="co">#&gt;    Method        Loss   Disclosed Grades Status</span></span>
+<span><span class="co">#&gt;    joint         0.3226 63.4%     4      Optimal within solver tolerances</span></span>
+<span><span class="co">#&gt;    expected_rank 0.3226 63.4%     4      Optimal within solver tolerances</span></span>
+<span><span class="co">#&gt;    composite     0.3226 63.4%     4      Optimal within solver tolerances</span></span>
+<span><span class="co">#&gt;    Constraints</span></span>
+<span><span class="co">#&gt;    within</span></span>
+<span><span class="co">#&gt;    within</span></span>
+<span><span class="co">#&gt;    within</span></span>
+<span><span class="co">#&gt;   expected_rank: 100.0% of pair relations agree with joint; 0 changed.</span></span>
+<span><span class="co">#&gt;   composite: 100.0% of pair relations agree with joint; 0 changed.</span></span>
+<span><span class="co">#&gt;   A score-order baseline searches only partitions of its declared order. Rows</span></span>
+<span><span class="co">#&gt;     outside the constraints are not eligible solutions.</span></span>
+<span><span class="co">#&gt;   i x$table retains bounds, constraints and reasons; x$relations retains pair</span></span>
+<span><span class="co">#&gt;     counts.</span></span>
+<span><span class="va">cmp</span><span class="op">$</span><span class="va">table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"method"</span>, <span class="st">"risk"</span>, <span class="st">"N"</span>, <span class="st">"G"</span>, <span class="st">"status"</span>, <span class="st">"optimality_scope"</span>,</span>
+<span>              <span class="st">"risk_absolute_gap"</span>, <span class="st">"family_feasible"</span>, <span class="st">"feasibility_reason"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;          method     risk   N G  status</span></span>
+<span><span class="co">#&gt; 1         joint 0.322573 276 4 optimal</span></span>
+<span><span class="co">#&gt; 2 expected_rank 0.322573 276 4 optimal</span></span>
+<span><span class="co">#&gt; 3     composite 0.322573 276 4 optimal</span></span>
+<span><span class="co">#&gt;                                                       optimality_scope</span></span>
+<span><span class="co">#&gt; 1                               full declared family (numerical solve)</span></span>
+<span><span class="co">#&gt; 2 contiguous partitions of the declared expected rank score order only</span></span>
+<span><span class="co">#&gt; 3     contiguous partitions of the declared composite score order only</span></span>
+<span><span class="co">#&gt;   risk_absolute_gap family_feasible feasibility_reason</span></span>
+<span><span class="co">#&gt; 1      5.551115e-17            TRUE               &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 2                NA            TRUE               &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 3                NA            TRUE               &lt;NA&gt;</span></span></code></pre></div>
+<p><code>status</code>, <code>optimality_scope</code> and
+<code>reason</code> are separate columns: a row without an action keeps
+its status and reason and is not drawn as a grade.
+<code>family_feasible</code> is a separate numerical check of the
+declared grade and budget constraints; <code>feasibility_reason</code>
+explains a violation. An action outside that family keeps its evaluated
+risk and pair relations, but is marked in the table and figures and
+cannot establish a comparison of minima over the same feasible family.
+No-action rows have <code>NA</code> feasibility. The raw budget residual
+uses the reference fit’s recorded tolerance, stored in
+<code>cmp$provenance$family_feasibility_tolerance</code>. Old saved
+comparisons without these columns remain viewable with a “not recorded”
+explanation; views do not calculate missing checks. Recreate the
+comparison to obtain them.</p>
+<p>Here the three rules chose the same grading under the specified
+posterior and loss. Agreement in this example does not establish general
+equivalence; the general comparison is the inequality between the two
+minimum risks.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_compare.html">postrank_plot_compare</a></span><span class="op">(</span><span class="va">cmp</span><span class="op">)</span></span></code></pre></div>
+<p><a href="baselines-and-the-cost-of-a-common-grade_files/figure-html/fig-compare-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Risk, disclosure and grade counts for the common report and fixed-order baselines under the same posterior and loss." target="_blank" rel="noopener"><img src="baselines-and-the-cost-of-a-common-grade_files/figure-html/fig-compare-1.png" class="r-plt" alt="Risk, disclosure and grade counts for the common report and fixed-order baselines under the same posterior and loss." width="100%"></a><span class="figure-full-size-link d-block small"><a href="baselines-and-the-cost-of-a-common-grade_files/figure-html/fig-compare-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Risk, disclosure and grade counts for the common report and fixed-order baselines under the same posterior and loss.">Open full-size figure</a></span></p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_compare.html">postrank_plot_compare</a></span><span class="op">(</span><span class="va">cmp</span>, view <span class="op">=</span> <span class="st">"relations"</span><span class="op">)</span></span></code></pre></div>
+<p><a href="baselines-and-the-cost-of-a-common-grade_files/figure-html/fig-compare-relations-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Counts of pair relations changed from the common report to each baseline." target="_blank" rel="noopener"><img src="baselines-and-the-cost-of-a-common-grade_files/figure-html/fig-compare-relations-1.png" class="r-plt" alt="Counts of pair relations changed from the common report to each baseline." width="100%"></a><span class="figure-full-size-link d-block small"><a href="baselines-and-the-cost-of-a-common-grade_files/figure-html/fig-compare-relations-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Counts of pair relations changed from the common report to each baseline.">Open full-size figure</a></span></p>
+<p>The relation change map between the joint grade and the expected-rank
+baseline is empty when the two actions agree:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_relations.html">postrank_plot_relations</a></span><span class="op">(</span><span class="va">a35</span>, y <span class="op">=</span> <span class="va">er_cuts</span>, labels <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
+<p><a href="baselines-and-the-cost-of-a-common-grade_files/figure-html/fig-change-map-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Pair-relation changes between the common report and expected-rank cuts." target="_blank" rel="noopener"><img src="baselines-and-the-cost-of-a-common-grade_files/figure-html/fig-change-map-1.png" class="r-plt" alt="Pair-relation changes between the common report and expected-rank cuts." width="100%"></a><span class="figure-full-size-link d-block small"><a href="baselines-and-the-cost-of-a-common-grade_files/figure-html/fig-change-map-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Pair-relation changes between the common report and expected-rank cuts.">Open full-size figure</a></span></p>
+</div>
+<div class="section level2">
+<h2 id="the-cost-of-one-common-grade">The cost of one common grade<a class="anchor" aria-label="anchor" href="#the-cost-of-one-common-grade"></a>
+</h2>
+<p>For each criterion, the commonality analysis compares risk under the
+common grading with risk under the best grading found for that criterion
+alone. The posterior, withholding cost <code>tau</code> and grade cap
+<code>G_max</code> are held fixed.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cc</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"commonality_30x3_tau35"</span><span class="op">)</span></span>
+<span><span class="va">cc</span></span>
+<span><span class="co">#&gt; &lt;postrank_commonality_cost&gt;  3 criteria sharing one grade assignment</span></span>
+<span><span class="co">#&gt;   Each criterion's separate calculation uses the same withholding cost and</span></span>
+<span><span class="co">#&gt;     grade limit.</span></span>
+<span><span class="co">#&gt;   Criterion error limits in separate calculations: removed.</span></span>
+<span><span class="co">#&gt;    Criterion Common loss Own loss Cost lower Cost upper</span></span>
+<span><span class="co">#&gt;    poverty   0.2142      0.1903   0.0239     0.0239</span></span>
+<span><span class="co">#&gt;    frl       0.2368      0.2038   0.0330     0.0330</span></span>
+<span><span class="co">#&gt;    snap      0.6251      0.1795   0.4455     0.4455</span></span>
+<span><span class="co">#&gt;   Own loss is the best validated separate action. Cost limits use its solver</span></span>
+<span><span class="co">#&gt;     lower bound, so an unfinished solve can leave a range or NA.</span></span>
+<span><span class="co">#&gt;   i x$table also records solver status, disclosure and agreement for each</span></span>
+<span><span class="co">#&gt;     separate calculation.</span></span>
+<span><span class="va">cc</span><span class="op">$</span><span class="va">table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion_id"</span>, <span class="st">"common_grade_risk"</span>, <span class="st">"own_best_risk"</span>, <span class="st">"own_lower_bound"</span>, <span class="st">"cost_lower"</span>, <span class="st">"cost_upper"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;   criterion_id common_grade_risk own_best_risk own_lower_bound cost_lower</span></span>
+<span><span class="co">#&gt; 1      poverty         0.2142040     0.1902943       0.1902943 0.02390977</span></span>
+<span><span class="co">#&gt; 2          frl         0.2368230     0.2037885       0.2037885 0.03303448</span></span>
+<span><span class="co">#&gt; 3         snap         0.6250609     0.1795425       0.1795425 0.44551839</span></span>
+<span><span class="co">#&gt;   cost_upper</span></span>
+<span><span class="co">#&gt; 1 0.02390977</span></span>
+<span><span class="co">#&gt; 2 0.03303448</span></span>
+<span><span class="co">#&gt; 3 0.44551839</span></span></code></pre></div>
+<p>Cached asset <code>commonality_30x3_tau35</code>: built by the
+maintainer with postrank 1.1.0 and the explicitly selected highs backend
+(version 1.12.0.3) at 2026-10-30T14:15:54Z; 3 solves. Reading it here
+solves nothing.</p>
+<p>The criterion-specific reference is a validated incumbent with a
+solver lower bound; it is not a certified minimum. These values
+determine the interval <code>[cost_lower, cost_upper]</code> for the
+additional criterion risk. Here <code>snap</code>, whose ordering
+conflicts with the other two criteria, has the largest commonality cost.
+This result describes the consequences of the specified weights without
+establishing whether those weights are substantively appropriate.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_commonality.html">postrank_plot_commonality</a></span><span class="op">(</span><span class="va">cc</span><span class="op">)</span></span></code></pre></div>
+<p><a href="baselines-and-the-cost-of-a-common-grade_files/figure-html/fig-commonality-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Criterion-specific commonality costs with numerical optimization-bound intervals." target="_blank" rel="noopener"><img src="baselines-and-the-cost-of-a-common-grade_files/figure-html/fig-commonality-1.png" class="r-plt" alt="Criterion-specific commonality costs with numerical optimization-bound intervals." width="100%"></a><span class="figure-full-size-link d-block small"><a href="baselines-and-the-cost-of-a-common-grade_files/figure-html/fig-commonality-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Criterion-specific commonality costs with numerical optimization-bound intervals.">Open full-size figure</a></span></p>
+<p>With the same posterior at <code>tau = .25</code> the common grade
+withholds everything
+(<code><a href="../articles/quickstart.html">vignette("quickstart", package = "postrank")</a></code>), and the
+criterion-only grades show what each criterion would have disclosed on
+its own:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cc25</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"commonality_30x3"</span><span class="op">)</span></span>
+<span><span class="va">cc25</span><span class="op">$</span><span class="va">table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion_id"</span>, <span class="st">"common_grade_risk"</span>, <span class="st">"own_best_risk"</span>, <span class="st">"own_G"</span>, <span class="st">"own_disclosures"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;   criterion_id common_grade_risk own_best_risk own_G own_disclosures</span></span>
+<span><span class="co">#&gt; 1      poverty              0.25     0.1604563     4             303</span></span>
+<span><span class="co">#&gt; 2          frl              0.25     0.1750977     4             303</span></span>
+<span><span class="co">#&gt; 3         snap              0.25     0.1477747     4             295</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="the-toy-commonality-and-a-tau-frontier">The toy: commonality and a tau frontier<a class="anchor" aria-label="anchor" href="#the-toy-commonality-and-a-tau-frontier"></a>
+</h2>
+<p>The following prepared results reproduce the earlier guide’s
+commonality and cost-path calculations for the 32-state example. HiGHS
+was explicitly selected when the caches were generated.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Optional reproduction, with fit &lt;- postrank(postrank_toy, ...)$fit:</span></span>
+<span><span class="co">#   postrank_commonality_cost(fit, backend = "highs", control = control)</span></span>
+<span><span class="co">#   postrank_frontier(pairwise, weights, tau = c(.15, .25, .4), G_max = 3L, backend = "highs", control = control)</span></span>
+<span><span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"toy_commonality"</span><span class="op">)</span><span class="op">$</span><span class="va">table</span><span class="op">[</span></span>
+<span>  , <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion_id"</span>, <span class="st">"common_grade_risk"</span>, <span class="st">"own_best_risk"</span>, <span class="st">"cost_lower"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;   criterion_id common_grade_risk own_best_risk cost_lower</span></span>
+<span><span class="co">#&gt; 1       need_A         0.1041667     0.1041667  0.0000000</span></span>
+<span><span class="co">#&gt; 2       need_B         0.3750000     0.1041667  0.2708333</span></span>
+<span><span class="va">frontier</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"toy_frontier"</span><span class="op">)</span></span>
+<span><span class="va">frontier</span><span class="op">$</span><span class="va">table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tau"</span>, <span class="st">"status"</span>, <span class="st">"N"</span>, <span class="st">"disclosure_rate"</span>,</span>
+<span>                   <span class="st">"E_over_N_need_A"</span>, <span class="st">"E_over_N_need_B"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;    tau  status N disclosure_rate E_over_N_need_A E_over_N_need_B</span></span>
+<span><span class="co">#&gt; 1 0.15 optimal 0       0.0000000              NA              NA</span></span>
+<span><span class="co">#&gt; 2 0.25 optimal 2       0.6666667         0.03125          0.4375</span></span>
+<span><span class="co">#&gt; 3 0.40 optimal 2       0.6666667         0.03125          0.4375</span></span></code></pre></div>
+<p>A frontier tabulates disclosure and criterion error ratios over a
+<code>tau</code> grid. With exact optima the number of disclosed pairs
+never falls as <code>tau</code> rises; actual solver statuses and gaps
+do not establish exact monotonicity. Changing <code>tau</code> changes
+the loss, so those rows are not ranked by their risks. Varying an error
+budget instead changes the feasible set at the same loss; the figure
+keeps different <code>tau</code> values in separate panel columns.</p>
+</div>
+<div class="section level2">
+<h2 id="where-next">Related articles<a class="anchor" aria-label="anchor" href="#where-next"></a>
+</h2>
+<ul>
+<li>
+<code><a href="../articles/quickstart.html">vignette("quickstart", package = "postrank")</a></code> for the
+seven-step workflow.</li>
+</ul>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+</div>
+
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer>
+</div>
+
+
+
+
+
+  </body>
+</html>
