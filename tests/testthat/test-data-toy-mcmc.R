@@ -40,7 +40,9 @@ test_that("recorded MCMC diagnostics are reproduced where posterior is available
   s <- d$summaries$weighted_total_loss; m <- s$diagnostics
   expect_true(d$total_loss$available)
   expect_lte(abs(s$mean - .248242), 1e-6)
-  expect_false(m$ess_tail$available)
+  raw_tail <- suppressWarnings(posterior::ess_tail(matrix(d$traces$weighted_total_loss$values, nrow = 512L, ncol = 4L)))
+  expect_identical(m$ess_tail$available, is.finite(raw_tail))
+  if (is.finite(raw_tail)) expect_equal(m$ess_tail$value, as.numeric(raw_tail), tolerance = 1e-12)
   expect_lte(abs(m$rhat$value - 1.090465), 1e-6)
   expect_lte(abs(m$ess_bulk$value - 42.954836), 1e-6)
   expect_lte(abs(m$mcse_mean$value - .038428), 1e-6)
