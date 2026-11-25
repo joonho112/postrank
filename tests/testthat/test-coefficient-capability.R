@@ -95,8 +95,8 @@ test_that("unequal short or single chains are not truncated padded or promoted",
 
 test_that("optional posterior absence preserves reasoned unavailability", {
   (function() {
-    # 0.9.0: the package namespace is locked under test, so the optional-posterior
-    # probe is replaced through testthat rather than assign() into the namespace.
+    # Because the package namespace is locked under test, mock the optional posterior
+    # check via local_mocked_bindings() rather than assign().
     local_mocked_bindings(.pr_posterior_diagnostic_functions = function() NULL)
     d <- cd_diagnose(cd_fixture("mcmc"), chain_history = cd_history())
     expect_false(d$diagnostics$mcse_mean$available)

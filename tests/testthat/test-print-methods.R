@@ -1,4 +1,4 @@
-# Chapter 13 console contract: totality, tier invariance, English-only output, wording
+# Console formatting invariants: width wrapping, ANSI vs. plain-text parity, English
 # guard and captured snapshots. All objects are built solver-free (mocked solve).
 pm_mock <- function(grade = "auto", status = "optimal") function(problem, backend, control, strategy) {
   ids <- problem$pairwise$entity_ids

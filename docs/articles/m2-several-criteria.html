@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Several criteria and competing goals • postrank</title>
+<title>Combining several criteria in one common grading • postrank</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Several criteria and competing goals">
+<meta property="og:title" content="Combining several criteria in one common grading">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,7 +35,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -57,7 +57,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Several criteria and competing goals</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Combining several criteria in one common grading</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/m2-several-criteria.Rmd" class="external-link"><code>vignettes/m2-several-criteria.Rmd</code></a></small>
@@ -66,363 +66,611 @@
 
     
     
-<p>For one criterion, grading balances the expected cost of incorrect
-directions against the cost of withholding comparisons. With several
-criteria, the decision also depends on the target of the comparison.
-Criterion-specific errors and errors in the ordering of a scalar
-composite define different objectives, which may favor different reports
-even when all target values are known.</p>
-<p>We extend the loss in <a href="m1-ranking-and-loss.html">Posterior
-ranking, grades, and loss</a> to criterion-weighted errors and compare
-it with loss for a scalar composite. An exact calculation establishes
-the different posterior information required by these objectives. The
-prepared six-site example illustrates the cost of a common grading and
-comparison under a fixed loss. All calculations use direct arithmetic,
-fixed-action evaluation or prepared results; model fitting and
-optimization are not required.</p>
+<p>With one criterion, a grading trades expected wrong-direction errors
+against the cost of leaving pairs unordered. With two or more
+criteria—such as school absence and suspension, race and gender contact
+gaps, or county income and incarceration—you also have to decide what a
+directional error means. Averaging wrong-direction errors across
+criteria and ordering a single composite index are different decision
+problems that can favor opposite rankings even when all target values
+are known.</p>
+<p>This article extends the single-criterion loss from <a href="m1-ranking-and-loss.html">Posterior ranking, integer grades, and
+reporting loss</a> to multiple criteria, contrasts weighted directional
+loss with a scalar composite target, shows what posterior dependence
+each objective needs, and examines the criterion-specific cost of
+sharing one common grading. Executed chunks use direct arithmetic,
+stored <code><a href="../reference/postrank_example.html">postrank_example()</a></code> objects, and two fixed-order
+dynamic-programming cut examples (<code><a href="../reference/postrank_cuts.html">postrank_cuts()</a></code>), so
+rendering needs no external LP or MIP solver.</p>
 <div class="section level2">
-<h2 id="one-report-several-error-counts">Criterion-weighted risk<a class="anchor" aria-label="anchor" href="#one-report-several-error-counts"></a>
+<h2 id="one-report-several-error-counts">Criterion-weighted loss<a class="anchor" aria-label="anchor" href="#one-report-several-error-counts"></a>
 </h2>
-<p>Let the targets be oriented so that larger values have higher
-priority. A grade vector
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>
-places unit
+<p>Orient every criterion
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>K</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">k \in \{1, \dots, K\}</annotation></semantics></math>
+before grading so that larger values of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>θ</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub><annotation encoding="application/x-tex">\theta_{ik}</annotation></semantics></math>
+receive higher priority. A common grading assigns one integer grade
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mi>i</mi></msub><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>G</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">g_i \in \{1, \dots, G\}</annotation></semantics></math>
+to each entity
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>:
+<strong>Grade 1 has the highest priority</strong>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>𝟏</mn><mo stretchy="false" form="prefix">{</mo><msub><mi>g</mi><mi>i</mi></msub><mo>&lt;</mo><msub><mi>g</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">x_{ij}(g) = \mathbf{1}\{g_i &lt; g_j\}</annotation></semantics></math>
+marks pairs reported with
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
-above unit
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
-when
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mi>i</mi></msub><mo>&lt;</mo><msub><mi>g</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">g_i&lt;g_j</annotation></semantics></math>;
-<strong>grade 1 has highest priority</strong>. Write
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn mathvariant="bold">𝟏</mn><mo stretchy="false" form="prefix">{</mo><msub><mi>g</mi><mi>i</mi></msub><mo>&lt;</mo><msub><mi>g</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">x_{ij}(g)=\mathbf{1}\{g_i&lt;g_j\}</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><mi>n</mi><mn>2</mn></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">M=\binom{n}{2}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mo>∑</mo><mrow><mi>i</mi><mo>≠</mo><mi>j</mi></mrow></msub><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">N(g)=\sum_{i\ne j}x_{ij}(g)</annotation></semantics></math>.
-Each disclosed unordered pair enters this sum once, in its reported
-direction. Units in the same grade have their comparison withheld.</p>
-<p>For criterion
+ahead of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><mi>n</mi><mn>2</mn></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">M = \binom{n}{2}</annotation></semantics></math>
+is the number of unordered pairs, and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mo>∑</mo><mrow><mi>i</mi><mo>≠</mo><mi>j</mi></mrow></msub><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">N(g) = \sum_{i \ne j} x_{ij}(g)</annotation></semantics></math>
+is the number of ordered (<code>disclosed</code>) pairs. Entities in the
+same grade are left unordered.</p>
+<p>On criterion
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>,
-define the error probability
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub><mo>≤</mo><msub><mi>θ</mi><mrow><mi>j</mi><mi>k</mi></mrow></msub><mo>∣</mo><mi>Y</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">e_{ij,k}=\Pr(\theta_{ik}\le\theta_{jk}\mid Y)</annotation></semantics></math>
-and the expected error count</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>E</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><munder><mo>∑</mo><mrow><mi>i</mi><mo>≠</mo><mi>j</mi></mrow></munder><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
-E_k(g)=\sum_{i\ne j}x_{ij}(g)e_{ij,k}.
+let
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub><mo>≤</mo><msub><mi>θ</mi><mrow><mi>j</mi><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">e_{ij,k} = \Pr(\theta_{ik} \le \theta_{jk})</annotation></semantics></math>
+be the posterior probability that reporting
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+ahead of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
+is wrong, and let</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>E</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><munder><mo>∑</mo><mrow><mi>i</mi><mo>≠</mo><mi>j</mi></mrow></munder><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
+E_k(g) = \sum_{i \ne j} x_{ij}(g) \, e_{ij,k}
 </annotation></semantics></math></p>
-<p>For one criterion, risk is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><msub><mi>E</mi><mn>1</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>τ</mi><mo stretchy="false" form="prefix">{</mo><mi>M</mi><mo>−</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo><mo stretchy="false" form="postfix">]</mo><mi>/</mi><mi>M</mi></mrow><annotation encoding="application/x-tex">[E_1(g)+\tau\{M-N(g)\}]/M</annotation></semantics></math>.
-The convention here counts a strict disclosed direction as wrong at
-latent equality. It also charges for withholding without asserting
-equality. All examples below have zero latent equality probability; <a href="m4-ties-and-withholding.html">True ties and withheld
-comparisons</a> explains how a different equality convention changes the
-loss.</p>
-<p>For several criteria, choose nonnegative weights summing to one. The
-criterion-weighted expected risk is</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>w</mi><mo>,</mo><mi>τ</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><msub><mi>w</mi><mi>k</mi></msub><msub><mi>E</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>τ</mi><mo stretchy="false" form="prefix">{</mo><mi>M</mi><mo>−</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo></mrow><mi>M</mi></mfrac><mo>=</mo><mi>τ</mi><mo>+</mo><mfrac><mn>1</mn><mi>M</mi></mfrac><munder><mo>∑</mo><mrow><mi>i</mi><mo>≠</mo><mi>j</mi></mrow></munder><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mrow><mo stretchy="true" form="prefix">(</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><msub><mi>w</mi><mi>k</mi></msub><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>−</mo><mi>τ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+<p>be the posterior expected number of wrong-direction pairs on
+criterion
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>.
+All examples in this article assume zero posterior probability of exact
+ties within each criterion; see <a href="m4-ties-and-withholding.html">Exact ties in the posterior versus
+withheld comparisons</a> when exact equality has positive
+probability.</p>
+<p>Choose criterion weights
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>w</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>w</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>w</mi><mi>K</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">w = (w_1, \dots, w_K)</annotation></semantics></math>.
+In <code><a href="../reference/postrank.html">postrank()</a></code> and <code><a href="../reference/postrank_settings.html">postrank_settings()</a></code>, weights
+follow three rules:</p>
+<ol style="list-style-type: decimal">
+<li>Every weight must be finite and nonnegative
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>w</mi><mi>k</mi></msub><mo>≥</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">w_k \ge 0</annotation></semantics></math>).
+A criterion can receive weight <code>0</code> so its error profile is
+tracked (or constrained by an error budget <code>q</code>) without
+entering the weighted objective.</li>
+<li>Weights must sum to <code>1</code> within <code>1e-12</code>.
+<strong><code>postrank</code> never rescales weights
+automatically</strong>; weights that do not sum to <code>1</code> stop
+with an error.</li>
+<li>With two or more criteria, <code>weights</code> (or
+<code>settings</code>) must be supplied; only for a single criterion
+does <code><a href="../reference/postrank.html">postrank()</a></code> fill in weight <code>1</code> when
+<code>weights</code> is omitted (<code><a href="../reference/postrank_settings.html">postrank_settings()</a></code> always
+requires <code>weights</code>). Named weights match criterion IDs, while
+unnamed weights in <code><a href="../reference/postrank.html">postrank()</a></code> and
+<code><a href="../reference/postrank_settings.html">postrank_settings()</a></code> match the input’s criterion order
+(passing <code>weights</code> directly to
+<code><a href="../reference/postrank_problem.html">postrank_problem()</a></code> or <code><a href="../reference/postrank_evaluate.html">postrank_evaluate()</a></code>
+requires criterion names).</li>
+</ol>
+<p>Given weights
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>w</mi><annotation encoding="application/x-tex">w</annotation></semantics></math>
+and withholding cost
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>∈</mo><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mi>/</mi><mn>2</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\tau \in (0, 1/2]</annotation></semantics></math>,
+each criterion has its own loss
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">[</mo><msub><mi>E</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>τ</mi><mo stretchy="false" form="prefix">{</mo><mi>M</mi><mo>−</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo><mo stretchy="false" form="postfix">]</mo><mi>/</mi><mi>M</mi></mrow><annotation encoding="application/x-tex">R_k(g) = [E_k(g) + \tau\{M - N(g)\}]/M</annotation></semantics></math>,
+and the criterion-weighted posterior expected loss is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>w</mi><mo>,</mo><mi>τ</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><msub><mi>w</mi><mi>k</mi></msub><mspace width="0.167em"></mspace><msub><mi>E</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>τ</mi><mo stretchy="false" form="prefix">{</mo><mi>M</mi><mo>−</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo></mrow><mi>M</mi></mfrac><mo>=</mo><mi>τ</mi><mo>+</mo><mfrac><mn>1</mn><mi>M</mi></mfrac><munder><mo>∑</mo><mrow><mi>i</mi><mo>≠</mo><mi>j</mi></mrow></munder><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mrow><mo stretchy="true" form="prefix">(</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><msub><mi>w</mi><mi>k</mi></msub><mspace width="0.167em"></mspace><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>−</mo><mi>τ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
 R_{w,\tau}(g)
-=\frac{\sum_{k=1}^K w_kE_k(g)+\tau\{M-N(g)\}}{M}
-=\tau+\frac1M\sum_{i\ne j}x_{ij}(g)
-\left(\sum_{k=1}^K w_ke_{ij,k}-\tau\right).
+= \frac{\sum_{k=1}^K w_k \, E_k(g) + \tau\{M - N(g)\}}{M}
+= \tau + \frac{1}{M} \sum_{i \ne j} x_{ij}(g)
+  \left(\sum_{k=1}^K w_k \, e_{ij,k} - \tau\right).
 </annotation></semantics></math></p>
-<p>The withheld-pair cost appears <strong>once</strong>, regardless of
-the number of criteria. Weights normalize the directional-error scale;
-they do not multiply the withholding charge by
+<p>Leaving a pair unordered costs
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math><strong>once</strong>, regardless of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>:
+the weights average the directional-error probabilities across criteria
+rather than multiplying
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>
+by
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>.
 Setting
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">K=1</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">K = 1</annotation></semantics></math>
 and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>w</mi><mn>1</mn></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">w_1=1</annotation></semantics></math>
-recovers the original problem. An all-withheld action has risk
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>
-whenever it is allowed.</p>
-<p>This identity follows from linearity of expectation, with the
-observed information, report, targets and preferences held fixed.
-Dependence among criteria or pairs does not invalidate it. It does not
-imply that the errors are independent, or that each disclosed direction
-is simultaneously correct on every criterion. Lee (2026), Chapter 11, <a href="https://joonho112.github.io/postrank-theory-book/chapters/11-multicriteria-loss.html#sec-weighted-directional-risk">“Weighted
-directional risk from a supplied selection law”</a>, gives the loss and
-this finite-sum derivation.</p>
-<p>Weights specify the relative cost of directional errors on the
-criteria; scientific importance is not estimated from the posterior.
-Positive weight on a criterion does not ensure that its expected error
-is as small as that of another criterion. A bound on its error
-proportion requires an additional constraint, as described in <a href="m5-computing-grades.html">Computing grades and choosing
-settings</a>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>w</mi><mn>1</mn></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">w_1 = 1</annotation></semantics></math>
+recovers the single-criterion loss, and giving every entity Grade 1
+still has loss
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>.</p>
+<p>By linearity of expectation,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>w</mi><mo>,</mo><mi>τ</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">R_{w,\tau}(g)</annotation></semantics></math>
+holds whether criteria or entity pairs are dependent or independent in
+the posterior. It does not assume that errors are independent across
+criteria, nor does it mean that an ordered pair is simultaneously right
+on every criterion. See Lee (2026), Chapter 11, <a href="https://joonho112.github.io/postrank-theory-book/chapters/11-multicriteria-loss.html#sec-weighted-directional-risk">Weighted
+directional risk from a supplied selection law</a>.</p>
+<p>Criterion weights express how you trade wrong-direction errors on one
+criterion against wrong-direction errors on another; they are not
+estimated from the posterior. Giving two criteria equal weight
+(<code>0.5</code> and <code>0.5</code>) does not force their expected
+error rates <code>E_over_N</code> to be equal. Bounding individual
+criterion errors or minimizing the worst criterion’s loss requires
+<code>q</code> or <code>objective = "minimax"</code>, discussed below
+and in <a href="m5-computing-grades.html">Computing grades, choosing
+settings, and reading solver bounds</a>.</p>
 </div>
 <div class="section level2">
-<h2 id="why-a-composite-is-a-different-target">Composite targets<a class="anchor" aria-label="anchor" href="#why-a-composite-is-a-different-target"></a>
+<h2 id="why-a-composite-is-a-different-target">Why weighted loss differs from a composite target<a class="anchor" aria-label="anchor" href="#why-a-composite-is-a-different-target"></a>
 </h2>
-<p>A scalar composite declares a target such as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mi>i</mi></msub><mo>=</mo><msub><mo>∑</mo><mi>k</mi></msub><msub><mi>a</mi><mi>k</mi></msub><msub><mi>θ</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">c_i=\sum_k a_k\theta_{ik}</annotation></semantics></math>.
-Its directional error probability is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>c</mi><mi>i</mi></msub><mo>≤</mo><msub><mi>c</mi><mi>j</mi></msub><mo>∣</mo><mi>Y</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Pr(c_i\le c_j\mid Y)</annotation></semantics></math>.
-This uses magnitudes and cardinal trade-offs;
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>k</mi></msub><msub><mi>w</mi><mi>k</mi></msub><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\sum_k w_ke_{ij,k}</annotation></semantics></math>
-averages criterion-specific error probabilities. Setting
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><mi>w</mi></mrow><annotation encoding="application/x-tex">a=w</annotation></semantics></math>
-numerically does not make these quantities equal.</p>
-<p>For a simple known state, take unit A with targets
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>,</mo><mi>−</mi><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(1,-2)</annotation></semantics></math>
-and unit B with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(0,0)</annotation></semantics></math>.
-With error weights
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>3</mn><mi>/</mi><mn>4</mn><mo>,</mo><mn>1</mn><mi>/</mi><mn>4</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(3/4,1/4)</annotation></semantics></math>,
-reporting A above B costs
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mn>4</mn></mrow><annotation encoding="application/x-tex">1/4</annotation></semantics></math>,
-whereas the reverse costs
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mi>/</mi><mn>4</mn></mrow><annotation encoding="application/x-tex">3/4</annotation></semantics></math>.
-Withholding at cost
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.3</mn><annotation encoding="application/x-tex">0.3</annotation></semantics></math>
-makes A above B the least costly of the three actions. An equally
-weighted composite gives A value
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>1</mn><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">-1/2</annotation></semantics></math>
-and B value zero, so its preferred direction is B above A. All targets
-are known in this example; the difference arises from the definition of
-a directional error under each objective. This is a member of the exact
-conflict family in Lee (2026), Chapter 12, <a href="https://joonho112.github.io/postrank-theory-book/chapters/12-conflict-estimands.html#sec-two-estimands">“Two
-co-primary targets for a reported direction”</a>.</p>
-<p>Agreement is possible. If, for every pair and almost every target
-state, all positive-weight criteria have the same strict direction, a
-nonnegative composite supported on those criteria with at least one
-positive coefficient has that direction too. Under the same withholding
-cost and feasible family, the two losses then agree. This sufficient
-condition is stronger than merely having positively correlated estimates
-or mostly similar posterior means.</p>
+<p>A linear composite defines a single combined target per entity, such
+as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mi>i</mi></msub><mo>=</mo><msubsup><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></msubsup><msub><mi>a</mi><mi>k</mi></msub><msub><mi>θ</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">c_i = \sum_{k=1}^K a_k \theta_{ik}</annotation></semantics></math>,
+and evaluates wrong-direction probability as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>c</mi><mi>i</mi></msub><mo>≤</mo><msub><mi>c</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Pr(c_i \le c_j)</annotation></semantics></math>.
+That probability depends on cardinal differences across criteria,
+whereas
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></msubsup><msub><mi>w</mi><mi>k</mi></msub><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\sum_{k=1}^K w_k e_{ij,k}</annotation></semantics></math>
+averages criterion-by-criterion ordering errors. Setting
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><mi>w</mi></mrow><annotation encoding="application/x-tex">a = w</annotation></semantics></math>
+does not make the two objectives agree.</p>
+<p>Even with zero posterior uncertainty, the two goals can rank a pair
+in opposite orders. Suppose entity <code>A</code> has known targets
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>,</mo><mi>−</mi><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(1, -2)</annotation></semantics></math>
+and entity <code>B</code> has known targets
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(0, 0)</annotation></semantics></math>:</p>
+<ul>
+<li>Under criterion-weighted loss with weights
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>w</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mn>3</mn><mi>/</mi><mn>4</mn><mo>,</mo><mn>1</mn><mi>/</mi><mn>4</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">w = (3/4, 1/4)</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mn>0.3</mn></mrow><annotation encoding="application/x-tex">\tau = 0.3</annotation></semantics></math>,
+reporting <code>A</code> ahead of <code>B</code> is right on criterion 1
+and wrong on criterion 2 (loss
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mn>4</mn><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">1/4 = 0.25</annotation></semantics></math>),
+reporting <code>B</code> ahead of <code>A</code> costs
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mi>/</mi><mn>4</mn><mo>=</mo><mn>0.75</mn></mrow><annotation encoding="application/x-tex">3/4 = 0.75</annotation></semantics></math>,
+and leaving the pair unordered costs
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.30</mn><annotation encoding="application/x-tex">0.30</annotation></semantics></math>.
+The best action reports <strong><code>A</code> ahead of
+<code>B</code></strong>.</li>
+<li>Under an equally weighted composite
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mi>i</mi></msub><mo>=</mo><mn>0.5</mn><mspace width="0.167em"></mspace><msub><mi>θ</mi><mrow><mi>i</mi><mn>1</mn></mrow></msub><mo>+</mo><mn>0.5</mn><mspace width="0.167em"></mspace><msub><mi>θ</mi><mrow><mi>i</mi><mn>2</mn></mrow></msub></mrow><annotation encoding="application/x-tex">c_i = 0.5 \, \theta_{i1} + 0.5 \, \theta_{i2}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mi>A</mi></msub><mo>=</mo><mi>−</mi><mn>0.5</mn><mo>&lt;</mo><msub><mi>c</mi><mi>B</mi></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">c_A = -0.5 &lt; c_B = 0</annotation></semantics></math>,
+so the composite orders <strong><code>B</code> ahead of
+<code>A</code></strong>. (Even with composite weights
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mn>3</mn><mi>/</mi><mn>4</mn><mo>,</mo><mn>1</mn><mi>/</mi><mn>4</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">a = (3/4, 1/4)</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mi>A</mi></msub><mo>=</mo><mn>3</mn><mi>/</mi><mn>4</mn><mo>−</mo><mn>2</mn><mi>/</mi><mn>4</mn><mo>=</mo><mi>+</mi><mn>0.25</mn></mrow><annotation encoding="application/x-tex">c_A = 3/4 - 2/4 = +0.25</annotation></semantics></math>,
+whereas changing <code>A</code> to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>,</mo><mi>−</mi><mn>4</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(1, -4)</annotation></semantics></math>
+gives
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mi>A</mi></msub><mo>=</mo><mi>−</mi><mn>0.25</mn><mo>&lt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">c_A = -0.25 &lt; 0</annotation></semantics></math>
+while keeping the criterion-weighted error of <code>A</code> ahead of
+<code>B</code> equal to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mn>4</mn></mrow><annotation encoding="application/x-tex">1/4</annotation></semantics></math>.)</li>
+</ul>
+<p>The disagreement comes from the definition of the target, not from
+estimation noise; see Lee (2026), Chapter 12, <a href="https://joonho112.github.io/postrank-theory-book/chapters/12-conflict-estimands.html#sec-two-estimands">Composite
+and criterion-specific reporting targets</a>. The two losses agree in
+general only under strong alignment—for example, when all
+positive-weight criteria share the exact same strict ordering across
+entities in almost every posterior draw, which is much stronger than
+positive correlation across criteria.</p>
 </div>
 <div class="section level2">
-<h2 id="which-posterior-information-is-needed">Posterior information requirements<a class="anchor" aria-label="anchor" href="#which-posterior-information-is-needed"></a>
+<h2 id="which-posterior-information-is-needed">Posterior information required across criteria<a class="anchor" aria-label="anchor" href="#which-posterior-information-is-needed"></a>
 </h2>
-<p>Additive risk is determined by the within-criterion pair
-probabilities. Once these are available, cross-criterion dependence is
-not required for the expectation. Marginal distributions for individual
-units generally do not determine these probabilities, however, because
-within-criterion dependence between units affects their ordering.</p>
-<p>Composite ordering and simultaneous correctness depend on additional
-features of the joint law. To demonstrate this, consider two
-constructions with identical within-criterion distributions but
-different dependence between criteria. Unit B is fixed at
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(0,0)</annotation></semantics></math>.
-Each matrix row specifies a complete state for unit A with probability
-one half. These matrices define finite laws rather than retained Monte
-Carlo draws.</p>
+<p>To evaluate
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>w</mi><mo>,</mo><mi>τ</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">R_{w,\tau}(g)</annotation></semantics></math>,
+<code>postrank</code> needs only the within-criterion pairwise
+probabilities
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub><mo>≤</mo><msub><mi>θ</mi><mrow><mi>j</mi><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">e_{ij,k} = \Pr(\theta_{ik} \le \theta_{jk})</annotation></semantics></math>.
+Once each
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><annotation encoding="application/x-tex">e_{ij,k}</annotation></semantics></math>
+is computed from the joint distribution of entities within criterion
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>,
+dependence <em>between</em> criteria does not change
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>w</mi><mo>,</mo><mi>τ</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">R_{w,\tau}(g)</annotation></semantics></math>.
+(Within each criterion, dependence <em>between entities</em> still
+matters whenever marginal intervals are converted to pairwise
+probabilities.)</p>
+<p>Ordering a composite
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mi>i</mi></msub><mo>=</mo><msub><mo>∑</mo><mi>k</mi></msub><msub><mi>a</mi><mi>k</mi></msub><msub><mi>θ</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">c_i = \sum_k a_k \theta_{ik}</annotation></semantics></math>—or
+computing the probability that <code>A</code> beats <code>B</code> on
+<em>both</em> criteria at once—does depend on how the criteria move
+together within each entity. To see this directly, fix entity
+<code>B</code> at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(0, 0)</annotation></semantics></math>
+and compare two two-state distributions for entity <code>A</code> in
+which each row has probability <code>1/2</code>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">together</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joonho112/postrank" class="external-link">postrank</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">together</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">opposite</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">w</span> <span class="op">&lt;-</span> <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.5</span>, <span class="fl">.5</span><span class="op">)</span></span>
-<span><span class="va">law_tau</span> <span class="op">&lt;-</span> <span class="fl">.2</span></span>
+<span><span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">law_summary</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">A</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">criterion_error</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">A</span> <span class="op">&lt;=</span> <span class="fl">0</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">criterion_error</span>,</span>
-<span>    weighted_error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">w</span> <span class="op">*</span> <span class="va">criterion_error</span><span class="op">)</span>,</span>
-<span>    composite_error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="va">A</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">a</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="fl">0</span><span class="op">)</span>,</span>
-<span>    correct_on_both <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">A</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">A</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">crit_err</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">A</span> <span class="op">&lt;=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>crit_1 <span class="op">=</span> <span class="va">crit_err</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, crit_2 <span class="op">=</span> <span class="va">crit_err</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,</span>
+<span>    weighted_error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">w</span> <span class="op">*</span> <span class="va">crit_err</span><span class="op">)</span>,</span>
+<span>    composite_error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="va">A</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">w</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="fl">0</span><span class="op">)</span>,</span>
+<span>    correct_on_both <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">A</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">==</span> <span class="fl">2L</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
-<span><span class="va">law_values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span>together <span class="op">=</span> <span class="fu">law_summary</span><span class="op">(</span><span class="va">together</span><span class="op">)</span>,</span>
-<span>  opposite <span class="op">=</span> <span class="fu">law_summary</span><span class="op">(</span><span class="va">opposite</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<caption>The same proposed disclosure, A above B, evaluated under two
-exact laws. Every listed state has probability one half; B is zero on
-both criteria.</caption>
-<colgroup>
-<col width="18%">
-<col width="17%">
-<col width="18%">
-<col width="18%">
-<col width="13%">
-<col width="13%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">Law</th>
-<th align="left">A’s possible states</th>
-<th align="right">Error on criterion 1</th>
-<th align="right">Error on criterion 2</th>
-<th align="right">Composite error</th>
-<th align="right">Correct on both</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">States move together</td>
-<td align="left">(2,2) or (-1,-1)</td>
-<td align="right">0.5</td>
-<td align="right">0.5</td>
-<td align="right">0.5</td>
-<td align="right">0.5</td>
-</tr>
-<tr class="even">
-<td align="left">States oppose</td>
-<td align="left">(2,-1) or (-1,2)</td>
-<td align="right">0.5</td>
-<td align="right">0.5</td>
-<td align="right">0.0</td>
-<td align="right">0.0</td>
-</tr>
-</tbody>
-</table>
-<p>The weighted error is 0.5 under both laws, as is the error for the
-reverse direction. Withholding therefore minimizes additive risk at
-<code>tau =</code> 0.2 in both. Under the second law, however, A’s
-composite is always positive: disclosing A above B has composite error 0
-and has lower expected loss than withholding. The probability of being
-correct on both criteria also differs between laws. Equal criterion-wise
-coefficients cannot recover either of these joint calculations. The
-example is reproduced by direct arithmetic from Lee (2026), Chapter 11,
-<a href="https://joonho112.github.io/postrank-theory-book/chapters/11-multicriteria-loss.html#an-exact-information-boundary-example">“Exact
-comparison of additive, composite, and joint-event information”</a>.</p>
-<p>For a composite calculated from posterior draws, retain genuine joint
-states and apply the composite to each entire state. Pairing independent
-criterion files by row number would impose a coupling that the files do
-not establish. For a specified Gaussian joint law, means and the
-relevant covariances can instead support an analytic calculation. That
-conclusion uses the Gaussian law and its dependence assumptions, not
-means alone.</p>
-<p>The function <code><a href="../reference/postrank_composite.html">postrank_composite()</a></code> constructs
-deterministic composite scores from a matrix of posterior means.
-Although the typed Gaussian input retains covariance information, this
-scoring function does not use it and returns neither a posterior
-distribution nor composite-direction probabilities. Precomputed pairwise
-inputs also lack the information needed to reconstruct composite or
-joint-event probabilities. A posterior analysis of the composite
-consequently requires a one-criterion posterior specified for that
-target; see <a href="m3-posterior-inputs.html">Posterior inputs and
-pairwise probabilities</a>.</p>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span>together <span class="op">=</span> <span class="fu">law_summary</span><span class="op">(</span><span class="va">together</span><span class="op">)</span>, opposite <span class="op">=</span> <span class="fu">law_summary</span><span class="op">(</span><span class="va">opposite</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          crit_1 crit_2 weighted_error composite_error correct_on_both</span></span>
+<span><span class="co">#&gt; together    0.5    0.5            0.5             0.5             0.5</span></span>
+<span><span class="co">#&gt; opposite    0.5    0.5            0.5             0.0             0.0</span></span></code></pre></div>
+<p>Both distributions have identical marginal error probabilities
+(<code>0.5</code> on criterion 1 and <code>0.5</code> on criterion 2),
+so reporting <code>A</code> ahead of <code>B</code> has
+criterion-weighted error <code>0.5</code> under both laws; at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mn>0.2</mn></mrow><annotation encoding="application/x-tex">\tau = 0.2</annotation></semantics></math>,
+leaving the pair unordered minimizes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>R</mi><mrow><mi>w</mi><mo>,</mo><mi>τ</mi></mrow></msub><annotation encoding="application/x-tex">R_{w,\tau}</annotation></semantics></math>
+under both laws. Under <code>opposite</code>, however,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mi>A</mi></msub><mo>=</mo><mn>0.5</mn><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>0.5</mn><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>+</mi><mn>0.5</mn><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">c_A = 0.5(2) + 0.5(-1) = +0.5 &gt; 0</annotation></semantics></math>
+in every state, so reporting <code>A</code> ahead of <code>B</code> has
+composite error <code>0</code> (while simultaneous correctness on both
+criteria drops from <code>0.5</code> to <code>0</code>).
+Criterion-by-criterion probability tables cannot distinguish
+<code>together</code> from <code>opposite</code>; see Lee (2026),
+Chapter 11, <a href="https://joonho112.github.io/postrank-theory-book/chapters/11-multicriteria-loss.html#an-exact-information-boundary-example">Exact
+comparison of additive, composite, and joint-event information</a>.</p>
+<p>If your goal is to grade entities on a composite
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>c</mi><mi>i</mi></msub><annotation encoding="application/x-tex">c_i</annotation></semantics></math>,
+compute
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>c</mi><mi>i</mi></msub><annotation encoding="application/x-tex">c_i</annotation></semantics></math>
+on each joint posterior draw
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math>
+before calling <code><a href="../reference/postrank_draws.html">postrank_draws()</a></code>, so cross-criterion
+dependence is preserved. Combine values only when the draw IDs identify
+the same joint state, whether the states were sampled independently or
+by MCMC. Row numbers from separate fits do not establish this
+correspondence. <code><a href="../reference/postrank_composite.html">postrank_composite()</a></code> computes a
+deterministic score vector from posterior means using user-supplied
+<code>centers</code> and <code>scales</code>—useful for building a
+fixed-order baseline, not a posterior distribution for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>c</mi><mi>i</mi></msub><annotation encoding="application/x-tex">c_i</annotation></semantics></math>.
+See <a href="m3-posterior-inputs.html">Posterior representations and
+pairwise comparison probabilities</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="scale-changes-affect-the-two-goals-differently">Scale changes affect the two goals differently<a class="anchor" aria-label="anchor" href="#scale-changes-affect-the-two-goals-differently"></a>
 </h2>
-<p>Applying the same strictly increasing function to every unit on a
-criterion preserves its directions and equalities. If the posterior is
-transformed accordingly and weights and feasible reports remain fixed,
-additive risks and their full minimizing sets are unchanged. This
-ordinal property of the target comparisons depends on the stated
-transformation conditions.</p>
-<p>Rescaling composite components with the numerical coefficients held
-fixed can alter their order. Similarly, refitting after transformation
-can change the posterior law, and constructing a new score order from
-transformed posterior means can change the feasible reports. None of
-these operations satisfies the premises of the invariance result. The
-conditions are given in Lee (2026), Chapter 12, <a href="https://joonho112.github.io/postrank-theory-book/chapters/12-conflict-estimands.html#sec-invariance-dominance">“Ordinal
-invariance and qualified dominance statements”</a>.</p>
+<p>Applying the same strictly increasing transformation to every entity
+on criterion
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+preserves
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub><mo>≤</mo><msub><mi>θ</mi><mrow><mi>j</mi><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\theta_{ik} \le \theta_{jk}</annotation></semantics></math>
+in every posterior state. When the posterior is transformed directly and
+<code>weights</code>, <code>tau</code>, and the allowed grade family are
+held fixed,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><annotation encoding="application/x-tex">e_{ij,k}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>w</mi><mo>,</mo><mi>τ</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">R_{w,\tau}(g)</annotation></semantics></math>,
+and the entire set of optimal gradings are unchanged.</p>
+<p>A linear composite
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mi>i</mi></msub><mo>=</mo><msub><mo>∑</mo><mi>k</mi></msub><msub><mi>a</mi><mi>k</mi></msub><msub><mi>θ</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">c_i = \sum_k a_k \theta_{ik}</annotation></semantics></math>
+is not invariant to nonlinear monotone transformations (or to rescaling
+one criterion while holding
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>a</mi><mi>k</mi></msub><annotation encoding="application/x-tex">a_k</annotation></semantics></math>
+fixed). Likewise, refitting a statistical model after transforming an
+outcome can change the posterior itself, and recomputing posterior means
+on a transformed scale can change a mean-based baseline order; see Lee
+(2026), Chapter 12, <a href="https://joonho112.github.io/postrank-theory-book/chapters/12-conflict-estimands.html#sec-invariance-dominance">Ordinal
+invariance and qualified dominance statements</a>.</p>
 </div>
 <div class="section level2">
-<h2 id="read-the-burden-on-each-criterion">Criterion-specific commonality costs<a class="anchor" aria-label="anchor" href="#read-the-burden-on-each-criterion"></a>
+<h2 id="read-the-burden-on-each-criterion">Criterion-specific cost of a common grading and minimax<a class="anchor" aria-label="anchor" href="#read-the-burden-on-each-criterion"></a>
 </h2>
-<p>The six fictional sites from <a href="a1-getting-started.html">Getting started</a> provide a small
-continuous example. Their normal distributions are specified directly,
-with independent sites and independent criteria within sites. The common
-report uses equal weights, withholding cost 0.2 and at most 3 grades.
-Its expected errors per disclosed pair are 1.77% for score A and 2.67%
-for score B, over the same 9 disclosed pairs. Equal weights have not
-equalized the errors.</p>
-<p>Define each criterion’s risk as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">[</mo><msub><mi>E</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>τ</mi><mo stretchy="false" form="prefix">{</mo><mi>M</mi><mo>−</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo><mo stretchy="false" form="postfix">]</mo><mi>/</mi><mi>M</mi></mrow><annotation encoding="application/x-tex">R_k(g)=[E_k(g)+\tau\{M-N(g)\}]/M</annotation></semantics></math>.
-Then
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>w</mi><mo>,</mo><mi>τ</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mo>∑</mo><mi>k</mi></msub><msub><mi>w</mi><mi>k</mi></msub><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">R_{w,\tau}(g)=\sum_k w_kR_k(g)</annotation></semantics></math>.
-For a fixed common report, its cost to criterion
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
-relative to that criterion’s own best feasible report is</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Δ</mi><mi>k</mi></msub><mo>=</mo><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>g</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>−</mo><munder><mi mathvariant="normal">min</mi><mrow><mi>h</mi><mo>∈</mo><mi mathvariant="script">ℱ</mi></mrow></munder><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>h</mi><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
-\Delta_k=R_k(g_{\mathrm{common}})-\min_{h\in\mathcal F}R_k(h).
-</annotation></semantics></math></p>
-<p>This difference is nonnegative when the common action belongs to the
-same family
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="script">ℱ</mi><annotation encoding="application/x-tex">\mathcal F</annotation></semantics></math>.
-The package computes own-criterion comparisons at the same withholding
-cost and grade-count settings. If the common problem has criterion
-protections, <code>protection = "drop"</code> removes them by default;
-<code>protection = "keep"</code> retains them. That choice changes the
-own comparison family and should be reported. This tutorial has no such
-protections.</p>
+<p>The six fictional sites from <a href="a1-getting-started.html">Getting started: grading with one or two
+criteria</a> illustrate how one common grading distributes expected
+errors across criteria. We load the stored single-criterion,
+two-criterion, and commonality results:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">commonality</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_commonality_cost.html">postrank_commonality_cost</a></span><span class="op">(</span><span class="va">two</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span>
-<span>  control <span class="op">=</span> <span class="fu"><a href="../reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">60</span>, threads <span class="op">=</span> <span class="fl">1</span>, seed <span class="op">=</span> <span class="fl">1304</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_one"</span><span class="op">)</span></span>
+<span><span class="va">two</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_two"</span><span class="op">)</span></span>
+<span><span class="va">commonality</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_commonality"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/get_profile.html">get_profile</a></span><span class="op">(</span><span class="va">two</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion"</span>, <span class="st">"weight"</span>, <span class="st">"E"</span>, <span class="st">"E_over_N"</span>, <span class="st">"risk"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;   criterion weight         E   E_over_N       risk</span></span>
+<span><span class="co">#&gt; 1   score_A    0.5 0.1596996 0.01774440 0.09064664</span></span>
+<span><span class="co">#&gt; 2   score_B    0.5 0.2405960 0.02673289 0.09603973</span></span></code></pre></div>
+<p>With equal weights (<code>0.5</code> and <code>0.5</code>),
+<code>tau = 0.2</code>, and <code>G_max = 3</code>, the common grading
+orders <code>N = 9</code> of the <code>15</code> site pairs. Its
+expected wrong-direction rate among ordered pairs
+(<code>E_over_N</code>) is <code>0.0177</code> (<code>1.77%</code>) on
+<code>score_A</code> and <code>0.0267</code> (<code>2.67%</code>) on
+<code>score_B</code>: equal weights in the objective do not force equal
+criterion error rates.</p>
+<p>Writing each criterion’s loss as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">[</mo><msub><mi>E</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>τ</mi><mo stretchy="false" form="prefix">{</mo><mi>M</mi><mo>−</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo><mo stretchy="false" form="postfix">]</mo><mi>/</mi><mi>M</mi></mrow><annotation encoding="application/x-tex">R_k(g) = [E_k(g) + \tau\{M - N(g)\}]/M</annotation></semantics></math>
+gives
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>w</mi><mo>,</mo><mi>τ</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msubsup><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></msubsup><msub><mi>w</mi><mi>k</mi></msub><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">R_{w,\tau}(g) = \sum_{k=1}^K w_k R_k(g)</annotation></semantics></math>.
+Relative to the best grading chosen for criterion
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+alone over the allowed family
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ℱ</mi><annotation encoding="application/x-tex">\mathcal{F}</annotation></semantics></math>,
+sharing the common grading
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>g</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi></mrow></msub><annotation encoding="application/x-tex">g_{\mathrm{common}}</annotation></semantics></math>
+costs criterion
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+an extra loss of</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Δ</mi><mi>k</mi></msub><mo>=</mo><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>g</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>−</mo><munder><mi mathvariant="normal">min</mi><mrow><mi>h</mi><mo>∈</mo><mi>ℱ</mi></mrow></munder><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>h</mi><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\Delta_k = R_k(g_{\mathrm{common}}) - \min_{h \in \mathcal{F}} R_k(h).
+</annotation></semantics></math></p>
+<p>Whenever
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi></mrow></msub><mo>∈</mo><mi>ℱ</mi></mrow><annotation encoding="application/x-tex">g_{\mathrm{common}} \in \mathcal{F}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Δ</mi><mi>k</mi></msub><mo>≥</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\Delta_k \ge 0</annotation></semantics></math>.
+<code><a href="../reference/postrank_commonality_cost.html">postrank_commonality_cost()</a></code> solves each criterion’s own
+problem at the same <code>tau</code>, <code>G_max</code>, and
+<code>exact_G</code>. If the common problem includes per-criterion error
+budgets <code>q</code>, <code>protection = "drop"</code> (the default)
+solves each own-criterion problem without <code>q</code>, while
+<code>protection = "keep"</code> retains all <code>q</code> error-budget
+constraints from the common problem (even on criteria whose
+single-criterion weight is <code>0</code>, so the common grading remains
+feasible in every single-criterion solve). Computing
+<code><a href="../reference/postrank_commonality_cost.html">postrank_commonality_cost()</a></code> from scratch requires an
+optimization solver—either the free <code>highs</code> package
+(<code>install.packages("highs")</code> with
+<code>backend = "highs"</code> or
+<code>options(postrank.backend = "highs")</code>) or a licensed Gurobi
+installation (the default)—so the solver call below is shown without
+running during vignette builds:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">commonality</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_commonality_cost.html">postrank_commonality_cost</a></span><span class="op">(</span></span>
+<span>  <span class="va">two</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="../reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">60</span>, threads <span class="op">=</span> <span class="fl">1</span>, seed <span class="op">=</span> <span class="fl">1304</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">commonality</span><span class="op">[[</span><span class="st">"table"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion_id"</span>, <span class="st">"common_grade_risk"</span>,</span>
+<span>  <span class="st">"own_best_risk"</span>, <span class="st">"cost_lower"</span>, <span class="st">"cost_upper"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;   criterion_id common_grade_risk own_best_risk cost_lower cost_upper</span></span>
+<span><span class="co">#&gt; 1      score_A        0.09064664    0.04165164 0.04899500 0.04899500</span></span>
+<span><span class="co">#&gt; 2      score_B        0.09603973    0.08157121 0.01446853 0.01446853</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_commonality.html">postrank_plot_commonality</a></span><span class="op">(</span><span class="va">commonality</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<a href="m2-several-criteria_files/figure-html/m2-commonality-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Extra criterion risk from using the prepared common grading for six fictional sites. Endpoints use each own-criterion solve's incumbent and lower bound; they are numerical solver bounds, not posterior intervals." target="_blank" rel="noopener"><img src="m2-several-criteria_files/figure-html/m2-commonality-1.png" class="r-plt" alt="Extra criterion risk from using the prepared common grading for six fictional sites. Endpoints use each own-criterion solve's incumbent and lower bound; they are numerical solver bounds, not posterior intervals." width="100%"></a><span class="figure-full-size-link d-block small"><a href="m2-several-criteria_files/figure-html/m2-commonality-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Extra criterion risk from using the prepared common grading for six fictional sites. Endpoints use each own-criterion solve's incumbent and lower bound; they are numerical solver bounds, not posterior intervals.">Open full-size figure</a></span><p class="caption">
-Extra criterion risk from using the prepared common grading for six
-fictional sites. Endpoints use each own-criterion solve’s incumbent and
-lower bound; they are numerical solver bounds, not posterior intervals.
+<a href="m2-several-criteria_files/figure-html/m2-commonality-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Horizontal plot of extra criterion loss for score_A (about 0.049) and score_B (about 0.014) when using the two-criterion common grading instead of each criterion's own optimal grading." target="_blank" rel="noopener"><img src="m2-several-criteria_files/figure-html/m2-commonality-1.png" class="r-plt" alt="Horizontal plot of extra criterion loss for score_A (about 0.049) and score_B (about 0.014) when using the two-criterion common grading instead of each criterion's own optimal grading." width="100%"></a><span class="figure-full-size-link d-block small"><a href="m2-several-criteria_files/figure-html/m2-commonality-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Horizontal plot of extra criterion loss for score_A (about 0.049) and score_B (about 0.014) when using the two-criterion common grading instead of each criterion's own optimal grading.">Open full-size figure</a></span><p class="caption">
+Extra loss per criterion from sharing one common grading across the six
+tutorial sites, with solver lower and upper bounds on each difference.
 </p>
 </div>
-<p>The common action costs score A an additional 0.0490 risk units and
-score B 0.0145, to the precision shown. Each quantity includes
-withholding as well as errors; it is not a change in score uncertainty
-or an estimate of social welfare.</p>
-<p>If an own-criterion solve has incumbent risk
+<p>Sharing the common grading adds <code>0.0490</code> loss units on
+<code>score_A</code> (<code>0.0906</code> vs. <code>0.0417</code> alone)
+and <code>0.0145</code> on <code>score_B</code> (<code>0.0960</code>
+vs. <code>0.0816</code> alone). Both differences combine wrong-direction
+errors and withheld pairs under the same <code>tau = 0.2</code>. If an
+own-criterion solve returns checked loss
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>U</mi><mi>k</mi></msub><annotation encoding="application/x-tex">U_k</annotation></semantics></math>
-and lower bound
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>L</mi><mi>k</mi></msub><annotation encoding="application/x-tex">L_k</annotation></semantics></math>,
-the reported endpoints are
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">max</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>g</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>U</mi><mi>k</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\max(0,R_k(g_{\mathrm{common}})-U_k)</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>g</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>L</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">R_k(g_{\mathrm{common}})-L_k</annotation></semantics></math>.
-Here they nearly coincide. A wide interval would reflect incomplete
-optimization, and the interpretation inherits the bounds’ numerical
-limitations. With one criterion, the common and own problems coincide
-under identical settings; there is no cross-criterion compromise to
-measure.</p>
+(the best grading found) and solver lower bound
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>L</mi><mi>k</mi></msub><annotation encoding="application/x-tex">L_k</annotation></semantics></math>
+(a loss no grading in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ℱ</mi><annotation encoding="application/x-tex">\mathcal{F}</annotation></semantics></math>
+can beat), <code>cost_lower</code> is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">max</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">{</mo><mn>0</mn><mo>,</mo><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>g</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>U</mi><mi>k</mi></msub><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\max\{0, R_k(g_{\mathrm{common}}) - U_k\}</annotation></semantics></math>
+and <code>cost_upper</code> is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>g</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>L</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">R_k(g_{\mathrm{common}}) - L_k</annotation></semantics></math>;
+here both own-criterion solves are optimal, so the two endpoints
+coincide. With a single criterion (<code>K = 1</code>), the common and
+own-criterion problems are identical.</p>
+<p>On the larger 30-site, three-criterion synthetic example
+(<code>pr_example_draws</code>, criteria <code>poverty</code>,
+<code>frl</code>, and <code>snap</code> with weights <code>0.50</code>,
+<code>0.25</code>, and <code>0.25</code> and <code>G_max = 4</code>),
+<code>snap</code> conflicts with the ordering of the other two criteria
+and absorbs the largest extra loss under the shared four-grade report at
+<code>tau = 0.35</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">a35</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"analysis_30x3_tau35"</span><span class="op">)</span></span>
+<span><span class="va">cc35</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"commonality_30x3_tau35"</span><span class="op">)</span></span>
+<span><span class="va">cc35</span><span class="op">[[</span><span class="st">"table"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion_id"</span>, <span class="st">"common_grade_risk"</span>, <span class="st">"own_best_risk"</span>,</span>
+<span>  <span class="st">"own_lower_bound"</span>, <span class="st">"cost_lower"</span>, <span class="st">"cost_upper"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;   criterion_id common_grade_risk own_best_risk own_lower_bound cost_lower</span></span>
+<span><span class="co">#&gt; 1      poverty         0.2142040     0.1902943       0.1902943 0.02390977</span></span>
+<span><span class="co">#&gt; 2          frl         0.2368230     0.2037885       0.2037885 0.03303448</span></span>
+<span><span class="co">#&gt; 3         snap         0.6250609     0.1795425       0.1795425 0.44551839</span></span>
+<span><span class="co">#&gt;   cost_upper</span></span>
+<span><span class="co">#&gt; 1 0.02390977</span></span>
+<span><span class="co">#&gt; 2 0.03303448</span></span>
+<span><span class="co">#&gt; 3 0.44551839</span></span>
+<span><span class="fu"><a href="../reference/postrank_plot_commonality.html">postrank_plot_commonality</a></span><span class="op">(</span><span class="va">cc35</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<a href="m2-several-criteria_files/figure-html/m2-commonality-30x3-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Horizontal interval plot of extra criterion loss across poverty, frl, and snap, with snap showing the largest extra loss." target="_blank" rel="noopener"><img src="m2-several-criteria_files/figure-html/m2-commonality-30x3-1.png" class="r-plt" alt="Horizontal interval plot of extra criterion loss across poverty, frl, and snap, with snap showing the largest extra loss." width="100%"></a><span class="figure-full-size-link d-block small"><a href="m2-several-criteria_files/figure-html/m2-commonality-30x3-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Horizontal interval plot of extra criterion loss across poverty, frl, and snap, with snap showing the largest extra loss.">Open full-size figure</a></span><p class="caption">
+Criterion-specific extra loss from sharing one common four-grade report
+across 30 synthetic sites on poverty, frl, and snap at tau = 0.35.
+</p>
+</div>
+<p>That table records the consequences of the chosen weights without
+deciding whether those weights are substantively right for an
+application. Lowering <code>tau</code> to <code>0.25</code> on the same
+posterior (<code>analysis_30x3</code> and <code>commonality_30x3</code>)
+makes leaving pairs unordered cheaper than resolving cross-criterion
+conflict, so the common grading withholds every pair (<code>1</code>
+grade, <code>N = 0</code>—a valid one-grade decision rather than a
+failed solver run, and not comparable by raw loss value to
+<code>tau = 0.35</code> because changing <code>tau</code> changes the
+loss), even though each criterion optimized on its own would still order
+pairs:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">a25</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"analysis_30x3"</span><span class="op">)</span></span>
+<span><span class="va">cc25</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"commonality_30x3"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>common_grades <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="../reference/get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">a25</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  common_ordered_pairs <span class="op">=</span> <span class="va">a25</span><span class="op">[[</span><span class="st">"evaluation"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"N"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt;        common_grades common_ordered_pairs </span></span>
+<span><span class="co">#&gt;                    1                    0</span></span>
+<span><span class="va">cc25</span><span class="op">[[</span><span class="st">"table"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion_id"</span>, <span class="st">"common_grade_risk"</span>, <span class="st">"own_best_risk"</span>,</span>
+<span>  <span class="st">"own_G"</span>, <span class="st">"own_disclosures"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;   criterion_id common_grade_risk own_best_risk own_G own_disclosures</span></span>
+<span><span class="co">#&gt; 1      poverty              0.25     0.1604563     4             303</span></span>
+<span><span class="co">#&gt; 2          frl              0.25     0.1750977     4             303</span></span>
+<span><span class="co">#&gt; 3         snap              0.25     0.1477747     4             295</span></span></code></pre></div>
+<p>When you want to protect the worst-performing criterion rather than
+minimize a weighted average, set <code>objective = "minimax"</code> in
+<code><a href="../reference/postrank.html">postrank()</a></code> or <code><a href="../reference/postrank_settings.html">postrank_settings()</a></code>. Minimax
+minimizes</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><munder><mi mathvariant="normal">max</mi><mrow><mi>k</mi><mo>∈</mo><mi>S</mi></mrow></munder><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
+\max_{k \in S} R_k(g)
+</annotation></semantics></math></p>
+<p>over the criterion subset <code>minimax_criteria</code> (all criteria
+by default)—the largest <strong>posterior expected</strong> criterion
+loss, not the expectation of a draw-by-draw maximum across criteria. By
+default (<code>minimax_refine = "weighted"</code>), a second solver pass
+then minimizes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>w</mi><mo>,</mo><mi>τ</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">R_{w,\tau}(g)</annotation></semantics></math>
+among gradings that keep the selected criteria at or below the
+first-stage minimax value; see <a href="m5-computing-grades.html">Computing grades, choosing settings, and
+reading solver bounds</a> for an example using
+<code>postrank_example("toy_minimax")</code>.</p>
 </div>
 <div class="section level2">
-<h2 id="separate-a-score-order-from-the-loss-it-is-evaluated-on">Score orders and evaluation loss<a class="anchor" aria-label="anchor" href="#separate-a-score-order-from-the-loss-it-is-evaluated-on"></a>
+<h2 id="separate-a-score-order-from-the-loss-it-is-evaluated-on">Fixed score-order cuts and comparing gradings under one loss<a class="anchor" aria-label="anchor" href="#separate-a-score-order-from-the-loss-it-is-evaluated-on"></a>
 </h2>
-<p>A fixed-order baseline first chooses an order, then restricts its
-grades to contiguous blocks of that order.
-<code><a href="../reference/postrank_expected_rank.html">postrank_expected_rank()</a></code> obtains scores from
-criterion-specific pair probabilities. <code><a href="../reference/postrank_composite.html">postrank_composite()</a></code>
-combines posterior means using declared scales and centers. Either score
-order can be followed by cuts chosen to minimize the
-<strong>criterion-weighted</strong> risk. Using composite scores to
-select an order does not turn that risk into composite-target risk.</p>
-<p>The following optional calculation illustrates the distinction
-between score construction and risk evaluation. The posterior means are
-those of the specified tutorial law. The two weight vectors have
-different roles, although their numerical values coincide. The cut
-calculation is omitted when the article is built.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">.5</span>, score_B <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span></span>
-<span><span class="va">scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_composite.html">postrank_composite</a></span><span class="op">(</span><span class="va">sites</span><span class="op">$</span><span class="va">law</span><span class="op">$</span><span class="va">means</span>, weights <span class="op">=</span> <span class="va">a</span>,</span>
-<span>  scales <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">1</span>, score_B <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">baseline</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_cuts.html">postrank_cuts</a></span><span class="op">(</span><span class="va">scores</span>, <span class="va">two</span><span class="op">$</span><span class="va">pairwise</span>, settings <span class="op">=</span> <span class="va">two</span><span class="op">$</span><span class="va">settings</span>,</span>
-<span>  direction <span class="op">=</span> <span class="st">"descending"</span>, rule <span class="op">=</span> <span class="st">"optimal"</span><span class="op">)</span></span></code></pre></div>
-<p>Optimal cuts are optimal only within that declared order, respecting
-exact score-tie blocks. Unrestricted grading also chooses the ordering
-of the groups. Its exact optimum can be no worse under the same risk
-when its family contains every baseline action. The interpretation of a
-numerical incumbent depends on its recorded status and bound; an
-incomplete search does not establish exact optimality. See Lee (2026),
-Chapter 16, <a href="https://joonho112.github.io/postrank-theory-book/chapters/16-evaluation-frontiers.html#sec-conditional-bayes-dominance">“Conditional
-Bayes dominance and its limits”</a>.</p>
-<p>A report chosen for another objective can also be evaluated under the
-reference objective. Here we take the prepared score-A-only grades as a
-fixed action and use both criteria to evaluate them:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_compare.html">postrank_compare</a></span><span class="op">(</span><span class="va">two</span>,</span>
-<span>  `Score A grades` <span class="op">=</span> <span class="fu"><a href="../reference/get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span>, baselines <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Their two-criterion risk is 0.1356, compared with 0.0933 for the
-common report, and both actions satisfy the reference grade cap. Their
-disclosed counts are 12 and 9, respectively. This calculation does not
-compare the original one-criterion scalar risk with a two-criterion
-scalar risk, and <code>baselines = character()</code> avoids
-constructing additional optimized cuts.</p>
-<p>This comparison conditions on the units, targets, posterior law,
-weights, withholding cost and feasible reports. It does not imply
-superiority under another loss or evaluation law, for every realized
-target state, or for a different institutional objective.
-Criterion-specific errors and disclosure rates describe the consequences
-of the specified decision. <a href="a7-figures-sensitivity.html">Figures
-and sensitivity analysis</a> examines their dependence on the
-settings.</p>
+<p>A simpler baseline orders entities by a scalar score—such as weighted
+posterior expected ranks from <code><a href="../reference/postrank_expected_rank.html">postrank_expected_rank()</a></code> or a
+mean index from <code><a href="../reference/postrank_composite.html">postrank_composite()</a></code>—and then partitions
+that fixed order into at most <code>G_max</code> contiguous grades using
+<code><a href="../reference/postrank_cuts.html">postrank_cuts()</a></code>. Even when
+<code><a href="../reference/postrank_composite.html">postrank_composite()</a></code> builds the order,
+<code>postrank_cuts(..., rule = "optimal")</code> chooses cutpoints by
+dynamic programming to minimize the <strong>criterion-weighted</strong>
+loss
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>w</mi><mo>,</mo><mi>τ</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">R_{w,\tau}(g)</annotation></semantics></math>
+along that order rather than evaluating composite-target error
+probabilities or arbitrary equal-sized bins:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">er</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_expected_rank.html">postrank_expected_rank</a></span><span class="op">(</span><span class="va">a35</span><span class="op">[[</span><span class="st">"pairwise"</span><span class="op">]</span><span class="op">]</span>, <span class="va">a35</span><span class="op">[[</span><span class="st">"settings"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"weights"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">er</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   site003   site010   site029   site028   site027   site019 </span></span>
+<span><span class="co">#&gt;  9.239438  9.371562 10.953312 11.076812 11.934250 12.872750</span></span>
+<span><span class="va">er_cuts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_cuts.html">postrank_cuts</a></span><span class="op">(</span><span class="va">er</span>, <span class="va">a35</span><span class="op">[[</span><span class="st">"pairwise"</span><span class="op">]</span><span class="op">]</span>, <span class="va">a35</span><span class="op">[[</span><span class="st">"settings"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">er_cuts</span></span>
+<span><span class="co">#&gt; &lt;postrank_baseline&gt;  30 entities in 4 grades (sizes 2 / 14 / 12 / 2)</span></span>
+<span><span class="co">#&gt;   Score order: expected rank; optimal cuts.</span></span>
+<span><span class="co">#&gt;   Posterior loss: 0.3226. Disclosed 276 of 435 pairs (63.4%); withheld 159.</span></span>
+<span><span class="co">#&gt;   The cuts minimize loss within this score order. Other orders were not</span></span>
+<span><span class="co">#&gt;     searched.</span></span>
+<span><span class="co">#&gt;   Equal scores stay together. Grade 1 has highest priority.</span></span>
+<span><span class="co">#&gt;   i get_grades(x) returns every grade; postrank_compare() compares methods</span></span>
+<span><span class="co">#&gt;     under one loss.</span></span>
+<span><span class="va">means</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_posterior_means.html">postrank_posterior_means</a></span><span class="op">(</span><span class="va">pr_example_draws</span><span class="op">)</span></span>
+<span><span class="va">comp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_composite.html">postrank_composite</a></span><span class="op">(</span></span>
+<span>  <span class="va">means</span>, <span class="va">a35</span><span class="op">[[</span><span class="st">"settings"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"weights"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>  scales <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>poverty <span class="op">=</span> <span class="fl">1</span>, frl <span class="op">=</span> <span class="fl">1</span>, snap <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  centers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>poverty <span class="op">=</span> <span class="fl">0</span>, frl <span class="op">=</span> <span class="fl">0</span>, snap <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/postrank_cuts.html">postrank_cuts</a></span><span class="op">(</span><span class="va">comp</span>, <span class="va">a35</span><span class="op">[[</span><span class="st">"pairwise"</span><span class="op">]</span><span class="op">]</span>, <span class="va">a35</span><span class="op">[[</span><span class="st">"settings"</span><span class="op">]</span><span class="op">]</span>, direction <span class="op">=</span> <span class="st">"descending"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;postrank_baseline&gt;  30 entities in 4 grades (sizes 2 / 14 / 12 / 2)</span></span>
+<span><span class="co">#&gt;   Score order: composite; optimal cuts.</span></span>
+<span><span class="co">#&gt;   Posterior loss: 0.3226. Disclosed 276 of 435 pairs (63.4%); withheld 159.</span></span>
+<span><span class="co">#&gt;   The cuts minimize loss within this score order. Other orders were not</span></span>
+<span><span class="co">#&gt;     searched.</span></span>
+<span><span class="co">#&gt;   Equal scores stay together. Grade 1 has highest priority.</span></span>
+<span><span class="co">#&gt;   i get_grades(x) returns every grade; postrank_compare() compares methods</span></span>
+<span><span class="co">#&gt;     under one loss.</span></span></code></pre></div>
+<p>In <code><a href="../reference/postrank_composite.html">postrank_composite()</a></code>, <code>centers</code> and
+<code>scales</code> are user-declared constants rather than
+data-estimated standardizations: named vectors match criterion IDs in
+any order and must list each criterion once, whereas an unnamed scalar
+is recycled across criteria (missing, extra, or duplicate names stop
+with an error). With quantile cuts (<code>rule = "quantile"</code>,
+<code>G_b</code>), entities with identical scores are never split across
+grades, and the realized grade count must still satisfy
+<code>G_max</code> and <code>exact_G</code>.</p>
+<p>Because a baseline searches only contiguous cuts of its fixed score
+order, its optimality scope is that order alone (with no whole-family
+LP/MIP lower bound or gap). Every contiguous partition of a score order
+is also a valid integer grading, so exact unrestricted optimization over
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ℱ</mi><annotation encoding="application/x-tex">\mathcal{F}</annotation></semantics></math>
+achieves a loss no larger than any fixed-order cut rule inside
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ℱ</mi><annotation encoding="application/x-tex">\mathcal{F}</annotation></semantics></math>
+on the same posterior and loss—whether that inequality is strict depends
+on the dataset, and whether a numerical solver run reached the exact
+minimum depends on its status and gap. See Lee (2026), Chapter 22, <a href="https://joonho112.github.io/postrank-theory-book/chapters/22-evaluation-frontiers.html#sec-conditional-bayes-dominance">Conditional
+Bayes dominance and its limits</a>.</p>
+<p><code><a href="../reference/postrank_compare.html">postrank_compare()</a></code> evaluates the joint grading and
+fixed-order baselines on one shared posterior and policy:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cmp35</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"comparison_30x3_tau35"</span><span class="op">)</span></span>
+<span><span class="va">cmp35</span><span class="op">[[</span><span class="st">"table"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"method"</span>, <span class="st">"risk"</span>, <span class="st">"N"</span>, <span class="st">"G"</span>, <span class="st">"status"</span>,</span>
+<span>  <span class="st">"optimality_scope"</span>, <span class="st">"risk_absolute_gap"</span>, <span class="st">"family_feasible"</span>, <span class="st">"feasibility_reason"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;          method     risk   N G  status</span></span>
+<span><span class="co">#&gt; 1         joint 0.322573 276 4 optimal</span></span>
+<span><span class="co">#&gt; 2 expected_rank 0.322573 276 4 optimal</span></span>
+<span><span class="co">#&gt; 3     composite 0.322573 276 4 optimal</span></span>
+<span><span class="co">#&gt;                                                       optimality_scope</span></span>
+<span><span class="co">#&gt; 1                               full declared family (numerical solve)</span></span>
+<span><span class="co">#&gt; 2 contiguous partitions of the declared expected rank score order only</span></span>
+<span><span class="co">#&gt; 3     contiguous partitions of the declared composite score order only</span></span>
+<span><span class="co">#&gt;   risk_absolute_gap family_feasible feasibility_reason</span></span>
+<span><span class="co">#&gt; 1      5.551115e-17            TRUE               &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 2                NA            TRUE               &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 3                NA            TRUE               &lt;NA&gt;</span></span>
+<span><span class="fu"><a href="../reference/postrank_plot_compare.html">postrank_plot_compare</a></span><span class="op">(</span><span class="va">cmp35</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<a href="m2-several-criteria_files/figure-html/m2-compare-30x3-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Comparison plot showing equal loss, ordered pair counts, and grade counts across the joint grading, expected-rank cuts, and composite cuts." target="_blank" rel="noopener"><img src="m2-several-criteria_files/figure-html/m2-compare-30x3-1.png" class="r-plt" alt="Comparison plot showing equal loss, ordered pair counts, and grade counts across the joint grading, expected-rank cuts, and composite cuts." width="100%"></a><span class="figure-full-size-link d-block small"><a href="m2-several-criteria_files/figure-html/m2-compare-30x3-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Comparison plot showing equal loss, ordered pair counts, and grade counts across the joint grading, expected-rank cuts, and composite cuts.">Open full-size figure</a></span><p class="caption">
+Loss, ordered pairs, and occupied grades for the joint common grading
+and the expected-rank and composite fixed-order baselines on the 30-site
+example at tau = 0.35.
+</p>
+</div>
+<p>In <code>cmp35$table</code>, <code>status</code>,
+<code>optimality_scope</code>, and <code>reason</code> stay separate
+(any row without a checked grading retains its status and reason without
+plotting a grade), while <code>family_feasible</code> and
+<code>feasibility_reason</code> check <code>G_max</code>,
+<code>exact_G</code>, and <code>q</code> within
+<code>cmp35$provenance$family_feasibility_tolerance</code> (older saved
+comparisons without those columns display <code>"not recorded"</code>
+without recomputing). On this 30-site example at
+<code>tau = 0.35</code>, all three rules choose the same grading—so
+<code>postrank_plot_compare(cmp35, view = "relations")</code> and the
+pairwise change map
+<code>postrank_plot_relations(a35, y = er_cuts, labels = "none")</code>
+show zero changed pair relations—though agreement on one dataset does
+not imply general equivalence:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_relations.html">postrank_plot_relations</a></span><span class="op">(</span><span class="va">a35</span>, y <span class="op">=</span> <span class="va">er_cuts</span>, labels <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<a href="m2-several-criteria_files/figure-html/m2-change-map-30x3-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Thirty-by-thirty relation-change matrix showing no changed pair relations between the joint grading and expected-rank cuts." target="_blank" rel="noopener"><img src="m2-several-criteria_files/figure-html/m2-change-map-30x3-1.png" class="r-plt" alt="Thirty-by-thirty relation-change matrix showing no changed pair relations between the joint grading and expected-rank cuts." width="100%"></a><span class="figure-full-size-link d-block small"><a href="m2-several-criteria_files/figure-html/m2-change-map-30x3-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Thirty-by-thirty relation-change matrix showing no changed pair relations between the joint grading and expected-rank cuts.">Open full-size figure</a></span><p class="caption">
+Pairwise ordering changes between the joint common grading and the
+expected-rank cut baseline on the 30-site example (all zero differences
+here).
+</p>
+</div>
+<p>To compare any externally chosen grading—such as the single-criterion
+<code>score_A</code> grades on the six tutorial sites—against
+<code>two</code> under the two-criterion loss without running baseline
+cut searches, pass named grade vectors to
+<code><a href="../reference/postrank_compare.html">postrank_compare()</a></code> with
+<code>baselines = character()</code>:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_compare.html">postrank_compare</a></span><span class="op">(</span></span>
+<span>  <span class="va">two</span>,</span>
+<span>  `Score A grades` <span class="op">=</span> <span class="fu"><a href="../reference/get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span>,</span>
+<span>  baselines <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">comparison</span><span class="op">[[</span><span class="st">"table"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"method"</span>, <span class="st">"risk"</span>, <span class="st">"N"</span>, <span class="st">"G"</span>, <span class="st">"status"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;           method       risk  N G    status</span></span>
+<span><span class="co">#&gt; 1          joint 0.09334319  9 3   optimal</span></span>
+<span><span class="co">#&gt; 2 Score A grades 0.13564691 12 3 evaluated</span></span></code></pre></div>
+<p>Evaluated on both criteria (<code>weights = c(0.5, 0.5)</code>,
+<code>tau = 0.2</code>), the <code>score_A</code>-only grading orders
+<code>12</code> pairs and has two-criterion loss <code>0.1356</code>,
+compared with <code>9</code> ordered pairs and loss <code>0.0933</code>
+for the common grading <code>two</code>. Both gradings use
+<code>3</code> grades (<code>G_max = 3</code>), and both losses are
+evaluated under the exact same two-criterion objective rather than
+comparing <code>one</code>’s one-criterion loss directly against
+<code>two</code>’s two-criterion loss. Lower loss under one chosen
+objective and posterior does not make a grading superior under a
+different loss, target definition, or population distribution; see <a href="a7-figures-sensitivity.html">Figures and sensitivity to reporting
+settings</a> for systematic sensitivity checks across weights,
+<code>tau</code>, and <code>G_max</code>.</p>
 </div>
 <div class="section level2">
-<h2 id="source-note">Source note<a class="anchor" aria-label="anchor" href="#source-note"></a>
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <p>Lee, JoonHo (2026). <em>Decisions from Noisy Multidimensional
-Indicators: Theory, Evidence, and Posterior Grading</em>, version 3, 29
-October 2026. Companion methods book. The specific Chapter 11, 12 and 16
-sections linked above supply the definitions, exact constructions,
-invariance conditions and scope of the Bayes comparison. The commonality
-calculation is also defined in <code><a href="../reference/postrank_commonality_cost.html">?postrank_commonality_cost</a></code>;
-its displayed numerical results use the prepared tutorial law, not an
-empirical study.</p>
+Indicators: Theory, Evidence, and Posterior Grading</em>. Companion book
+(<code>citation("postrank")</code>; online Chapters 11, 12, and 22 in
+the expanded online edition linked above). See also
+<code><a href="../reference/postrank_settings.html">?postrank_settings</a></code>,
+<code><a href="../reference/postrank_commonality_cost.html">?postrank_commonality_cost</a></code>, and
+<code><a href="../reference/postrank_compare.html">?postrank_compare</a></code>.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

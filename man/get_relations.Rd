@@ -6,35 +6,31 @@
 get_relations(x, ...)
 }
 \arguments{
-\item{x}{A \code{postrank_fit} or \code{postrank_analysis}.}
+\item{x}{A \code{postrank_fit} or \code{postrank_analysis} object.}
 
 \item{...}{Unused arguments for generic compatibility.}
 }
 \value{
-An integer matrix with one row and column per entity, named and
-ordered as the input. Its diagonal is zero. Returns \code{NULL} when no
-validated grade is available.
+An \verb{n x n} integer matrix named and ordered by \code{entity_id}, with
+\code{0L} on the diagonal, or \code{NULL} when no checked grading is available.
 }
 \description{
-The stored grading is represented as a matrix of disclosed directions. Entry
-\verb{(i, j)} is 1 when row entity i has higher priority than column entity j, -1
-for the opposite direction, and 0 when the comparison is withheld. The
-entries represent reporting decisions rather than posterior comparison
-probabilities.
+\code{get_relations()} converts the checked grades in \code{x} into an
+entity-by-entity matrix of reported ordering decisions: \code{1L} when row entity
+\code{i} has a higher-priority grade than column entity \code{j} (\code{grade[i] < grade[j]}),
+\code{-1L} when \code{grade[i] > grade[j]}, and \code{0L} when the pair is left unordered
+(\code{grade[i] == grade[j]}, including the diagonal).
 }
 \details{
-Smaller grades mean higher priority. Shared grades give zero in
-both directions without asserting latent equality. A valid all-withheld
-report has an all-zero relation matrix, distinct from \code{NULL} after a solve
-without validated grades. This accessor does not run a solver.
+Entries record the reported grading decisions, not posterior
+comparison probabilities. A valid one-grade report leaving all pairs
+unordered returns an all-\code{0L} matrix, whereas \code{NULL} means no checked
+grading is available. \code{get_relations()} does not run a solver.
 }
 \examples{
-if (requireNamespace("highs", quietly = TRUE)) {
-  one <- postrank(pr_tutorial$one, tau = .2, G_max = 3L, backend = "highs",
-    control = postrank_control(time_limit = 10), fragility = FALSE)
-  relations <- get_relations(one)
-  relations[c("A", "B", "C"), c("A", "B", "C")]
-}
+one <- postrank_example("tutorial_one")
+rel <- get_relations(one)
+rel[c("A", "B", "C"), c("A", "B", "C")]
 }
 \seealso{
 \code{\link[=get_grades]{get_grades()}}, \code{\link[=get_profile]{get_profile()}}

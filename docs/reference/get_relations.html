@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Extract Which Pairwise Directions the Grades Disclose — get_relations • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Extract Which Pairwise Directions the Grades Disclose — get_relations"><meta name="description" content="The stored grading is represented as a matrix of disclosed directions. Entry
-(i, j) is 1 when row entity i has higher priority than column entity j, -1
-for the opposite direction, and 0 when the comparison is withheld. The
-entries represent reporting decisions rather than posterior comparison
-probabilities."><meta property="og:description" content="The stored grading is represented as a matrix of disclosed directions. Entry
-(i, j) is 1 when row entity i has higher priority than column entity j, -1
-for the opposite direction, and 0 when the comparison is withheld. The
-entries represent reporting decisions rather than posterior comparison
-probabilities."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Extract Which Pairwise Directions the Grades Disclose — get_relations • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Extract Which Pairwise Directions the Grades Disclose — get_relations"><meta name="description" content="get_relations() converts the checked grades in x into an
+entity-by-entity matrix of reported ordering decisions: 1L when row entity
+i has a higher-priority grade than column entity j (grade[i] &amp;lt; grade[j]),
+-1L when grade[i] &amp;gt; grade[j], and 0L when the pair is left unordered
+(grade[i] == grade[j], including the diagonal)."><meta property="og:description" content="get_relations() converts the checked grades in x into an
+entity-by-entity matrix of reported ordering decisions: 1L when row entity
+i has a higher-priority grade than column entity j (grade[i] &amp;lt; grade[j]),
+-1L when grade[i] &amp;gt; grade[j], and 0L when the pair is left unordered
+(grade[i] == grade[j], including the diagonal)."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -15,7 +15,7 @@ probabilities."><meta property="og:image" content="https://joonho112.github.io/p
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,7 +23,7 @@ probabilities."><meta property="og:image" content="https://joonho112.github.io/p
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -43,11 +43,11 @@ probabilities."><meta property="og:image" content="https://joonho112.github.io/p
     </div>
 
     <div class="ref-description section level2">
-    <p>The stored grading is represented as a matrix of disclosed directions. Entry
-<code>(i, j)</code> is 1 when row entity i has higher priority than column entity j, -1
-for the opposite direction, and 0 when the comparison is withheld. The
-entries represent reporting decisions rather than posterior comparison
-probabilities.</p>
+    <p><code>get_relations()</code> converts the checked grades in <code>x</code> into an
+entity-by-entity matrix of reported ordering decisions: <code>1L</code> when row entity
+<code>i</code> has a higher-priority grade than column entity <code>j</code> (<code>grade[i] &lt; grade[j]</code>),
+<code>-1L</code> when <code>grade[i] &gt; grade[j]</code>, and <code>0L</code> when the pair is left unordered
+(<code>grade[i] == grade[j]</code>, including the diagonal).</p>
     </div>
 
     <div class="section level2">
@@ -60,7 +60,7 @@ probabilities.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>A <code>postrank_fit</code> or <code>postrank_analysis</code>.</p></dd>
+<dd><p>A <code>postrank_fit</code> or <code>postrank_analysis</code> object.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -69,16 +69,15 @@ probabilities.</p>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An integer matrix with one row and column per entity, named and
-ordered as the input. Its diagonal is zero. Returns <code>NULL</code> when no
-validated grade is available.</p>
+    <p>An <code>n x n</code> integer matrix named and ordered by <code>entity_id</code>, with
+<code>0L</code> on the diagonal, or <code>NULL</code> when no checked grading is available.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Smaller grades mean higher priority. Shared grades give zero in
-both directions without asserting latent equality. A valid all-withheld
-report has an all-zero relation matrix, distinct from <code>NULL</code> after a solve
-without validated grades. This accessor does not run a solver.</p>
+    <p>Entries record the reported grading decisions, not posterior
+comparison probabilities. A valid one-grade report leaving all pairs
+unordered returns an all-<code>0L</code> matrix, whereas <code>NULL</code> means no checked
+grading is available. <code>get_relations()</code> does not run a solver.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -87,12 +86,9 @@ without validated grades. This accessor does not run a solver.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"highs"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">one</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank.html">postrank</a></span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span>, tau <span class="op">=</span> <span class="fl">.2</span>, G_max <span class="op">=</span> <span class="fl">3L</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span></span>
-<span class="r-in"><span>    control <span class="op">=</span> <span class="fu"><a href="postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>, fragility <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">relations</span> <span class="op">&lt;-</span> <span class="fu">get_relations</span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">relations</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_one"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">rel</span> <span class="op">&lt;-</span> <span class="fu">get_relations</span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">rel</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         entity_j</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> entity_i  A  B C</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        A  0  0 1</span>

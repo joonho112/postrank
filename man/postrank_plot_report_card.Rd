@@ -18,87 +18,120 @@ postrank_plot_report_card(
 )
 }
 \arguments{
-\item{x}{A \code{postrank_report_card} or a \code{postrank_analysis} with a prepared card.}
+\item{x}{A \code{postrank_report_card} or a \code{postrank_analysis} with a prepared
+report card.}
 
-\item{criteria}{Optional nonempty subset and display order of criterion IDs.}
+\item{criteria}{Optional character vector of distinct criterion IDs from the
+card, giving the subset and left-to-right (or top-to-bottom) panel order.
+\code{NULL} (the default) shows all criteria in stored weight order.}
 
-\item{order}{Within-grade order: \code{"grade"} preserves the stored card order;
-\code{"expected_rank"} uses weighted expected rank across all criteria;
-\code{"mean"} uses one criterion's mean; \code{"label"} sorts raw entity IDs.}
+\item{order}{Ordering of entities within each grade: \code{"grade"} (the default)
+keeps the report card's stored \code{sort_rank} (\verb{1..n} row order);
+\code{"expected_rank"} sorts by weighted expected rank across all criteria in
+the card; \code{"mean"} sorts by descending posterior mean on one criterion;
+\code{"label"} sorts by raw entity ID in locale-independent byte/ASCII
+lexicographic (\code{"radix"}) order.}
 
-\item{max_rows}{Positive integer display limit, default 30. \code{NULL} shows
-every row. Explicit \code{entities} override this limit.}
+\item{max_rows}{Positive integer cap on automatically displayed entities
+(default \code{30L}), or \code{NULL} to show every entity. Ignored when \code{entities} is
+supplied.}
 
-\item{show_withheld}{Logical; include full grade sizes in the subtitle.}
+\item{show_withheld}{Logical scalar (\code{TRUE} by default). When \code{TRUE} and the
+full card has more than one grade, includes full-report grade sizes in the
+subtitle.}
 
-\item{...}{Unused; nonempty arguments are rejected.}
+\item{...}{Unused; passing any argument in \code{...} stops with an error. Pass
+arguments after \code{...} by name.}
 
-\item{entities}{Optional distinct entity IDs to show. All selected entities
-are shown, even if their number exceeds \code{max_rows}. Their display order
-follows \code{order}, not the order of this vector.}
+\item{entities}{Optional character vector of distinct entity IDs from the
+card to display. All named entities are shown even when \code{length(entities)}
+exceeds \code{max_rows}; their vertical order follows \code{order}, not the order of
+\code{entities}.}
 
-\item{entity_labels}{Optional named character vector mapping IDs to display
-names. Partial maps retain the other IDs. Final display names must be
-distinct; include an ID when names repeat. Newlines can break long labels.}
+\item{entity_labels}{Optional named character vector mapping known raw entity
+IDs in the card to non-blank display names. Unmapped IDs keep their raw
+IDs. Resulting display names must be distinct across the full card (include
+an ID when two names would match); \code{"\\n"} may be used to break long labels.}
 
-\item{criterion_labels}{Optional named criterion-to-label vector. Partial
-maps use readable criterion names for the remainder. Final labels must be
-distinct. Labels may include units or newlines without changing values.}
+\item{criterion_labels}{Optional named character vector mapping known
+criterion IDs in the card to non-blank panel strip labels. Unmapped IDs
+replace underscores with spaces unless that would create duplicate labels.
+Resulting strip labels must be distinct across all criteria in the card.}
 
-\item{ncol}{Positive integer number of facet columns; default at most three.
-Use \code{ncol = 1} with a taller figure for a narrow page.}
+\item{ncol}{Positive integer number of facet columns. \code{NULL} (the default)
+uses \code{min(3, length(criteria_shown))}; values above the number of displayed
+criteria are capped at that count. Use \code{ncol = 1} for narrow pages.}
 
-\item{order_by}{Criterion used with \code{order = "mean"}. Required when several
-criteria are displayed; otherwise the sole displayed criterion is used.
-An explicit criterion may be any criterion of the card.}
+\item{order_by}{Single criterion ID used when \code{order = "mean"}. Must be
+\code{NULL} for other \code{order} choices. Required when \code{order = "mean"} and more
+than one criterion is displayed; when \code{NULL} with a single displayed
+criterion, that criterion is used. An explicit \code{order_by} may name any
+criterion in the card, even one omitted from \code{criteria}.}
 }
 \value{
-A \code{ggplot} object whose data retain raw entity and criterion IDs.
-If an analysis has no prepared card, a status panel explains the recorded
-reason; a card and grades must already be available.
+A \code{ggplot} object whose \verb{$data} table holds the same columns as
+\code{postrank_plot_data(x, "report_card")} for the displayed entities and
+criteria, ordered by \code{order} with \code{entity_id}, \code{criterion}, and \code{grade}
+stored as factors (over raw IDs and \verb{1..G}) alongside \code{sort_rank} (\verb{1..n}
+row order stored in the card), \code{n_withheld} (number of other entities in
+the same grade), \code{mean}, \code{lower}, \code{upper}, and \code{expected_rank}. If \code{x} is a
+\code{postrank_analysis} whose \code{report_card} slot is \code{NULL}, returns an empty
+status \code{ggplot} stating why no report card is available.
 }
 \description{
-The figure displays the stored posterior mean and central interval for each
-selected entity, with one panel per criterion and color indicating grade
-membership. Grade 1 has highest priority. The intervals describe uncertainty
-in the targets, whereas a shared grade denotes a withheld comparison without
-asserting target equality.
+\code{postrank_plot_report_card()} plots the stored posterior mean and central
+interval for each displayed entity, with one panel per criterion and color
+showing grade membership. Grade 1 is the highest priority, and larger target
+values mean higher priority as declared when the input was built. Each
+horizontal bar summarizes marginal uncertainty for one entity's target at a
+time; entities in the same grade are left unordered (withheld), which does
+not mean their targets are equal.
 }
 \details{
-The figure uses stored means, interval endpoints and grades without
-recomputing summaries or solving. Means are never clipped to intervals:
-a skewed distribution can have its mean outside its central interval.
-The caption gives the stored interval level and distinguishes supplied
-central summaries from computed equal-tail posterior intervals.
-These are not confidence intervals for the grades or solver bounds.
+The plot reads stored means, interval endpoints, and grades without solving
+or recomputing posterior summaries. Points mark posterior means and segments
+mark central intervals (\code{lower} to \code{upper}) on \code{"Posterior target"}; means
+are never clipped to interval endpoints because a skewed posterior can have
+its mean outside its central interval. The caption records the stored
+percentage level (\code{100 * card$level}, where \code{card} is \code{x} or \code{x$report_card})
+and states whether the intervals came from supplied marginal summaries or
+computed equal-tail posterior intervals (from draws, an exact finite law, or
+normal/mixture posteriors). These intervals are marginal posterior summaries
+for individual targets, not simultaneous intervals and not confidence
+intervals for grade labels or solver bounds.
 
-All ordering keeps grades contiguous. \code{order = "expected_rank"} uses the
-card's weights across all criteria, even when only some panels are shown.
-\code{order = "mean"} uses the larger mean first within each grade; means in
-different units are never added for ordering. Labels affect display only.
+Grades always stay in contiguous vertical blocks (\code{1} at the top), with light
+gray background bands on odd-numbered grades. When \code{order = "expected_rank"},
+expected ranks are combined using the card's criterion weights across all
+criteria, even if \code{criteria} displays a subset. When \code{order = "mean"}, means
+on different criteria are never added together. Display labels affect axis
+and strip text only.
 
-Automatic row selection spreads up to \code{max_rows} rows across grades.
-Where possible, each grade receives a row; remaining rows are allocated
-by grade size and spaced within each grade. If fewer rows than grades are
-requested, some grades are omitted. This is a display selection, not a
-representative sample or a new analysis. Grade colors and subtitle counts
-refer to the full report. For about 30 rows, consider a 7 by 8 inch output;
-smaller selections and \code{ncol = 1} suit narrow pages.
+When \code{entities} is \code{NULL} and the card has more than \code{max_rows} entities,
+deterministic display selection gives at least one row to each grade when
+\code{max_rows >= G}, allocates remaining rows in proportion to grade size, and
+spaces rows across each grade; if \code{max_rows < G}, some grades are omitted
+and the subtitle notes this. That subset is for visual layout only, not a
+statistical sample or a re-grading. Colors use \code{\link[=scale_colour_grade]{scale_colour_grade()}} with
+the full report's grade count \code{G} up to 64 grades (and neutral dark gray
+without a legend when \code{G > 64}), so subsets keep their original grade colors.
 }
 \examples{
-# Read prepared tutorial results; no model fitting or optimization.
-source(system.file("scripts", "_vignette-setup.R", package = "postrank"),
-  local = TRUE)
-one <- load_or_compute("tutorial_one")
-p <- postrank_plot_report_card(one, max_rows = NULL,
-  criterion_labels = c(score_A = "Score A (standardized units)"))
-p
+one <- postrank_example("tutorial_one")
+postrank_plot_report_card(
+  one,
+  max_rows = NULL,
+  criterion_labels = c(score_A = "Score A (standardized units)")
+)
 
-# The same six sites on two criteria, with one panel per row.
-two <- load_or_compute("tutorial_two")
-postrank_plot_report_card(two, ncol = 1, entities = c("A", "C", "F"),
+two <- postrank_example("tutorial_two")
+postrank_plot_report_card(
+  two,
+  ncol = 1,
+  entities = c("A", "C", "F"),
   entity_labels = c(A = "Site A", C = "Site C", F = "Site F"),
-  criterion_labels = c(score_A = "Score A", score_B = "Score B"))
+  criterion_labels = c(score_A = "Score A", score_B = "Score B")
+)
 }
 \seealso{
 \code{\link[=postrank_report_card]{postrank_report_card()}}, \code{\link[=postrank_plot_data]{postrank_plot_data()}},

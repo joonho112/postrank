@@ -1,10 +1,12 @@
-# Calculate Strict Error and Equality Probabilities
+# Compute Strict Error and Equality Probabilities
 
-Comparison probabilities are calculated for an equality-neutral loss
-under a target law that permits exact equality. Under this loss,
-equality contributes neither a strict-direction error nor a withholding
-cost. A shared reported grade continues to denote a withheld direction
-without asserting equality of the underlying targets.
+`postrank_tie_pairwise()` computes pairwise strict directional-error
+(`b`), equality (`t`), and distinctness (`d`) probabilities for
+tie-aware mode (the workflow for posteriors in which distinct entities
+can be equal with positive probability under equality-neutral loss,
+where true target equality has zero loss). Placing two entities in the
+same grade still leaves them unordered rather than claiming their
+targets are equal.
 
 ## Usage
 
@@ -20,60 +22,67 @@ postrank_tie_pairwise(
 
 - draws:
 
-  A validated
+  A `postrank_tie_draws` object from
   [`as_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_tie_draws.md)
-  input or its canonical payload, containing complete joint states for
-  one or more criteria and explicit equality declarations. Values are
-  compared at their supplied precision, without rounding, jitter, or
-  independently rearranging entities.
+  or
+  [`read_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/read_postrank_tie_draws.md),
+  or a plain `"tie-aware-input-0.1"` list.
 
 - method:
 
-  `"blocks"` (default) or `"reference"` for equal-weight Monte Carlo
-  aggregation. The block method limits working indicator storage; the
-  reference method handles one ordered pair at a time. Exact finite laws
-  instead use their declared masses.
+  Aggregation algorithm for `"equal_weight_draws"` inputs: `"blocks"`
+  (the default, processing up to `block_size` ordered pairs at a time to
+  limit indicator-matrix memory) or `"reference"` (one ordered pair at a
+  time). Ignored for `"exact_finite_posterior"` inputs, which sum exact
+  state masses (`method = "exact_finite_law"`).
 
 - block_size:
 
-  Positive integer maximum ordered-pair block size for the block
-  algorithm. It does not change which values count as equal.
+  Positive integer maximum ordered-pair block size (`128L` by default)
+  for `method = "blocks"`; does not change numerical values.
 
 ## Value
 
-A `postrank_tie_pairwise` object with entity-by-entity-by-criterion
-arrays `b` (strict directional error), `t` (equality), and `d`
-(distinctness), plus the source and equality declarations. All diagonals
-are `NA` because self-comparisons are unused. Sample sizes describe
-Monte Carlo input only; exact finite laws retain rational coefficients
-and their double projection.
+A `postrank_tie_pairwise` list containing `n x n x K` arrays `b` (strict
+directional-error probability), `t` (equality probability), and `d`
+(distinctness probability) with `NA` diagonals, together with
+`entity_ids`, `criterion_ids`, `sample_sizes` (`S` for Monte Carlo
+draws, `NA` for exact finite laws), `sampling_regimes`, `equality`,
+`source`, `exact` (rational strings and double-projection differences
+for exact finite laws; `NULL` for Monte Carlo draws),
+`coefficient_type`, and `pairwise_identity`.
 
 ## Details
 
-For distinct entities, the error for reporting i above j is
-\\b\_{ij,k}=P(\theta\_{i,k}\<\theta\_{j,k})\\. Equality is
-\\t\_{ij,k}=P(\theta\_{i,k}=\theta\_{j,k})\\, and distinctness is
-\\d\_{ij,k}=P(\theta\_{i,k}\ne\theta\_{j,k})\\. Equality and
-distinctness are symmetric, while the two strict-direction errors sum to
-distinctness: \\b\_{ij,k}+b\_{ji,k}=d\_{ij,k}\\. Reverse strict errors
-sum to one only when equality probability is zero. The withholding
-contribution is `tau * d`, not always `tau`.
+For distinct entities `i != j` on criterion `k`:
 
-For a complete finite law, aggregation uses every positive-mass state
-and optional `gmp` arithmetic. For Monte Carlo input, equality
-frequencies are empirical; repeated coincidences do not establish
-structural equality. Per-criterion structural classes come from supplied
-declarations for Monte Carlo input and from the full positive-mass
-support for finite laws. The problem builder later intersects those
-classes across active criteria; the coefficient calculation has no
-criterion-loss weights.
+- `b[i, j, k] = Pr(theta_{i,k} < theta_{j,k})` is the strict
+  directional-error probability from placing `i` in a higher-priority
+  grade than `j`.
 
-This function neither converts positive equality into ordinary
-weak-error probabilities nor verifies the scientific equality model. Use
+- `t[i, j, k] = Pr(theta_{i,k} = theta_{j,k})` is the equality
+  probability.
+
+- `d[i, j, k] = Pr(theta_{i,k} != theta_{j,k})` is the distinctness
+  probability.
+
+Off the diagonal, `t` and `d` are symmetric, opposite strict-direction
+errors sum to distinctness (`b[i, j, k] + b[j, i, k] = d[i, j, k]`), and
+`d[i, j, k] + t[i, j, k] = 1` (so `b[i, j, k] + b[j, i, k] = 1` only
+when `t[i, j, k] = 0`). Under equality-neutral loss, leaving `(i, j)` in
+the same grade costs `tau * d[i, j, k]` rather than `tau`.
+
+Exact finite laws aggregate over all positive-mass states using optional
+package `gmp` and record both exact rational strings and their `double`
+projections in `b`, `t`, and `d`. Monte Carlo inputs compute empirical
+draw frequencies at full supplied precision without rounding or jitter;
+coincident Monte Carlo ties are never used to merge structural equality
+classes. Criterion equality partitions are intersected across
+positive-weight criteria later in
+[`postrank_tie_problem()`](https://joonho112.github.io/postrank/reference/postrank_tie_problem.md).
+Use
 [`postrank_pairwise()`](https://joonho112.github.io/postrank/reference/postrank_pairwise.md)
-when every distinct pair has zero equality probability and the ordinary
-loss is intended. A finite target law need not have continuous marginals
-to satisfy that zero-equality condition.
+instead when every distinct pair has zero equality probability.
 
 ## See also
 
@@ -85,16 +94,16 @@ to satisfy that zero-equality condition.
 ## Examples
 
 ``` r
-if (requireNamespace("gmp", quietly = TRUE)) {
-  # Bundled complete two-state teaching law, not retained Monte Carlo draws.
-  path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
-  input <- read_postrank_tie_draws(path)
-  pw <- postrank_tie_pairwise(input)
-  # A and B are structurally equal on criterion S in this specified law.
-  c(strict_error = pw$b["A", "B", "S"], equality = pw$t["A", "B", "S"],
-    distinctness = pw$d["A", "B", "S"])
-  # The reverse strict errors for C and D sum to their distinctness.
-  pw$b["C", "D", "S"] + pw$b["D", "C", "S"]
-}
+path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
+input <- read_postrank_tie_draws(path)
+pw <- postrank_tie_pairwise(input)
+c(
+  strict_error = pw$b["A", "B", "S"],
+  equality = pw$t["A", "B", "S"],
+  distinctness = pw$d["A", "B", "S"]
+)
+#> strict_error     equality distinctness 
+#>            0            1            0 
+pw$b["C", "D", "S"] + pw$b["D", "C", "S"]
 #> [1] 1
 ```

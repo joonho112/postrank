@@ -1,10 +1,11 @@
-# Find Pairwise Decisions Close to the Monte Carlo Noise Scale
+# Find Pairwise Decisions Near the Monte Carlo Noise Scale
 
-The diagnostic identifies pairs for which the estimated loss from
-disclosure in the better direction is close to the withholding cost.
-Since grades are selected jointly, a flagged pair need not imply a
-change in the selected grading. Indicator traces are calculated without
-optimization.
+`postrank_mc_fragility()` identifies unordered entity pairs whose
+estimated wrong-direction error in the better ordering direction lies
+close to the withholding cost `tau` relative to its Monte Carlo standard
+error (MCSE), without running a solver. Because grades are chosen
+jointly across all pairs, a flagged pair need not change the selected
+grading.
 
 ## Usage
 
@@ -22,63 +23,66 @@ postrank_mc_fragility(
 
 - draws:
 
-  Joint equal-weight ordinary posterior draws. Whole states must retain
-  the dependence among entities and criteria. Exact finite laws,
-  criterion-wise blocks, Gaussian/mixture coefficients, supplied
-  probabilities, and equality-neutral inputs are not supported by this
-  Monte Carlo diagnostic.
+  Joint equal-weight posterior draws from
+  [`postrank_draws()`](https://joonho112.github.io/postrank/reference/postrank_draws.md)
+  or
+  [`as_postrank_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_draws.md)
+  (`dependence_mode = "joint_model"`). Criterion-wise blocks, exact
+  finite laws, Gaussian or mixture coefficients, pre-computed
+  probabilities, and tie-mode inputs are not accepted.
 
 - fit, settings:
 
-  Supply exactly one, as in
-  [`postrank_crossfit()`](https://joonho112.github.io/postrank/reference/postrank_crossfit.md).
-  Only `weights` and `tau` are needed in a settings list. A supplied
-  fit's grade is used to label its relation for each traced pair; its
-  optimization status is not improved by this diagnostic.
+  Supply `fit` (`postrank_fit` or `postrank_analysis` on `draws`) or
+  `settings`
+  ([`postrank_settings()`](https://joonho112.github.io/postrank/reference/postrank_settings.md)
+  or named list with `weights` and `tau`), not both. When `fit` has a
+  checked grading, each traced pair is also labeled by its relation in
+  `fit$grade`.
 
 - z:
 
-  Positive MCSE multiplier, default 2. This sets a descriptive scale,
-  not a simultaneous confidence level.
+  Positive numeric MCSE multiplier (`2` by default) setting the
+  descriptive flagging threshold `|d - tau| < z * mcse`.
 
 - screen_margin:
 
-  Positive threshold: only pairs with margin strictly below it are
-  traced. For IID samples with `S > 1`, the default is
-  `z * 0.5 / sqrt(S - 1)`, using the maximum sample SD of a bounded
-  indicator to avoid screening out a pair that this rule could flag. The
-  MCMC default `0.1` is a heuristic screening threshold, not a bound on
-  omitted pairs.
+  Positive numeric pre-screen threshold: only pairs with
+  `|d - tau| < screen_margin` have per-draw indicator traces built. When
+  `NULL` (the default), IID inputs with `S > 1` use
+  `z * 0.5 / sqrt(S - 1)` (the maximum sample SD of a `[0, 1]`
+  indicator, so no pair that could be flagged is skipped), and MCMC
+  inputs use `0.1` (a working screen accompanied by a warning, not an
+  upper bound).
 
 ## Value
 
-A `postrank_mc_fragility` list with a `pairs` table of better
-directions, weighted error, margin, MCSE, margin/MCSE ratio, and
-`fragile` flag; a supplied grade adds its reported relation. `summary`
-counts all pairs, traced pairs, flagged pairs, and unavailable MCSEs.
-Screening choices, sampling regime, and diagnostic warnings are
-retained.
+A `postrank_mc_fragility` list with `pairs` (data frame of traced pairs
+containing `entity_i`, `entity_j`, `better_direction`, `weighted_error`,
+`margin`, `disclose_preferred`, `mcse`, `ratio`, and `fragile`, plus
+`relation_in_grade` when `fit` has grades), `summary` (`pairs`,
+`traced`, `fragile`, `fragile_share`, `mcse_unavailable`, plus
+`fragile_disclosed` and `fragile_tied` when `fit` has grades), `regime`,
+`draws`, `z`, `screen_margin`, `mcse_method`, and `warnings`.
 
 ## Details
 
-Let \\\bar e\_{ij}=\sum_k w_k e\_{ij,k}\\ and \\d=\min(\bar e\_{ij},\bar
-e\_{ji})\\. Considering this pair alone, disclosure in the better
-direction has lower estimated loss than withholding when \\d\<\tau\\.
-The function flags \\\|d-\tau\|\<z\\\widehat{\mathrm{MCSE}}\\ using the
-weighted indicator trace for the empirically better direction. It does
-not diagnose global action stability, enforce grade counts or
-protections, or provide post-selection coverage for that chosen
-direction.
+For each unordered pair `(i, j)`, let \\\bar e\_{ij} = \sum_k w_k
+e\_{ij,k}\\ be the criterion-weighted directional-error probability and
+\\d = \min(\bar e\_{ij}, \bar e\_{ji})\\. Taken in isolation, ordering
+the pair in its better direction beats withholding when \\d \< \tau\\.
+For pairs passing `screen_margin`, `postrank_mc_fragility()` builds the
+per-draw weighted indicator trace for that empirically better direction
+and flags `|d - tau| < z * mcse`.
 
-IID MCSE is sample SD divided by the square root of the actual draw
-count. MCMC MCSE uses
-[`posterior::mcse_mean`](https://rdrr.io/pkg/posterior/man/mcse_mean.html)
-with the original equal-length chains. Unequal chains are not truncated
-or padded; missing optional software or unavailable MCSE leaves the
-corresponding flags unavailable. In particular, a constant empirical
-trace is not proof of certainty or adequate chain exploration. MCMC ESS
-cannot replace an IID sample count in a concentration bound. These
-pairwise flags are descriptive, not finite-sample guarantees.
+IID MCSE is `sd(trace) / sqrt(S)`. MCMC MCSE uses
+[`posterior::mcse_mean()`](https://rdrr.io/pkg/posterior/man/mcse_mean.html)
+on equal-length chains; unequal chain lengths or an uninstalled
+`posterior` package leave `mcse` and `fragile` as `NA` with a warning
+rather than truncating chains or substituting zero. Pairwise fragility
+flags are descriptive summaries and do not assess global grade
+stability, account for `G_max` or error budgets `q`, or provide
+simultaneous confidence levels or a finite-sample guarantee.
 
 ## See also
 
@@ -89,8 +93,10 @@ pairwise flags are descriptive, not finite-sample guarantees.
 ## Examples
 
 ``` r
-fragility <- postrank_mc_fragility(postrank_toy,
-  settings = list(weights = c(need_A = .6, need_B = .4), tau = .25))
+fragility <- postrank_mc_fragility(
+  postrank_toy,
+  settings = list(weights = c(need_A = 0.6, need_B = 0.4), tau = 0.25)
+)
 fragility$summary
 #> $pairs
 #> [1] 3

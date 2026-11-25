@@ -1,15 +1,15 @@
 {
   "compatibility_schema_version": "1",
-  "reader_package_version": "1.2.0",
+  "reader_package_version": "1.3.0",
   "origin_package_version": "1.1.0",
   "origin_source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
   "origin_cache_manifest_sha256": "26a3c067229d000be41c624975c2b8f777b0d2f887e96555694399808a2aae28",
   "origin_source_manifest_sha256": "fbc44fcc363bb01f7f9e9d7697be479ad0ca1a2b1d5af1b04876992df8f251cd",
-  "compatible_source_id": "d95656cdfb0b9663bd804a919e635f171b74579b74dafb61f6b2d9777fdfd61d",
+  "compatible_source_id": "74e7ecfb3420a4f2197037cbab84b9a3f0429707bba342c3f47b57a3de4ef360",
   "compatible_source_entries": [
     {
       "path": "DESCRIPTION",
-      "sha256": "f9fb5a72b36f1d9e75eac222352fa46693f06c4ae95952a82ffda85246d5f16f"
+      "sha256": "e7a3f0124d745668c1b0f6423df229ca2e32903100ed379471539e65af371268"
     },
     {
       "path": "LICENSE",
@@ -17,15 +17,15 @@
     },
     {
       "path": "R/accessors.R",
-      "sha256": "2556a6792e9730e4aba6ebc12e578f28f6fb1bd11a4ae99799d377649b0fc8e4"
+      "sha256": "afdb4e402ffd2241dd32dc85edf2e992aebf6b887cadb35b29b77e99da5d65c3"
     },
     {
       "path": "R/as-postrank-posterior.R",
-      "sha256": "e9479d3d7ae6288e4fc8c82d8ed82052b6c2c9c9d893bbf1f962f267cb431dd5"
+      "sha256": "f481727ec53d50efdf739ba1a4b72e3fcd39f24249be455ce322e8206cc23231"
     },
     {
       "path": "R/backend-availability.R",
-      "sha256": "0b3763835aabf3a1b5b03f753dc9c0a496fa76b0343363cb09b69760e2cd3f19"
+      "sha256": "fa008cde0b3e422ea0c72906e6e96365557ef2af259f2895848586243bebf2a7"
     },
     {
       "path": "R/backend-gurobi.R",
@@ -37,75 +37,79 @@
     },
     {
       "path": "R/baselines.R",
-      "sha256": "e7202fa5d3d211290c9130f9374134ceed577a393b90d1780e694a913de2ebbe"
+      "sha256": "93e9cc0deb2f99729a6cb553bc02eb56b3a78c013fd65733585f21dec85bbfd1"
     },
     {
       "path": "R/cache.R",
-      "sha256": "eaa7eee90606155e7c528868f4abffe348d4c9df4d8cd933c52f7226463403e0"
+      "sha256": "143d92bb999c50cfb6c8a7b16298fcaf593b6e209b7aa93e6d4d056a033269a5"
     },
     {
       "path": "R/canonical-grade.R",
-      "sha256": "fd524e71da9b7ed865bb5cc0e049a35a6db03bd5d46b080b0a1ffe879fb8dcfd"
+      "sha256": "7ae3077f0ca2fdba81346e22edeaa0bdf070419c2e5dcdcdc2fdb4809cb6123b"
     },
     {
       "path": "R/coefficient-diagnostics.R",
-      "sha256": "c403ef0e53e753920815dc36094b67683ad9f1a41926a0ea2e1ef67cde91c7af"
+      "sha256": "701925b250300104175c8485b8756d9d80922091a4787c4a11822c6576c9450b"
     },
     {
       "path": "R/coefficient-gaussian.R",
-      "sha256": "55abe6f3a7020023911c869524707e5a561df2bade3aa6c5b848556695be3476"
+      "sha256": "800e6a40083cebfd36ad2223102702d288718e3660a9ecddaa34d47c4939d4ea"
     },
     {
       "path": "R/coefficient-identity.R",
-      "sha256": "919cb5079022ffa07789272d6bcf6501d82be4e0b945b19e50f1abf0a60e6aeb"
+      "sha256": "c864a3c9bed479f877f5ce21e5010b55467f6011284991922556e97a4fe89bfd"
     },
     {
       "path": "R/coefficient-mixture.R",
-      "sha256": "1fc00b968f42e46e06dd38363513db6dfe0515e9c20e92aed4c13d15ad339422"
+      "sha256": "10344288614548afc4d1bacbd48399368113b65612cb1a70c688ec465482be9a"
     },
     {
       "path": "R/coefficient-problem-adapter.R",
-      "sha256": "8380befeb246d5fe419b9d4461ecf1f85cbac611d9ba99104b2e6889a596438a"
+      "sha256": "c2f0e2bde419b195eec0f8f1a6cf1f8a5e9e2cabbf8dc96e962af1edb21ebe18"
     },
     {
       "path": "R/coefficient-validation.R",
-      "sha256": "481760f221124b35b03d6eccceb50e8e46f7ce1797f02d304ec0fb59a9065e72"
+      "sha256": "01bd74ac813c73075a9597b4caae47b55ba0c5d4ab8f3f589ec881dff302fcc4"
     },
     {
       "path": "R/compare.R",
-      "sha256": "1dd536160e40b80cacda7d063de8fa2ffa9980ffb877ac213fe99e912c13a1d6"
+      "sha256": "00463e370734772feda61e588bb454f09035594bff4ca72592b867277c153985"
     },
     {
       "path": "R/control.R",
-      "sha256": "9c103e911e90205dcc25975cd263685c6af7db4066cb995ec831561485e2c08b"
+      "sha256": "da6c84cb77304080fe51d10918f1278dba54071d8f14fef8ff1586968b836ccf"
     },
     {
       "path": "R/data-case-alabama.R",
-      "sha256": "956a8c16b342500f84106bba20168aea96fd6dc41301797d40c7048b72632ec1"
+      "sha256": "b6067cda9994deab13b011d99b31a725aa0150fc33605aba144f519fb49938e8"
     },
     {
       "path": "R/data-case-cde.R",
-      "sha256": "aaa35cc5b4901a545ff3f460b149d9509d4ce5fcc62f32c387e2d32711cbf55a"
+      "sha256": "81b8afa76eb21847d5062e4bf29722ac5a04ccba4ff087b59a0ce5592c0ee27e"
     },
     {
       "path": "R/data-case-krw.R",
-      "sha256": "726f512dc3a601d2856d594b985e6279fe8944040415662bb2dc674b4cd2715f"
+      "sha256": "950608fd15cb110058e39dc253982ef90045686174d852d3adc048d3aae0b432"
     },
     {
       "path": "R/data-tutorial.R",
-      "sha256": "9cf8ed9bfb8e8fa42187b15100dad4a16d7a0f3cc10815c69592ad6554cc5cb3"
+      "sha256": "3bb7fbe049e22a7d75671fc4c3bfeb46c8a9bf9eb868f3846c87690d9d212800"
     },
     {
       "path": "R/data.R",
-      "sha256": "9622b26fe864362e15713ee5f9b719348d687d2d5f44389e837ff21ff8b8333e"
+      "sha256": "a8ab76894bd684df4bbfcd9d42c721de34297da44d9901fa4e56431c388fd0e5"
     },
     {
       "path": "R/decision-frontier.R",
-      "sha256": "35b56cf13988ae723ff4b44dc83103b04ba37207a3c1bf4754b97dc48d05b79b"
+      "sha256": "600815a24fc59594acb954855eaf6052ae2bcfae6c7cb3ff3889d80759457d5a"
     },
     {
       "path": "R/decision-traces.R",
       "sha256": "4f166f8297d3319e6eb1aac6a3eb1b793c352905858c63420eb87e3ec24e5db8"
+    },
+    {
+      "path": "R/describe.R",
+      "sha256": "54e26b293f9291926950f20934f7186e9850ea4c89fc8e6562971aa4414716f5"
     },
     {
       "path": "R/diagnose-mcmc.R",
@@ -117,15 +121,15 @@
     },
     {
       "path": "R/diagnose-stability.R",
-      "sha256": "777c126ecb7c6e7307d9f87fd8e006b04bff996efb4e4471d1e00357d3eaab13"
+      "sha256": "0686cf0c0a79bce068cbf8bb02a485ea70d7a5cc8acaf0c47aebaf3ca8355c40"
     },
     {
       "path": "R/draws-builder.R",
-      "sha256": "5e56e5615e8e037e98b4e20f4e25c388aa501b03c964b000a7a9f8f58ba3a3fa"
+      "sha256": "19b5b3f7fe2d17172705fb83e6643a0591dba43b2abdad129542172dd1406f02"
     },
     {
       "path": "R/draws-class.R",
-      "sha256": "cb82968c9832a3128fc8089b4fcd4e187e1ba7edcdc364ccaa7b1697f9e784f4"
+      "sha256": "24b9165702e9a158f0806ec72397ead7f74b4a9a5141893a8d357efa017960f4"
     },
     {
       "path": "R/draws-criterionwise.R",
@@ -137,7 +141,7 @@
     },
     {
       "path": "R/draws-friendly.R",
-      "sha256": "b83321e6b8b2ef3dfa87ade334a1a55058dee7527b8292e986f1668e249a7f9b"
+      "sha256": "e1d504004e9b4be8b6a6037f688eb0a79498f3b79fdcae7df7d01efaf6e3178f"
     },
     {
       "path": "R/draws-joint.R",
@@ -145,11 +149,11 @@
     },
     {
       "path": "R/draws-serialization.R",
-      "sha256": "27f598dfb690d0cf55cea2f98d88a3e4369f329d50721e2a7d98bb4cdec207a3"
+      "sha256": "34d4386bd235f85abb17b622d0b11afde5ef36597ae91c6968ad2a391954b866"
     },
     {
       "path": "R/draws-subset.R",
-      "sha256": "49ea2217b1a43fc687f1a863a03c33bb6f6a9fb0c5de80fa54d7c5fd7f93122d"
+      "sha256": "79af1bddd87e34824a13c50c04a51e6d78a6ca3042758b7e00f0440de901fc15"
     },
     {
       "path": "R/engine-dp.R",
@@ -173,19 +177,23 @@
     },
     {
       "path": "R/evaluate-grade.R",
-      "sha256": "0d66fc2a813859d2e48f0abc0b4362c5a81eaf488a597b141d7d3819914aab4c"
+      "sha256": "4ea23978bb75dca5f7daa9f91fd53bee9f43641414d49afeb6591712fa5302a1"
+    },
+    {
+      "path": "R/example-results.R",
+      "sha256": "c57015387782582d4c22fe527ac16577c5d542d8b00cafe4802413d0543df688"
     },
     {
       "path": "R/guarantee-status.R",
-      "sha256": "5f3a213246221c368517740f080274f50c68e4beb7ff96ef1c7ef7aa24265f94"
+      "sha256": "c3306d0083382050640c9a92800d84d31035abbce7e2e3aea663b8d2a385b63b"
     },
     {
       "path": "R/iid-coefficient-bounds.R",
-      "sha256": "66825054264aa2d3551b97eeca1ab52b7cc1abb0f1af6af3c19ff1dcff1f667e"
+      "sha256": "94d6bb55e562ed26ca8796b020d6c25fa930ac5542c794318780aaeba02dcff1"
     },
     {
       "path": "R/mc-diagnostics.R",
-      "sha256": "612ba03c5ee8a189cae26fcb29cb490ffa28decfc3fd7a058e08c2fd91b16228"
+      "sha256": "2737adbeef96c4774c204c6e5316da946fd5d8c89497f55c86912128d0b26631"
     },
     {
       "path": "R/mdomain-action.R",
@@ -193,7 +201,7 @@
     },
     {
       "path": "R/mdomain-assess.R",
-      "sha256": "903c5f41b652fd931cc26a8dce180b992b9503f92ac72dfff37d7a181760b2d8"
+      "sha256": "caf30b437145398f988c7d9263765a8656e008d059adfab213dc535f3aa59914"
     },
     {
       "path": "R/mdomain-capabilities.R",
@@ -201,7 +209,7 @@
     },
     {
       "path": "R/mdomain-core-action.R",
-      "sha256": "4756089f07ad510928547262bc8c42b50e069877e4a94970a261fe537a9907c9"
+      "sha256": "c794383300e03f14ce8518b8e36a4d8e83047ea763762ec183d69d853bb2092d"
     },
     {
       "path": "R/mdomain-core-candidates.R",
@@ -229,11 +237,11 @@
     },
     {
       "path": "R/mdomain-core-input.R",
-      "sha256": "1ad2538a3e768af633910720fe5fa01b33693e5cd2e1ea28bb16a7795d8705c3"
+      "sha256": "e3cabc857275ddd5cbfb9dc9fe8f10f389ba1763dbede79a9f49a2086796f25d"
     },
     {
       "path": "R/mdomain-core-oracle.R",
-      "sha256": "d7174a56a60d3d9131a5cb0f075c7bdbcdd23b6c4245f8148c61bb6d3c22e985"
+      "sha256": "b07ff946b774f6fad32bbed642a46aa43db8459f0d0d8b50e8e8303fefe6a8f0"
     },
     {
       "path": "R/mdomain-core-solve-candidates.R",
@@ -245,19 +253,19 @@
     },
     {
       "path": "R/mdomain-decision.R",
-      "sha256": "8e130481b262242e4bb258dcd798a7e1c3ec313235f7f2a7c76b37cea4deedfb"
+      "sha256": "fec405e62a056b36bf97c92e3d4b4997340aa12bef4e2fc9b3283ecd7f93dc33"
     },
     {
       "path": "R/mdomain-evaluate.R",
-      "sha256": "584b1b829702180bad5812dce23c48010fe18c351bec683c1e79feac575eeb70"
+      "sha256": "bdeaa35c71108fbefdbc5ef2458383045cdee21a5feed658ac1637d3fe4e0c69"
     },
     {
       "path": "R/mdomain-family.R",
-      "sha256": "c6577f65861b6117ab4ba6512a188407658edde21cca2615d4abd58bbfcce841"
+      "sha256": "43e9e66c165ad58ef09b9daca2c37897db2eec3ebc866bc2dbb5f84ba1dc1e7a"
     },
     {
       "path": "R/mdomain-input.R",
-      "sha256": "2787b76e5eac62c32cbd71e69246400d2e27583dcfae7eaed7e5d6d3f7981321"
+      "sha256": "78eaeadbc62dcb0943f7a29b9b22fca4fbe69d9c19cc63dd6ad8f61d56e19182"
     },
     {
       "path": "R/mdomain-joint-input.R",
@@ -277,11 +285,11 @@
     },
     {
       "path": "R/mdomain-plot-data.R",
-      "sha256": "b5f64df20492fd10d1fc14b2dd42056e55735949778a3ed3667cedd2707c1529"
+      "sha256": "468a293d4bf215bf95cd9e9755629327b61c80128c32bf355ecc54efe9a20e26"
     },
     {
       "path": "R/mdomain-plot-grades.R",
-      "sha256": "54fcffde377bff75885701f03ae2883d972b3cc69d08e2ce5ce920982ee1d5ab"
+      "sha256": "9feaf2db75ce0f07171601fc14096f5920f24c2323679170ecfd6726b61724dc"
     },
     {
       "path": "R/mdomain-plot-pair.R",
@@ -289,23 +297,23 @@
     },
     {
       "path": "R/mdomain-plot.R",
-      "sha256": "4813cbd8c08bd54402c35510c9dfc6a15e25eb6565e141d38fe08c178da6a758"
+      "sha256": "05f05fe3f1fcd1bf15901c049add73f010b8c51977a2c5931d053dec4aa33984"
     },
     {
       "path": "R/mdomain-solve.R",
-      "sha256": "5d6163630b59ad789425cfb3aab5207e109009d7eb233e9e8e596e35e4e002ac"
+      "sha256": "4d5d6ba4e7de02a1a51c27357c42b9222bad1d7a482ad068cc28b28d628574bd"
     },
     {
       "path": "R/minimax-refine.R",
-      "sha256": "334a31a7dd1b31aff6f004160bbf38f8c48d781ab0ba98ac058fea49a153514f"
+      "sha256": "0017e60b81fe662e2cc272787f6967b043730d75fdf179e7d7bcc89a9188ee67"
     },
     {
       "path": "R/normalize-solver-result.R",
-      "sha256": "6b4e3d80ca56bb7150f3a5550280bdf1d81e5385bbebec6ebf3919353394a2a2"
+      "sha256": "e6440aa73971544c9c559416f6d60700935ed81dc18f3fff97bd41afb8eaadb4"
     },
     {
       "path": "R/options.R",
-      "sha256": "8939a1391b0483452bd148b1a5b185da6128269ed88cc8b773639d3c30e96018"
+      "sha256": "99ad56f0ced423450c0ded4afc40294d385cc7cfd6cca56364316b45d7de7c09"
     },
     {
       "path": "R/pairwise-blocks.R",
@@ -313,7 +321,7 @@
     },
     {
       "path": "R/pairwise-dispatch.R",
-      "sha256": "4639a6cbde4dd852fb2d3418b9991184a18a77ef4f62d9920d1d880c3ac985da"
+      "sha256": "9fbd503a998954f2ba9e18492069234249fb2a96833acfa3b012716a7b6204b4"
     },
     {
       "path": "R/pairwise-exact.R",
@@ -325,31 +333,31 @@
     },
     {
       "path": "R/plots-card.R",
-      "sha256": "88965fdb9c37cc70d8d120f0b5585d343267075837479ac76fdf51bb3a3ea445"
+      "sha256": "1d96ee606a240bcaa6351414ccfbabca83f390153ffeefb064c88abefdf96b17"
     },
     {
       "path": "R/plots-compare.R",
-      "sha256": "8aeece7346f9636365d1d2ca7629ee06b7fec73c0067dce9e53f42c90bbf84cd"
+      "sha256": "1fd24648e41894027a340f3532ae183924074b1bcd3c34ba1e1403a4e882eaf6"
     },
     {
       "path": "R/plots-data.R",
-      "sha256": "76247e780828a4b83ca703a3e5bc13cfd9346e50b6031d2a8e23c4b0f7562f97"
+      "sha256": "c5880d6be89888640b0b3f3c85fb0ca0f5e5271100d8fbb5b5ef191c89f114ee"
     },
     {
       "path": "R/plots-frontier.R",
-      "sha256": "4768289f7c76bc5a58915ed0aa0dd175d773aa177b97f37826f04e7b360b0adf"
+      "sha256": "7ea51acea0925dbb1ddb45a27b5bbff8505191f364e70d0182875615017ea9b1"
     },
     {
       "path": "R/plots-pairwise.R",
-      "sha256": "bad7a7a2177ffd942f524166660e62f23271b803136c13ef411ae99204815f3f"
+      "sha256": "a66ab9f89bec7b7098eb483834bc1e17d8401ca820e59ba7a7416e83557fab78"
     },
     {
       "path": "R/plots-profile.R",
-      "sha256": "f35238eadb57d80a734f0edf9dbf92d16c70d7ec402e707dcb13d1ac7b43f862"
+      "sha256": "db3da49fd0cdb524b53fad1ea6808d3b6e9fdfe7ab03f76de73d46766a5a890a"
     },
     {
       "path": "R/plots-relations.R",
-      "sha256": "18b5a8896446f144576298c7b6e2be38f767685330c266da3f91af6e9978d6bb"
+      "sha256": "18d80253a5848835f14075170cd29c327aa8615e2f8cf1e9d59cc0e7288edfbc"
     },
     {
       "path": "R/plots-utils.R",
@@ -357,39 +365,39 @@
     },
     {
       "path": "R/posterior-summaries.R",
-      "sha256": "2438ac1128838d155cebeb261901eff52021aa9667118ed1e8b3904ef788b4b2"
+      "sha256": "8d5fef30436267f0cfe23c8b5319a1bd6ec83fd5e06ac52f07cd0bd97884c985"
     },
     {
       "path": "R/postrank-analysis.R",
-      "sha256": "fedbc4e489d36a866b5355f0c257149bc8b674016018058335ed3b08b42d4e33"
+      "sha256": "b77518d4388d976256cb5f0913699506d8ce5ae92318a6ac15af537918bb582f"
     },
     {
       "path": "R/postrank-diagnose.R",
-      "sha256": "69ac763c866fd0c4408a5c0e8386793c612e021ea9125ad91823421973c240b7"
+      "sha256": "9b6eb7a862538bdd0973e0dc8bf9f370a65f8cf200fe38b83b86481068da9573"
     },
     {
       "path": "R/postrank-package.R",
-      "sha256": "53126a668d956708b7f0e915278e5c6342026b6040fcba3fe9b4487d46a6bb63"
+      "sha256": "547616496a28112e9481724d6b9d188a6b97998c5f687cfdc7b98c16b1794721"
     },
     {
       "path": "R/postrank-report.R",
-      "sha256": "01c6a0393c52856602a66cb42ac8fc1646671cd5428a973649700a5dddfe9e7e"
+      "sha256": "a56e4fe389c656187e290d939b21f6b61b58ff6a6e1e75c5c5b39d2e8c6de69d"
     },
     {
       "path": "R/postrank-solve.R",
-      "sha256": "3b873856996de1190e2df40c66c931ea8ef7684c9c8f345d2bbaad04451cf244"
+      "sha256": "273c210c6609d6b4c082ca7b55c0c9a22b17884b8dbf20aa3ad0ecfc00d234ab"
     },
     {
       "path": "R/print-methods.R",
-      "sha256": "5c20991c3c2a15a9b915da1a1a87585a4afb2c74bc9862c5cbf1451f54fa02f8"
+      "sha256": "9f1a1d14b799c60b853e745ce945de31467345240bdf49789605d8d2adf971a8"
     },
     {
       "path": "R/probabilities.R",
-      "sha256": "8331daa40716081f8bb92143af5852f078a38f3bd8554609dda2cd7d2a9eb238"
+      "sha256": "39b8c26d91a0cb03bfd2e2678752ac5f4b99abcf0a5ca1e4147113fc99f14aae"
     },
     {
       "path": "R/problem-class.R",
-      "sha256": "99599419eaa94aa882a97199340f935966ae84e62f015f05a04e9f871638f836"
+      "sha256": "0b7736834a47232619bce6664df4969cb643b494ae82ac09e41c389707763090"
     },
     {
       "path": "R/problem-encoding.R",
@@ -417,27 +425,27 @@
     },
     {
       "path": "R/protection-envelopes.R",
-      "sha256": "3dfd798a4ffb807c370b9e48dfd64e07423f7da1078b93fee6b0a3a9e07a9d19"
+      "sha256": "4f46a7574b7209f849b2902c7657591a3a41dac373dc088e910da6db19f6e2c0"
     },
     {
       "path": "R/report-card.R",
-      "sha256": "4e0e29a1ae6dfb06a980668de5bd15715b66151aff5f6b708f0e9ec6bcbd9292"
+      "sha256": "8ca95a01e6d08e122f6d3b3f332d70752265f4edc67882006ae918075b5003e8"
     },
     {
       "path": "R/risk-regret-bounds.R",
-      "sha256": "24ed147a40790c1026fca6f4aea4950ff11bdedbb7f55439fae88f16ce4489f9"
+      "sha256": "53d9284760066dd050650b730630b380f0eada4a9165df389381111ff55b40a7"
     },
     {
       "path": "R/sensitivity.R",
-      "sha256": "fe3413cd2928c7c42d6a7eb704447f1a51e9a048a86f62c98ac107a238b6d577"
+      "sha256": "02c5516ccb336ee327a4ebc6911260e366ccd7581791b5525a350dbc4f394e60"
     },
     {
       "path": "R/settings.R",
-      "sha256": "fc6c564f8166eec54442f936a22c6dc81c7192bc60d464c2cc0657e3e829333d"
+      "sha256": "bb8e7e193beed78ee8d047fe1deae4a904a33b4ec725d390d48c3374404bf012"
     },
     {
       "path": "R/solution-class.R",
-      "sha256": "36868b6aa91d906dbee9342b1fcc2ed876e28ce7060941115515ec20dc0d2ed8"
+      "sha256": "bf7e59b1a174873e6cfa795e5b4dc4396ea856eac6c6106ef023a68e624678ae"
     },
     {
       "path": "R/solution-identity.R",
@@ -445,55 +453,55 @@
     },
     {
       "path": "R/theme.R",
-      "sha256": "509bc9afe354456792fedc2866c7a5b4c91755f8f11ecb1efc9c6f03aa8a21bb"
+      "sha256": "6c5c263405e736037fe8f5ff03976de5d9ca41b110a8cf0e2113574431f68904"
     },
     {
       "path": "R/tie-backend.R",
-      "sha256": "974a1888b0077ba3f4dde17dc9546214909d77b2e29cc0f371f2284661a5751f"
+      "sha256": "1c471d1f65c0ad27bf93fc0cb6ff9248faa8118f308b1cdebd566c7cb5466c72"
     },
     {
       "path": "R/tie-evaluate.R",
-      "sha256": "adbbf947c0e0f6374664a31bc69e7d027af18feef72e1f24a23362c3b6a59df5"
+      "sha256": "1eea395fead90c26f541a58d8f19dbb45418ba8003cf8c6fc37aba02f18652ab"
     },
     {
       "path": "R/tie-input.R",
-      "sha256": "b3fe2ea6356303ab9feb70ac316ab565714e585b069bf593f36df664cfbbd873"
+      "sha256": "65aca1ed2450d7da099fc900a7adc5eb27528b1a79ca2b03743bc9ef1098bd17"
     },
     {
       "path": "R/tie-json-scan.R",
-      "sha256": "a4d1d6ee9a80b3e8983ce3f65d85abd87c2630cc9a34a2729a1fb3f7a2c098a2"
+      "sha256": "c56c14d89a32f0bbe12690e4e052a9bbd93ecb06d1bb06760eb26f81f1fad7bd"
     },
     {
       "path": "R/tie-normalize.R",
-      "sha256": "059324367235313ed983dead32ae72c2bde8fe8149b1788df77f34154de4f26b"
+      "sha256": "0558cb71e1b5ec2e147cb2dbf5d7acdbc43457b2024efac5bf01a841e70b6151"
     },
     {
       "path": "R/tie-pairwise.R",
-      "sha256": "8ad12e624fb2e81e9c257fd2bf8fc991d9d840c042089fd3e5c20b48bf2d3104"
+      "sha256": "628e984984afc9200e04ffa03ff39bfe56f82c86fc6da1c39e3b5e46b13ec52f"
     },
     {
       "path": "R/tie-problem.R",
-      "sha256": "95d02593754ba4906071b83568abe30fe018be7b0fdb083e3a7e932776b003dd"
+      "sha256": "c18fef4f21ebdff0e27fe38320fedf598b904fc143440f6b1cd84865ab14c081"
     },
     {
       "path": "R/tie-serialization.R",
-      "sha256": "a5d781e1a4fecac246303bd972f82111ec491c9e83f554400d98a3107d02fb34"
+      "sha256": "d711f2c9c92cf36c86b58f3f194843e4ed73150e7315308dcbf76d7129bfe533"
     },
     {
       "path": "R/tie-solution.R",
-      "sha256": "fece876d66a395292c12fb07f473b3d6626764f2cd72e9ada7f0e0baab939081"
+      "sha256": "218092f6183a8990c9b6b1d5ae0829e4ae850b7088d96c94b81f618f58b9fc6c"
     },
     {
       "path": "R/tie-solve.R",
-      "sha256": "ff4e91d9883e0465017edab281028d25c00516b0cae0ed81ecead6a0d87aba3c"
+      "sha256": "52b632784c6a4e633985464a835e789bb034376dc74b463a912789f66d8e203c"
     },
     {
       "path": "R/utils-cli.R",
-      "sha256": "fa80a459db3d7f7706fb9080b0bb2cc90f9cdb37acd72f1d271e6ab6a3e2d7e2"
+      "sha256": "e6395a981fee909ba07fdb2bd361c2543c24a493cad2c3ddb78457edd537413a"
     },
     {
       "path": "R/utils-digest.R",
-      "sha256": "d25ee1cb7a506ed349404d115567e7f1f2408ca6ad95172261a3d1764374d192"
+      "sha256": "d6cddc63d1e3a260db1e98a06c874cb19cd25e0e9734bb7f0087acaaec1e9ce6"
     },
     {
       "path": "R/validate-draw-history.R",
@@ -505,7 +513,7 @@
     },
     {
       "path": "R/validate-solution.R",
-      "sha256": "7f556b9a679e1a23ba0d10a272340fc43a061b54c90801182b2b6ed750a1604a"
+      "sha256": "321e57a10a16f36cdfa589affa0114a2fdddc22dea7dd003505675809e05c7f3"
     },
     {
       "path": "data/postrank_toy.rda",
@@ -545,21 +553,24 @@
     },
     {
       "path": "inst/scripts/_vignette-setup.R",
-      "sha256": "438fd14c9328baeb4ab46ff2c5f2923e6e03cf93acae2c39db97719fb3618376"
+      "sha256": "44eec1c6921034a19370ed6549f80d55025036052c4814d8e15c29284e8df777"
     },
     {
       "path": "inst/scripts/build-cached-assets.R",
-      "sha256": "1b36263bc0cc20cf9793274f1990ee3c9a0b152cce30f412ce163a6441823158"
+      "sha256": "20e0383024ffb0e32c9ef8fa4c96d4361796bec35a187452c69c280a7a459a79"
     },
     {
       "path": "inst/scripts/validate-cache-reader-compatibility.R",
-      "sha256": "5a6813cc5901068257c77451f5ba343f030b2e101f36672a71c76a66cf5b61ee"
+      "sha256": "ac33adcc20ef06472436826743979411d228bd98127e34d162d104cf4b76c704"
     }
   ],
   "unchanged_origin_paths": ["R/accessors.R", "R/as-postrank-posterior.R", "R/backend-availability.R", "R/backend-gurobi.R", "R/backend-highs.R", "R/baselines.R", "R/cache.R", "R/canonical-grade.R", "R/coefficient-diagnostics.R", "R/coefficient-gaussian.R", "R/coefficient-identity.R", "R/coefficient-mixture.R", "R/coefficient-problem-adapter.R", "R/coefficient-validation.R", "R/compare.R", "R/control.R", "R/data-case-alabama.R", "R/data-case-cde.R", "R/data-case-krw.R", "R/data-tutorial.R", "R/data.R", "R/decision-frontier.R", "R/decision-traces.R", "R/diagnose-mcmc.R", "R/diagnose-regime.R", "R/diagnose-stability.R", "R/draws-builder.R", "R/draws-class.R", "R/draws-criterionwise.R", "R/draws-exact.R", "R/draws-friendly.R", "R/draws-joint.R", "R/draws-serialization.R", "R/draws-subset.R", "R/engine-dp.R", "R/engine-local-search.R", "R/engine-lp.R", "R/engine-solve.R", "R/engine-spec.R", "R/evaluate-grade.R", "R/guarantee-status.R", "R/iid-coefficient-bounds.R", "R/mc-diagnostics.R", "R/minimax-refine.R", "R/normalize-solver-result.R", "R/options.R", "R/pairwise-blocks.R", "R/pairwise-dispatch.R", "R/pairwise-exact.R", "R/pairwise-reference.R", "R/plots-card.R", "R/plots-compare.R", "R/plots-data.R", "R/plots-frontier.R", "R/plots-pairwise.R", "R/plots-profile.R", "R/plots-relations.R", "R/plots-utils.R", "R/posterior-summaries.R", "R/postrank-analysis.R", "R/postrank-diagnose.R", "R/postrank-package.R", "R/postrank-report.R", "R/postrank-solve.R", "R/print-methods.R", "R/probabilities.R", "R/problem-class.R", "R/problem-encoding.R", "R/problem-exact-grades.R", "R/problem-minimax.R", "R/problem-protection.R", "R/problem-weighted.R", "R/protection-constraint-settings.R", "R/protection-envelopes.R", "R/report-card.R", "R/risk-regret-bounds.R", "R/sensitivity.R", "R/settings.R", "R/solution-class.R", "R/solution-identity.R", "R/theme.R", "R/tie-backend.R", "R/tie-evaluate.R", "R/tie-input.R", "R/tie-json-scan.R", "R/tie-normalize.R", "R/tie-pairwise.R", "R/tie-problem.R", "R/tie-serialization.R", "R/tie-solution.R", "R/tie-solve.R", "R/utils-cli.R", "R/utils-digest.R", "R/validate-draw-history.R", "R/validate-draws-common.R", "R/validate-solution.R", "data/postrank_toy.rda", "data/pr_case_alabama.rda", "data/pr_case_cde.rda", "data/pr_case_krw.rda", "data/pr_example_draws.rda", "data/pr_example_gaussian.rda", "data/pr_toy_mcmc.rda", "data/pr_tutorial.rda"],
-  "allowed_origin_differences": ["DESCRIPTION", "LICENSE", "inst/extdata/case-studies/DATA-NOTICE.md", "inst/scripts/_vignette-setup.R"],
-  "added_source_paths": ["R/mdomain-action.R", "R/mdomain-assess.R", "R/mdomain-capabilities.R", "R/mdomain-core-action.R", "R/mdomain-core-candidates.R", "R/mdomain-core-decision.R", "R/mdomain-core-diagnose-mcmc.R", "R/mdomain-core-evaluate-expected.R", "R/mdomain-core-evaluate-joint.R", "R/mdomain-core-input-summary.R", "R/mdomain-core-input.R", "R/mdomain-core-oracle.R", "R/mdomain-core-solve-candidates.R", "R/mdomain-core-validate-iid.R", "R/mdomain-decision.R", "R/mdomain-evaluate.R", "R/mdomain-family.R", "R/mdomain-input.R", "R/mdomain-joint-input.R", "R/mdomain-methods.R", "R/mdomain-numbers.R", "R/mdomain-plot-cells.R", "R/mdomain-plot-data.R", "R/mdomain-plot-grades.R", "R/mdomain-plot-pair.R", "R/mdomain-plot.R", "R/mdomain-solve.R", "inst/scripts/validate-cache-reader-compatibility.R"],
-  "reader_sha256": "438fd14c9328baeb4ab46ff2c5f2923e6e03cf93acae2c39db97719fb3618376",
+  "allowed_origin_differences": ["DESCRIPTION", "LICENSE", "R/accessors.R", "R/as-postrank-posterior.R", "R/backend-availability.R", "R/baselines.R", "R/cache.R", "R/canonical-grade.R", "R/coefficient-diagnostics.R", "R/coefficient-gaussian.R", "R/coefficient-identity.R", "R/coefficient-mixture.R", "R/coefficient-problem-adapter.R", "R/coefficient-validation.R", "R/compare.R", "R/control.R", "R/data-case-alabama.R", "R/data-case-cde.R", "R/data-case-krw.R", "R/data-tutorial.R", "R/data.R", "R/decision-frontier.R", "R/diagnose-stability.R", "R/draws-builder.R", "R/draws-class.R", "R/draws-friendly.R", "R/draws-serialization.R", "R/draws-subset.R", "R/evaluate-grade.R", "R/guarantee-status.R", "R/iid-coefficient-bounds.R", "R/mc-diagnostics.R", "R/minimax-refine.R", "R/normalize-solver-result.R", "R/options.R", "R/pairwise-dispatch.R", "R/plots-card.R", "R/plots-compare.R", "R/plots-data.R", "R/plots-frontier.R", "R/plots-pairwise.R", "R/plots-profile.R", "R/plots-relations.R", "R/posterior-summaries.R", "R/postrank-analysis.R", "R/postrank-diagnose.R", "R/postrank-package.R", "R/postrank-report.R", "R/postrank-solve.R", "R/print-methods.R", "R/probabilities.R", "R/problem-class.R", "R/protection-envelopes.R", "R/report-card.R", "R/risk-regret-bounds.R", "R/sensitivity.R", "R/settings.R", "R/solution-class.R", "R/theme.R", "R/tie-backend.R", "R/tie-evaluate.R", "R/tie-input.R", "R/tie-json-scan.R", "R/tie-normalize.R", "R/tie-pairwise.R", "R/tie-problem.R", "R/tie-serialization.R", "R/tie-solution.R", "R/tie-solve.R", "R/utils-cli.R", "R/utils-digest.R", "R/validate-solution.R", "inst/extdata/case-studies/DATA-NOTICE.md", "inst/scripts/_vignette-setup.R", "inst/scripts/build-cached-assets.R"],
+  "origin_code_manifest_sha256": "10f53b481ba55cbafb6c99999fb9b32773b631babb1e16e3e9f0f14b6c746ddb",
+  "comment_only_origin_differences": ["R/accessors.R", "R/as-postrank-posterior.R", "R/backend-availability.R", "R/baselines.R", "R/cache.R", "R/canonical-grade.R", "R/coefficient-diagnostics.R", "R/coefficient-gaussian.R", "R/coefficient-identity.R", "R/coefficient-mixture.R", "R/coefficient-problem-adapter.R", "R/coefficient-validation.R", "R/compare.R", "R/control.R", "R/data-case-alabama.R", "R/data-case-cde.R", "R/data-case-krw.R", "R/data-tutorial.R", "R/data.R", "R/decision-frontier.R", "R/diagnose-stability.R", "R/draws-builder.R", "R/draws-class.R", "R/draws-friendly.R", "R/draws-serialization.R", "R/draws-subset.R", "R/evaluate-grade.R", "R/guarantee-status.R", "R/iid-coefficient-bounds.R", "R/mc-diagnostics.R", "R/minimax-refine.R", "R/normalize-solver-result.R", "R/options.R", "R/pairwise-dispatch.R", "R/plots-card.R", "R/plots-compare.R", "R/plots-data.R", "R/plots-frontier.R", "R/plots-pairwise.R", "R/plots-profile.R", "R/plots-relations.R", "R/posterior-summaries.R", "R/postrank-analysis.R", "R/postrank-diagnose.R", "R/postrank-package.R", "R/postrank-report.R", "R/postrank-solve.R", "R/print-methods.R", "R/probabilities.R", "R/problem-class.R", "R/protection-envelopes.R", "R/report-card.R", "R/risk-regret-bounds.R", "R/sensitivity.R", "R/settings.R", "R/solution-class.R", "R/theme.R", "R/tie-backend.R", "R/tie-evaluate.R", "R/tie-input.R", "R/tie-json-scan.R", "R/tie-normalize.R", "R/tie-pairwise.R", "R/tie-problem.R", "R/tie-serialization.R", "R/tie-solution.R", "R/tie-solve.R", "R/utils-cli.R", "R/utils-digest.R", "R/validate-solution.R", "inst/scripts/build-cached-assets.R"],
+  "source_comparison": "Original data files and the 1.1.0 manifests are byte-identical. Original R files and inst/scripts/build-cached-assets.R are byte-identical or differ only in comments: their code hash equals origin-code-manifest.json. Other original differences are limited to DESCRIPTION, LICENSE, DATA-NOTICE.md and the reader inst/scripts/_vignette-setup.R.",
+  "added_source_paths": ["R/describe.R", "R/example-results.R", "R/mdomain-action.R", "R/mdomain-assess.R", "R/mdomain-capabilities.R", "R/mdomain-core-action.R", "R/mdomain-core-candidates.R", "R/mdomain-core-decision.R", "R/mdomain-core-diagnose-mcmc.R", "R/mdomain-core-evaluate-expected.R", "R/mdomain-core-evaluate-joint.R", "R/mdomain-core-input-summary.R", "R/mdomain-core-input.R", "R/mdomain-core-oracle.R", "R/mdomain-core-solve-candidates.R", "R/mdomain-core-validate-iid.R", "R/mdomain-decision.R", "R/mdomain-evaluate.R", "R/mdomain-family.R", "R/mdomain-input.R", "R/mdomain-joint-input.R", "R/mdomain-methods.R", "R/mdomain-numbers.R", "R/mdomain-plot-cells.R", "R/mdomain-plot-data.R", "R/mdomain-plot-grades.R", "R/mdomain-plot-pair.R", "R/mdomain-plot.R", "R/mdomain-solve.R", "inst/scripts/validate-cache-reader-compatibility.R"],
+  "reader_sha256": "44eec1c6921034a19370ed6549f80d55025036052c4814d8e15c29284e8df777",
   "validation": {
     "status": "complete",
     "assets": {
@@ -692,5 +703,5 @@
     },
     "method": "Actual reader asset validation followed by all 21 full cross-version reads in isolated staging; no solves."
   },
-  "validated_at": "2026-11-06T05:47:03Z"
+  "validated_at": "2026-11-21T23:20:11Z"
 }

@@ -1,10 +1,10 @@
 # Disclosure and Error Frontier Over Tau or One Budget
 
-A grading problem is solved at each withholding-cost or error-budget
-setting. The resulting disclosure, criterion error ratios, risks and
-grade relations are compared. A working optimizer backend is required.
-Since a change in tau changes the loss function, raw risks at different
-tau values cannot be used to rank decisions under a common loss.
+`postrank_frontier()` solves a grading problem across a grid of
+unordered-pair costs `tau` (and/or a grid of error budgets `q_grid` on
+one criterion `q_criterion`), summarizing how the fraction of ordered
+pairs `N / M` and expected wrong-order rates `E_k / N` vary across
+settings.
 
 ## Usage
 
@@ -32,79 +32,90 @@ postrank_frontier(
 
 - pairwise:
 
-  A directional-error source accepted by
+  Pairwise directional-error source accepted by
   [`postrank_problem()`](https://joonho112.github.io/postrank/reference/postrank_problem.md),
-  or a `postrank_fit` / `postrank_analysis` whose pairwise object and
-  policy are reused (then only `tau` or `q_criterion`/`q_grid` may be
-  supplied).
+  or a `postrank_fit` / `postrank_analysis` whose pairwise probabilities
+  and base policy are reused (when reusing a fit or analysis, supply
+  only `tau` and/or `q_criterion` + `q_grid`).
 
-- weights, G_max, objective, q, exact_G, minimax_criteria:
+- weights, G_max, objective, q, exact_G, minimax_criteria,
+  minimax_refine:
 
-  As in
-  [`postrank_problem`](https://joonho112.github.io/postrank/reference/postrank_problem.md).
+  Policy arguments passed to
+  [`postrank_problem()`](https://joonho112.github.io/postrank/reference/postrank_problem.md)
+  when neither `settings` nor a fit/analysis is supplied.
 
 - tau:
 
-  A vector of abstention costs.
+  Numeric vector of unordered-pair costs in `(0, 0.5]`. May be omitted
+  only when `q_criterion` and `q_grid` are supplied together with
+  `settings` or a fit/analysis (whose `tau` is then held fixed).
 
 - q_criterion, q_grid:
 
-  Optional criterion ID and vector of q values; each grid value replaces
-  that criterion's q.
+  Optional criterion ID and numeric vector of expected-error budgets in
+  `[0, 1]` (supply both together or omit both). When both `tau` and
+  `q_grid` have multiple values, all combinations are solved.
 
 - backend, control, strategy:
 
-  Resolved as in
-  [`postrank_solve`](https://joonho112.github.io/postrank/reference/postrank_solve.md)
-  (`backend = NULL`: option, then Gurobi; no fallback).
-
-- minimax_refine:
-
-  Passed to
-  [`postrank_problem`](https://joonho112.github.io/postrank/reference/postrank_problem.md)
-  for minimax.
+  Solver, controls and search strategy, resolved as in
+  [`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md).
 
 - settings:
 
   Optional
-  [`postrank_settings`](https://joonho112.github.io/postrank/reference/postrank_settings.md)
-  supplying the policy; `tau` (the grid axis) may accompany it, other
-  loose policy arguments may not (`settings_conflict`). For a q-grid
-  with `tau` omitted, the base tau comes from `settings` or the reused
-  fit.
+  [`postrank_settings()`](https://joonho112.github.io/postrank/reference/postrank_settings.md)
+  object supplying the base policy (`tau` and/or `q_criterion` +
+  `q_grid` may accompany it, whereas separate policy arguments stop with
+  `settings_conflict`).
 
 ## Value
 
-A `postrank_frontier` list whose `table` has one row per setting: tau, q
-value, status, grade count, disclosures N, disclosure rate N/M,
-criterion error ratios E_k/N, criterion risks, primary and weighted
-risk, the absolute gap and the grade's relation identity.
+A `postrank_frontier` list whose `table` has one row per solved setting
+with columns `tau`, `q_value`, `status`, `G`, `N`, `disclosure_rate`
+(`N / M`), `primary_risk`, `weighted_risk`, `risk_absolute_gap`,
+`relation_identity`, `E_over_N_<k>` and `risk_<k>`, alongside `weights`,
+`G_max`, `objective`, `q`, `exact_G`, `q_criterion`, `backend`,
+`strategy`, `interpretation`, `input_identity` and `schema_version`.
 
 ## Details
 
-Holding the input and feasible family fixed, exact optima have
-nondecreasing disclosure counts as tau increases. If both actions have
-valid absolute risk gaps at most \\\epsilon\\, then for \\\tau_2 \>
-\tau_1\\ the weaker bound is \\N_2-N_1\ge-2\epsilon M/(\tau_2-\tau_1)\\.
-Assessment requires both the stored `risk_absolute_gap` and status; a
-status label alone does not establish that bound. Changing q or the
-grade family at the same time removes the fixed-family comparison.
-Missing action metrics remain `NA`. The input-specific restrictions of
-[`postrank_problem()`](https://joonho112.github.io/postrank/reference/postrank_problem.md)
-apply to each new problem; this function does not extend those
-capabilities.
+Solving requires an optimization solver: install the free `highs`
+package (`install.packages("highs")`) and use `backend = "highs"` or
+`options(postrank.backend = "highs")`, or provide a licensed Gurobi
+installation (the default). `postrank` never switches solvers on its
+own.
+
+Because changing `tau` changes the loss definition itself, compare
+frontier rows by their ordered pair counts `N`, error rates `E_k / N`
+and grade relations rather than ranking rows by `primary_risk`. Holding
+the input and constraint family fixed, exact optima have nondecreasing
+`N` as `tau` increases; if two rows at `tau_2 > tau_1` both have valid
+`risk_absolute_gap` at most \\\epsilon\\, then \\N_2 - N_1 \ge -2
+\epsilon M / (\tau_2 - \tau_1)\\. Rows without a checked grading record
+`NA` action metrics.
+
+## See also
+
+[`postrank_plot_frontier()`](https://joonho112.github.io/postrank/reference/postrank_plot_frontier.md),
+[`postrank_sensitivity()`](https://joonho112.github.io/postrank/reference/postrank_sensitivity.md),
+[`postrank_commonality_cost()`](https://joonho112.github.io/postrank/reference/postrank_commonality_cost.md)
 
 ## Examples
 
 ``` r
-draws <- read_postrank_draws(system.file("examples", "synthetic-iid.json",
-  package = "postrank", mustWork = TRUE))
-pairwise <- postrank_pairwise(draws)
-weights <- c(need_A = .6, need_B = .4)
-if (requireNamespace("highs", quietly = TRUE)) {
-  postrank_frontier(pairwise, weights, tau = c(.1, .25, .4), G_max = 3L,
-    backend = "highs", control = list(time_limit = 10))
-}
+# Inspect a stored frontier without running a solver:
+fr <- postrank_example("toy_frontier")
+fr$table[, c("tau", "G", "N", "disclosure_rate", "primary_risk", "status")]
+#>    tau G N disclosure_rate primary_risk  status
+#> 1 0.15 1 0       0.0000000       0.1500 optimal
+#> 2 0.25 2 2       0.6666667       0.2125 optimal
+#> 3 0.40 2 2       0.6666667       0.2625 optimal
+# Solve a three-point tau frontier with the optional highs package:
+pw <- postrank_pairwise(postrank_toy)
+postrank_frontier(pw, c(need_A = 0.6, need_B = 0.4), tau = c(0.1, 0.25, 0.4),
+  G_max = 3L, backend = "highs", control = postrank_control(time_limit = 10))
 #> <postrank_frontier>  3 choices of withholding cost
 #>    Tau  Loss   Disclosed Grades Gap
 #>    0.1  0.1000 0.0%      1      1.39e-17

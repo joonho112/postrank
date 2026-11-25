@@ -13,56 +13,68 @@ postrank_sensitivity(
 )
 }
 \arguments{
-\item{x}{A \code{postrank_pairwise}, \code{postrank_coefficients}, or
-\code{postrank_probabilities} object accepted by \code{\link[=postrank_problem]{postrank_problem()}}, or a
-\code{postrank_analysis} whose coefficients are reused.}
+\item{x}{Pairwise comparison probabilities (\code{postrank_pairwise},
+\code{postrank_coefficients} or \code{\link[=postrank_probabilities]{postrank_probabilities()}}), or a
+\code{postrank_analysis} whose \code{pairwise} component is reused.}
 
-\item{grid}{A \code{\link[=postrank_settings_grid]{postrank_settings_grid()}} data frame or a list of
-\code{\link[=postrank_settings]{postrank_settings()}}.}
+\item{grid}{A \code{\link[=postrank_settings_grid]{postrank_settings_grid()}} data frame or a non-empty list of
+\code{\link[=postrank_settings]{postrank_settings()}} objects.}
 
-\item{backend}{\code{NULL} (option, then Gurobi) or \code{"gurobi"}/\code{"highs"}.}
+\item{backend}{Solver to use, \code{"gurobi"} or \code{"highs"}; \code{NULL} uses
+\code{getOption("postrank.backend")}, or \code{"gurobi"} if unset.}
 
-\item{control}{A \code{\link[=postrank_control]{postrank_control()}} object or bare control list.}
+\item{control}{Solver controls from \code{\link[=postrank_control]{postrank_control()}} or a named list.}
 
-\item{reference}{Optional \code{setting_id} of the reference row (default: the
-row flagged \code{is_reference}).}
+\item{reference}{Optional \code{setting_id} of the reference row (defaults to the
+row with \code{is_reference = TRUE}, or row 1).}
 
-\item{keep_fits}{Keep every fit (\code{TRUE} by default for at most 25 rows).}
+\item{keep_fits}{Logical; whether to retain all \code{postrank_fit} objects in
+\code{fits} (defaults to \code{TRUE} when at most 25 rows remain after binding).}
 }
 \value{
-A \code{postrank_sensitivity} list. \code{table} contains action metrics and
-solver bounds, \code{changes} counts pair relations newly disclosed, newly
-withheld or reversed against the reference, and \code{grades} stores entity
-grades by setting. Changes compare relations, not numeric label differences.
-\code{grid} and \code{settings} retain the bound policies; \code{fits} holds the full fits
-when requested. \code{reference_id}, \code{backend}, \code{control}, \code{schema_version},
-\code{provenance} and \code{warnings} record the calculation.
+A \code{postrank_sensitivity} list containing \code{grid}, bound \code{settings},
+\code{fits} (\code{NULL} when \code{keep_fits = FALSE}), \code{grades} (\verb{n x L} integer
+matrix), \code{table} (loss, \code{N}, \code{disclosure_rate}, \code{G}, \code{status}, \code{reason},
+bounds, gap and \verb{E_over_N_<k>}), \code{changes} (\code{n_same}, \code{n_new_disclosed},
+\code{n_new_withheld}, \code{n_reversed} and \code{change_fraction} relative to
+\code{reference_id}), \code{reference_id}, \code{backend}, \code{control}, \code{schema_version},
+\code{provenance} and \code{warnings}.
 }
 \description{
-A separate optimization is performed for each distinct policy using the same
-posterior coefficients. A working optimizer backend is required.
+\code{postrank_sensitivity()} solves one grading problem per setting in \code{grid} on
+the same pairwise comparison probabilities, and summarizes how grades,
+ordered pair counts and pairwise relations change relative to a reference
+row.
 }
 \details{
-One problem is solved per grid row using the same coefficients. The
-backend is resolved once and recorded. Each row reports risk, disclosure,
-grade count, status, bounds and relation changes relative to the reference
-row. Rows without a validated grade retain their status, reason and bounds,
-with \code{NA} action metrics and changes; they are not replaced by all-withheld
-actions. Grade caps exceeding the entity count are reduced when bound to the
-input. Rows that coincide only after this reduction are removed with a
-warning. Since raw risks are comparable only under a common loss, the table
-reports settings separately without ranking them.
+Solving requires an optimization solver: install the free \code{highs} package
+(\code{install.packages("highs")}) and use \code{backend = "highs"} or
+\code{options(postrank.backend = "highs")}, or provide a licensed Gurobi
+installation (the default). \code{postrank} never switches solvers on its own.
+
+Because changing \code{tau} or \code{weights} changes the loss definition itself,
+compare rows by their grades, ordered pair counts and \code{changes} rather than
+ranking settings by their \code{risk} numbers. If capping \code{G_max} at the entity
+count makes two grid rows identical, duplicates are dropped with a warning.
+Rows that finish without a checked grading record \code{NA} loss and \code{changes}
+with \code{reason = "no_validated_incumbent"}.
 }
 \examples{
-if (requireNamespace("highs", quietly = TRUE)) {
-  pw <- postrank_pairwise(postrank_toy)
-  base <- postrank_settings(c(need_A = .6, need_B = .4), tau = .25, G_max = 3L)
-  sens <- postrank_sensitivity(pw, postrank_settings_grid(base, tau = .4), backend = "highs",
-    control = postrank_control(time_limit = 10))
-  sens$table[, c("risk", "N", "G", "status")]
-}
+# Inspect a stored sensitivity grid without running a solver:
+sens0 <- postrank_example("tutorial_sensitivity")
+sens0$table[, c("setting_id", "risk", "N", "G", "status")]
+sens0$changes
+\dontshow{if (requireNamespace("highs", quietly = TRUE)) withAutoprint(\{ # examplesIf}
+# Solve a two-row grid directly with the optional highs package:
+pw <- postrank_pairwise(postrank_toy)
+base <- postrank_settings(c(need_A = 0.6, need_B = 0.4), tau = 0.25, G_max = 3L)
+sens <- postrank_sensitivity(pw, postrank_settings_grid(base, tau = 0.4),
+  backend = "highs", control = postrank_control(time_limit = 10))
+sens$table[, c("setting_id", "risk", "N", "G", "status")]
+\dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link[=postrank_settings_grid]{postrank_settings_grid()}}, \code{\link[=postrank_frontier]{postrank_frontier()}}
+\code{\link[=postrank_settings_grid]{postrank_settings_grid()}}, \code{\link[=postrank_frontier]{postrank_frontier()}},
+\code{\link[=postrank_example]{postrank_example()}}
 }
 \concept{grids}

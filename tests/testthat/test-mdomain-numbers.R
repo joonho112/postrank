@@ -126,7 +126,7 @@ testthat::test_that("the optional exact arithmetic dependency is checked lazily"
   guarded <- tryCatch(.md_attempt({ evaluated <- TRUE }), error = identity)
   testthat::expect_identical(guarded$code, "mdomain_dependency")
   testthat::expect_false(evaluated)
-  # P1 empirical input validation does not require the P2 rational dependency.
+  # Common-grade draw validation does not require the optional gmp package.
   testthat::expect_s3_class(as_postrank_draws(pr_test_payload()), "postrank_draws")
 })
 

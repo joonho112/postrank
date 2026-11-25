@@ -1,5 +1,5 @@
-# Practical Monte Carlo diagnostics (014 repair, decision 4): cross-fitted risk
-# and MC-fragile pairs. Both are descriptive; neither is a finite-sample bound.
+# Monte Carlo cross-fitting and pairwise fragility diagnostics.
+# Both are descriptive summaries; neither is a finite-sample bound.
 
 # Problem settings from a fit or an explicit settings list.
 .pr_mc_settings <- function(fit, settings, need_G = TRUE) {
@@ -10,7 +10,7 @@
     .pr_assert(is.null(fit$problem$protection_envelope) && is.null(fit$problem$settings$risk_caps),
       "MC diagnostics need a public problem, not an internal envelope or second-stage problem", "invalid_mc_diagnostic")
     s <- fit$problem$settings
-    # Legacy (0.0.1) minimax fits have no minimax_refine setting and were single-stage.
+    # Saved minimax fits without a minimax_refine slot used single-stage optimization.
     if (identical(s$objective, "minimax") && is.null(s$minimax_refine)) s$minimax_refine <- "none"
     return(s)
   }
@@ -74,71 +74,69 @@
   mean(ra[up] == rb[up])
 }
 
-#' Select and Evaluate Reports on Two Draw Folds
+#' Select and Evaluate Gradings on Two Draw Folds
 #'
-#' Posterior draws are divided into two folds. A grading is selected on each
-#' fold and evaluated on the other, giving a diagnostic of sensitivity to
-#' finite posterior simulation. The supplied model is retained throughout; it
-#' is not refitted to held-out observations. The calculation requires two
-#' optimizations.
+#' `postrank_crossfit()` splits posterior draws into two folds (`A` and `B`),
+#' solves the grading problem on each fold, and evaluates each fold's grading on
+#' the held-out fold. It measures sensitivity of the chosen grading and its risk
+#' to finite posterior simulation without refitting your statistical model to
+#' held-out observations. Running `postrank_crossfit()` executes two solver
+#' runs.
 #'
-#' @param draws Joint equal-weight ordinary posterior draws, validated or a
-#'   supported canonical payload. Whole states must preserve all entities and
-#'   criteria. Separate criterion blocks, exact finite laws, Gaussian/mixture
-#'   coefficients, supplied probabilities, and equality-neutral inputs are not
-#'   supported by this draw-splitting diagnostic.
-#' @param fit Optional `postrank_fit` or `postrank_analysis` on the same input.
-#'   Its problem settings are used, and its grade, when available, is also
-#'   evaluated on both folds. Supply exactly one of `fit` or `settings`.
-#' @param settings Alternatively, a [postrank_settings()] object or a list with
-#'   `weights`, `tau`, `G_max`, and optional `objective`, `q`, `exact_G`,
-#'   `minimax_criteria`, and `minimax_refine`. The conditional unbiasedness
-#'   interpretation requires loss settings fixed independently of evaluation draws.
-#' @param backend,control,strategy Backend, numerical controls, and strategy as
-#'   in [postrank_solve()], applied separately to each fold. `backend = NULL`
-#'   uses the `postrank.backend` option, then Gurobi; there is no fallback.
-#' @return A `postrank_crossfit` list with split receipts and per-fold status,
-#'   incumbent availability, absolute risk gap, selected grade, in-fold and
-#'   out-of-fold risk, and `optimism` (out-of-fold minus in-fold). It also reports
-#'   pair-relation agreement, `folds_with_incumbent`, `mean_optimism`, and
-#'   `mean_abs_optimism`. With `q`, out-of-fold protection ratios are descriptive;
-#'   they do not assert that the report remains protected under the target law.
-#' @details IID input uses the first and second halves of stored draws. MCMC
-#'   input with at least two chains uses groups of whole original chains; one
-#'   chain is split into halves. A half split requires at least four draws.
-#'   The input's ordinary zero-equality condition is retained.
+#' @param draws Joint equal-weight posterior draws from [postrank_draws()] or
+#'   [as_postrank_draws()] (`dependence_mode = "joint_model"`), so each draw
+#'   contains a joint state across all entities and criteria. Criterion-wise
+#'   blocks, exact finite laws, Gaussian or mixture coefficients, pre-computed
+#'   probabilities, and tie-mode inputs are not accepted.
+#' @param fit Optional `postrank_fit` or `postrank_analysis` solved on `draws`
+#'   (for an original public problem, without protection envelopes or
+#'   second-stage risk caps). Supplies the problem settings and, when a checked
+#'   grading is present, also evaluates that full-draw grading on each fold.
+#'   Supply `fit` or `settings`, not both.
+#' @param settings A [postrank_settings()] object or named list with `weights`,
+#'   `tau`, `G_max`, and optional `objective`, `q`, `exact_G`,
+#'   `minimax_criteria`, and `minimax_refine`. Supply `fit` or `settings`, not
+#'   both.
+#' @param backend,control,strategy Solver choice, [postrank_control()] options,
+#'   and search strategy passed to [postrank_solve()] on each fold. `backend =
+#'   NULL` (the default) uses `getOption("postrank.backend")` or Gurobi (which
+#'   requires a license); install `highs` and pass `backend = "highs"` to use
+#'   HiGHS. `postrank` never switches solvers automatically.
+#' @return A `postrank_crossfit` list containing `split` metadata, per-fold
+#'   records in `folds` (`draws`, `status`, `incumbent_validated`,
+#'   `risk_absolute_gap`, and when a checked grading exists, `grade`, `G`,
+#'   `in_fold_risk`, `out_of_fold_risk`, `optimism = out_of_fold_risk -
+#'   in_fold_risk`, plus `out_of_fold_protection` when `q` is set and
+#'   `full_grade_risk_on_fold` when `fit` has grades), `agreement`
+#'   (`between_folds`, plus `full_vs_A` and `full_vs_B` when `fit` has grades),
+#'   `folds_with_incumbent`, `mean_optimism`, `mean_abs_optimism`, and
+#'   `warnings`.
+#' @details
+#' For IID draws (`S >= 4`), fold `A` is the first `floor(S / 2)` draws and fold
+#' `B` is the remainder. For MCMC draws with at least two chains, fold `A` holds
+#' the first `ceiling(C / 2)` whole chains and fold `B` holds the remaining
+#' chains; single-chain MCMC (`S >= 4`) splits iterations into first and second
+#' halves with an autocorrelation warning.
 #'
-#'   For independent IID training and evaluation folds from the same target law,
-#'   out-of-fold linear weighted risk is conditionally unbiased for the selected
-#'   training-fold report's true risk. Its difference from in-fold risk therefore
-#'   concerns that fold report's optimism, not the full-data report's optimism.
-#'   The same linearity applies to each criterion risk. It does not apply to
-#'   minimax risk: a maximum of empirical risks is generally biased upward.
+#' When `A` and `B` are independent IID folds from the same posterior and
+#' `objective = "weighted"` with loss settings fixed beforehand, out-of-fold
+#' weighted risk is conditionally unbiased for that fold grading's true
+#' posterior risk (computed from roughly `S / 2` draws rather than all `S`
+#' draws). When both folds select the exact same grading, their two signed
+#' `optimism` values have opposite signs and cancel in `mean_optimism`; check
+#' `mean_abs_optimism` for the noise scale. Under `objective = "minimax"` (a
+#' maximum of empirical criterion risks) or MCMC folds, out-of-fold risk is not
+#' unbiased. When `q` budgets are present, `out_of_fold_protection` reports
+#' held-out `E_k / N` descriptively.
 #'
-#'   No exact unbiasedness is claimed for MCMC folds. Single-chain halves can
-#'   be dependent, and grouping whole chains alone establishes neither
-#'   independence nor target stationarity and does not remove initialization
-#'   bias. Sampling declarations are not independently verified.
-#'
-#' Cross-fit values describe simulation sensitivity and do not correct the
-#' full-data risk. When both folds select the same report, the signed
-#' differences cancel, although their absolute magnitudes can remain
-#' informative about simulation sensitivity. A fold without a validated
-#' incumbent retains its reason for unavailability, and aggregates use only
-#' available folds. Interpretation therefore depends on the fold count and
-#' statuses. These diagnostics provide neither a finite-sample bound nor
-#' evidence of calibration on new observations.
+#' Cross-fitting is a descriptive summary of Monte Carlo sensitivity and does
+#' not adjust the full-sample risk or provide a finite-sample guarantee.
 #' @seealso [postrank_diagnose()], [postrank_mc_fragility()],
 #'   [postrank_iid_bounds()]
 #' @examples
-#' settings <- list(weights = c(need_A = .6, need_B = .4), tau = .25, G_max = 3L)
-#' \dontrun{
-#' # Optional: two small native solves; no model is refitted.
-#' cf <- postrank_crossfit(postrank_toy, settings = settings,
-#'   backend = "highs", control = postrank_control(time_limit = 10, threads = 1))
+#' cf <- postrank_example("toy_crossfit")
 #' cf[c("folds_with_incumbent", "mean_optimism", "mean_abs_optimism")]
-#' cf$folds
-#' }
+#' cf$agreement
 #' @concept diagnostics
 #' @export
 postrank_crossfit <- function(draws, fit = NULL, settings = NULL, backend = NULL, control = list(), strategy = NULL) {
@@ -149,7 +147,6 @@ postrank_crossfit <- function(draws, fit = NULL, settings = NULL, backend = NULL
   .pr_with_backend(resolved, .pr_crossfit_core(draws, fit, settings, resolved$name, cc$core, cc$strategy))
 }
 
-# Unchanged 0.0.1.9003 (C3) body, moved behind the public adapter (freeze manifest: moved_from postrank_crossfit).
 .pr_crossfit_core <- function(draws, fit = NULL, settings = NULL, backend = c("gurobi", "highs"), control = list(),
                               strategy = c("staged", "label_mip")) {
   draws <- .pr_mc_joint_draws(draws); backend <- match.arg(backend); strategy <- match.arg(strategy)
@@ -229,53 +226,60 @@ postrank_crossfit <- function(draws, fit = NULL, settings = NULL, backend = NULL
   out
 }
 
-#' Find Pairwise Decisions Close to the Monte Carlo Noise Scale
+#' Find Pairwise Decisions Near the Monte Carlo Noise Scale
 #'
-#' The diagnostic identifies pairs for which the estimated loss from disclosure
-#' in the better direction is close to the withholding cost. Since
-#' grades are selected jointly, a flagged pair need not imply a change in the
-#' selected grading. Indicator traces are calculated without optimization.
+#' `postrank_mc_fragility()` identifies unordered entity pairs whose estimated
+#' wrong-direction error in the better ordering direction lies close to the
+#' withholding cost `tau` relative to its Monte Carlo standard error (MCSE),
+#' without running a solver. Because grades are chosen jointly across all pairs,
+#' a flagged pair need not change the selected grading.
 #'
-#' @param draws Joint equal-weight ordinary posterior draws. Whole states must
-#'   retain the dependence among entities and criteria. Exact finite laws,
-#'   criterion-wise blocks, Gaussian/mixture coefficients, supplied probabilities,
-#'   and equality-neutral inputs are not supported by this Monte Carlo diagnostic.
-#' @param fit,settings Supply exactly one, as in [postrank_crossfit()]. Only
-#'   `weights` and `tau` are needed in a settings list. A supplied fit's grade
-#'   is used to label its relation for each traced pair; its optimization status
-#'   is not improved by this diagnostic.
-#' @param z Positive MCSE multiplier, default 2. This sets a descriptive scale,
-#'   not a simultaneous confidence level.
-#' @param screen_margin Positive threshold: only pairs with margin strictly below
-#'   it are traced. For IID samples with `S > 1`, the default is
-#'   `z * 0.5 / sqrt(S - 1)`, using the maximum sample SD of a bounded indicator
-#'   to avoid screening out a pair that this rule could flag. The MCMC default
-#'   `0.1` is a heuristic screening threshold, not a bound on omitted pairs.
-#' @return A `postrank_mc_fragility` list with a `pairs` table of better
-#'   directions, weighted error, margin, MCSE, margin/MCSE ratio, and `fragile`
-#'   flag; a supplied grade adds its reported relation. `summary` counts all
-#'   pairs, traced pairs, flagged pairs, and unavailable MCSEs. Screening choices,
-#'   sampling regime, and diagnostic warnings are retained.
-#' @details Let \eqn{\bar e_{ij}=\sum_k w_k e_{ij,k}} and
-#'   \eqn{d=\min(\bar e_{ij},\bar e_{ji})}. Considering this pair alone,
-#'   disclosure in the better direction has lower estimated loss than
-#'   withholding when \eqn{d<\tau}. The function flags
-#'   \eqn{|d-\tau|<z\,\widehat{\mathrm{MCSE}}} using the weighted indicator
-#'   trace for the empirically better direction. It does not diagnose global
-#'   action stability, enforce grade counts or protections, or provide
-#'   post-selection coverage for that chosen direction.
+#' @param draws Joint equal-weight posterior draws from [postrank_draws()] or
+#'   [as_postrank_draws()] (`dependence_mode = "joint_model"`). Criterion-wise
+#'   blocks, exact finite laws, Gaussian or mixture coefficients, pre-computed
+#'   probabilities, and tie-mode inputs are not accepted.
+#' @param fit,settings Supply `fit` (`postrank_fit` or `postrank_analysis` on
+#'   `draws`) or `settings` ([postrank_settings()] or named list with `weights`
+#'   and `tau`), not both. When `fit` has a checked grading, each traced pair is
+#'   also labeled by its relation in `fit$grade`.
+#' @param z Positive numeric MCSE multiplier (`2` by default) setting the
+#'   descriptive flagging threshold `|d - tau| < z * mcse`.
+#' @param screen_margin Positive numeric pre-screen threshold: only pairs with
+#'   `|d - tau| < screen_margin` have per-draw indicator traces built. When
+#'   `NULL` (the default), IID inputs with `S > 1` use
+#'   `z * 0.5 / sqrt(S - 1)` (the maximum sample SD of a `[0, 1]` indicator, so
+#'   no pair that could be flagged is skipped), and MCMC inputs use `0.1` (a
+#'   working screen accompanied by a warning, not an upper bound).
+#' @return A `postrank_mc_fragility` list with `pairs` (data frame of traced
+#'   pairs containing `entity_i`, `entity_j`, `better_direction`,
+#'   `weighted_error`, `margin`, `disclose_preferred`, `mcse`, `ratio`, and
+#'   `fragile`, plus `relation_in_grade` when `fit` has grades), `summary`
+#'   (`pairs`, `traced`, `fragile`, `fragile_share`, `mcse_unavailable`, plus
+#'   `fragile_disclosed` and `fragile_tied` when `fit` has grades), `regime`,
+#'   `draws`, `z`, `screen_margin`, `mcse_method`, and `warnings`.
+#' @details
+#' For each unordered pair `(i, j)`, let
+#' \eqn{\bar e_{ij} = \sum_k w_k e_{ij,k}} be the criterion-weighted
+#' directional-error probability and \eqn{d = \min(\bar e_{ij}, \bar e_{ji})}.
+#' Taken in isolation, ordering the pair in its better direction beats
+#' withholding when \eqn{d < \tau}. For pairs passing `screen_margin`,
+#' `postrank_mc_fragility()` builds the per-draw weighted indicator trace for
+#' that empirically better direction and flags `|d - tau| < z * mcse`.
 #'
-#'   IID MCSE is sample SD divided by the square root of the actual draw count.
-#'   MCMC MCSE uses `posterior::mcse_mean` with the original equal-length chains.
-#'   Unequal chains are not truncated or padded; missing optional software or
-#'   unavailable MCSE leaves the corresponding flags unavailable. In particular,
-#'   a constant empirical trace is not proof of certainty or adequate chain
-#'   exploration. MCMC ESS cannot replace an IID sample count in a concentration
-#'   bound. These pairwise flags are descriptive, not finite-sample guarantees.
-#' @seealso [postrank_diagnose()], [postrank_crossfit()], [postrank_iid_bounds()]
+#' IID MCSE is `sd(trace) / sqrt(S)`. MCMC MCSE uses `posterior::mcse_mean()` on
+#' equal-length chains; unequal chain lengths or an uninstalled `posterior`
+#' package leave `mcse` and `fragile` as `NA` with a warning rather than
+#' truncating chains or substituting zero. Pairwise fragility flags are
+#' descriptive summaries and do not assess global grade stability, account for
+#' `G_max` or error budgets `q`, or provide simultaneous confidence levels or a
+#' finite-sample guarantee.
+#' @seealso [postrank_diagnose()], [postrank_crossfit()],
+#'   [postrank_iid_bounds()]
 #' @examples
-#' fragility <- postrank_mc_fragility(postrank_toy,
-#'   settings = list(weights = c(need_A = .6, need_B = .4), tau = .25))
+#' fragility <- postrank_mc_fragility(
+#'   postrank_toy,
+#'   settings = list(weights = c(need_A = 0.6, need_B = 0.4), tau = 0.25)
+#' )
 #' fragility$summary
 #' fragility$pairs
 #' @concept diagnostics
@@ -286,7 +290,6 @@ postrank_mc_fragility <- function(draws, fit = NULL, settings = NULL, z = 2, scr
   .pr_mc_fragility_core(draws, fit, settings, z, screen_margin)
 }
 
-# Unchanged 0.0.1.9003 (C3) body, moved behind the public adapter (freeze manifest: moved_from postrank_mc_fragility).
 .pr_mc_fragility_core <- function(draws, fit = NULL, settings = NULL, z = 2, screen_margin = NULL) {
   draws <- .pr_mc_joint_draws(draws); s <- .pr_mc_settings(fit, settings, need_G = FALSE)
   if (!is.null(fit)) .pr_assert(identical(fit$input_identity, draws$validation$input_identity),

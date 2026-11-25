@@ -1,8 +1,9 @@
 # Inspect Solver Package Availability
 
-The installed Gurobi or HiGHS package is inspected through its package
-and linkage information. The inspection does not load the solver
-namespace, execute an optimization or check a license.
+`postrank_backend_available()` checks whether the `gurobi` or `highs` R
+package is installed and passes static runtime-linkage checks, without
+loading the solver namespace, running an optimization or querying a
+license.
 
 ## Usage
 
@@ -14,38 +15,43 @@ postrank_backend_available(backend = c("gurobi", "highs"))
 
 - backend:
 
-  `"gurobi"` (default) or `"highs"`.
+  Solver package to inspect, `"gurobi"` (the default) or `"highs"`.
 
 ## Value
 
-A `postrank_backend_availability` list with `installed`, `package_path`,
-`wrapper_version`, `available_for_attempt`, `runtime_check` and
-`license_check`. `available_for_attempt = TRUE` means no known obstacle
-was found by this inspection, not that a solve or license check
-succeeded.
+A `postrank_backend_availability` list containing `backend`,
+`installed`, `package_path`, `wrapper_version`, `available_for_attempt`,
+`runtime_check`, `license_check` and `interpretation`.
 
 ## Details
 
-The inspection can identify a known macOS mismatch between Gurobi's
-linked R runtime and the running R. Other runtime failures may only
-become apparent when solving. It does not change library paths or select
-another backend. Choose HiGHS explicitly in
+`available_for_attempt = TRUE` means the package directory was found
+and, on macOS for Gurobi, no mismatch between Gurobi's linked R library
+and the running R session was detected. Because no namespace is loaded
+and no license or test solve is run, `available_for_attempt = TRUE` does
+not confirm that a solve will succeed or that a Gurobi license is
+active.
+
+Calling this function does not change library paths or select a solver.
+To use HiGHS in
 [`postrank()`](https://joonho112.github.io/postrank/reference/postrank.md)
 or
-[`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md);
-neither function silently replaces an unavailable backend.
+[`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md),
+pass `backend = "highs"` or set `options(postrank.backend = "highs")`;
+`postrank` never switches solvers automatically.
 
 ## See also
 
+[`postrank()`](https://joonho112.github.io/postrank/reference/postrank.md),
 [`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md),
-[`postrank_control()`](https://joonho112.github.io/postrank/reference/postrank_control.md)
+[postrank_options](https://joonho112.github.io/postrank/reference/postrank_options.md)
 
 ## Examples
 
 ``` r
-availability <- postrank_backend_available("highs")
-availability$available_for_attempt
+avail <- postrank_backend_available("highs")
+avail$available_for_attempt
 #> [1] TRUE
-availability$runtime_check$executed
+avail$runtime_check$executed
 #> [1] FALSE
 ```

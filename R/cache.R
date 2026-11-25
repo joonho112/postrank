@@ -1,7 +1,7 @@
-# Live reproduction report for the installed cache reader (inst/scripts/_vignette-setup.R).
-# Compares a sealed result with a freshly computed one from an explicitly selected backend:
+# Live reproduction check for the installed example reader (inst/scripts/_vignette-setup.R).
+# Compares a stored result with a freshly computed one from an explicitly selected solver:
 # statuses, risks, bounds/gaps and pair-relation agreement. Equal or close risks do not force
-# identical grades, and an alternative incumbent is not stale data.
+# identical grades, and an alternative optimal grading is not stale data.
 .pr_live_comparison <- function(cached, fresh) {
   fit_of <- function(x) if (inherits(x, "postrank_analysis")) x$fit else if (inherits(x, "postrank_fit")) x else NULL
   a <- fit_of(cached); b <- fit_of(fresh)

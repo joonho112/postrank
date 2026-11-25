@@ -1,15 +1,19 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Score Fixed Grades When True Equality Has Zero Loss — postrank_tie_evaluate • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Score Fixed Grades When True Equality Has Zero Loss — postrank_tie_evaluate"><meta name="description" content="A proposed grading is evaluated under the equality-neutral loss. A disclosed
-direction incurs an error only when the targets are strictly reversed, and
-withholding costs tau only when the targets are distinct. True equality
-therefore has zero loss under either action. Shared grades remain decisions
-to withhold comparisons and do not establish target equality. The supplied
-grades are evaluated without selection or optimization."><meta property="og:description" content="A proposed grading is evaluated under the equality-neutral loss. A disclosed
-direction incurs an error only when the targets are strictly reversed, and
-withholding costs tau only when the targets are distinct. True equality
-therefore has zero loss under either action. Shared grades remain decisions
-to withhold comparisons and do not establish target equality. The supplied
-grades are evaluated without selection or optimization."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Evaluate a Fixed Grading Under Equality-Neutral Loss — postrank_tie_evaluate • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Evaluate a Fixed Grading Under Equality-Neutral Loss — postrank_tie_evaluate"><meta name="description" content="postrank_tie_evaluate() computes posterior expected equality-neutral loss,
+distinct-pair counts, and error ratios for a fixed grading without running a
+solver. Under equality-neutral loss, ordering a pair incurs loss only when
+the targets are strictly reversed (theta_i &amp;lt; theta_j), and leaving a pair
+in the same grade costs tau only when the targets are distinct
+(theta_i != theta_j), so exact equality (theta_i = theta_j) has zero loss
+under either decision. Placing two entities in the same grade still leaves
+them unordered rather than claiming their targets are equal."><meta property="og:description" content="postrank_tie_evaluate() computes posterior expected equality-neutral loss,
+distinct-pair counts, and error ratios for a fixed grading without running a
+solver. Under equality-neutral loss, ordering a pair incurs loss only when
+the targets are strictly reversed (theta_i &amp;lt; theta_j), and leaving a pair
+in the same grade costs tau only when the targets are distinct
+(theta_i != theta_j), so exact equality (theta_i = theta_j) has zero loss
+under either decision. Placing two entities in the same grade still leaves
+them unordered rather than claiming their targets are equal."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -17,7 +21,7 @@ grades are evaluated without selection or optimization."><meta property="og:imag
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,7 +29,7 @@ grades are evaluated without selection or optimization."><meta property="og:imag
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -39,18 +43,20 @@ grades are evaluated without selection or optimization."><meta property="og:imag
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Score Fixed Grades When True Equality Has Zero Loss</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Evaluate a Fixed Grading Under Equality-Neutral Loss</h1>
 
       <div class="d-none name"><code>postrank_tie_evaluate.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>A proposed grading is evaluated under the equality-neutral loss. A disclosed
-direction incurs an error only when the targets are strictly reversed, and
-withholding costs <code>tau</code> only when the targets are distinct. True equality
-therefore has zero loss under either action. Shared grades remain decisions
-to withhold comparisons and do not establish target equality. The supplied
-grades are evaluated without selection or optimization.</p>
+    <p><code>postrank_tie_evaluate()</code> computes posterior expected equality-neutral loss,
+distinct-pair counts, and error ratios for a fixed grading without running a
+solver. Under equality-neutral loss, ordering a pair incurs loss only when
+the targets are strictly reversed (<code>theta_i &lt; theta_j</code>), and leaving a pair
+in the same grade costs <code>tau</code> only when the targets are distinct
+(<code>theta_i != theta_j</code>), so exact equality (<code>theta_i = theta_j</code>) has zero loss
+under either decision. Placing two entities in the same grade still leaves
+them unordered rather than claiming their targets are equal.</p>
     </div>
 
     <div class="section level2">
@@ -63,84 +69,106 @@ grades are evaluated without selection or optimization.</p>
 
 
 <dl><dt id="arg-grade">grade<a class="anchor" aria-label="anchor" href="#arg-grade"></a></dt>
-<dd><p>Positive integer numeric vector named in declared entity order.
-Labels are canonicalized without changing pairwise relations.</p></dd>
+<dd><p>Positive integer/numeric vector named in the exact order of
+<code>pairwise$entity_ids</code> (<code>1</code> = highest priority; occupied labels are
+renumbered to <code>1..G</code> by <code><a href="canonical_postrank_grade.html">canonical_postrank_grade()</a></code> without changing
+pairwise relations).</p></dd>
 
 
 <dt id="arg-pairwise">pairwise<a class="anchor" aria-label="anchor" href="#arg-pairwise"></a></dt>
-<dd><p>A validated object from <code><a href="postrank_tie_pairwise.html">postrank_tie_pairwise()</a></code>.</p></dd>
+<dd><p>A validated <code>postrank_tie_pairwise</code> object from
+<code><a href="postrank_tie_pairwise.html">postrank_tie_pairwise()</a></code>.</p></dd>
 
 
 <dt id="arg-weights">weights<a class="anchor" aria-label="anchor" href="#arg-weights"></a></dt>
-<dd><p>Nonnegative finite weights, named for every criterion exactly
-once and summing to one. They are not automatically normalized. For one
-criterion, supply its named weight of 1.</p></dd>
+<dd><p>Non-negative finite numeric vector named by every criterion in
+<code>pairwise</code> and summing to <code>1</code> (for a single criterion, supply a named
+weight of <code>1</code>; weights are not normalized automatically).</p></dd>
 
 
 <dt id="arg-tau">tau<a class="anchor" aria-label="anchor" href="#arg-tau"></a></dt>
-<dd><p>Cost of withholding a distinct comparison, in <code>(0, 0.5]</code>.</p></dd>
+<dd><p>Cost of withholding a distinct comparison, a finite scalar with
+<code>0 &lt; tau &lt;= 0.5</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>postrank_tie_evaluation</code> list with the grade, counts, losses,
-settings, input identities and <code>guard_satisfied</code>/<code>guard_classes</code>.
-Criterion-specific <code>E</code> (also <code>Eb</code>), <code>D_k</code>, <code>T_k</code> and <code>H_k</code> are expected
-wrong, disclosed-distinct, total-distinct and withheld-distinct counts.
-<code>D</code> and <code>T</code> are the weighted distinct counts. <code>N</code> is the raw number of
-disclosed unordered pairs; <code>M</code> counts all unordered pairs.</p>
-<p><code>disclosure_rate = N/M</code> and <code>D_over_T</code> (also
-<code>distinct_disclosure_rate</code>) use raw pairs and distinct opportunities,
-respectively. <code>D_k_over_T_k</code>, <code>E_over_D</code> and <code>E_over_N</code> keep the
-criterion-specific distinct and raw denominators separate. Ratios with
-zero denominators are <code>NA</code>.</p>
-<p><code>criterion_risk</code> and <code>criterion_baseline</code> contain criterion losses and
-all-withheld baselines. <code>weighted_risk</code> and <code>primary_risk</code> are the
-weighted loss. <code>all_withhold_risk</code> (also <code>R0</code>) is its all-withheld
-baseline. <code>weighted_raw_objective</code> (also <code>raw_Z</code>) is
-<code>sum(weights * E) - tau * D</code>.</p>
+    <p>A <code>postrank_tie_evaluation</code> list containing canonical <code>grade</code>, <code>G</code>,
+<code>M = choose(n, 2)</code>, <code>N</code>, directed-disclosure matrix <code>x</code>,
+<code>disclosure_rate = N / M</code>, <code>abstention_rate = (M - N) / M</code>, criterion
+counts <code>E</code> (also <code>Eb</code>, expected strict wrong-direction errors), <code>D_k</code>
+(expected disclosed-distinct pairs), <code>T_k</code> (expected total-distinct pairs),
+and <code>H_k</code> (expected withheld-distinct pairs), weighted distinct counts <code>D</code>
+and <code>T</code>, ratios <code>E_over_M</code>, <code>E_over_N</code>, <code>E_over_D</code>, <code>D_k_over_T_k</code>, and
+<code>D_over_T</code> (also <code>distinct_disclosure_rate</code>; ratios with zero denominator
+are <code>NA_real_</code>), <code>criterion_risk</code>, <code>criterion_baseline</code>, <code>weighted_risk</code>
+and <code>primary_risk</code>, <code>all_withhold_risk</code> and <code>R0</code>, <code>weighted_raw_objective</code>
+and <code>raw_Z</code>, <code>guard_satisfied</code>, <code>guard_classes</code>, <code>guard</code>, and <code>settings</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Criterion risk is <code>(E + tau * H_k) / M</code>. The all-withheld baseline
-is <code>R0 = tau * T / M</code>, which is generally smaller than <code>tau</code> when some
-equality mass is present. Risk also equals <code>R0 + raw_Z / M</code>, but the
-evaluator directly sums the action's losses independently of the solver
-objective. For an all-withheld action, N and every D_k are zero, risk is
-R0, and E/N and E/D_k are undefined. Zero expected strict errors do not
-establish a strictly superior direction when equality is possible.</p>
-<p>Ratios are ratios of posterior expected counts, not expectations of
-realized draw-specific ratios. They describe the supplied law and loss,
-not external prediction accuracy or policy benefit. Ordinary
-<code><a href="postrank_evaluate.html">postrank_evaluate()</a></code> retains its separate weak-error loss and does not
-silently change when this function is used.</p>
-<p>Entities equal with probability one on every positive-weight criterion
-form an active-profile class. Tie-aware optimization keeps each such
-class in one grade. This evaluator reports whether a fixed grade obeys
-that rule, but also scores violations for comparison. It does not check
-a <code>G_max</code> family or establish feasibility or optimality. Use
-<code><a href="validate_postrank_tie_solution.html">validate_postrank_tie_solution()</a></code> to check a problem's numerical solution.</p>
+    <p>Criterion risk is <code>(E + tau * H_k) / M</code>, and the all-withheld risk is
+<code>R0 = tau * T / M</code> (smaller than <code>tau</code> whenever positive equality probability
+is present on an active criterion). Weighted risk equals <code>R0 + raw_Z / M</code>
+with <code>raw_Z = sum(weights * E) - tau * D</code>, and is summed directly from
+<code>pairwise$b</code> and <code>pairwise$d</code> independently of any sparse MIP model. For an
+all-withheld single-grade grading (<code>G = 1</code>), <code>N</code> and every <code>D_k</code> are <code>0</code>,
+<code>primary_risk</code> equals <code>R0</code>, and <code>E_over_N</code> and <code>E_over_D</code> are <code>NA_real_</code>.</p>
+<p>Reported ratios (<code>E_over_N</code>, <code>E_over_D</code>, <code>D_over_T</code>) are ratios of posterior
+expected counts under the supplied posterior rather than expectations of
+per-draw ratios. <code>guard_satisfied</code> records whether <code>grade</code> keeps each
+active-profile equality class (<code>guard$groups</code>) in one grade; unlike
+<code><a href="postrank_tie_problem.html">postrank_tie_problem()</a></code>, <code>postrank_tie_evaluate()</code> also evaluates gradings
+that split an equality class for comparison and does not check <code>G_max</code>
+feasibility (use <code><a href="validate_postrank_tie_solution.html">validate_postrank_tie_solution()</a></code> to check solver
+candidates). Ordinary <code><a href="postrank_evaluate.html">postrank_evaluate()</a></code> retains its zero-equality
+weak-error loss.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="postrank_tie_problem.html">postrank_tie_problem()</a></code>, <code><a href="postrank_tie_capabilities.html">postrank_tie_capabilities()</a></code>,
+    <div class="dont-index"><p><code><a href="postrank_tie_problem.html">postrank_tie_problem()</a></code>, <code><a href="postrank_tie_solve.html">postrank_tie_solve()</a></code>,
+<code><a href="validate_postrank_tie_solution.html">validate_postrank_tie_solution()</a></code>, <code><a href="postrank_tie_capabilities.html">postrank_tie_capabilities()</a></code>,
 <code><a href="../articles/m4-ties-and-withholding.html">vignette("m4-ties-and-withholding", package = "postrank")</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"gmp"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="co"># A complete two-state law, not two Monte Carlo draws.</span></span></span>
-<span class="r-in"><span>  <span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"synthetic-tie-aware.json"</span>, package <span class="op">=</span> <span class="st">"postrank"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">pw</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_tie_pairwise.html">postrank_tie_pairwise</a></span><span class="op">(</span><span class="fu"><a href="read_postrank_tie_draws.html">read_postrank_tie_draws</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>S <span class="op">=</span> <span class="fl">.6</span>, C <span class="op">=</span> <span class="fl">.4</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">ev</span> <span class="op">&lt;-</span> <span class="fu">postrank_tie_evaluate</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">3L</span>, B <span class="op">=</span> <span class="fl">3L</span>, C <span class="op">=</span> <span class="fl">2L</span>, D <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    <span class="va">pw</span>, <span class="va">weights</span>, tau <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">ev</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"primary_risk"</span>, <span class="st">"R0"</span>, <span class="st">"N"</span>, <span class="st">"D"</span>, <span class="st">"T"</span>, <span class="st">"guard_satisfied"</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span>  <span class="va">held</span> <span class="op">&lt;-</span> <span class="fu">postrank_tie_evaluate</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">1L</span>, B <span class="op">=</span> <span class="fl">1L</span>, C <span class="op">=</span> <span class="fl">1L</span>, D <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    <span class="va">pw</span>, <span class="va">weights</span>, tau <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">held</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"primary_risk"</span>, <span class="st">"E_over_N"</span>, <span class="st">"E_over_D"</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"synthetic-tie-aware.json"</span>, package <span class="op">=</span> <span class="st">"postrank"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pw</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_tie_pairwise.html">postrank_tie_pairwise</a></span><span class="op">(</span><span class="fu"><a href="read_postrank_tie_draws.html">read_postrank_tie_draws</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>S <span class="op">=</span> <span class="fl">0.6</span>, C <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ev</span> <span class="op">&lt;-</span> <span class="fu">postrank_tie_evaluate</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">3L</span>, B <span class="op">=</span> <span class="fl">3L</span>, C <span class="op">=</span> <span class="fl">2L</span>, D <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="va">pw</span>,</span></span>
+<span class="r-in"><span>  <span class="va">weights</span>,</span></span>
+<span class="r-in"><span>  tau <span class="op">=</span> <span class="fl">0.25</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ev</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"primary_risk"</span>, <span class="st">"R0"</span>, <span class="st">"N"</span>, <span class="st">"D"</span>, <span class="st">"T"</span>, <span class="st">"guard_satisfied"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $primary_risk</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $R0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.175</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $N</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $D</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $T</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $guard_satisfied</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">held</span> <span class="op">&lt;-</span> <span class="fu">postrank_tie_evaluate</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">1L</span>, B <span class="op">=</span> <span class="fl">1L</span>, C <span class="op">=</span> <span class="fl">1L</span>, D <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="va">pw</span>,</span></span>
+<span class="r-in"><span>  <span class="va">weights</span>,</span></span>
+<span class="r-in"><span>  tau <span class="op">=</span> <span class="fl">0.25</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">held</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"primary_risk"</span>, <span class="st">"E_over_N"</span>, <span class="st">"E_over_D"</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $primary_risk</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.175</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>

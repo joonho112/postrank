@@ -40,7 +40,7 @@ test_that("typed settings build the same problem identity as the loose call", {
   mm_loose <- postrank_problem(pw, w, .25, 3L, "minimax", minimax_refine = "none")
   mm_typed <- postrank_problem(pw, settings = postrank_settings(w, .25, 3L, objective = "minimax", minimax_refine = "none"))
   expect_identical(mm_typed$problem_identity, mm_loose$problem_identity)
-  # Positional legacy call keeps its meaning (T-api-02).
+  # Positional arguments in postrank_problem() retain their documented order.
   expect_identical(postrank_problem(pw, w, .25, 3L, "minimax")$settings$objective, "minimax")
 })
 

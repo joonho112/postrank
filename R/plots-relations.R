@@ -37,52 +37,64 @@
   .pr_abort(paste(what, "must be a postrank_fit, postrank_analysis, postrank_baseline or named grade vector"), "wrong_class", paste0("$.", what))
 }
 
-#' Plot Disclosed Comparisons or Their Changes
+#' Plot Disclosed Pair Relations or Their Changes
 #'
-#' The matrix displays the pairwise directions disclosed or withheld by a
-#' grading. When a second report is supplied, each relation is classified as
-#' unchanged, newly disclosed, newly withheld or reversed. The tiles represent
-#' selected actions. Posterior comparison probabilities are displayed
-#' separately by [postrank_plot_pairwise()].
+#' `postrank_plot_relations()` draws an upper-triangular matrix showing whether
+#' each unordered entity pair is ordered (`above` or `below`) or left in the
+#' same grade (`withheld`), or how those pair relations change from one grading
+#' `x` to a second grading `y`. Tiles show chosen grading decisions rather than
+#' posterior comparison probabilities; use [postrank_plot_pairwise()] to view
+#' directional-error probabilities.
 #'
 #' @param x A `postrank_fit`, `postrank_analysis`, `postrank_baseline`, or a
-#'   complete named integer grade vector. Grade 1 has highest priority.
-#' @param y Optional second fit, analysis, baseline or named grade vector on
-#'   exactly the same entities. Changes run from `x` to `y`.
-#' @param labels `"auto"` shows IDs or display names for at most 15 entities
-#'   when every label has at most 20 characters; otherwise it shows positions
-#'   in grade order. `"ids"` always shows the labels. `"none"` hides ticks and
-#'   axis labels. Increase the canvas size when explicitly showing many IDs.
-#' @param ... Unused.
-#' @param entity_labels Optional partial named character vector mapping raw
-#'   entity IDs to display names. Unmapped IDs keep their text. Names are
-#'   wrapped on explicit ID axes and never alter data or ordering. Supply
-#'   this argument by name.
-#' @return A `ggplot` object. If either fitted object lacks a validated grade,
-#'   a status panel explains which result is unavailable.
+#'   named integer/numeric vector of grades (`1` = highest priority).
+#' @param y Optional second `postrank_fit`, `postrank_analysis`,
+#'   `postrank_baseline`, or named grade vector grading the exact same set of
+#'   entity IDs as `x`. Relation changes are classified from `x` to `y`.
+#' @param labels Axis label mode: `"auto"` (the default) shows entity IDs (or
+#'   `entity_labels`) when there are at most 15 entities and every display label
+#'   has at most 20 characters, and otherwise shows integer positions in grade
+#'   order; `"ids"` always shows display labels (wrapped at 18 characters on
+#'   axes); `"none"` hides ticks and axis labels.
+#' @param ... Unused; unnamed extra arguments are ignored. Pass `entity_labels`
+#'   by name.
+#' @param entity_labels Optional named character vector mapping raw entity IDs
+#'   to display names. Unmapped IDs keep their raw IDs. Labels affect tick text
+#'   only and never alter axis order or `$data`.
+#' @return A `ggplot` object whose `$data` table has one row per unordered pair
+#'   (`entity_i`, `entity_j`, `i_pos`, `j_pos`, `code`, `relation`, plus
+#'   `change` when `y` is supplied). If `x` or `y` is a fitted object without a
+#'   checked grading, returns an empty status `ggplot` stating which object has
+#'   no grades.
 #' @details
-#' Both axes follow the first object's grade, then raw entity ID. Only the
-#' upper triangle is drawn, so every unordered pair appears once. In a
-#' single-report view, gray means that the comparison is withheld. A shared
-#' grade does not assert latent equality.
+#' Both axes order entities by `x`'s grade (`1` first) and then raw entity ID
+#' (`radix` order), with the horizontal axis along the top and the vertical axis
+#' reversed so every unordered pair appears once in the upper triangle. In a
+#' single-grading plot, gray tiles mark pairs left in the same grade
+#' (`withheld`), which withholds ordering without asserting equal targets.
 #'
-#' In a change map, light gray means unchanged and medium gray means newly
-#' withheld. Unchanged includes pairs that were disclosed in the same direction
-#' and pairs withheld by both reports. Agreement uses all `M = choose(n, 2)`
-#' pairs. A relation change is not itself a loss improvement: reports from
-#' different policies need evaluation under a common loss for a risk comparison.
-#' The function reads grades and does not solve or calculate new posterior scores.
-#' @seealso [postrank_plot_compare()], [get_relations()], [postrank_plot_pairwise()]
+#' When `y` is supplied, each pair is classified as `"unchanged"`,
+#' `"newly disclosed"`, `"newly withheld"`, or `"reversed"`. `"unchanged"`
+#' (light gray) covers both pairs ordered in the same direction by `x` and `y`
+#' and pairs withheld by both; `"newly withheld"` is medium gray. The subtitle
+#' reports category counts and overall agreement (`unchanged / M`, over all
+#' `M = choose(n, 2)` unordered pairs). Relation changes describe how two
+#' gradings differ on pairs, not which grading has lower risk; use
+#' [postrank_compare()] to evaluate rules under one shared loss.
+#' @seealso [postrank_plot_compare()], [get_relations()],
+#'   [postrank_plot_pairwise()], [postrank_plot_data()]
 #' @concept visualization
 #' @examples
-#' # Read prepared tutorial results; no model fitting or optimization.
-#' source(system.file("scripts", "_vignette-setup.R", package = "postrank"),
-#'   local = TRUE)
-#' one <- load_or_compute("tutorial_one")
+#' one <- postrank_example("tutorial_one")
 #' postrank_plot_relations(one)
-#' two <- load_or_compute("tutorial_two")
-#' postrank_plot_relations(one, two, labels = "ids",
-#'   entity_labels = c(A = "Site A", F = "Site F"))
+#'
+#' two <- postrank_example("tutorial_two")
+#' postrank_plot_relations(
+#'   one,
+#'   two,
+#'   labels = "ids",
+#'   entity_labels = c(A = "Site A", F = "Site F")
+#' )
 #' @export
 postrank_plot_relations <- function(x, y = NULL, labels = c("auto", "ids", "none"), ..., entity_labels = NULL) {
   labels <- match.arg(labels)

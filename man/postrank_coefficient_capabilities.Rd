@@ -6,39 +6,44 @@
 postrank_coefficient_capabilities(x)
 }
 \arguments{
-\item{x}{An object from \code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}} or
-\code{\link[=postrank_mixture_coefficients]{postrank_mixture_coefficients()}}.}
+\item{x}{A \code{postrank_coefficients} object from
+\code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}} or \code{\link[=postrank_mixture_coefficients]{postrank_mixture_coefficients()}}.}
 }
 \value{
-A named list of logical indicators, after validating \code{x}. These cover
-weighted expected risk, means, native problem types, target-draw quantities,
-conditional-risk traces, and eligibility for hyperparameter-MCMC metrics.
+A named list of 12 logical flags:
+\itemize{
+\item \code{weighted_expected_risk}, \code{posterior_means} and
+\code{weighted_at_most_G_problem}: \code{TRUE};
+\item \code{minimax_problem}, \code{protection_problem} (\code{q}) and \code{exact_G_problem} (in
+\code{\link[=postrank_problem]{postrank_problem()}}): \code{FALSE};
+\item \code{target_state_trace}, \code{target_quantiles} (empirical draw quantiles),
+\code{exact_rational} and \code{formal_numerical_certification}: \code{FALSE};
+\item \code{rb_conditional_risk_trace}: \code{TRUE} for mixtures, \code{FALSE} for a single
+normal posterior;
+\item \code{hyperparameter_mcse_eligible}: \code{TRUE} only for mixtures with
+\code{source_regime == "hyperparameter_mcmc"}.
+}
 }
 \description{
-These indicators describe the calculations supported for Gaussian or
-shared-state mixture coefficients. They concern the implemented operations
-and provide no assessment of the model assumptions or probability accuracy.
+\code{postrank_coefficient_capabilities()} validates a normal or shared-state
+mixture posterior input and returns logical flags telling which \code{postrank}
+functions and settings accept it.
 }
 \details{
-The native \code{\link[=postrank_problem]{postrank_problem()}} route supports weighted loss with an
-upper grade-count limit for these inputs. Its \code{minimax_problem},
-\code{protection_problem}, and \code{exact_G_problem} indicators are \code{FALSE}.
-These are problem-construction limits; a fixed-action evaluator or
-fixed-order baseline has its own documented scope.
-
-A mixture can supply a trace of conditional expected risk across shared
-states. Eligibility for hyperparameter-MCMC diagnostics does not mean that
-sufficient original chain history was supplied or that sampling converged.
-Neither Gaussian nor mixture coefficients supply realized target-loss
-draws, target quantiles, exact rational coefficients, or a statistical or
-numerical certificate.
+\code{exact_G_problem = FALSE} applies to unrestricted optimization in
+\code{\link[=postrank]{postrank()}} and \code{\link[=postrank_problem]{postrank_problem()}}; fixed-order cuts in \code{\link[=postrank_cuts]{postrank_cuts()}}
+do allow \code{exact_G} on \code{postrank_coefficients}. \code{hyperparameter_mcse_eligible = TRUE}
+indicates that \code{\link[=postrank_coefficient_diagnose]{postrank_coefficient_diagnose()}} can compute MCMC metrics if
+valid \code{chain_history} records are supplied, not that sampling converged.
 }
 \examples{
-capabilities <- postrank_coefficient_capabilities(pr_tutorial$one)
-capabilities[c("weighted_expected_risk", "weighted_at_most_G_problem",
-  "target_state_trace", "formal_numerical_certification")]
+caps <- postrank_coefficient_capabilities(pr_tutorial$one)
+caps[c("weighted_expected_risk", "weighted_at_most_G_problem",
+  "minimax_problem", "rb_conditional_risk_trace")]
 }
 \seealso{
-\code{\link[=postrank_coefficient_diagnose]{postrank_coefficient_diagnose()}}, \code{\link[=validate_postrank_coefficients]{validate_postrank_coefficients()}}
+\code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}},
+\code{\link[=postrank_mixture_coefficients]{postrank_mixture_coefficients()}}, \code{\link[=postrank_coefficient_diagnose]{postrank_coefficient_diagnose()}},
+\code{\link[=validate_postrank_coefficients]{validate_postrank_coefficients()}}
 }
 \concept{coefficients}

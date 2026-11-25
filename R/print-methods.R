@@ -1,60 +1,60 @@
-# Result-first English console (Chapter 13, PR-DEC-13-A). For every print-bearing class:
-# format_postrank_<class>_cli() builds the lines, format.<class>() returns them and
+# Console formatting, print(), and summary() methods. For each printed class:
+# format_postrank_<class>_cli() builds the lines, format.<class>() returns them, and
 # print.<class>() writes them and returns the object invisibly. summary.<class>() returns
-# a typed postrank_<class>_summary. All are pure views over stored slots.
+# a typed postrank_<class>_summary. All read stored fields without recomputing results.
 
 #' Format postrank Results for Reading in the Console
 #'
-#' The `print(x)` method gives a concise display, `summary(x)` describes the
-#' results and settings, and `format(x)` returns the display as text. The
-#' methods use stored results without optimization or recalculation of
-#' posterior probabilities. Grade 1 has highest priority and shared grades
-#' withhold comparisons. Valid all-withheld grades are distinguished from fits
-#' for which no validated grades are available.
+#' In ordinary use, call `print(x)` for a concise console display, `summary(x)`
+#' (or `summary(x, details = TRUE)`) for a fuller summary of settings and
+#' bounds, and `format(x)` to get the console lines as a character vector. The
+#' 24 `format_postrank_*_cli()` functions return the exact same lines as
+#' `format(x)` when you want to set line width, styling tier or table row count
+#' directly and verify `x`'s class. None of these methods run a solver or
+#' recompute probabilities.
 #'
-#' @param x An object of the class named by the formatter. A wrong class
-#'   raises `wrong_class`.
-#' @param ... Additional display arguments.
-#' @param details For the summary formatter, include technical source records
-#'   and identities. `NULL` follows the summary object's stored preference.
-#' @param width Line width; `NULL` follows `getOption("width")`. Widths are
-#'   floored at 40 characters.
-#' @param tier Styling: `NULL` detects the context, `1` uses ANSI styling,
-#'   `2` is plain text, and `3` is for knitted documents.
-#' @param n_head Maximum number of rows displayed in table bodies. This affects
-#'   applicable displays only; it does not select or remove stored entities.
-#' @return Each formatter returns a character vector with one element per
-#'   console line. The matching `format()` method returns the same lines for
-#'   the same arguments. `print()` writes those lines and invisibly returns
-#'   its input. `summary()` returns a structured summary with its own display.
-#' @details Default summaries emphasize grades, disclosure, expected loss and
-#'   solver qualifications. Use `summary(x, details = TRUE)` to add technical
-#'   details; structured fields remain available with either display setting.
-#'   An optimization gap concerns the supplied numerical problem, separately
-#'   from posterior uncertainty and Monte Carlo error.
-#'
-#'   Large grade memberships and table bodies may be shortened for reading.
-#'   Accessors and [postrank_tables] return the complete stored results, so use
-#'   those for calculations, row selection or export. Console text is not a
-#'   stable data format. Fix `width` and `tier = 2` when saving plain text.
-#'
-#'   Styling tiers have the same content; stripping tier 1's ANSI styling gives
-#'   tier 2. Entity IDs and stored warning text are preserved. The named
-#'   formatter functions on this page remain available alongside `format()`.
-#'   The validation formatter handles input and solution validations; the
-#'   guarantee formatter handles conditional risk, regret and protection
-#'   records; the summary formatter handles structured summaries.
-#' @seealso [get_grades()], [get_profile()], [get_risk()], [postrank_report()]
+#' @param x An object of the class named by the formatter (wrong classes stop
+#'   with error code `wrong_class`). `format_postrank_validation_cli()` accepts
+#'   both `postrank_validation` and `postrank_solution_validation`;
+#'   `format_postrank_guarantee_cli()` handles the conditional bound and
+#'   envelope records; `format_postrank_summary_cli()` formats objects returned
+#'   by `summary()`.
+#' @param ... Additional display arguments passed between methods.
+#' @param details Logical for `format_postrank_summary_cli()` and `summary()`:
+#'   whether to include technical source records and hashes. `NULL` uses the
+#'   setting stored on the summary object.
+#' @param width Target line width in characters (`NULL` reads
+#'   `getOption("width")`, floored at `40`).
+#' @param tier Styling mode: `NULL` detects the session context, `1` adds ANSI
+#'   terminal styling, `2` produces plain text (identical to tier `1` with ANSI
+#'   codes stripped), and `3` formats for knitted documents.
+#' @param n_head Maximum number of rows shown in printed table bodies (default
+#'   `10L`). Does not drop or alter rows stored inside `x`.
+#' @returns Each `format_postrank_*_cli()` function and `format()` method
+#'   returns a character vector with one element per line. `print()` writes
+#'   those lines and returns `x` invisibly. `summary()` returns a structured
+#'   `postrank_summary` object with its own `print()` and `format()` methods
+#'   (controlled by `postrank.lang`; see [postrank_options]).
+#' @details
+#' Console output uses `"disclosed"` for ordered pairs, `"withheld"` for
+#' unordered pairs (shared grades), and `"risk"` for posterior expected loss.
+#' Long grade member lists and tables are shortened for reading; use
+#' [get_grades()], [get_profile()], [get_risk()] and [postrank_tables] to
+#' extract complete results rather than parsing console text. When saving plain
+#' text, fix `width` and `tier = 2`.
+#' @seealso [get_grades()], [get_profile()], [get_risk()], [postrank_tables],
+#'   [postrank_report()], [postrank_options]
 #' @name format_postrank_cli
-#' @concept reporting
+#' @concept formatters
 #' @examples
-#' lines <- format(pr_tutorial$one, width = 72, tier = 2)
+#' one <- postrank_example("tutorial_one")
+#' lines <- format(one, width = 72, tier = 2)
 #' cat(lines, sep = "\n")
-#' identical(lines,
-#'   format_postrank_coefficients_cli(pr_tutorial$one, width = 72, tier = 2))
+#' identical(lines, format_postrank_analysis_cli(one, width = 72, tier = 2))
+#'
 #' summary(pr_tutorial$one)
-#' technical <- summary(pr_tutorial$one, details = TRUE)
-#' names(technical)
+#' tech <- summary(pr_tutorial$one, details = TRUE)
+#' names(tech)
 NULL
 
 .pr_status_words <- function(status) {
@@ -644,7 +644,7 @@ print.postrank_summary <- function(x, ..., width = NULL, n_head = 10L) .pr_print
 #' @export
 format.postrank_summary <- function(x, ...) .pr_format_dispatch(x, "postrank_summary", ...)
 
-# ---- summary() methods: typed receipts (SPEC-13.5) -------------------------------------------
+# ---- summary() methods -----------------------------------------------------------------------
 .pr_summary_lang <- function() {
   lang <- getOption("postrank.lang", "en")
   if (!identical(lang, "en")) .pr_abort(paste0("postrank.lang = \"", lang, "\" is not supported; official output is English (\"en\")"),
@@ -804,8 +804,8 @@ summary.postrank_backend_availability <- function(object, ..., details = FALSE) 
   provenance = list(package_path = object$package_path, runtime_check = object$runtime_check$status,
     license_check = object$license_check$status), interpretation = object$interpretation, details = details)
 
-# Equality-neutral inputs have separate classes and a separate loss definition.
-# These private views read their stored results without casting to legacy fits.
+# Tie-aware inputs use separate classes and an R0-centered loss definition;
+# these formatters read stored fields without converting to tie-free fits.
 .pr_tie_sections <- function(x, cls) {
   scope <- "Decisions support weighted loss and an upper limit on grades; q limits, exact grade counts and minimax are unsupported in this path."
   loss <- "True equality incurs no error or withholding cost. Withheld unequal targets incur the declared cost. A shared grade does not assert true equality."

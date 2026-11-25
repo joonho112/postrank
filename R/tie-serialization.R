@@ -32,37 +32,40 @@
   x
 }
 
-#' Read an Equality-Neutral Posterior Input from JSON
+#' Read a Tie-Aware Posterior Input from JSON
 #'
-#' The reader imports posterior values, declarations of genuine equality and
-#' original source histories for a tie-aware analysis. Files produced by
-#' [write_postrank_tie_draws()] preserve the numerical targets and IDs.
+#' `read_postrank_tie_draws()` reads a `"tie-aware-input-0.1"` JSON file into a
+#' validated `postrank_tie_draws` object for tie-aware mode (the workflow for
+#' posteriors in which distinct entities can be equal with positive probability
+#' under equality-neutral loss, where true equality has zero loss). Files
+#' written by [write_postrank_tie_draws()] round-trip with identical numerical
+#' values, IDs, equality partitions, and `input_identity`.
 #'
-#' @param path Path to an existing `tie-aware-input-0.1` JSON file.
-#' @return A validated `postrank_tie_draws` from [as_postrank_tie_draws()].
+#' @param path Path to an existing `"tie-aware-input-0.1"` JSON file.
+#' @return A validated `postrank_tie_draws` object from
+#'   [as_postrank_tie_draws()].
 #' @details
-#' The reader supports joint equal-weight IID/MCMC draws and complete exact
-#' finite laws. It preserves the `K = 1` criterion axis and performs no target
-#' transformation. It does not convert ordinary inputs or reinterpret rounded
-#' continuous values as a scientific equality model.
+#' Supports both `input_kind = "equal_weight_draws"` (joint IID or MCMC draws,
+#' preserving singleton criterion axes when `K = 1`) and
+#' `"exact_finite_posterior"` (which requires optional package `gmp`). Before
+#' floating-point conversion, `read_postrank_tie_draws()` scans the raw JSON
+#' structure against `inst/schema/tie-draws-schema.json`, rejecting duplicate
+#' object keys, malformed array shapes, and integer tokens outside safe-integer
+#' range (`2^53 - 1`), and then runs [as_postrank_tie_draws()].
 #'
-#' Duplicate decoded keys, malformed supported array shapes and unsafe
-#' finite-law integer tokens are rejected before floating conversion. Shape
-#' checks cover the supported JSON binding; the R validator checks the
-#' corresponding metadata, values and equality partition. These checks do not
-#' verify scientific equality, jointness or convergence. Complete finite laws
-#' require the optional `gmp` package.
+#' Use [read_postrank_draws()] for ordinary zero-equality inputs; this reader
+#' does not convert ordinary inputs or treat rounded continuous draws as a valid
+#' equality model. Schema and R validation do not verify scientific equality or
+#' MCMC convergence.
 #' @seealso [write_postrank_tie_draws()], [as_postrank_tie_draws()],
 #'   [read_postrank_draws()]
 #' @concept tie-aware
-#' @examples
-#' if (requireNamespace("gmp", quietly = TRUE)) {
-#'   path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
-#'   input <- read_postrank_tie_draws(path)
-#'   input$criterion_ids
-#'   input$equality$criterion_classes
-#'   validate_postrank_tie_draws(input)
-#' }
+#' @examplesIf requireNamespace("gmp", quietly = TRUE)
+#' path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
+#' input <- read_postrank_tie_draws(path)
+#' input$criterion_ids
+#' input$equality$criterion_classes
+#' validate_postrank_tie_draws(input)
 #' @export
 read_postrank_tie_draws <- function(path) {
   .pr_string(path, "$.path")
@@ -76,42 +79,40 @@ read_postrank_tie_draws <- function(path) {
   as_postrank_tie_draws(.pr_tie_json_bind(x))
 }
 
-#' Save an Equality-Neutral Posterior Input as JSON
+#' Write a Tie-Aware Posterior Input to JSON
 #'
-#' The writer stores a tie-aware input with its numerical values, target
-#' definitions and equality classes. The file can be read by
-#' [read_postrank_tie_draws()] with all entities and their original order
-#' retained.
+#' `write_postrank_tie_draws()` validates and writes a tie-aware posterior input
+#' (for posteriors with positive probability of exact equality under
+#' equality-neutral loss) to a `"tie-aware-input-0.1"` JSON file readable by
+#' [read_postrank_tie_draws()].
 #'
-#' @param x A complete canonical `tie-aware-input-0.1` payload or an unchanged
+#' @param x A plain `"tie-aware-input-0.1"` named list or an unmodified
 #'   `postrank_tie_draws` object.
-#' @param path Destination JSON file; its parent directory must exist.
-#' @param overwrite Logical; allow replacement of an existing file.
-#'   Defaults to `FALSE`.
-#' @return The destination path, invisibly.
+#' @param path Destination JSON file path; `dirname(path)` must already exist.
+#' @param overwrite Logical scalar (`FALSE` by default). When `FALSE`, stops
+#'   with an error if `path` already exists.
+#' @return `path`, invisibly.
 #' @details
-#' Validation is repeated before writing. Values use 17 significant digits;
-#' all entities, singleton dimensions, sampling histories and named criterion
-#' equality partitions are retained. A temporary file in the destination
-#' directory is renamed into place after the supported JSON checks pass.
-#'
-#' The file stores the canonical input, not a claim of scientific verification.
-#' Reading it repeats validation and recreates its content identity. Changed
-#' objects fail validation rather than being silently accepted. Use
-#' [write_postrank_draws()] for the ordinary zero-equality input domain.
-#' @seealso [read_postrank_tie_draws()], [validate_postrank_tie_draws()]
+#' Re-runs [as_postrank_tie_draws()] before writing, formats numbers to 17
+#' significant digits while retaining all entities, singleton dimensions,
+#' sampling histories, and criterion equality partitions, validates the JSON
+#' output against `inst/schema/tie-draws-schema.json`, and writes to a temporary
+#' file in `dirname(path)` before renaming into place. Modified
+#' `postrank_tie_draws` objects fail validation rather than being written. Use
+#' [write_postrank_draws()] for ordinary zero-equality inputs.
+#' @seealso [read_postrank_tie_draws()], [validate_postrank_tie_draws()],
+#'   [write_postrank_draws()]
 #' @concept tie-aware
-#' @examples
-#' if (requireNamespace("gmp", quietly = TRUE)) {
-#'   input <- read_postrank_tie_draws(system.file("examples", "synthetic-tie-aware.json",
-#'     package = "postrank"))
-#'   path <- tempfile(fileext = ".json")
-#'   write_postrank_tie_draws(input, path)
-#'   restored <- read_postrank_tie_draws(path)
-#'   identical(restored$input_identity, input$input_identity)
-#'   identical(restored$equality, input$equality)
-#'   unlink(path)
-#' }
+#' @examplesIf requireNamespace("gmp", quietly = TRUE)
+#' input <- read_postrank_tie_draws(
+#'   system.file("examples", "synthetic-tie-aware.json", package = "postrank")
+#' )
+#' path <- tempfile(fileext = ".json")
+#' write_postrank_tie_draws(input, path)
+#' restored <- read_postrank_tie_draws(path)
+#' identical(restored$input_identity, input$input_identity)
+#' identical(restored$equality, input$equality)
+#' unlink(path)
 #' @export
 write_postrank_tie_draws <- function(x, path, overwrite = FALSE) {
   .pr_string(path, "$.path")

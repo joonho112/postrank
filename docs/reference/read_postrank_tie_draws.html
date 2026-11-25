@@ -1,9 +1,15 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Read an Equality-Neutral Posterior Input from JSON — read_postrank_tie_draws • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Read an Equality-Neutral Posterior Input from JSON — read_postrank_tie_draws"><meta name="description" content="The reader imports posterior values, declarations of genuine equality and
-original source histories for a tie-aware analysis. Files produced by
-write_postrank_tie_draws() preserve the numerical targets and IDs."><meta property="og:description" content="The reader imports posterior values, declarations of genuine equality and
-original source histories for a tie-aware analysis. Files produced by
-write_postrank_tie_draws() preserve the numerical targets and IDs."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Read a Tie-Aware Posterior Input from JSON — read_postrank_tie_draws • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Read a Tie-Aware Posterior Input from JSON — read_postrank_tie_draws"><meta name="description" content='read_postrank_tie_draws() reads a "tie-aware-input-0.1" JSON file into a
+validated postrank_tie_draws object for tie-aware mode (the workflow for
+posteriors in which distinct entities can be equal with positive probability
+under equality-neutral loss, where true equality has zero loss). Files
+written by write_postrank_tie_draws() round-trip with identical numerical
+values, IDs, equality partitions, and input_identity.'><meta property="og:description" content='read_postrank_tie_draws() reads a "tie-aware-input-0.1" JSON file into a
+validated postrank_tie_draws object for tie-aware mode (the workflow for
+posteriors in which distinct entities can be equal with positive probability
+under equality-neutral loss, where true equality has zero loss). Files
+written by write_postrank_tie_draws() round-trip with identical numerical
+values, IDs, equality partitions, and input_identity.'><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -11,7 +17,7 @@ write_postrank_tie_draws() preserve the numerical targets and IDs."><meta proper
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,7 +25,7 @@ write_postrank_tie_draws() preserve the numerical targets and IDs."><meta proper
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -33,15 +39,18 @@ write_postrank_tie_draws() preserve the numerical targets and IDs."><meta proper
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Read an Equality-Neutral Posterior Input from JSON</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Read a Tie-Aware Posterior Input from JSON</h1>
 
       <div class="d-none name"><code>read_postrank_tie_draws.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>The reader imports posterior values, declarations of genuine equality and
-original source histories for a tie-aware analysis. Files produced by
-<code><a href="write_postrank_tie_draws.html">write_postrank_tie_draws()</a></code> preserve the numerical targets and IDs.</p>
+    <p><code>read_postrank_tie_draws()</code> reads a <code>"tie-aware-input-0.1"</code> JSON file into a
+validated <code>postrank_tie_draws</code> object for tie-aware mode (the workflow for
+posteriors in which distinct entities can be equal with positive probability
+under equality-neutral loss, where true equality has zero loss). Files
+written by <code><a href="write_postrank_tie_draws.html">write_postrank_tie_draws()</a></code> round-trip with identical numerical
+values, IDs, equality partitions, and <code>input_identity</code>.</p>
     </div>
 
     <div class="section level2">
@@ -54,25 +63,27 @@ original source histories for a tie-aware analysis. Files produced by
 
 
 <dl><dt id="arg-path">path<a class="anchor" aria-label="anchor" href="#arg-path"></a></dt>
-<dd><p>Path to an existing <code>tie-aware-input-0.1</code> JSON file.</p></dd>
+<dd><p>Path to an existing <code>"tie-aware-input-0.1"</code> JSON file.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A validated <code>postrank_tie_draws</code> from <code><a href="as_postrank_tie_draws.html">as_postrank_tie_draws()</a></code>.</p>
+    <p>A validated <code>postrank_tie_draws</code> object from
+<code><a href="as_postrank_tie_draws.html">as_postrank_tie_draws()</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The reader supports joint equal-weight IID/MCMC draws and complete exact
-finite laws. It preserves the <code>K = 1</code> criterion axis and performs no target
-transformation. It does not convert ordinary inputs or reinterpret rounded
-continuous values as a scientific equality model.</p>
-<p>Duplicate decoded keys, malformed supported array shapes and unsafe
-finite-law integer tokens are rejected before floating conversion. Shape
-checks cover the supported JSON binding; the R validator checks the
-corresponding metadata, values and equality partition. These checks do not
-verify scientific equality, jointness or convergence. Complete finite laws
-require the optional <code>gmp</code> package.</p>
+    <p>Supports both <code>input_kind = "equal_weight_draws"</code> (joint IID or MCMC draws,
+preserving singleton criterion axes when <code>K = 1</code>) and
+<code>"exact_finite_posterior"</code> (which requires optional package <code>gmp</code>). Before
+floating-point conversion, <code>read_postrank_tie_draws()</code> scans the raw JSON
+structure against <code>inst/schema/tie-draws-schema.json</code>, rejecting duplicate
+object keys, malformed array shapes, and integer tokens outside safe-integer
+range (<code>2^53 - 1</code>), and then runs <code><a href="as_postrank_tie_draws.html">as_postrank_tie_draws()</a></code>.</p>
+<p>Use <code><a href="read_postrank_draws.html">read_postrank_draws()</a></code> for ordinary zero-equality inputs; this reader
+does not convert ordinary inputs or treat rounded continuous draws as a valid
+equality model. Schema and R validation do not verify scientific equality or
+MCMC convergence.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -82,13 +93,20 @@ require the optional <code>gmp</code> package.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"gmp"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"synthetic-tie-aware.json"</span>, package <span class="op">=</span> <span class="st">"postrank"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">input</span> <span class="op">&lt;-</span> <span class="fu">read_postrank_tie_draws</span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">input</span><span class="op">$</span><span class="va">criterion_ids</span></span></span>
-<span class="r-in"><span>  <span class="va">input</span><span class="op">$</span><span class="va">equality</span><span class="op">$</span><span class="va">criterion_classes</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="validate_postrank_tie_draws.html">validate_postrank_tie_draws</a></span><span class="op">(</span><span class="va">input</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"synthetic-tie-aware.json"</span>, package <span class="op">=</span> <span class="st">"postrank"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu">read_postrank_tie_draws</span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">input</span><span class="op">$</span><span class="va">criterion_ids</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "S" "C"</span>
+<span class="r-in"><span><span class="va">input</span><span class="op">$</span><span class="va">equality</span><span class="op">$</span><span class="va">criterion_classes</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $S</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   A   B   C   D </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> "A" "A" "C" "D" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   A   B   C   D </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> "A" "A" "A" "D" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="fu"><a href="validate_postrank_tie_draws.html">validate_postrank_tie_draws</a></span><span class="op">(</span><span class="va">input</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

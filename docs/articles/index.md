@@ -2,75 +2,62 @@
 
 ### Start here
 
-Follow a small analysis from supplied posterior information to grades,
-exported results and figures.
+Walk through a complete analysis from posterior inputs to integer
+grades, exported tables, HTML reports, and sensitivity plots.
 
-- [Analysis with one or several
+- [Getting started: grading with one or two
   criteria](https://joonho112.github.io/postrank/articles/a1-getting-started.md):
-- [Analysis of supplied posterior
-  results](https://joonho112.github.io/postrank/articles/a5-your-posterior-results.md):
-- [Reading and exporting
+- [Preparing your posterior draws and comparison
+  probabilities](https://joonho112.github.io/postrank/articles/a5-your-posterior-results.md):
+- [Reading and exporting grading
   results](https://joonho112.github.io/postrank/articles/a6-reading-exporting-results.md):
-- [Figures and sensitivity
-  analysis](https://joonho112.github.io/postrank/articles/a7-figures-sensitivity.md):
+- [Figures and sensitivity to reporting
+  settings](https://joonho112.github.io/postrank/articles/a7-figures-sensitivity.md):
 
 ### Applied examples
 
-Explore one-criterion and common-grading analyses in three case studies.
+Follow one-criterion and multi-criterion grading analyses across
+California schools, large U.S. employers, and Alabama counties.
 
-- [Comparing chronic absence across California
-  schools](https://joonho112.github.io/postrank/articles/a2-cde-accountability.md):
-- [Race and gender at large
-  employers](https://joonho112.github.io/postrank/articles/a3-krw-race-gender.md):
-- [Economic opportunity in Alabama: income and
+- [Grading California schools on chronic
+  absence](https://joonho112.github.io/postrank/articles/a2-cde-accountability.md):
+- [Grading large employers on race and gender contact
+  gaps](https://joonho112.github.io/postrank/articles/a3-krw-race-gender.md):
+- [Grading Alabama counties on income and
   incarceration](https://joonho112.github.io/postrank/articles/a4-alabama-opportunity.md):
 
 ### Methods
 
-Understand the loss, competing criteria, posterior requirements,
-withholding, computation and numerical uncertainty.
+Connect posterior comparison probabilities, integer grades, multiple
+criteria, exact ties, solver bounds, and Monte Carlo or IID diagnostics.
 
-- [Posterior ranking, grades, and
+- [Posterior ranking, integer grades, and reporting
   loss](https://joonho112.github.io/postrank/articles/m1-ranking-and-loss.md):
-- [Several criteria and competing
-  goals](https://joonho112.github.io/postrank/articles/m2-several-criteria.md):
-- [Posterior inputs and pairwise
+- [Combining several criteria in one common
+  grading](https://joonho112.github.io/postrank/articles/m2-several-criteria.md):
+- [Posterior representations and pairwise comparison
   probabilities](https://joonho112.github.io/postrank/articles/m3-posterior-inputs.md):
-- [True ties and withheld
+- [Exact ties in the posterior versus withheld
   comparisons](https://joonho112.github.io/postrank/articles/m4-ties-and-withholding.md):
-- [Computing grades and choosing
-  settings](https://joonho112.github.io/postrank/articles/m5-computing-grades.md):
-- [Monte Carlo uncertainty and
-  diagnostics](https://joonho112.github.io/postrank/articles/m6-uncertainty-diagnostics.md):
+- [Computing grades, choosing settings, and reading solver
+  bounds](https://joonho112.github.io/postrank/articles/m5-computing-grades.md):
+- [Monte Carlo diagnostics, cross-fitting, and IID
+  bounds](https://joonho112.github.io/postrank/articles/m6-uncertainty-diagnostics.md):
 
 ### Multidomain profiles
 
-Assign each unit a separate grade in each domain. Extend the
-common-grade workflow with joint protection and crossed priorities.
+Assign each entity a separate grade in each domain and evaluate joint
+cross-domain error-exceedance protection.
 
-- [A first multidomain report
-  card](https://joonho112.github.io/postrank/articles/mdomain-quickstart.md):
-- [When domains can be graded
-  separately](https://joonho112.github.io/postrank/articles/mdomain-decisions.md):
-
-### Additional examples
-
-Work through the retained examples, producer declarations and
-comparisons with simpler grading rules.
-
-- [Common grading from posterior
-  draws](https://joonho112.github.io/postrank/articles/quickstart.md):
-- [Strict inputs, declarations and external
-  producers](https://joonho112.github.io/postrank/articles/inputs-and-producers.md):
-- [Baselines and criterion
-  burden](https://joonho112.github.io/postrank/articles/baselines-and-the-cost-of-a-common-grade.md):
+- [Grading entities across multiple
+  domains](https://joonho112.github.io/postrank/articles/mdomain-quickstart.md):
+- [Separate domain rules versus joint multidomain
+  protection](https://joonho112.github.io/postrank/articles/mdomain-decisions.md):
 
 ### Reference aids
 
-Browse the common-grade figure gallery or update scripts written for the
-earlier interface.
+Browse all seven common-grade figure functions and their display options
+side by side.
 
-- [A gallery of the seven result
+- [Gallery of the seven common-grade
   figures](https://joonho112.github.io/postrank/articles/figure-gallery.md):
-- [Moving from the earlier 0.9
-  interface](https://joonho112.github.io/postrank/articles/migration-from-0-9.md):

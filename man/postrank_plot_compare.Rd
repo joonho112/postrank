@@ -8,54 +8,59 @@ postrank_plot_compare(x, view = c("summary", "relations"), ..., ncol = NULL)
 \arguments{
 \item{x}{A \code{postrank_comparison} from \code{\link[=postrank_compare]{postrank_compare()}}.}
 
-\item{view}{\code{"summary"} for risk, disclosure and grade-count panels;
-\code{"relations"} for pair-relation change counts.}
+\item{view}{\code{"summary"} (the default) for risk, disclosure, and grade-count
+panels, or \code{"relations"} for stacked counts of pairwise relation changes
+from \code{x$reference} to each other rule.}
 
-\item{...}{Unused.}
+\item{...}{Unused; unnamed extra arguments are ignored. Pass \code{ncol} by name.}
 
-\item{ncol}{Optional positive integer number of facet columns in the
-summary view. Supply by name. \code{NULL} uses three columns; \code{ncol = 1}
-with a taller output suits a narrow page. Ignored in the relations view.}
+\item{ncol}{Positive integer number of facet columns in \code{view = "summary"},
+or \code{NULL} (the default, which uses 3 columns). Use \code{ncol = 1} for narrow
+pages. Ignored when \code{view = "relations"}.}
 }
 \value{
-A \code{ggplot} object. Unavailable actions keep their method labels,
-statuses and reasons, with unavailable points and relation counts omitted. The
-relations view returns a status panel if no comparison has grades.
+A \code{ggplot} object. Rules without a finite risk (\code{!is.finite(risk)})
+keep their y-axis labels, statuses, and reasons in the subtitle while their
+points and bars are omitted. When \code{view = "relations"} and no compared rule
+has grades, returns an empty status \code{ggplot} stating why.
 }
 \description{
-Stored reports are compared by risk, disclosure and grade count, or by
-changes in pairwise relations relative to the reference report. Risk values
-use the comparison object's common posterior and loss settings. The plotting
-function neither evaluates nor optimizes additional actions.
+\code{postrank_plot_compare()} plots stored grading rules from
+\code{\link[=postrank_compare]{postrank_compare()}} side by side on risk, disclosure rate (\code{N / M}), and
+grade count (\code{G}), or by pairwise relation changes relative to the reference
+rule. All risk values come from \code{x}'s shared posterior and loss settings
+without solving or evaluating new gradings.
 }
 \details{
-The summary view plots risk, \code{N/M} (disclosed pairs over all unordered
-pairs), and the number of grades. The reference action's point is filled;
-other actions are hollow. A tick marks an available stored risk lower bound.
-Method labels give status, optimization scope and any absolute risk gap.
-An optimal fixed-order baseline is optimal within its contiguous partitions,
-not over every possible grading; baselines have no full-family lower bound.
+In \code{view = "summary"}, the reference rule (\code{x$reference}) is drawn as a
+filled circle and other rules as hollow circles; a vertical tick marks any
+stored \code{risk_lower_bound}. Y-axis labels show the rule name, solver status
+(\code{"optimal (numerical)"} for full-family optimal solves), optimization scope
+(\code{"full family"}, \code{"fixed score order"}, or \code{"supplied action"}), and any
+absolute solver risk gap. A score-order baseline searches only contiguous
+cuts of its fixed score order rather than all gradings, so it has no
+full-family lower bound.
 
-The relations view counts unchanged, newly disclosed, newly withheld and
-reversed pairs from the reference to each alternative. Every bar covers all
-\code{M = choose(n, 2)} pairs, including those withheld by both actions.
+In \code{view = "relations"}, each bar covers all \code{M = choose(n, 2)} unordered
+pairs across \code{"unchanged"}, \code{"newly disclosed"}, \code{"newly withheld"}, and
+\code{"reversed"} relative to \code{x$reference}; \code{"unchanged"} includes pairs left
+unordered by both rules.
 
-Supplied actions outside the declared grade or budget constraints are
-marked \verb{outside family}. Their fixed-action risks can be evaluated under
-the common loss, but do not compare minima over the same feasible family.
-The absence of feasibility records in older comparison objects is indicated
-in the plot. These checks require reconstruction of the comparison; they
-are not performed during plotting.
+Rules recorded with \code{family_feasible == FALSE} (for example, exceeding
+\code{G_max} or violating an error budget \code{q_k}) are tagged \code{"[outside family]"}
+on the y-axis and listed in the subtitle: their fixed-action risks are
+evaluated under the same loss, but they are outside the constrained feasible
+set. If \code{family_feasible} is absent from an older comparison object, the
+subtitle notes that constraint checks require rebuilding \code{x} with
+\code{\link[=postrank_compare]{postrank_compare()}}.
 }
 \examples{
-# Read a prepared three-criterion method comparison; no new solve or evaluation.
-source(system.file("scripts", "_vignette-setup.R", package = "postrank"),
-  local = TRUE)
-comparison <- load_or_compute("comparison_30x3_tau35")
+comparison <- postrank_example("comparison_30x3_tau35")
 postrank_plot_compare(comparison, ncol = 1)
 postrank_plot_compare(comparison, view = "relations")
 }
 \seealso{
-\code{\link[=postrank_compare]{postrank_compare()}}, \code{\link[=postrank_plot_relations]{postrank_plot_relations()}}, \code{\link[=postrank_plot_data]{postrank_plot_data()}}
+\code{\link[=postrank_compare]{postrank_compare()}}, \code{\link[=postrank_plot_relations]{postrank_plot_relations()}},
+\code{\link[=postrank_plot_data]{postrank_plot_data()}}
 }
 \concept{visualization}

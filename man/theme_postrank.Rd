@@ -6,27 +6,28 @@
 theme_postrank(base_size = 11, base_family = "")
 }
 \arguments{
-\item{base_size}{Base font size in points; default 11.}
+\item{base_size}{Base font size in points (\code{11} by default).}
 
-\item{base_family}{Font family passed to ggplot2; the default \code{""} uses
-the graphics device's default family.}
+\item{base_family}{Font family passed to \code{ggplot2} (\code{""} by default, using
+the graphics device's default family).}
 }
 \value{
-A ggplot2 \code{theme} that can be added to a plot.
+A \code{ggplot2} \code{theme} object that can be added to a plot with \code{+}.
 }
 \description{
-The theme specifies the typography and white background used in postrank
-figures. It extends \code{\link[ggplot2:theme_minimal]{ggplot2::theme_minimal()}} with a light horizontal grid,
-axis lines, a left-aligned bold title and a bottom legend.
+\code{theme_postrank()} returns the \code{ggplot2} theme used across \code{postrank}
+figures, extending \code{\link[ggplot2:theme_minimal]{ggplot2::theme_minimal()}} with white backgrounds, a light
+horizontal grid, axis lines and ticks, left-aligned bold titles, and a bottom
+legend.
 }
 \details{
-White plot and panel backgrounds preserve the contrast of the grade
-palette. The theme affects presentation only: grades, entity order and
-plotted values are retained. Additional ggplot2 theme settings can be
-applied subsequently to modify individual figures.
+White plot and panel backgrounds (\code{"#FFFFFF"}) keep at least 3:1 contrast
+with the grade color ramp from \code{\link[=postrank_palette]{postrank_palette()}}. The theme changes
+visual styling only and leaves grades, entity order, and plotted data
+untouched; add further \code{\link[ggplot2:theme]{ggplot2::theme()}} calls afterward to customize
+individual elements.
 }
 \examples{
-# A prepared one-criterion probability matrix, with larger text.
 p <- postrank_plot_pairwise(pr_tutorial$one)
 p + theme_postrank(base_size = 12)
 }

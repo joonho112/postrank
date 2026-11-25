@@ -1,7 +1,15 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Prepare Identified Multidomain Posterior States — postrank_mdomain_input • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Prepare Identified Multidomain Posterior States — postrank_mdomain_input"><meta name="description" content="Bind explicit unit and domain IDs, target definitions and producer
-declarations to states without fitting a model or inventing dependence."><meta property="og:description" content="Bind explicit unit and domain IDs, target definitions and producer
-declarations to states without fitting a model or inventing dependence."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Prepare Posterior States for Multidomain Grading — postrank_mdomain_input • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Prepare Posterior States for Multidomain Grading — postrank_mdomain_input"><meta name="description" content="postrank_mdomain_input() binds unit IDs, domain IDs, target definitions,
+and source metadata to posterior states for multidomain profile grading,
+where each unit receives a separate integer grade on each domain rather than
+a single shared grade across criteria. It validates the supplied states and
+metadata without fitting a statistical model or inventing cross-domain
+dependence. Requires optional package gmp."><meta property="og:description" content="postrank_mdomain_input() binds unit IDs, domain IDs, target definitions,
+and source metadata to posterior states for multidomain profile grading,
+where each unit receives a separate integer grade on each domain rather than
+a single shared grade across criteria. It validates the supplied states and
+metadata without fitting a statistical model or inventing cross-domain
+dependence. Requires optional package gmp."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -9,7 +17,7 @@ declarations to states without fitting a model or inventing dependence."><meta p
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,7 +25,7 @@ declarations to states without fitting a model or inventing dependence."><meta p
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -31,14 +39,18 @@ declarations to states without fitting a model or inventing dependence."><meta p
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Prepare Identified Multidomain Posterior States</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Prepare Posterior States for Multidomain Grading</h1>
 
       <div class="d-none name"><code>postrank_mdomain_input.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>Bind explicit unit and domain IDs, target definitions and producer
-declarations to states without fitting a model or inventing dependence.</p>
+    <p><code>postrank_mdomain_input()</code> binds unit IDs, domain IDs, target definitions,
+and source metadata to posterior states for multidomain profile grading,
+where each unit receives a separate integer grade on each domain rather than
+a single shared grade across criteria. It validates the supplied states and
+metadata without fitting a statistical model or inventing cross-domain
+dependence. Requires optional package <code>gmp</code>.</p>
     </div>
 
     <div class="section level2">
@@ -59,71 +71,108 @@ declarations to states without fitting a model or inventing dependence.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>A labeled numeric state by unit by domain array; a domain-named
-list of labeled state by unit matrices; a complete P2 specification; or
-a validated <code><a href="postrank_draws.html">postrank_draws()</a></code> object.</p></dd>
+<dd><p>One of four inputs:</p><ul><li><p>a 3D finite numeric array (<code>state x unit x domain</code>) with unique
+non-blank dimnames on all three axes (<code>S &gt;= 1</code>, <code>n &gt;= 2</code>, <code>D &gt;= 1</code>);</p></li>
+<li><p>a domain-named list of 2D finite numeric matrices (<code>state x unit</code>)
+sharing identical unit column names in the same order;</p></li>
+<li><p>a validated <code><a href="postrank_draws.html">postrank_draws()</a></code> object (adapted with its stored
+targets, representation, and draw history; leave <code>targets</code>,
+<code>representation</code>, <code>masses</code>, <code>state_origin</code>, and <code>equality_classes</code> as
+<code>NULL</code>);</p></li>
+<li><p>a complete native specification list (<code>!is.null(x$layout)</code>) or an
+existing <code>postrank_mdomain_input</code> object to revalidate (with all extra
+arguments <code>NULL</code>).</p></li>
+</ul></dd>
 
 
 <dt id="arg-targets">targets<a class="anchor" aria-label="anchor" href="#arg-targets"></a></dt>
-<dd><p>Domain-ordered named target records containing <code>definition</code>,
-<code>units</code>, <code>orientation = "larger_is_higher"</code>, <code>equality_classes</code>, and
-<code>equality_provenance</code>. <code>transformations</code> records existing transformations;
-its default empty list records that this interface applies none.</p></dd>
+<dd><p>Named list in exact domain order. Each domain record requires
+non-empty strings <code>definition</code>, <code>units</code>, and <code>equality_provenance</code>,
+<code>orientation = "larger_is_higher"</code>, character vector <code>equality_classes</code>
+(one non-blank class label per unit in unit order; distinct labels declare
+no structural tie), and optional <code>transformations</code> (defaults to <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>).</p></dd>
 
 
 <dt id="arg-provenance">provenance<a class="anchor" aria-label="anchor" href="#arg-provenance"></a></dt>
-<dd><p>A list with <code>input_id</code>, <code>law_id</code>, <code>proper_law = TRUE</code>,
-and <code>joint_generation</code> for a joint array or <code>within_domain_joint</code> for
-separate vectors. Optional producer, intended-law, sampling, retention
-and audit metadata are retained; absent audit fields have explicit
-missing reasons. A complete finite law additionally requires
-<code>sampling_assumptions = list(finite_support_origin = "...")</code> describing
-why the supplied support is complete. Draw inputs retain their actual
-sampling declarations; missing sampler metadata is marked as missing.
-These are producer declarations, not verified facts.</p></dd>
+<dd><p>Named list requiring non-empty strings <code>input_id</code> and
+<code>law_id</code>, plus <code>proper_law = TRUE</code>. Joint 3D arrays also require non-empty
+<code>joint_generation</code>; separate domain matrix lists require
+<code>within_domain_joint</code>. When <code>representation = "exact_finite_law"</code>,
+<code>provenance$sampling_assumptions$finite_support_origin</code> is also required.
+Optional source, sampling, and retention fields are kept as supplied, and
+omitted optional fields are listed in <code>missing_metadata</code> rather than filled
+in automatically.</p></dd>
 
 
 <dt id="arg-representation">representation<a class="anchor" aria-label="anchor" href="#arg-representation"></a></dt>
-<dd><p>Explicit <code>"exact_finite_law"</code>,
-<code>"iid_equal_weight_draws"</code> or <code>"mcmc_equal_weight_draws"</code>; separate
-domains may use a domain-ordered named vector.</p></dd>
+<dd><p>State representation: <code>"exact_finite_law"</code>,
+<code>"iid_equal_weight_draws"</code>, or <code>"mcmc_equal_weight_draws"</code> (for separate
+domain matrices, may be a domain-ordered named character vector).</p></dd>
 
 
 <dt id="arg-masses">masses<a class="anchor" aria-label="anchor" href="#arg-masses"></a></dt>
-<dd><p>For finite laws, rational strings or numeric stored values,
-or a list with <code>encoding</code> and <code>values</code>. Separate inputs use a domain-named
-list. Rational masses sum exactly to one; numeric masses use the core's
-recorded floating normalization contract.</p></dd>
+<dd><p>State masses required when
+<code>representation = "exact_finite_law"</code>: exact rational strings summing to
+<code>1</code> (for example <code>c("1/10", "9/10")</code>), numeric weights, or
+<code>list(encoding = ..., values = ...)</code>. Separate domain inputs take a
+domain-ordered named list.</p></dd>
 
 
 <dt id="arg-state-origin">state_origin<a class="anchor" aria-label="anchor" href="#arg-state-origin"></a></dt>
-<dd><p>Data frame with <code>source_index</code>, <code>chain_id</code>, and
-<code>iteration_id</code>, in array state order; required for MCMC. Optional
-<code>state_id</code> must match state labels. Separate inputs use a named list.</p></dd>
+<dd><p>Data frame with one row per state and columns
+<code>source_index</code>, <code>chain_id</code>, and <code>iteration_id</code> (plus optional <code>state_id</code>
+matching state dimnames). Required without missing values (<code>iteration_id &gt;= 1</code>) when <code>representation = "mcmc_equal_weight_draws"</code>. Separate domain
+inputs take a domain-ordered named list.</p></dd>
 
 
 <dt id="arg-equality-classes">equality_classes<a class="anchor" aria-label="anchor" href="#arg-equality-classes"></a></dt>
-<dd><p>Optional domain-ordered named list of unit class
-labels, equivalent to the corresponding target fields. Equal labels
-declare model identities; they are never inferred from observed ties.</p></dd>
+<dd><p>Optional domain-ordered named list of unit equality
+class vectors (equivalent to supplying <code>equality_classes</code> inside each
+<code>targets</code> entry). Shared labels declare model-based equality and are never
+inferred from observed numerical ties.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>postrank_mdomain_input</code> inheriting <code>p2_profile_input</code>, retaining
-<code>original_spec</code>, validated payloads, capabilities and audit receipts.</p>
+    <p>A <code>postrank_mdomain_input</code> object (inheriting <code>p2_profile_input</code>)
+containing <code>unit_ids</code>, <code>domain_ids</code>, <code>n</code>, <code>D</code>, <code>layout</code>, <code>representation</code>,
+<code>coupling_status</code>, <code>payloads</code>, <code>capabilities</code>, <code>missing_metadata</code>,
+<code>original_spec</code>, and validation <code>receipts</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Separate domain vectors support additive expectations and events
-within each domain. Matching row labels do not establish cross-domain
-coupling. Pair probability summaries are accepted through a complete
-specification and require an explicit latent equality convention.
-Existing draw inputs are revalidated and adapted with their original
-declarations; <code>provenance</code> must additionally declare <code>input_id</code>, <code>law_id</code>
-and <code>proper_law = TRUE</code>. The suggested package <code>gmp</code> is required.</p>
+    <p>Separate domain matrix lists (<code>layout = "criterionwise_arrays"</code>) set
+<code>coupling_status = "unknown_cross_domain"</code>: they support additive expected
+loss and joint events involving at most one active domain, and matching state
+row names across matrices are never treated as coupled joint draws. Adapting
+an existing <code><a href="postrank_draws.html">postrank_draws()</a></code> object revalidates it and carries over its
+target definitions and sampling metadata once <code>provenance</code> supplies
+<code>input_id</code>, <code>law_id</code>, and <code>proper_law = TRUE</code>. Metadata fields record how
+the input was constructed without verifying model specification or MCMC
+convergence.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="postrank_mdomain_decision.html">postrank_mdomain_decision()</a></code>, <code><a href="postrank_mdomain_family.html">postrank_mdomain_family()</a></code>,
+<code><a href="postrank_mdomain_evaluate.html">postrank_mdomain_evaluate()</a></code>, <code><a href="postrank_mdomain_solve.html">postrank_mdomain_solve()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">inp</span> <span class="op">&lt;-</span> <span class="fu">postrank_mdomain_input</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">postrank_toy</span>,</span></span>
+<span class="r-in"><span>  provenance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>input_id <span class="op">=</span> <span class="st">"toy"</span>, law_id <span class="op">=</span> <span class="st">"toy-normal"</span>, proper_law <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">inp</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Multidomain posterior input</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3 units; 2 domains; joint_array</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Representation: iid_equal_weight_draws</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Coupling: supplied_joint</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Proper law: producer declaration; numerical guarantee: none</span>
+<span class="r-in"><span><span class="va">inp</span><span class="op">$</span><span class="va">domain_ids</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "need_A" "need_B"</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

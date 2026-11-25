@@ -14,72 +14,71 @@ postrank_cuts(
 )
 }
 \arguments{
-\item{scores}{A named score vector (one per entity), for example from
-\code{\link[=postrank_expected_rank]{postrank_expected_rank()}} or \code{\link[=postrank_composite]{postrank_composite()}}.}
+\item{scores}{Finite numeric vector named by \code{pairwise$entity_ids}, for
+example from \code{\link[=postrank_expected_rank]{postrank_expected_rank()}} or \code{\link[=postrank_composite]{postrank_composite()}}.}
 
-\item{pairwise}{The \code{postrank_pairwise}, \code{postrank_coefficients}, or
-\code{postrank_probabilities} object whose directional errors define the loss.}
+\item{pairwise}{A \code{postrank_pairwise}, \code{postrank_coefficients} or
+\code{\link[=postrank_probabilities]{postrank_probabilities()}} object supplying directional-error
+probabilities.}
 
-\item{settings}{A \code{\link[=postrank_settings]{postrank_settings()}} object (weights, tau, grade rule).}
+\item{settings}{A \code{\link[=postrank_settings]{postrank_settings()}} object specifying weighted \code{weights},
+\code{tau}, \code{G_max} and optional \code{exact_G}.}
 
-\item{direction}{\code{"ascending"} (smaller score = higher priority, as for
-expected rank) or \code{"descending"} (larger = higher, as for composites).}
+\item{direction}{Score direction: \code{"ascending"} (smaller score = higher
+priority, the default, matching \code{\link[=postrank_expected_rank]{postrank_expected_rank()}}) or
+\code{"descending"} (larger score = higher priority, matching
+\code{\link[=postrank_composite]{postrank_composite()}}).}
 
-\item{rule}{\code{"optimal"} or \code{"quantile"}.}
+\item{rule}{Cut rule: \code{"optimal"} (the default, dynamic programming over
+contiguous cuts) or \code{"quantile"} (fixed positional cuts).}
 
-\item{G_b}{For \code{rule = "quantile"}, the requested number of grades
-(default: the settings' \code{exact_G}, else \code{G_max}, capped at \code{n}).}
+\item{G_b}{Positive integer requested grade count when \code{rule = "quantile"}
+(defaults to \code{settings$exact_G}, or \code{settings$G_max}, capped at \code{n}; must
+be \code{NULL} when \code{rule = "optimal"}).}
 
-\item{method}{Optional label; defaults to the score's \code{score_method}
-attribute, else \code{"user_scores"}.}
+\item{method}{Optional non-empty label for this baseline; defaults to
+\code{attr(scores, "score_method")}, or \code{"user_scores"} if unset.}
 }
 \value{
-A \code{postrank_baseline} list. \code{scores}, \code{direction}, \code{order} and
-\code{score_blocks} record the declared order and its indivisible exact-score
-blocks. \code{cut_rule}, \code{cuts} (block positions) and the entity-named \code{grade}
-record the action. \code{evaluation} contains the fixed-action metrics;
-\code{risk} is the weighted loss and \code{objective} its raw optimization value.
-\code{optimality_scope} distinguishes optimal partitions of this score order
-from quantile cuts; neither provides a full-family solver bound.
-\code{method}, \code{tie_policy}, bound \code{settings}, \code{input_identity},
-\code{schema_version}, \code{provenance} and \code{warnings} retain the construction
-record. When the requested grade count is impossible, the function raises
-an error rather than returning an all-withheld report.
+A \code{postrank_baseline} list containing \code{method}, \code{scores},
+\code{direction}, \code{order}, \code{score_blocks}, \code{cut_rule}, \code{cuts}, \code{grade},
+\code{evaluation}, \code{objective}, \code{risk}, \code{optimality_scope}, \code{tie_policy}, bound
+\code{settings}, \code{input_identity}, \code{schema_version}, \code{provenance} and
+\code{warnings}.
 }
 \description{
-A declared score order is partitioned into ordered grades, with exactly tied
-scores retained in the same grade. Optimal cuts minimize weighted loss over
-partitions of that order, whereas quantile cuts use fixed positions. The
-search therefore remains conditional on the declared order.
+\code{postrank_cuts()} partitions an entity score order into contiguous integer
+grades (grade 1 = highest priority), keeping entities with equal scores in
+the same grade. No external optimization solver is required.
 }
 \details{
-\code{rule = "optimal"} uses a contiguous-partition dynamic program
-(subject to ordinary floating-point arithmetic) under the settings' grade
-cap \code{G_max}, or the exact grade count \code{exact_G}; its optimality is
-restricted to contiguous partitions of this score order. \code{rule = "quantile"}
-uses the fixed positional labels \eqn{1 + \lfloor (p - 1) G_b / n \rfloor}
-and performs no optimization. Exactly equal stored scores are never split;
-a quantile boundary inside an exact-score block merges the grades it
-straddles, so the realized number of grades can be below \code{G_b}. The realized
-grade count must still satisfy \code{G_max} and \code{exact_G}; violations raise
-\code{baseline_grade_limit_violation} or \code{baseline_exact_grade_violation}.
+\code{rule = "optimal"} uses dynamic programming (in ordinary floating-point
+arithmetic) to minimize weighted expected loss over contiguous partitions of
+the given score order under \code{G_max} or \code{exact_G} (breaking exact objective
+ties toward fewer occupied grades and then earlier block cuts). Optimality
+holds only within contiguous partitions of this score order, not across all
+allowed gradings. \code{rule = "quantile"} assigns raw positional grades
+\eqn{1 + \lfloor (p - 1) G_b / n \rfloor} without optimization, merging any
+grades straddled by equal scores (which can leave fewer than \code{G_b} occupied
+grades, recorded in \code{warnings}).
 
-The dynamic program optimizes the weighted objective only: settings with
-error budgets \code{q} or the minimax objective are refused
-(\code{unsupported_baseline_settings}); an \code{exact_G} larger than the number of
-exact-score blocks is refused (\code{exact_G_exceeds_blocks}). Typed Gaussian
-and mixture coefficients permit exact-count cuts within this fixed order,
-although their native joint problem constructor does not support exact-G.
-Direct \code{\link[=postrank_probabilities]{postrank_probabilities()}} inputs are restricted to weighted
-at-most-G cuts, as well as weighted at-most-G native problems.
+Settings with \code{q} error budgets or \code{objective = "minimax"} stop with
+\code{unsupported_baseline_settings}, and \code{exact_G} exceeding the number of
+distinct score blocks stops with \code{exact_G_exceeds_blocks} (or
+\code{baseline_exact_grade_violation} when quantile merging leaves fewer grades).
+\code{\link[=postrank_probabilities]{postrank_probabilities()}} inputs support at-most-\code{G_max} cuts without
+\code{exact_G}, whereas \code{postrank_pairwise} and \code{postrank_coefficients} also allow
+\code{exact_G}.
 }
 \examples{
 pw <- postrank_pairwise(postrank_toy)
-s <- postrank_settings(c(need_A = .6, need_B = .4), tau = .25, G_max = 3L)
-er <- postrank_cuts(postrank_expected_rank(pw, s$weights), pw, s, direction = "ascending")
+s <- postrank_settings(c(need_A = 0.6, need_B = 0.4), tau = 0.25, G_max = 3L)
+er <- postrank_cuts(postrank_expected_rank(pw, s$weights), pw, s,
+  direction = "ascending")
 get_grades(er)
 }
 \seealso{
-\code{\link[=postrank_expected_rank]{postrank_expected_rank()}}, \code{\link[=postrank_composite]{postrank_composite()}}, \code{\link[=postrank_compare]{postrank_compare()}}
+\code{\link[=postrank_expected_rank]{postrank_expected_rank()}}, \code{\link[=postrank_composite]{postrank_composite()}},
+\code{\link[=postrank_compare]{postrank_compare()}}
 }
 \concept{baselines}

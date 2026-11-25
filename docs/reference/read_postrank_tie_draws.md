@@ -1,10 +1,13 @@
-# Read an Equality-Neutral Posterior Input from JSON
+# Read a Tie-Aware Posterior Input from JSON
 
-The reader imports posterior values, declarations of genuine equality
-and original source histories for a tie-aware analysis. Files produced
-by
+`read_postrank_tie_draws()` reads a `"tie-aware-input-0.1"` JSON file
+into a validated `postrank_tie_draws` object for tie-aware mode (the
+workflow for posteriors in which distinct entities can be equal with
+positive probability under equality-neutral loss, where true equality
+has zero loss). Files written by
 [`write_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/write_postrank_tie_draws.md)
-preserve the numerical targets and IDs.
+round-trip with identical numerical values, IDs, equality partitions,
+and `input_identity`.
 
 ## Usage
 
@@ -16,26 +19,30 @@ read_postrank_tie_draws(path)
 
 - path:
 
-  Path to an existing `tie-aware-input-0.1` JSON file.
+  Path to an existing `"tie-aware-input-0.1"` JSON file.
 
 ## Value
 
-A validated `postrank_tie_draws` from
+A validated `postrank_tie_draws` object from
 [`as_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_tie_draws.md).
 
 ## Details
 
-The reader supports joint equal-weight IID/MCMC draws and complete exact
-finite laws. It preserves the `K = 1` criterion axis and performs no
-target transformation. It does not convert ordinary inputs or
-reinterpret rounded continuous values as a scientific equality model.
+Supports both `input_kind = "equal_weight_draws"` (joint IID or MCMC
+draws, preserving singleton criterion axes when `K = 1`) and
+`"exact_finite_posterior"` (which requires optional package `gmp`).
+Before floating-point conversion, `read_postrank_tie_draws()` scans the
+raw JSON structure against `inst/schema/tie-draws-schema.json`,
+rejecting duplicate object keys, malformed array shapes, and integer
+tokens outside safe-integer range (`2^53 - 1`), and then runs
+[`as_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_tie_draws.md).
 
-Duplicate decoded keys, malformed supported array shapes and unsafe
-finite-law integer tokens are rejected before floating conversion. Shape
-checks cover the supported JSON binding; the R validator checks the
-corresponding metadata, values and equality partition. These checks do
-not verify scientific equality, jointness or convergence. Complete
-finite laws require the optional `gmp` package.
+Use
+[`read_postrank_draws()`](https://joonho112.github.io/postrank/reference/read_postrank_draws.md)
+for ordinary zero-equality inputs; this reader does not convert ordinary
+inputs or treat rounded continuous draws as a valid equality model.
+Schema and R validation do not verify scientific equality or MCMC
+convergence.
 
 ## See also
 
@@ -46,11 +53,18 @@ finite laws require the optional `gmp` package.
 ## Examples
 
 ``` r
-if (requireNamespace("gmp", quietly = TRUE)) {
-  path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
-  input <- read_postrank_tie_draws(path)
-  input$criterion_ids
-  input$equality$criterion_classes
-  validate_postrank_tie_draws(input)
-}
+path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
+input <- read_postrank_tie_draws(path)
+input$criterion_ids
+#> [1] "S" "C"
+input$equality$criterion_classes
+#> $S
+#>   A   B   C   D 
+#> "A" "A" "C" "D" 
+#> 
+#> $C
+#>   A   B   C   D 
+#> "A" "A" "A" "D" 
+#> 
+validate_postrank_tie_draws(input)
 ```

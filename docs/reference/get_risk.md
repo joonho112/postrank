@@ -1,9 +1,8 @@
 # Extract Posterior Loss with Its Solver Bound and Status
 
-The primary risk of the validated grading is returned with the
-whole-problem lower bound, absolute risk gap and normalized solver
-status. These quantities describe both the available decision and the
-extent to which numerical optimality has been established.
+`get_risk()` returns the posterior expected loss (`risk`) of the checked
+grading in `x` together with the solver's lower bound across all allowed
+gradings, optimization gap and normalized termination status.
 
 ## Usage
 
@@ -15,7 +14,7 @@ get_risk(x, ...)
 
 - x:
 
-  A `postrank_fit` or `postrank_analysis`.
+  A `postrank_fit` or `postrank_analysis` object.
 
 - ...:
 
@@ -23,36 +22,51 @@ get_risk(x, ...)
 
 ## Value
 
-A named list with numeric `risk`, `lower_bound` and `gap`, and character
-`status`. Unavailable numeric values are `NA`.
+A named list with four elements:
+
+- `risk`: posterior expected loss of the checked grading (weighted sum
+  of criterion losses when `objective == "weighted"`, or largest
+  selected criterion loss when `objective == "minimax"`), or `NA_real_`
+  when no checked grading is available;
+
+- `lower_bound`: a loss that no allowed grading for `x`'s problem can
+  beat (up to solver and floating-point tolerances), or `NA_real_` when
+  no usable lower bound is available;
+
+- `gap`: `risk - lower_bound`, or `NA_real_` when either is `NA`;
+
+- `status`: normalized solver status string (`"optimal"`,
+  `"feasible_not_certified"`, `"time_limit"`, `"infeasible"`,
+  `"unbounded"`, `"numerical_error"` or `"unknown"`).
 
 ## Details
 
-`risk` is weighted expected loss for a weighted problem, or the largest
-selected criterion risk for minimax. With one criterion and weight 1, it
-is that criterion's risk. The gap is an optimization quantity for the
-supplied probabilities, not posterior uncertainty or a bound on
-true-posterior regret by itself.
+`lower_bound`, `gap` and `status` describe optimization over the
+supplied pairwise probabilities only; they do not measure posterior
+uncertainty, Monte Carlo error, or excess loss ("regret") under the true
+posterior when probabilities are estimated from finite draws.
 
-A time limit may leave validated grades or none. Without validated
-grades, risk and gap are `NA`, while status and any usable lower bound
-remain. Missing or rejected bounds can also make the gap unavailable
-despite a retained grade. Consult the fit's `objective$bound_source`,
-warnings and validation details for the numerical qualifications.
+When a solver stops at its time limit without a checked grading, `risk`
+and `gap` are `NA_real_` while `status` and any usable `lower_bound` are
+kept (distinct from a valid one-grade report leaving all pairs
+unordered, which has `risk = tau`). Even with a checked grading,
+`lower_bound` and `gap` are `NA_real_` if no bound was computed or if
+the reported bound was excluded on numerical checks; inspect
+`objective$bound_source` (on a `postrank_fit`, or
+`x$fit$objective$bound_source` on a `postrank_analysis`) and
+`x$warnings` for details.
 
 ## See also
 
 [`get_profile()`](https://joonho112.github.io/postrank/reference/get_profile.md),
+[`get_grades()`](https://joonho112.github.io/postrank/reference/get_grades.md),
 [`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md)
 
 ## Examples
 
 ``` r
-if (requireNamespace("highs", quietly = TRUE)) {
-  one <- postrank(pr_tutorial$one, tau = .2, G_max = 3L, backend = "highs",
-    control = postrank_control(time_limit = 10), fragility = FALSE)
-  get_risk(one)
-}
+one <- postrank_example("tutorial_one")
+get_risk(one)
 #> $risk
 #> [1] 0.04165164
 #> 

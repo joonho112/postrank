@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Choose Grades Under Equality-Neutral Loss — postrank_tie_solve • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Choose Grades Under Equality-Neutral Loss — postrank_tie_solve"><meta name="description" content="A prepared tie-aware problem is solved by mixed-integer optimization, and
-its candidate is checked independently before grades are returned. The
-objective minimizes weighted expected strict errors and distinct-comparison
-withholding costs, subject to the grade cap and active-profile equality
-guard. A validated candidate may remain available when optimization
-terminates early."><meta property="og:description" content="A prepared tie-aware problem is solved by mixed-integer optimization, and
-its candidate is checked independently before grades are returned. The
-objective minimizes weighted expected strict errors and distinct-comparison
-withholding costs, subject to the grade cap and active-profile equality
-guard. A validated candidate may remain available when optimization
-terminates early."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Solve a Grading Problem Under Equality-Neutral Loss — postrank_tie_solve • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Solve a Grading Problem Under Equality-Neutral Loss — postrank_tie_solve"><meta name="description" content='postrank_tie_solve() solves a tie-aware grading problem from
+postrank_tie_problem() by mixed-integer programming (strategy = "label_mip") and independently checks any candidate grading before returning
+it. It minimizes posterior expected equality-neutral loss (where true target
+equality has zero loss whether the pair is ordered or placed in the same
+grade), subject to at most G_max occupied grades and the active-profile
+equality constraint (requiring entities declared structurally equal on every
+positive-weight criterion to share a grade).'><meta property="og:description" content='postrank_tie_solve() solves a tie-aware grading problem from
+postrank_tie_problem() by mixed-integer programming (strategy = "label_mip") and independently checks any candidate grading before returning
+it. It minimizes posterior expected equality-neutral loss (where true target
+equality has zero loss whether the pair is ordered or placed in the same
+grade), subject to at most G_max occupied grades and the active-profile
+equality constraint (requiring entities declared structurally equal on every
+positive-weight criterion to share a grade).'><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -17,7 +19,7 @@ terminates early."><meta property="og:image" content="https://joonho112.github.i
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,7 +27,7 @@ terminates early."><meta property="og:image" content="https://joonho112.github.i
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -39,18 +41,19 @@ terminates early."><meta property="og:image" content="https://joonho112.github.i
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Choose Grades Under Equality-Neutral Loss</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Solve a Grading Problem Under Equality-Neutral Loss</h1>
 
       <div class="d-none name"><code>postrank_tie_solve.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>A prepared tie-aware problem is solved by mixed-integer optimization, and
-its candidate is checked independently before grades are returned. The
-objective minimizes weighted expected strict errors and distinct-comparison
-withholding costs, subject to the grade cap and active-profile equality
-guard. A validated candidate may remain available when optimization
-terminates early.</p>
+    <p><code>postrank_tie_solve()</code> solves a tie-aware grading problem from
+<code><a href="postrank_tie_problem.html">postrank_tie_problem()</a></code> by mixed-integer programming (<code>strategy = "label_mip"</code>) and independently checks any candidate grading before returning
+it. It minimizes posterior expected equality-neutral loss (where true target
+equality has zero loss whether the pair is ordered or placed in the same
+grade), subject to at most <code>G_max</code> occupied grades and the active-profile
+equality constraint (requiring entities declared structurally equal on every
+positive-weight criterion to share a grade).</p>
     </div>
 
     <div class="section level2">
@@ -68,66 +71,104 @@ terminates early.</p>
 
 
 <dl><dt id="arg-problem">problem<a class="anchor" aria-label="anchor" href="#arg-problem"></a></dt>
-<dd><p>A validated object from <code><a href="postrank_tie_problem.html">postrank_tie_problem()</a></code>.</p></dd>
+<dd><p>A validated <code>postrank_tie_problem</code> object from
+<code><a href="postrank_tie_problem.html">postrank_tie_problem()</a></code>.</p></dd>
 
 
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p><code>NULL</code>, <code>"highs"</code> or <code>"gurobi"</code>. The explicit argument takes
-precedence over <code>getOption("postrank.backend")</code>, then the default Gurobi.
-Choose <code>"highs"</code> explicitly to use HiGHS. There is no backend fallback.</p></dd>
+<dd><p>Solver to use, <code>"gurobi"</code> or <code>"highs"</code>. If <code>NULL</code> (the
+default), <code>getOption("postrank.backend")</code> is used, or <code>"gurobi"</code> (which
+requires a license) when unset; install the <code>highs</code> package and pass
+<code>backend = "highs"</code> to use HiGHS. <code>postrank</code> never switches solvers
+automatically. Missing or unloadable solver packages and runtime R errors
+thrown by the solver (such as Gurobi without an active license) stop the
+call with a <code>postrank_backend_unavailable</code> error, whereas solver
+termination outcomes (<code>"optimal"</code>, <code>"time_limit"</code>,
+<code>"feasible_not_certified"</code>, <code>"infeasible"</code>, <code>"numerical_error"</code>, ...) are
+returned in <code>status$normalized</code>.</p></dd>
 
 
 <dt id="arg-control">control<a class="anchor" aria-label="anchor" href="#arg-control"></a></dt>
-<dd><p>Named time, thread, seed, gap and tolerance controls, or a
-<code>postrank_control</code> with <code>strategy = "label_mip"</code>. Nonempty staged-engine
-controls are unsupported in this mode.</p></dd>
+<dd><p>Named list of solver controls (<code>time_limit</code>, <code>threads</code>,
+<code>seed</code>, <code>relative_gap</code>, <code>absolute_risk_gap</code>, <code>tolerances</code>, <code>output</code>,
+<code>strategy</code>, and <code>verbose</code>, although <code>postrank_tie_solve()</code> itself prints no
+progress messages when <code>verbose = TRUE</code>) or a <code><a href="postrank_control.html">postrank_control()</a></code> object.
+Because <code><a href="postrank_control.html">postrank_control()</a></code> defaults to <code>strategy = "staged"</code>, pass
+<code>postrank_control(strategy = "label_mip", ...)</code> (or pass
+<code>strategy = "label_mip"</code> explicitly). Staged <code>engine</code> options are not
+supported: in a plain <code>list</code>, omit <code>engine</code> or pass <code>engine = list()</code>; in
+<code><a href="postrank_control.html">postrank_control()</a></code>, leave <code>engine</code> at its defaults.</p></dd>
 
 
 <dt id="arg-strategy">strategy<a class="anchor" aria-label="anchor" href="#arg-strategy"></a></dt>
-<dd><p><code>"label_mip"</code> only. When omitted, an explicit strategy in
-<code>control</code> is used and checked; otherwise the label model is used.</p></dd>
+<dd><p>Must be <code>"label_mip"</code> (<code>"staged"</code> search is not supported in
+tie-aware mode). When <code>strategy</code> is omitted in the call and
+<code>control$strategy</code> is present, <code>control$strategy</code> is used and checked.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>postrank_tie_fit</code> with the problem, settings, backend, raw solver
-result, status, validation, objective records and numerical warnings.
-<code>incumbent_validated</code> indicates whether <code>grade</code> and <code>evaluation</code> are
-available. Only a candidate passing independent rounded-primal,
-active-profile and direct-loss checks receives grades.</p>
-<p>The objective record includes validated action risk as an upper bound,
-any usable whole-problem lower bound, the absolute risk gap, and raw
-units/scale/offset. Bounds convert as <code>R0 + raw_bound/M</code>, where
-<code>R0 = tau * T/M</code> is the all-withheld baseline. Unavailable action or bound
-quantities are <code>NA</code>.</p>
+    <p>A <code>postrank_tie_fit</code> list containing <code>schema_version</code>, <code>loss</code>,
+<code>problem_identity</code>, <code>input_identity</code>, <code>problem</code>, <code>settings</code>, <code>backend</code>,
+<code>engine</code>, <code>control</code>, <code>capabilities</code>, <code>status</code> (<code>raw_code</code>, <code>raw_message</code>,
+<code>normalized</code>, <code>termination_reason</code>), <code>has_incumbent</code>,
+<code>incumbent_validated</code>, <code>raw_solution</code>, <code>solution_validation</code>, <code>grade</code>,
+<code>evaluation</code>, <code>relations</code> (<code>n x n</code> integer pairwise relation matrix), and
+<code>solution_identity</code> (the last four are <code>NULL</code> unless <code>incumbent_validated</code>
+is <code>TRUE</code>), <code>objective</code>, <code>runtime</code>, <code>raw_backend_result</code>,
+<code>numerical_issues</code>, and <code>warnings</code>. <code>incumbent_validated</code> is <code>TRUE</code> only
+when the rounded candidate passes integer constraint, active-profile
+equality, and direct <code><a href="postrank_tie_evaluate.html">postrank_tie_evaluate()</a></code> loss checks, establishing
+feasibility within tolerances (not optimality).</p>
+<p>In <code>objective</code>, <code>primary_action_risk</code> and <code>risk_upper_bound</code> give the
+verified grading's directly evaluated equality-neutral risk <code>U</code> (<code>NA</code> when
+<code>incumbent_validated</code> is <code>FALSE</code>), <code>risk_lower_bound</code> gives any usable
+whole-problem lower bound <code>L = R0 + raw_lower_bound / M</code> (a loss no
+feasible grading can beat according to the solver, or <code>NA</code> when
+unavailable), <code>risk_absolute_gap</code> gives <code>U - L</code> (<code>NA</code> when either bound is
+<code>NA</code>), and <code>offset</code> gives the all-withheld risk <code>R0 = tau * T / M</code>, where
+<code>M = choose(n, 2)</code> counts all unordered pairs and <code>T</code> is the
+criterion-weighted expected number of distinct-target pairs.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>A shared grade withholds a comparison; it does not assert latent
-equality. A valid single-grade action has risk R0 and undefined
-conditional error ratios. A solve without validated grades instead has
-<code>grade = NULL</code>; it is not reported as an all-withheld action.</p>
-<p>Inspect <code>incumbent_validated</code>, <code>status</code>, <code>objective$risk_lower_bound</code> and
-<code>objective$risk_absolute_gap</code> together. A validated candidate establishes
-feasibility within tolerance, not optimality. A rejected solver bound can
-coexist with a retained grade. A raw optimal status becomes
-<code>"feasible_not_certified"</code> when a usable whole-problem lower bound is
-missing or the risk gap exceeds the requested threshold, allowing only
-comparison roundoff. The threshold is the larger of <code>absolute_risk_gap</code>
-and <code>relative_gap * abs(U - R0)</code>, where <code>U</code> is the validated action risk.
-The valid grade, raw status, and any valid loose lower bound are retained.
-Other termination statuses are not promoted. An optimal result remains
-subject to floating-point tolerances, including the existing tolerance-scale
-bound-inversion clamp, and does not constitute a numerical certificate;
-the gap concerns the supplied optimization problem, not posterior or
-Monte Carlo uncertainty. Multiple optima may have different grade counts
-and imply different funding mappings.</p>
-<p>This route supports weighted at-most-G decisions only. It does not run
-the staged engine, minimax refinement, q protection or exact-G decisions.
-Ordinary baselines, accessors, HTML reports, plots and Monte Carlo
-guarantees do not accept tie-aware objects. Read <code>fit$grade</code> and
-<code>fit$evaluation</code>, or use the tie-aware print, format and summary methods.
-The optimizer does not verify the scientific declarations in the input.</p>
+    <p>Placing two entities in the same grade leaves them unordered without claiming
+equal targets. A valid single-grade (<code>G = 1</code>) solution has <code>grade</code> equal to
+all <code>1</code>s, risk <code>R0</code>, and <code>NA</code> conditional error ratios (<code>E_over_N</code>, expected
+strict errors per ordered pair, and <code>E_over_D</code>, expected strict errors per
+ordered distinct pair); by contrast, a run without a verified grading (for
+example, a time limit reached before finding any feasible integer solution)
+has <code>incumbent_validated = FALSE</code> and <code>grade = NULL</code>.</p>
+<p>Read <code>incumbent_validated</code>, <code>status$normalized</code>, <code>objective$risk_lower_bound</code>,
+and <code>objective$risk_absolute_gap</code> together:</p><ul><li><p>A raw <code>"optimal"</code> status becomes <code>"feasible_not_certified"</code> (keeping
+the verified <code>grade</code> and any valid loose <code>risk_lower_bound</code>) when a
+usable whole-problem lower bound is missing or <code>risk_absolute_gap</code>
+exceeds <code>max(absolute_risk_gap, relative_gap * abs(U - R0))</code> beyond
+floating-point comparison roundoff.</p></li>
+<li><p>If a solver's lower bound exceeds <code>U</code> by at most the objective
+tolerance (scaled to the raw objective magnitude), it is clamped to <code>U</code>
+(<code>risk_absolute_gap = 0</code>, <code>bound_inversion_within_tolerance = TRUE</code>) with
+a warning. Larger bound inversions, unrounded solver constraint
+violations larger than integer-rounding tolerances can explain, or other
+backend consistency/numerical issues (such as objective mismatch or
+numerical termination) set <code>status$normalized = "numerical_error"</code> and
+exclude <code>risk_lower_bound</code> while keeping a valid rounded <code>grade</code>;
+non-eligible statuses such as <code>"unknown"</code> also exclude
+<code>risk_lower_bound</code>.</p></li>
+<li><p>Solver statuses and gaps describe optimization of the supplied
+problem within floating-point tolerances; they do not provide a formal
+numerical certificate or measure posterior or Monte Carlo uncertainty.
+Multiple optimal gradings may exist with different occupied grade counts
+<code>G</code> and different downstream policy or funding mappings.</p></li>
+</ul><p>Tie-aware solving supports weighted at-most-<code>G_max</code> problems only (<code>minimax</code>,
+<code>q</code> error budgets, and <code>exact_G</code> are not supported) and does not verify
+scientific equality or sampling declarations in the input. Tie-aware fits
+provide <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>, <code><a href="https://rdrr.io/r/base/format.html" class="external-link">format()</a></code>, and <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> methods, and expose grades and
+losses via <code>fit$grade</code>, <code>fit$evaluation</code>, and <code>fit$relations</code>. Ordinary
+zero-equality functions (<code><a href="get_grades.html">get_grades()</a></code>, <code><a href="postrank_compare.html">postrank_compare()</a></code>,
+<code><a href="postrank_report.html">postrank_report()</a></code>, <code>postrank_plot_*()</code>, Monte Carlo diagnostics, and IID
+bounds) do not accept <code>postrank_tie_*</code> objects; see
+<code><a href="postrank_tie_capabilities.html">postrank_tie_capabilities()</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -137,17 +178,44 @@ The optimizer does not verify the scientific declarations in the input.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"gmp"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"highs"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"highs"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"synthetic-tie-aware.json"</span>, package <span class="op">=</span> <span class="st">"postrank"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">pw</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_tie_pairwise.html">postrank_tie_pairwise</a></span><span class="op">(</span><span class="fu"><a href="read_postrank_tie_draws.html">read_postrank_tie_draws</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">problem</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_tie_problem.html">postrank_tie_problem</a></span><span class="op">(</span><span class="va">pw</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>S <span class="op">=</span> <span class="fl">.6</span>, C <span class="op">=</span> <span class="fl">.4</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.25</span>, G_max <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">postrank_tie_solve</span><span class="op">(</span><span class="va">problem</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span></span>
-<span class="r-in"><span>    control <span class="op">=</span> <span class="fu"><a href="postrank_control.html">postrank_control</a></span><span class="op">(</span>strategy <span class="op">=</span> <span class="st">"label_mip"</span>, time_limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">fit</span></span></span>
+<span class="r-in"><span>  <span class="va">problem</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_tie_problem.html">postrank_tie_problem</a></span><span class="op">(</span><span class="va">pw</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>S <span class="op">=</span> <span class="fl">0.6</span>, C <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">0.25</span>, G_max <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">postrank_tie_solve</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">problem</span>,</span></span>
+<span class="r-in"><span>    backend <span class="op">=</span> <span class="st">"highs"</span>,</span></span>
+<span class="r-in"><span>    control <span class="op">=</span> <span class="fu"><a href="postrank_control.html">postrank_control</a></span><span class="op">(</span>strategy <span class="op">=</span> <span class="st">"label_mip"</span>, time_limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">fit</span><span class="op">$</span><span class="va">grade</span></span></span>
 <span class="r-in"><span>  <span class="va">fit</span><span class="op">$</span><span class="va">objective</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"primary_action_risk"</span>, <span class="st">"risk_lower_bound"</span>, <span class="st">"risk_absolute_gap"</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;postrank_tie_fit&gt;  4 entities in 3 grades (sizes 1 / 1 / 2).</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Equality-neutral posterior loss: 0.0400.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Disclosed 5 of 6 pairs (83.3%); withheld 1.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   All-withheld loss (R0): 0.1750; R0 need not equal tau.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Criterion results:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Criterion Loss   Error / disclosed Error / distinct</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    S         0.0667 0.080             0.080</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    C         0.0000 0.000             0.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Reading the loss:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   True equality incurs no error or withholding cost. Withheld unequal targets</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     incur the declared cost. A shared grade does not assert true equality.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Error / disclosed divides by the number of disclosed pairs. Error /</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     distinct divides by their expected unequal-target mass. A zero denominator</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     remains NA.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Decisions support weighted loss and an upper limit on grades; q limits,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     exact grade counts and minimax are unsupported in this path.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Computation:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Solver: Optimal within solver tolerances.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Optimization gap: 0.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Loss upper bound: 0.0400; lower bound: 0.0400.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Solver: highs; elapsed time 0.005 seconds.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   The gap concerns optimization of the supplied probabilities. It does not</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     measure posterior uncertainty or Monte Carlo error.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   !  1 warning recorded: Reported lower bound exceeded the validated action r...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   i  summary(x, details = TRUE) adds the stored technical record.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $primary_action_risk</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>

@@ -6,26 +6,25 @@
 validate_postrank_probabilities(x)
 }
 \arguments{
-\item{x}{An object from \code{\link[=postrank_probabilities]{postrank_probabilities()}}.}
+\item{x}{A \code{postrank_probabilities} object created by
+\code{\link[=postrank_probabilities]{postrank_probabilities()}}.}
 }
 \value{
-Invisible \code{TRUE} on success. An invalid or altered object raises an
-error; values and source records are not repaired or replaced.
+\code{TRUE}, invisibly, when \code{x} is valid and unaltered; otherwise stops
+with an error (\code{invalid_probabilities} or \code{stale_probability_identity}).
 }
 \description{
-Directional errors, corrections and summaries are reconstructed from the
-stored source values and compared with the recorded probability input. These
-checks detect invalid content or changes introduced after construction,
-including changes in a loaded object.
+\code{validate_postrank_probabilities()} rebuilds a \code{postrank_probabilities}
+object from its stored raw probabilities, source settings, correction rule
+and marginal summaries, checking that nothing was altered after construction.
 }
 \details{
-The checks repeat the constructor's requirements, including named
-axes, unused \code{NA} diagonals, probability range, reverse complements, and
-consistency of the requested correction. They do not establish joint-law
-coherence, the truth of the source description, or the accuracy of the
-supplied probabilities. A correction record is not an error certificate.
-To change probabilities, targets, or source descriptions, construct a new
-input with \code{\link[=postrank_probabilities]{postrank_probabilities()}}.
+All checks from \code{\link[=postrank_probabilities]{postrank_probabilities()}} are re-run, including matching
+entity and criterion names, \code{NA} diagonals, values in \verb{[0, 1]}, complement
+tolerances and \code{summaries} consistency. Passing these checks confirms that
+the stored object is intact; it does not verify joint-posterior coherence or
+the accuracy of the external calculation. To change probabilities or
+descriptions, call \code{\link[=postrank_probabilities]{postrank_probabilities()}} again.
 }
 \examples{
 x <- postrank_probabilities(pr_tutorial$one$e,

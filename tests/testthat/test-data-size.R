@@ -1,4 +1,4 @@
-# T-doc-04 / T-rel-14: source data/*.rda use xz and stay within 4 MiB; the installed data/
+# Source data/*.rda files use xz compression within 4 MiB and installed data/
 # directory stays within 5 MiB; no data/*.R generator exists. Cache bytes are measured
 # separately and are not part of either data budget.
 test_that("source data files are xz-compressed .rda within the 4 MiB budget", {

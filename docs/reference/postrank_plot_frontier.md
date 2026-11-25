@@ -1,9 +1,10 @@
-# Plot Disclosure, Error and Risk Across Settings
+# Plot Disclosure, Error, and Risk Across Settings
 
-A prepared frontier is displayed over a grid of withholding costs or
-error budgets. The available panels give disclosure `N/M`, criterion
-error `E_k/N` and risk at each setting. The figure uses stored results
-without repeating the grid calculations.
+`postrank_plot_frontier()` plots stored disclosure rates (`N / M`),
+criterion wrong-direction error rates (`E_k / N`), and primary risk
+across a grid of withholding costs `tau` or error budgets `q_k` from
+[`postrank_frontier()`](https://joonho112.github.io/postrank/reference/postrank_frontier.md),
+without re-solving the grid.
 
 ## Usage
 
@@ -21,53 +22,59 @@ postrank_plot_frontier(
 
 - x:
 
-  A `postrank_frontier` with stored grid results.
+  A `postrank_frontier` object.
 
 - panels:
 
-  Nonempty subset of `"disclosure"`, `"error"` and `"risk"`. Selected
-  panels retain this standard display order.
+  Non-empty character vector chosen from
+  `c("disclosure", "error", "risk")` (all three by default). Selected
+  panels always appear in that top-to-bottom order.
 
 - highlight:
 
-  Optional value on the displayed horizontal axis (`tau` or the varied
-  error budget), marked by a dashed line.
+  Optional numeric value on the horizontal axis (`tau` or the varied
+  error budget `q_value`) marked with a vertical dashed line.
 
 - mark_uncertified:
 
-  Logical; draw rows whose recorded status is not `"optimal"` hollow.
-  `FALSE` gives every available row its ordinary point style. This
-  legacy argument name does not imply numerical certification.
+  Logical scalar (`TRUE` by default). When `TRUE`, grid points whose
+  solver `status` is not `"optimal"` are drawn as hollow circles; when
+  `FALSE`, all available points use the standard shape scale. Here
+  `"optimal"` records the solver's numerical termination status, which
+  is not a mathematical certificate.
 
 - ...:
 
-  Unused.
+  Unused; unnamed extra arguments are ignored.
 
 ## Value
 
-A `ggplot` object. When no selected panel has an available value, a
-status panel explains the missing incumbent or undefined error rate.
+A `ggplot` object. When no grid point has a finite value for the
+requested panels (for example, no checked grading or `N = 0` when only
+`"error"` is shown), returns an empty status `ggplot` stating why.
 
 ## Details
 
-`M` is the number of all unordered pairs and `N` the number disclosed.
-Point shape distinguishes grade counts; criterion color and line style
-identify error series. Rows without an incumbent retain their status in
-the subtitle and receive no point. Lines stop at unavailable rows and at
-undefined `E_k/N` when `N = 0`; a single available point has no
-connecting line. Axes start at zero and adapt to the available values.
+`M = choose(n, 2)` is the number of unordered entity pairs and `N` is
+the number of disclosed (ordered) pairs. Point shapes indicate the
+number of distinct grades `G` (up to 18 distinct `G` values; above 18,
+solid circles are used and noted in the subtitle). Color and line type
+distinguish criteria in the `"error"` panel. Grid rows without a checked
+grading are listed in the subtitle and omitted from the plot; connecting
+lines stop at missing rows and at `N = 0` where `E_k / N` is undefined,
+so non-adjacent available points are never joined across a gap. Vertical
+axes start at zero.
 
-Changing `tau` changes the loss. Risks at different `tau` values
-therefore do not rank policies under one shared loss. Changing an error
-budget changes the feasible action family. If a budget grid contains
-several `tau` values, they receive separate panel columns rather than a
-common connecting line.
+Changing `tau` changes the loss function itself, so risk values at
+different `tau` settings do not compare rules under one shared loss.
+Changing an error budget `q_k` changes the feasible set of gradings;
+when an error-budget grid spans multiple `tau` values, each `tau`
+receives its own facet column rather than a single connecting line.
 
-Disclosure is nondecreasing in `tau` for exact optima when all other
-settings are fixed, but the set of disclosed pairs need not be nested.
-Recorded optimal statuses and numerical gaps do not establish exact
-monotonicity of the displayed actions or posterior validity. Available
-statuses and gaps remain visible even when points are styled alike.
+Under exact optimization with all other settings fixed, disclosure
+`N / M` is nondecreasing in `tau`, although the disclosed pair sets need
+not be nested. Numerical solver statuses and gaps do not guarantee exact
+monotonicity of the returned gradings.
 
 ## See also
 
@@ -78,9 +85,6 @@ statuses and gaps remain visible even when points are styled alike.
 ## Examples
 
 ``` r
-# Read prepared tutorial results; no model fitting or optimization.
-source(system.file("scripts", "_vignette-setup.R", package = "postrank"),
-  local = TRUE)
-frontier <- load_or_compute("tutorial_frontier")
-postrank_plot_frontier(frontier, highlight = .2)
+frontier <- postrank_example("tutorial_frontier")
+postrank_plot_frontier(frontier, highlight = 0.2)
 ```

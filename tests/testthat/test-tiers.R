@@ -1,4 +1,4 @@
-# T-test-08: the execution tiers skip exactly as declared (Chapter 15).
+# Test execution tier helpers skip when optional solvers or opt-in flags are absent.
 pr_tier_outcome <- function(guard) tryCatch({ guard(); "ran" }, skip = function(e) "skipped")
 
 test_that("the licensed Gurobi tier needs the explicit opt-in", {

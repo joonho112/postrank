@@ -1,15 +1,13 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Use Previously Calculated Comparison Probabilities — postrank_probabilities • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Use Previously Calculated Comparison Probabilities — postrank_probabilities"><meta name="description" content="The constructor imports comparison probabilities from an external posterior
-analysis, numerical integration or a specified law. A matrix represents one
-criterion and an array represents several criteria. The event direction,
-target definition, source and any requested numerical correction are
-recorded. Neither posterior draws nor a fitted model are produced by this
-operation."><meta property="og:description" content="The constructor imports comparison probabilities from an external posterior
-analysis, numerical integration or a specified law. A matrix represents one
-criterion and an array represents several criteria. The event direction,
-target definition, source and any requested numerical correction are
-recorded. Neither posterior draws nor a fitted model are produced by this
-operation."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Use Previously Calculated Comparison Probabilities — postrank_probabilities • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Use Previously Calculated Comparison Probabilities — postrank_probabilities"><meta name="description" content="postrank_probabilities() builds a pairwise-probability input from
+comparison probabilities computed outside postrank (for example by
+analytic formulas, numerical integration or another posterior summary),
+without requiring posterior draws. Pass a square matrix for one criterion or
+a 3D array for several criteria."><meta property="og:description" content="postrank_probabilities() builds a pairwise-probability input from
+comparison probabilities computed outside postrank (for example by
+analytic formulas, numerical integration or another posterior summary),
+without requiring posterior draws. Pass a square matrix for one criterion or
+a 3D array for several criteria."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -17,7 +15,7 @@ operation."><meta property="og:image" content="https://joonho112.github.io/postr
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,7 +23,7 @@ operation."><meta property="og:image" content="https://joonho112.github.io/postr
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -45,12 +43,11 @@ operation."><meta property="og:image" content="https://joonho112.github.io/postr
     </div>
 
     <div class="ref-description section level2">
-    <p>The constructor imports comparison probabilities from an external posterior
-analysis, numerical integration or a specified law. A matrix represents one
-criterion and an array represents several criteria. The event direction,
-target definition, source and any requested numerical correction are
-recorded. Neither posterior draws nor a fitted model are produced by this
-operation.</p>
+    <p><code>postrank_probabilities()</code> builds a pairwise-probability input from
+comparison probabilities computed outside <code>postrank</code> (for example by
+analytic formulas, numerical integration or another posterior summary),
+without requiring posterior draws. Pass a square matrix for one criterion or
+a 3D array for several criteria.</p>
     </div>
 
     <div class="section level2">
@@ -74,118 +71,120 @@ operation.</p>
 
 
 <dl><dt id="arg-probabilities">probabilities<a class="anchor" aria-label="anchor" href="#arg-probabilities"></a></dt>
-<dd><p>A named square matrix for one criterion, or a named
-entity-by-entity-by-criterion numeric array. Both entity axes must contain
-the same IDs in the same order. Diagonals must be <code>NA</code>: they are unused
-self-comparisons, not zero-probability events.</p></dd>
+<dd><p>A named <code>n x n</code> numeric matrix for one criterion, or a
+named <code>n x n x K</code> numeric array (<code>n &gt;= 2</code>). Row and column entity names
+must match in the same order. Diagonal entries must be <code>NA</code> (unused
+self-comparisons, not <code>0</code> or <code>NaN</code>), and off-diagonal entries must be
+finite numbers in <code>[0, 1]</code>.</p></dd>
 
 
 <dt id="arg-event">event<a class="anchor" aria-label="anchor" href="#arg-event"></a></dt>
-<dd><p>Explicitly <code>"higher_priority"</code> for
-<code>P(theta[i,k] &gt; theta[j,k])</code>, or <code>"directional_error"</code> for
-<code>P(theta[i,k] &lt;= theta[j,k])</code>. Larger target values mean higher priority.
-The output <code>e</code> always stores the latter event, the error for reporting
-row entity i above column entity j.</p></dd>
+<dd><p>Which pairwise event <code>probabilities[i, j, ]</code> represents
+(required): <code>"higher_priority"</code> for <code>P(theta[i, k] &gt; theta[j, k])</code>, or
+<code>"directional_error"</code> for <code>P(theta[i, k] &lt;= theta[j, k])</code>, where larger
+<code>theta</code> means higher priority. The returned <code>$e</code> array always stores
+<code>"directional_error"</code> (the expected error if entity <code>i</code> is graded above
+entity <code>j</code>).</p></dd>
 
 
 <dt id="arg-zero-ties">zero_ties<a class="anchor" aria-label="anchor" href="#arg-zero-ties"></a></dt>
-<dd><p>Explicitly <code>TRUE</code>: each pair of distinct targets has equality
-probability zero. Continuous marginals are not required; a finite law with
-no pairwise equality is also admissible. Positive or unknown equality
-probability cannot be imported by this route.</p></dd>
+<dd><p>Must be <code>TRUE</code> (required): distinct entities have zero
+probability of exact equality on each criterion. For posteriors with
+positive or unknown tie probability, use <code><a href="postrank_tie_pairwise.html">postrank_tie_pairwise()</a></code>.</p></dd>
 
 
 <dt id="arg-margin">margin<a class="anchor" aria-label="anchor" href="#arg-margin"></a></dt>
-<dd><p>Explicitly <code>0</code>. Nonzero comparison margins are unsupported.</p></dd>
+<dd><p>Must be <code>0</code> (required). Nonzero comparison margins are not
+supported.</p></dd>
 
 
 <dt id="arg-source">source<a class="anchor" aria-label="anchor" href="#arg-source"></a></dt>
-<dd><p>A list with <code>kind</code>, <code>description</code>, and <code>conditioning</code>.
-<code>kind</code> is <code>"analytic_reference"</code>, <code>"numerical_integration"</code>,
-<code>"iid_summary"</code>, <code>"mcmc_summary"</code>, or <code>"published_reference"</code>.
-Describe how the probabilities were obtained and what was held fixed,
-including an estimated prior in an empirical Bayes analysis. The label
-records the producer's account; it does not verify calculation accuracy.</p></dd>
+<dd><p>Plain named list with strings <code>kind</code>, <code>description</code> and
+<code>conditioning</code> (required). <code>kind</code> must be one of <code>"analytic_reference"</code>,
+<code>"numerical_integration"</code>, <code>"iid_summary"</code>, <code>"mcmc_summary"</code> or
+<code>"published_reference"</code>. State how the probabilities were computed and
+what was conditioned on (including any fixed empirical Bayes prior).</p></dd>
 
 
 <dt id="arg-targets">targets<a class="anchor" aria-label="anchor" href="#arg-targets"></a></dt>
-<dd><p>A criterion-named character vector describing the oriented
-targets and units, in the same order as the probability array.</p></dd>
+<dd><p>Character vector named by criterion (in the same order as
+<code>probabilities</code>) describing each higher-priority target and its units
+(required).</p></dd>
 
 
 <dt id="arg-criterion">criterion<a class="anchor" aria-label="anchor" href="#arg-criterion"></a></dt>
-<dd><p>One criterion name, required for matrix input. Omit it for
-an array, whose third dimension provides the names.</p></dd>
+<dd><p>Single criterion name when <code>probabilities</code> is a 2D matrix;
+leave <code>NULL</code> when <code>probabilities</code> is a 3D array (whose 3rd axis supplies
+the names).</p></dd>
 
 
 <dt id="arg-correction">correction<a class="anchor" aria-label="anchor" href="#arg-correction"></a></dt>
-<dd><p><code>"none"</code> (default) or an explicit <code>"symmetric"</code>
-correction of small reverse-complement discrepancies.</p></dd>
+<dd><p>How small discrepancies in <code>P(i, j) + P(j, i) = 1</code> are
+handled: <code>"none"</code> (the default) or <code>"symmetric"</code>.</p></dd>
 
 
 <dt id="arg-tolerance">tolerance<a class="anchor" aria-label="anchor" href="#arg-tolerance"></a></dt>
-<dd><p>With symmetric correction, an explicit nonnegative
-tolerance no larger than <code>1e-3</code>. This upper limit is a safeguard, not a
-recommended integration tolerance. Without correction, reverse sums must
-be within <code>1e-12</code> of one and this argument must be omitted.</p></dd>
+<dd><p>Maximum allowed complement discrepancy
+<code>max |P(i, j) + P(j, i) - 1|</code> when <code>correction = "symmetric"</code>, a finite
+number in <code>[0, 1e-3]</code> (this cap is a safeguard, not a recommended
+integration tolerance). Must be <code>NULL</code> when <code>correction = "none"</code>, which
+requires complement sums to be within <code>1e-12</code> of <code>1</code>.</p></dd>
 
 
 <dt id="arg-summaries">summaries<a class="anchor" aria-label="anchor" href="#arg-summaries"></a></dt>
-<dd><p>Optional list with named entity-by-criterion <code>means</code>,
-<code>same_targets = TRUE</code>, and a <code>description</code>. To supply fixed central
-equal-tail intervals, also include <code>lower</code>, <code>upper</code>, and <code>level</code>.
-These must describe the same oriented targets and units. Intervals at
-another level cannot be recovered from these summaries.</p></dd>
+<dd><p>Optional plain named list of marginal target summaries for
+the same oriented targets and units: <code>means</code> (<code>n x K</code> matrix with matching
+row and column names), <code>same_targets = TRUE</code>, and <code>description</code>. To enable
+report cards, also supply <code>lower</code>, <code>upper</code> (<code>n x K</code> matrices with
+<code>lower &lt;= upper</code>) and <code>level</code> (<code>0 &lt; level &lt; 1</code>) together; intervals at any
+other <code>level</code> cannot be computed from these summaries.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>postrank_probabilities</code> object containing directional errors <code>e</code>,
-raw and corrected probabilities, source records, correction magnitudes,
-and optional supplied summaries. It can be used by <code><a href="postrank.html">postrank()</a></code>,
-<code><a href="postrank_problem.html">postrank_problem()</a></code>, <code><a href="postrank_evaluate.html">postrank_evaluate()</a></code>, <code><a href="postrank_expected_rank.html">postrank_expected_rank()</a></code>,
-and <code><a href="postrank_cuts.html">postrank_cuts()</a></code> within their documented scope. No draw count,
-Monte Carlo diagnostic, or numerical certificate is inferred.</p>
+    <p>A <code>postrank_probabilities</code> object (inheriting from
+<code>postrank_pairwise</code>) containing directional error probabilities <code>e</code>,
+<code>raw_probabilities</code>, <code>corrected_probabilities</code>, <code>correction</code> diagnostics,
+<code>source</code>, <code>targets</code>, <code>summaries</code> and <code>capabilities</code>. Accepted by
+<code><a href="postrank.html">postrank()</a></code>, <code><a href="postrank_problem.html">postrank_problem()</a></code>, <code><a href="postrank_evaluate.html">postrank_evaluate()</a></code>,
+<code><a href="postrank_expected_rank.html">postrank_expected_rank()</a></code> and <code><a href="postrank_cuts.html">postrank_cuts()</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Native joint search and fixed-order cuts support weighted expected
-loss with an upper grade-count limit for this input. Minimax, <code>q</code>
-protections, and an exact grade count are unsupported in those routes.
-A fixed report can be scored with <code><a href="postrank_evaluate.html">postrank_evaluate()</a></code>; this does not test
-whether it belongs to a particular constrained action family.</p>
-<p>Range and reverse-complement checks do not establish that the supplied
-probabilities come from a coherent joint posterior or a suitable model.
-Cross-criterion dependence is unnecessary for additive expected loss, but
-these coefficients do not determine composite ordering or simultaneous
-correctness probabilities. A summary of Monte Carlo comparisons likewise
-does not retain the original draws or chain histories.</p>
-<p>Symmetric correction replaces a forward probability by the average of
-itself and one minus its reverse, then complements the reverse value.
-The maximum change is retained separately for each criterion. For a fixed
-report, the resulting risk change is at most <code>N/M</code> times the weighted
-sum of these maxima, where <code>N</code> counts disclosed pairs and <code>M</code> counts all
-unordered pairs. This describes a change from the supplied array; it does
-not bound quadrature, model, or Monte Carlo error. Nothing is corrected
-silently when <code>correction = "none"</code>.</p>
+    <p><strong>Supported settings and summaries.</strong> Supplied probabilities support the
+weighted expected-loss objective with <code>G_max</code>. Minimax objectives, <code>q</code> error
+budgets and <code>exact_G</code> are not available in <code><a href="postrank.html">postrank()</a></code> or
+<code><a href="postrank_problem.html">postrank_problem()</a></code>. Because no posterior draws are present, Monte Carlo
+fragility, cross-fitting, draw diagnostics and IID bounds are unavailable;
+a report card is available in <code><a href="postrank.html">postrank()</a></code> and <code><a href="postrank_report_card.html">postrank_report_card()</a></code> only
+when <code>summaries</code> includes <code>lower</code>, <code>upper</code> and <code>level</code>, and only at that
+<code>level</code>.</p>
+<p><strong>Symmetric correction.</strong> When <code>correction = "symmetric"</code>, each upper-triangle
+entry is replaced by <code>(a[i, j] + 1 - a[j, i]) / 2</code> and the lower-triangle
+entry is set to <code>1 - a[i, j]</code>. For any fixed grading with <code>N</code> ordered pairs
+out of <code>M</code> total pairs, this changes the weighted loss by at most <code>N / M</code>
+times the weighted sum of <code>correction$maximum_absolute_change</code>. That bound
+measures only the adjustment to the supplied array, not numerical
+integration, Monte Carlo or model error.</p>
+<p><strong>Scope of checks.</strong> Checking range and complement sums does not verify that
+the probabilities come from a coherent joint posterior or an adequate model.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="validate_postrank_probabilities.html">validate_postrank_probabilities()</a></code>, <code><a href="postrank_pairwise.html">postrank_pairwise()</a></code>,
-<code><a href="postrank_tie_pairwise.html">postrank_tie_pairwise()</a></code> for the separate equality-neutral loss.</p></div>
+<code><a href="postrank_tie_pairwise.html">postrank_tie_pairwise()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># The same analytic one-criterion law as the tutorial Gaussian input.</span></span></span>
-<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">postrank_probabilities</span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span><span class="op">$</span><span class="va">e</span>,</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">postrank_probabilities</span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span><span class="op">$</span><span class="va">e</span>,</span></span>
 <span class="r-in"><span>  event <span class="op">=</span> <span class="st">"directional_error"</span>, zero_ties <span class="op">=</span> <span class="cn">TRUE</span>, margin <span class="op">=</span> <span class="fl">0</span>,</span></span>
 <span class="r-in"><span>  source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>kind <span class="op">=</span> <span class="st">"analytic_reference"</span>,</span></span>
 <span class="r-in"><span>    description <span class="op">=</span> <span class="st">"Normal-CDF comparisons for pr_tutorial score A"</span>,</span></span>
-<span class="r-in"><span>    conditioning <span class="op">=</span> <span class="st">"The specified means, variances, and independent-site law are fixed"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    conditioning <span class="op">=</span> <span class="st">"The specified means, variances and independent-site law are fixed"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="st">"Score A in illustrative units; larger means higher priority"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">grade</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fl">1L</span>, <span class="fl">2L</span>, <span class="fl">2L</span>, <span class="fl">3L</span>, <span class="fl">3L</span><span class="op">)</span>, <span class="va">x</span><span class="op">$</span><span class="va">entity_ids</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="postrank_evaluate.html">postrank_evaluate</a></span><span class="op">(</span><span class="va">grade</span>, <span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span><span class="op">$</span><span class="va">weighted_risk</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="postrank_evaluate.html">postrank_evaluate</a></span><span class="op">(</span><span class="va">grade</span>, <span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span><span class="op">$</span><span class="va">weighted_risk</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.05165164</span>
 <span class="r-in"><span><span class="fu"><a href="validate_postrank_probabilities.html">validate_postrank_probabilities</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
 </code></pre></div>

@@ -64,39 +64,62 @@
   }, "mdomain_result_invalid", "x")
 }
 
-#' Solve a Declared Multidomain Candidate Family
+#' Select a Multidomain Grade Profile from a Candidate Family
 #'
-#' Minimize additive expected loss over the complete Cartesian product of the
-#' declared candidate columns, subject to mean guards and direct joint
-#' protection. Every optimal candidate is retained, including exact ties.
+#' `postrank_mdomain_solve()` evaluates every grade profile in the Cartesian
+#' product of a [postrank_mdomain_family()] and selects the feasible profile(s)
+#' minimizing domain-weighted expected loss subject to expected-error budgets
+#' and direct joint false-discovery-proportion (FDP) exceedance limits. Every
+#' tied minimizer in the candidate set is retained. Requires optional package
+#' `gmp` and runs no external MIP solver.
 #'
-#' @param input A [postrank_mdomain_input()] object used to construct `family`.
-#' @param family A [postrank_mdomain_family()] object. Its construction input,
-#'   identities, columns, provenance and integrity receipts are revalidated.
-#' @param decision A [postrank_mdomain_decision()] recipe, or `NULL` for its
-#'   documented defaults. The recipe is rebound to the validated input.
-#' @param max_actions Positive integer maximum size of the declared Cartesian
-#'   product. An oversized product raises a typed error before enumeration;
-#'   the product is never silently truncated and no incumbent is returned.
-#' @return A `postrank_mdomain_fit` containing `solution`, the complete native
-#'   candidate-search record; `evaluation`, a validated fixed-card evaluation of
-#'   the selected candidate; and `input`, `family`, bound `decision`, named
-#'   integer `grades`, `optimizer_ids`, `optimizer_count`, `selected_id`,
-#'   `candidate_table`, `status`, `search_scope` and integrity receipts.
-#' @details Only primary expected-loss minimization with direct joint union
-#'   protection is exposed. The first optimizer in lexicographic canonical grade
-#'   order is selected without a secondary objective. The full optimizer set
-#'   and all examined candidates remain available in `solution`.
+#' @param input The validated [postrank_mdomain_input()] object used to build
+#'   `family`.
+#' @param family A [postrank_mdomain_family()] object built on `input`.
+#' @param decision A [postrank_mdomain_decision()] specification, or `NULL` (the
+#'   default) to use the default specification from [postrank_mdomain_decision()].
+#' @param max_actions Positive integer cap (`100000L` by default) on the exact
+#'   Cartesian product size. If `family` has more than `max_actions` profiles,
+#'   `postrank_mdomain_solve()` stops with an error before enumeration rather
+#'   than truncating the search.
+#' @return A `postrank_mdomain_fit` list containing `grades` (selected `n x D`
+#'   integer grade matrix), `evaluation` ([postrank_mdomain_evaluate()] output
+#'   for `selected_id`), `candidate_table` (one row per examined profile),
+#'   `optimizer_ids`, `optimizer_count`, `selected_id`, `solution`, `input`,
+#'   `family`, `decision` (matched to `input`), `status`, `search_scope`,
+#'   `assurance`, and `receipts` (validation and hash records).
+#' @details
+#' When multiple feasible candidates tie for the minimum loss, `optimizer_ids`
+#' lists all of them (`status$optimum = "tied"`) and `selected_id` picks the
+#' first in lexicographic order of the renumbered (`1..K_d`) grade columns
+#' without adding a secondary tie-breaking objective.
 #'
-#'   Optimality is restricted to the declared candidate family. Examining its
-#'   complete product does not establish unrestricted ordered-partition
-#'   optimality. Exact rational comparisons and computed approximate comparisons
-#'   have distinct statuses; approximate values use no tie tolerance. Arithmetic
-#'   on supplied draws concerns their empirical measure and supplies no intended
-#'   posterior feasibility certificate. Construction provenance is retained,
-#'   including whether the evaluation measure also informed the candidates.
-#'   Missing joint information raises an error rather than making a candidate
-#'   infeasible or pairing marginal histories.
+#' Optimality holds only within the declared candidate family
+#' (`status$optimality = "candidate_restricted"`); examining the entire
+#' Cartesian product of `family` does not establish optimality over all possible
+#' multidomain grade matrices or unrestricted ordered partitions. Exact rational
+#' (`gmp`) arithmetic over finite draws evaluates their empirical distribution
+#' without rounding error rather than certifying feasibility or optimality under
+#' an intended continuous posterior. If an active joint constraint requires
+#' cross-domain coupling that `input` does not supply, the call stops with a
+#' capability error rather than pairing separate domain rows.
+#' @seealso [postrank_mdomain_family()], [postrank_mdomain_decision()],
+#'   [postrank_mdomain_evaluate()], [postrank_mdomain_grades()]
+#' @examplesIf requireNamespace("gmp", quietly = TRUE)
+#' inp <- postrank_mdomain_input(
+#'   postrank_toy,
+#'   provenance = list(input_id = "toy", law_id = "toy-normal", proper_law = TRUE)
+#' )
+#' dec <- postrank_mdomain_decision(tau = "1/4", t = "1/2", alpha = "1/5")
+#' fam <- postrank_mdomain_family(
+#'   inp,
+#'   order = "posterior_mean",
+#'   cuts = list(need_A = 1:2, need_B = 1:2),
+#'   max_grades = 3L
+#' )
+#' fit <- postrank_mdomain_solve(inp, fam, decision = dec)
+#' fit
+#' postrank_mdomain_grades(fit)
 #' @concept multidomain
 #' @export
 postrank_mdomain_solve <- function(input, family, decision=NULL,

@@ -1,5 +1,5 @@
-# T-ux-09/10/12/13/16: the standalone English HTML report embeds only the eligible shipped
-# figures from prepared objects, never overwrites, and keeps its honesty footer.
+# Standalone English HTML report generation: embeds stored report-card and profile
+# figures, refuses to overwrite existing files, and includes scope caveats.
 pr_html_of <- function(path) paste(readLines(path, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
 pr_n_png <- function(html) lengths(regmatches(html, gregexpr("data:image/png;base64,", html, fixed = TRUE)))
 pr_fig_state <- function(rep) vapply(rep$figures, function(f) if (isTRUE(f$available)) "embedded" else f$reason, "")

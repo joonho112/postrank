@@ -1,8 +1,9 @@
 # Read Posterior Draws or an Exact Finite Law from JSON
 
-The reader imports a saved posterior input, including its target
-definitions, ordered IDs and original sampling history. Files in this
-format are produced by
+`read_postrank_draws()` reads a saved posterior input from a JSON file
+in `postrank`'s `applied-0.1` JSON schema, restoring its values, entity
+and criterion order, target descriptions and sampling history. Files in
+this format are written by
 [`write_postrank_draws()`](https://joonho112.github.io/postrank/reference/write_postrank_draws.md).
 
 ## Usage
@@ -21,26 +22,28 @@ read_postrank_draws(path)
 
 A validated `postrank_draws` object from
 [`as_postrank_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_draws.md).
-Invalid JSON or unsupported input raises a structured error.
+Malformed JSON, schema mismatches or invalid input values stop the call
+with a structured error.
 
 ## Details
 
-The reader supports joint equal-weight draws, criterion-wise blocks and
-complete exact finite laws. It preserves the singleton criterion
-dimension for `K = 1` and does not orient, reorder or round supplied
-targets. Duplicate decoded JSON keys, invalid JSON numbers and malformed
-supported array shapes are rejected. Exact-law integer tokens are
-checked before conversion so that unsafe values cannot pass by
-floating-point rounding.
+Joint equal-weight draws (`joint_draws`), separate criterion-wise
+matrices (`criterion_blocks`) and exact finite posterior laws
+(`finite_law`) are supported. Singleton criterion dimensions (`K = 1`)
+are kept, and target values are never negated, reordered or rounded on
+import. Before decoding, the reader rejects duplicate JSON object keys,
+nonfinite or underflowing numbers, and `finite_law` integer tokens
+outside the exact 53-bit integer range (`<= 9007199254740991`), then
+checks the JSON structure against the installed `draws-schema.json`
+specification and runs
+[`as_postrank_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_draws.md).
 
-Supported JSON shape checks and R semantic checks are performed; this is
-not a general JSON Schema validation. Required declarations are
-preserved without the high-level array route's additional
-placeholder-text check. Reading a file does not verify its scientific
-provenance, jointness or convergence. Use
-[`read_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/read_postrank_tie_draws.md)
-for equality-neutral inputs; this reader does not convert between the
-two input domains.
+Required descriptions are checked for presence and non-empty text
+without the placeholder-word list of
+[`postrank_declarations()`](https://joonho112.github.io/postrank/reference/postrank_declarations.md).
+Reading a file does not verify scientific identification, jointness or
+MCMC convergence. For exact-tie inputs, use
+[`read_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/read_postrank_tie_draws.md).
 
 ## See also
 

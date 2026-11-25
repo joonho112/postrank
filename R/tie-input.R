@@ -1,4 +1,4 @@
-# Separate opt-in domain. No legacy payload, class, default or identity is changed.
+# Separate tie-aware input classes; standard tie-free classes and hashes are unchanged.
 .pr_tie_utf8 <- function(x) {
   .pr_assert(!any(Encoding(x) == "bytes"),
     "byte-encoded strings cannot be represented as declared Unicode text", "invalid_tie_text")
@@ -10,7 +10,7 @@
 }
 
 # Normalize encodings, never Unicode composition or code points. Attributes are
-# traversed too: entity/criterion names and array dimnames belong to the seal.
+# traversed too: entity/criterion names and array dimnames enter the content hash.
 .pr_tie_text_content <- function(x) {
   attrs <- attributes(x)
   if (is.character(x)) x <- .pr_tie_utf8(x)
@@ -38,7 +38,7 @@
 
 .pr_tie_canonical <- function(x) .pr_tie_sort_content(.pr_tie_text_content(x))
 
-# Callers remove only their own seal before passing semantic content here.
+# Callers strip only their own identity field before hashing semantic content here.
 .pr_tie_identity <- function(x, domain) {
   .pr_string(domain, "$.identity_domain")
   digest::digest(list(domain = domain, content = .pr_tie_canonical(x)),
@@ -244,103 +244,129 @@
   invisible(TRUE)
 }
 
-#' Prepare Posterior Inputs with Genuine Equality Mass
+#' Prepare Posterior Inputs with Positive Equality Probability
 #'
-#' The constructor prepares a posterior law that permits exact equality between
-#' distinct entities. The separate equality-neutral analysis uses strict
-#' directional errors and assigns zero withholding loss at true equality. A
-#' shared grade denotes a withheld comparison without asserting that the
-#' targets are equal.
+#' `as_postrank_tie_draws()` builds and checks a posterior input for *tie-aware
+#' mode*, the separate `postrank_tie_*` workflow for posteriors in which two
+#' distinct entities can be exactly equal with positive probability. Tie-aware
+#' mode uses *equality-neutral loss*, under which true target equality
+#' (`theta_i = theta_j`) has zero loss whether the pair is ordered or placed in
+#' the same grade. Placing two entities in the same grade still leaves them
+#' unordered (withholds ordering) rather than claiming their targets are equal.
 #'
-#' @param x A complete `tie-aware-input-0.1` named-list payload or an unchanged
-#'   `postrank_tie_draws` object. Supported inputs are joint equal-weight IID
-#'   or MCMC draws, or a complete exact finite law.
-#' @return A `postrank_tie_draws` object retaining the target values, IDs,
-#'   source histories and equality classes, with an identity for detecting
-#'   subsequent changes. It does not inherit from `postrank_draws`.
+#' @param x A plain named `list` following the `"tie-aware-input-0.1"` structure
+#'   (joint equal-weight IID or MCMC draws, or a complete exact finite law), or
+#'   an unmodified `postrank_tie_draws` object.
+#' @return A `postrank_tie_draws` list keeping target values, entity and
+#'   criterion IDs, sampling history, criterion equality partitions, `validation`
+#'   flags, and `input_identity` (a SHA-256 content hash used to detect later
+#'   edits). Does not inherit from `postrank_draws`.
 #' @details
-#' Values must already be oriented so that larger means higher priority.
-#' Joint draws retain a `S x n x K` array, including `S x n x 1` for one
-#' criterion. Target, context, identification, provenance and joint-state
-#' records follow the corresponding ordinary input structure. The input
-#' must explicitly set `tie_policy$rule = "equality_neutral"`,
-#' `declared = TRUE` and
-#' `observed_tie_action = "accept_declared_exact_equality"`.
+#' Target values must already be oriented so larger values mean higher priority
+#' (`orientation = "higher_priority"` on every criterion). Required top-level
+#' fields are `schema_version = "tie-aware-input-0.1"`, `input_kind`,
+#' `dependence_mode = "joint_model"`,
+#' `requested_functional = "expected_rank_loss"`, `entity_ids`, `criterion_ids`,
+#' `targets`, `context`, `identification` (`status = "identified_declared"`),
+#' `tie_policy` (`rule = "equality_neutral"`, `declared = TRUE`, non-empty
+#' `justification`, and
+#' `observed_tie_action = "accept_declared_exact_equality"`), `provenance`,
+#' `equality`, and one of `joint_draws` or `finite_law`. Criterion-wise draw
+#' blocks, unequal draw weights, and variational approximations are rejected.
 #'
-#' The `equality` record contains `basis`, a substantive `justification`, and
-#' `criterion_classes`, a criterion-named list of character class labels named
-#' by every entity. For IID/MCMC draws, `basis = "structural_declared"` requires
-#' classes justified by the producing model. Every declared within-class
-#' equality is checked in every retained draw. Coincident Monte Carlo values
-#' do not establish almost-sure equality and are never used to infer classes.
+#' The `equality` list carries `basis`, a non-empty `justification`, and
+#' `criterion_classes` (a criterion-named list of character vectors assigning a
+#' non-blank class label to every entity):
+#' \itemize{
+#'   \item For `input_kind = "equal_weight_draws"`, `joint_draws` holds an
+#'     `S x n x K` array (retaining the third dimension when `K = 1`), and
+#'     `equality$basis` must be `"structural_declared"`. Entities sharing a
+#'     class label on criterion `k` must have identical values in every retained
+#'     draw (`==`, with no tolerance or jitter). Coincident ties in finitely
+#'     many Monte Carlo draws are never used to merge structural classes, while
+#'     every retained numerical tie contributes to empirical equality
+#'     probability. Do not pass rounded continuous draws here; re-export them at
+#'     full precision for [postrank_draws()].
+#'   \item For `input_kind = "exact_finite_posterior"`, `finite_law` lists all
+#'     positive-mass states with safe-integer `theta` (`n x K`) and positive
+#'     safe-integer `mass_numerator` values summing to `denominator` (at most
+#'     `2^53 - 1`, verified with optional package `gmp`), plus
+#'     `not_empirical_posterior_relabeling = TRUE`. Here `equality$basis` must
+#'     be `"exact_finite_law"`; set `criterion_classes = NULL` to derive the
+#'     partition from equality across all states (any supplied partition must
+#'     define the same equivalence relation).
+#' }
 #'
-#' For `basis = "exact_finite_law"`, the complete positive-mass states determine
-#' the equality partition. Set `criterion_classes = NULL` to derive it;
-#' a supplied partition must describe the same relation. State targets and
-#' mass numerators must be safe integers, with positive masses summing to a
-#' common denominator; the optional `gmp` package is required. These states
-#' define the entire law, not an empirical sample relabeled as exact.
-#'
-#' All numerical equality is exact. Each retained numeric tie is treated as
-#' genuine equality, even if it occurs outside a structurally equal class.
-#' Recover full-precision exports of rounded continuous draws before using
-#' this route. No tolerance, jitter, rounding or entity removal is performed.
-#' Integer storage is normalized losslessly to double storage for JSON
-#' round-trips. Criterion-wise, weighted approximate and variational inputs
-#' are unsupported. Metadata checks cannot establish scientific equality,
-#' jointness, stationarity or convergence; they do not supply an uncertainty
-#' certificate. Changed objects fail revalidation; the constructor does not
-#' assign them a new content identity.
+#' Integer values are stored as `double` so JSON round-trips preserve exact
+#' storage. Structural checks do not verify model specification, MCMC
+#' convergence, or scientific equality claims, and do not issue a numerical
+#' certificate. Mutating a `postrank_tie_draws` object after creation causes
+#' revalidation to stop with an error.
 #' @seealso [validate_postrank_tie_draws()], [postrank_tie_pairwise()],
 #'   [read_postrank_tie_draws()],
 #'   `vignette("m4-ties-and-withholding", package = "postrank")`
 #' @concept tie-aware
-#' @examples
-#' if (requireNamespace("gmp", quietly = TRUE)) {
-#'   # K = 1: B is always 1; A is 0, 1 or 2 with probabilities .1, .4, .5.
-#'   states <- lapply(c(0, 1, 2), function(a)
-#'     matrix(c(a, 1), 2, 1,
-#'       dimnames = list(entity = c("A", "B"), criterion = "score")))
-#'   masses <- c(1L, 4L, 5L)
-#'   payload <- list(
-#'     schema_version = "tie-aware-input-0.1",
-#'     input_kind = "exact_finite_posterior", dependence_mode = "joint_model",
-#'     requested_functional = "expected_rank_loss",
-#'     entity_ids = c("A", "B"), criterion_ids = "score",
-#'     targets = list(list(criterion_id = "score", estimand = "Specified latent score",
-#'       entity_population = "Two fictional sites A and B",
-#'       time_reference = "Static mathematical example", units = "Score units",
-#'       source_transform = "identity", identification_basis = "Complete stated law",
-#'       orientation = "higher_priority")),
-#'     context = list(cohort_id = "two-site-score", data_version = "1",
-#'       data_conditioning = "No observations; a directly specified law",
-#'       model_summary = "B is 1; A is 0, 1 or 2 with masses 1/10, 4/10, 5/10"),
-#'     identification = list(status = "identified_declared",
-#'       note = "Labeled coordinates are defined directly by the law"),
-#'     tie_policy = list(rule = "equality_neutral", declared = TRUE,
-#'       justification = "The state A = B = 1 has genuine equality mass 4/10",
-#'       observed_tie_action = "accept_declared_exact_equality"),
-#'     provenance = list(producer = "Help-page finite-law example",
-#'       artifact_id = "two-site-three-state-law",
-#'       artifact_hash = digest::digest(list(states, masses), algo = "sha256"),
-#'       construction_note = "Complete law; no sampling or rounding",
-#'       created_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")),
-#'     equality = list(basis = "exact_finite_law",
-#'       justification = "Compare all positive-mass states", criterion_classes = NULL),
-#'     finite_law = list(denominator = sum(masses), value_representation = "safe_integer",
-#'       states = lapply(seq_along(states), function(s)
-#'         list(state_id = paste0("state-", s), mass_numerator = masses[s], theta = states[[s]])),
-#'       law_definition = "B is 1; A is 0, 1 or 2 with masses 1/10, 4/10, 5/10",
-#'       not_empirical_posterior_relabeling = TRUE))
-#'   one <- as_postrank_tie_draws(payload)
-#'   postrank_tie_pairwise(one)$t["A", "B", "score"] # 0.4 equality probability
+#' @examplesIf requireNamespace("gmp", quietly = TRUE)
+#' states <- lapply(c(0, 1, 2), function(a) {
+#'   matrix(c(a, 1), 2, 1, dimnames = list(entity = c("A", "B"), criterion = "score"))
+#' })
+#' masses <- c(1L, 4L, 5L)
+#' payload <- list(
+#'   schema_version = "tie-aware-input-0.1",
+#'   input_kind = "exact_finite_posterior",
+#'   dependence_mode = "joint_model",
+#'   requested_functional = "expected_rank_loss",
+#'   entity_ids = c("A", "B"),
+#'   criterion_ids = "score",
+#'   targets = list(list(
+#'     criterion_id = "score", estimand = "Specified latent score",
+#'     entity_population = "Two fictional sites A and B",
+#'     time_reference = "Static mathematical example", units = "Score units",
+#'     source_transform = "identity", identification_basis = "Complete stated law",
+#'     orientation = "higher_priority"
+#'   )),
+#'   context = list(
+#'     cohort_id = "two-site-score", data_version = "1",
+#'     data_conditioning = "Directly specified three-state law",
+#'     model_summary = "B is 1; A is 0, 1, or 2 with masses 1/10, 4/10, 5/10"
+#'   ),
+#'   identification = list(
+#'     status = "identified_declared",
+#'     note = "Coordinates defined directly by the finite law"
+#'   ),
+#'   tie_policy = list(
+#'     rule = "equality_neutral", declared = TRUE,
+#'     justification = "State A = B = 1 has equality probability 4/10",
+#'     observed_tie_action = "accept_declared_exact_equality"
+#'   ),
+#'   provenance = list(
+#'     producer = "Help-page finite-law example",
+#'     artifact_id = "two-site-three-state-law",
+#'     artifact_hash = digest::digest(list(states, masses), algo = "sha256"),
+#'     construction_note = "Complete law without sampling or rounding",
+#'     created_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+#'   ),
+#'   equality = list(
+#'     basis = "exact_finite_law",
+#'     justification = "Compare all positive-mass states",
+#'     criterion_classes = NULL
+#'   ),
+#'   finite_law = list(
+#'     denominator = sum(masses), value_representation = "safe_integer",
+#'     states = lapply(seq_along(states), function(s) {
+#'       list(state_id = paste0("state-", s), mass_numerator = masses[s], theta = states[[s]])
+#'     }),
+#'     law_definition = "B is 1; A is 0, 1, or 2 with masses 1/10, 4/10, 5/10",
+#'     not_empirical_posterior_relabeling = TRUE
+#'   )
+#' )
+#' one <- as_postrank_tie_draws(payload)
+#' postrank_tie_pairwise(one)$t["A", "B", "score"]
 #'
-#'   # K = 2: the bundled complete law retains its own source and declarations.
-#'   two <- read_postrank_tie_draws(system.file("examples", "synthetic-tie-aware.json",
-#'     package = "postrank"))
-#'   two$criterion_ids
-#'   two$equality$criterion_classes
-#' }
+#' two <- read_postrank_tie_draws(
+#'   system.file("examples", "synthetic-tie-aware.json", package = "postrank")
+#' )
+#' two$equality$criterion_classes
 #' @export
 as_postrank_tie_draws <- function(x) {
   if (inherits(x, "postrank_tie_draws")) { validate_postrank_tie_draws(x); return(x) }
@@ -356,35 +382,36 @@ as_postrank_tie_draws <- function(x) {
   validate_postrank_tie_draws(x); x
 }
 
-#' Check an Equality-Neutral Posterior Input
+#' Validate a Tie-Aware Posterior Input
 #'
-#' The validator checks numerical values, declared equality classes and
-#' sampling history for a tie-aware analysis. It also detects changes
-#' introduced after the object was constructed by [as_postrank_tie_draws()].
+#' `validate_postrank_tie_draws()` checks the numerical arrays or finite-law
+#' states, declarations, criterion equality partitions, and content hash of a
+#' `postrank_tie_draws` object used in tie-aware mode (the workflow for
+#' posteriors with positive probability of exact equality under equality-neutral
+#' loss).
 #'
-#' @param x A `postrank_tie_draws` from [as_postrank_tie_draws()].
-#' @return Invisible `TRUE` on success. Invalid or changed input raises a
-#'   structured error; unlike [validate_postrank_draws()], this function does
-#'   not return a record with `valid = FALSE`.
+#' @param x A `postrank_tie_draws` object from [as_postrank_tie_draws()] or
+#'   [read_postrank_tie_draws()].
+#' @return `TRUE` invisibly when `x` passes all checks. Unlike
+#'   [validate_postrank_draws()], invalid or modified objects stop with a
+#'   structured error rather than returning a report with `valid = FALSE`.
 #' @details
-#' Checks cover ordered axes, required source descriptions, sampling history,
-#' exact within-class equality and the object's content identity. Scientific
-#' equality classes for Monte Carlo draws remain declarations about the model;
-#' their agreement with finitely many draws is not proof of almost-sure
-#' equality. Complete finite laws determine equality from all positive-mass
-#' states. Validation does not establish scientific provenance, jointness,
-#' stationarity or convergence. Ordinary `postrank_draws` inputs are not
-#' accepted, and reusing the constructor does not silently accept mutations.
-#' @seealso [as_postrank_tie_draws()], [read_postrank_tie_draws()]
+#' Checks cover `"tie-aware-input-0.1"` fields, UTF-8 text, axis dimensions and
+#' order, sampling history or exact rational masses (`gmp` required for
+#' `"exact_finite_posterior"`), exact equality across every retained draw within
+#' declared structural classes, and `x$input_identity`. Ordinary
+#' `postrank_draws` objects are rejected. Passing validation confirms internal
+#' consistency, not scientific equality, MCMC convergence, or a numerical
+#' certificate.
+#' @seealso [as_postrank_tie_draws()], [read_postrank_tie_draws()],
+#'   [write_postrank_tie_draws()]
 #' @concept tie-aware
-#' @examples
-#' if (requireNamespace("gmp", quietly = TRUE)) {
-#'   input <- read_postrank_tie_draws(system.file("examples", "synthetic-tie-aware.json",
-#'     package = "postrank"))
-#'   valid <- validate_postrank_tie_draws(input)
-#'   valid
-#'   input$equality$criterion_classes
-#' }
+#' @examplesIf requireNamespace("gmp", quietly = TRUE)
+#' input <- read_postrank_tie_draws(
+#'   system.file("examples", "synthetic-tie-aware.json", package = "postrank")
+#' )
+#' validate_postrank_tie_draws(input)
+#' input$equality$criterion_classes
 #' @export
 validate_postrank_tie_draws <- function(x) {
   .pr_assert(identical(class(x), c("postrank_tie_draws", "list")),

@@ -1,4 +1,4 @@
-# External review PKG-05/06: prepared coefficient diagnostics and complete frontier views.
+# Coefficient diagnostics in HTML reports and missing-point handling on frontier plots.
 pr_output_coefficients <- function(K = 2L, mixture = FALSE, reserved = FALSE) {
   ids <- c("A", "B", "C")
   ks <- if (reserved) c("risk", "N/M", paste0("k", seq_len(K - 2L))) else paste0("k", seq_len(K))
@@ -36,7 +36,7 @@ test_that("coefficient diagnostics reports preserve class-specific metrics and N
       expect_match(html, reason, fixed = TRUE)
       expect_match(html, "Typed coefficient diagnostics", fixed = TRUE)
       expect_match(html, "Target-loss draws and target-loss MCSE are unavailable", fixed = TRUE)
-      expect_match(html, "ESS is not an IID sample size", fixed = TRUE)   # honesty register (013 V-07)
+      expect_match(html, "ESS is not an IID sample size", fixed = TRUE)   # conditional-risk scope note
       expect_false(grepl("Total loss:", html, fixed = TRUE))
     } else expect_null(rep$diagnostic_table)
     expect_error(postrank_report(a$fit, analysis = a, output_file = path, figures = FALSE), "already exists")

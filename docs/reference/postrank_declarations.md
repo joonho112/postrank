@@ -1,11 +1,12 @@
 # Describe the Targets and Source of Posterior Draws
 
-The declarations specify the targets represented by the posterior draws,
-the information on which they are conditioned and the procedure used to
-generate them. The resulting bundle provides the eight required
-scientific declarations for
-[`postrank_draws()`](https://joonho112.github.io/postrank/reference/postrank_draws.md).
-Its components can also be passed separately to
+`postrank_declarations()` collects the eight required descriptions of a
+posterior-draws input for
+[`postrank_draws()`](https://joonho112.github.io/postrank/reference/postrank_draws.md):
+what each criterion measures, the data and model context, the software
+and source that produced the draws, and why target identification, joint
+sampling and zero exact-tie probability hold. Its components can also be
+passed separately to
 [`postrank_draws_from_array()`](https://joonho112.github.io/postrank/reference/postrank_draws_from_array.md).
 
 ## Usage
@@ -27,72 +28,109 @@ postrank_declarations(
 
 - targets:
 
-  One record per criterion, as a data frame or list of named lists.
-  Required fields are `criterion_id`, `estimand`, `entity_population`,
-  `time_reference` and `units`; `source_transform` and
-  `identification_basis` are optional. Describe the actual target and
-  any transformation.
+  One record per criterion, as a data frame or a list of named lists.
+  Required string fields are `criterion_id`, `estimand`,
+  `entity_population`, `time_reference` and `units`; optional string
+  fields are `source_transform` and `identification_basis`.
 
 - context:
 
-  Named list with `cohort_id`, `data_version`, `data_conditioning` and
-  `model_summary`.
+  Named list of non-empty character strings: `cohort_id` (identifier for
+  the compared entity cohort), `data_version` (data release label),
+  `data_conditioning` (which observations or assumptions the posterior
+  conditions on) and `model_summary` (short summary of the statistical
+  model).
 
 - provenance:
 
-  Named list with `producer`, `artifact_id` and `construction_note`;
-  optional `artifact_hash` and `created_at`.
+  Named list of non-empty character strings: `producer` (software or
+  script that created this draw object), `artifact_id` (identifier for
+  the draw object) and `construction_note` (how this draw array or file
+  was assembled from the model output); optional string fields are
+  `artifact_hash` and `created_at`.
 
 - origin:
 
-  Named list with `source_id`, `fit_id`, `model_id`, `source_format` and
-  `source_artifact`; optional `source_hash`.
+  Named list of non-empty character strings: `source_id` (identifier for
+  the upstream posterior source), `fit_id` (identifier for the model
+  fit, or `"none"` when there is no fit), `model_id` (identifier for the
+  model specification), `source_format` (format of the upstream output,
+  such as `"CmdStan CSV files"` or `"R array"`) and `source_artifact`
+  (which file or R object holds the draws); optional string field
+  `source_hash`.
 
 - identification_note:
 
-  Why each labeled target is identified.
+  One string explaining why each criterion's target is identified by the
+  model.
 
 - tie_justification:
 
-  Why distinct entities have zero probability of exact equality on each
-  criterion. A continuous marginal alone need not imply this when entity
-  targets are dependent.
+  One string explaining why distinct entities have zero probability of
+  exact equality on each criterion. Continuous marginals alone do not
+  guarantee this when entity targets are dependent.
 
 - joint_generation:
 
-  How each retained draw represents one joint state of all entities and
-  criteria, preserving the model's dependence.
+  One string explaining how each draw represents all entities and
+  criteria together, preserving their dependence under the model.
 
 - sampling_provenance:
 
-  How the draws were produced, including the sampling regime and any
-  selection of retained draws.
+  One string describing the sampling algorithm, chain count, warmup
+  removal and thinning used to generate the retained draws (whereas
+  `provenance$construction_note` describes how the array or file was
+  extracted or packaged).
 
 ## Value
 
-A `postrank_declarations` list containing these eight fields.
+A `postrank_declarations` object, a named list containing these eight
+fields in order.
 
 ## Details
 
-All eight declarations are required. The bundle checks completeness and
-rejects generic placeholders such as `"unknown"`, `"TBD"` or `"..."` in
-required descriptive text. IDs follow their own rules; `fit_id` and
-`data_version` may legitimately be labels such as `"none"`. This text
-check also applies to the high-level numeric-array route of
-[`postrank_draws()`](https://joonho112.github.io/postrank/reference/postrank_draws.md).
-Direct strict constructors and canonical metadata readers check required
-text and structure without this additional placeholder check.
+For most numeric arrays,
+[`postrank_describe()`](https://joonho112.github.io/postrank/reference/postrank_describe.md)
+is shorter: it takes each statement as a plain argument, fills all five
+identifiers from one `label`, and calls `postrank_declarations()`. Use
+`postrank_declarations()` directly when the five identifiers
+(`cohort_id`, `artifact_id`, `source_id`, `fit_id`, `model_id`) or the
+two sampling notes (`construction_note` and `sampling_provenance`) need
+to differ, or when you want to record an existing `source_transform` or
+`identification_basis` in `targets`. Every descriptive statement must be
+written by you; nothing is inferred or filled in automatically.
 
-Identification, joint generation, zero equality probability and
-convergence remain scientific declarations; validation does not
-establish their truth. The example declarations therefore require
-replacement by descriptions of the actual analysis. `source_transform`
-records an existing transformation, whereas array orientation is
-performed separately by
+All eight arguments are required and non-`NULL`. Every required string
+field except `targets$criterion_id`, `origin$fit_id` and
+`context$data_version` is checked against generic placeholders such as
+`"unknown"`, `"TBD"`, `"TODO"`, `"NA"`, `"none"`, `"..."`, `"missing"`
+or `"not declared"` (error code `placeholder_declaration`), so
+`cohort_id`, `artifact_id`, `source_id` and `model_id` must also be real
+labels rather than `"none"`. Optional subfields (`source_transform`,
+`identification_basis`, `artifact_hash`, `created_at`, `source_hash`)
+are checked when passed to
+[`postrank_draws_from_array()`](https://joonho112.github.io/postrank/reference/postrank_draws_from_array.md).
+Lower-level constructors
+([`postrank_draws_from_array()`](https://joonho112.github.io/postrank/reference/postrank_draws_from_array.md),
+[`as_postrank_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_draws.md),
+[`as_postrank_posterior()`](https://joonho112.github.io/postrank/reference/as_postrank_posterior.md),
+[`read_postrank_draws()`](https://joonho112.github.io/postrank/reference/read_postrank_draws.md))
+check that required strings are non-empty without applying this
+placeholder list.
+
+Checking a `postrank_declarations` object verifies that required fields
+are present and non-placeholder; it does not verify scientific
+identification, joint sampling, zero tie probability or MCMC
+convergence. In `targets`, `source_transform` records a transformation
+that was already applied before calling `postrank`; sign reversal of
+lower-is-higher criteria is performed separately by the `orientation`
+argument of
 [`postrank_draws()`](https://joonho112.github.io/postrank/reference/postrank_draws.md).
 
 ## See also
 
+[`postrank_describe()`](https://joonho112.github.io/postrank/reference/postrank_describe.md)
+for the flat-argument helper;
 [`postrank_draws()`](https://joonho112.github.io/postrank/reference/postrank_draws.md),
 [`postrank_draws_from_array()`](https://joonho112.github.io/postrank/reference/postrank_draws_from_array.md),
 [`vignette("a5-your-posterior-results", package = "postrank")`](https://joonho112.github.io/postrank/articles/a5-your-posterior-results.md)
@@ -100,44 +138,39 @@ performed separately by
 ## Examples
 
 ``` r
-# One criterion: a specified synthetic law, not a fitted data analysis.
 set.seed(901)
 values <- array(rnorm(64 * 3), c(64, 3, 1),
   dimnames = list(NULL, c("A", "B", "C"), "need"))
-decl <- postrank_declarations(
-  targets = data.frame(criterion_id = "need",
-    estimand = "Latent site need in a specified standard Normal law",
-    entity_population = "Three fictional sites A, B and C",
-    time_reference = "Static illustration; no observation period",
-    units = "Illustrative standardized need units"),
-  context = list(cohort_id = "three-fictional-sites", data_version = "1",
-    data_conditioning = "No observations; the target law is specified directly",
-    model_summary = "Independent standard Normal coordinates"),
-  provenance = list(producer = "Help-page R generator", artifact_id = "normal-need",
-    construction_note = "64 IID states sampled with seed 901"),
-  origin = list(source_id = "specified-normal-law", fit_id = "no-model-fit",
-    model_id = "independent-standard-normal", source_format = "R array",
-    source_artifact = "The rnorm array generated in this example"),
-  identification_note = "The law directly defines every labeled site target.",
-  tie_justification = paste("Independent continuous Normal coordinates have",
-    "zero probability of exact equality."),
-  joint_generation = paste("Every row is one state of all sites and included criteria;",
-    "all coordinates are independent in this example."),
-  sampling_provenance = "Base R rnorm with seed 901; IID states, no warmup or thinning.")
+
+# Short form via postrank_describe() (calls postrank_declarations()):
+decl <- postrank_describe(
+  estimand = c(need = "Latent site need in a specified standard normal law"),
+  population = "Three fictional sites A, B and C",
+  time = "Static illustration; no observation period",
+  units = "Illustrative standardized need units",
+  data = "No observations; the law is specified directly",
+  model = "Independent standard normal coordinates",
+  identification = "The law directly defines each site's target.",
+  joint = "Each draw holds one value for every site and criterion.",
+  sampling = "64 independent draws from rnorm() with seed 901; no warmup or thinning.",
+  ties = "Independent continuous normal coordinates are equal with probability zero.",
+  software = "Base R rnorm()",
+  source = "The array values created in this example",
+  label = "normal-need", data_version = "1", values = values)
 draws <- postrank_draws(values, regime = "iid", declarations = decl)
 draws$criterion_ids
 #> [1] "need"
 
-# Add an independent criterion while retaining every first-criterion draw.
-two <- array(c(values, rnorm(64 * 3)), c(64, 3, 2),
-  dimnames = list(NULL, c("A", "B", "C"), c("need", "cost")))
-decl2 <- unclass(decl)
-decl2$targets <- rbind(decl$targets, transform(decl$targets,
-  criterion_id = "cost", estimand = "Latent cost in a standard Normal law",
-  units = "Illustrative standardized cost units"))
-decl2$provenance$artifact_id <- "normal-need-and-cost"
-decl2 <- do.call(postrank_declarations, decl2)
-two_draws <- postrank_draws(two, regime = "iid", declarations = decl2)
-two_draws$criterion_ids
-#> [1] "need" "cost"
+# Full form when identifiers such as fit_id ("none") differ from artifact_id:
+decl_full <- postrank_declarations(
+  targets = decl$targets,
+  context = decl$context,
+  provenance = decl$provenance,
+  origin = modifyList(decl$origin, list(fit_id = "none")),
+  identification_note = decl$identification_note,
+  tie_justification = decl$tie_justification,
+  joint_generation = decl$joint_generation,
+  sampling_provenance = decl$sampling_provenance)
+decl_full$origin$fit_id
+#> [1] "none"
 ```

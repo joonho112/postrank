@@ -6,37 +6,39 @@
 postrank_expected_rank(pairwise, weights = NULL)
 }
 \arguments{
-\item{pairwise}{A \code{postrank_pairwise}, \code{postrank_coefficients}, or
-\code{postrank_probabilities} object with tie-free directional errors.}
+\item{pairwise}{Pairwise directional-error probabilities: a
+\code{postrank_pairwise}, \code{postrank_coefficients} or \code{\link[=postrank_probabilities]{postrank_probabilities()}}
+object.}
 
-\item{weights}{\code{NULL} for equal weights, or nonnegative criterion weights
-summing to one. An unnamed vector follows criterion order; names must
-cover every criterion exactly once.}
+\item{weights}{Nonnegative finite criterion weights summing to one within
+\code{1e-12}, or \code{NULL} (the default) for equal weights \code{1 / K}. Unnamed weights
+follow \code{pairwise$criterion_ids} order; named weights must name every
+criterion once.}
 }
 \value{
-A named numeric vector, one score per entity (attribute
-\code{score_method = "expected_rank"}).
+A numeric vector named by \code{entity_ids}, carrying attribute
+\code{score_method = "expected_rank"}.
 }
 \description{
-Each entity receives a score equal to its posterior expected rank averaged
-over the chosen criteria. Smaller scores indicate higher reporting priority.
-The resulting order can be partitioned into grades by \code{\link[=postrank_cuts]{postrank_cuts()}}.
+\code{postrank_expected_rank()} computes each entity's posterior expected rank
+averaged across criteria, where \code{1} is the highest priority (smallest score =
+highest priority). Pass the resulting score vector to \code{\link[=postrank_cuts]{postrank_cuts()}} to
+partition that score order into integer grades.
 }
 \details{
-The expected-rank score is
+Entity \code{i}'s score is
 \eqn{r_i = \sum_k b_k \{1 + \sum_{j \ne i} e_{ij,k}\}}
-with \eqn{e_{ij,k} = P(\theta_{ik} \le \theta_{jk} \mid Y)}: the posterior
-expected rank of entity \code{i} (1 = highest priority), averaged over criteria
-with weights \code{b}. Columns are summed in a stable entity-ID order.
-Reordering input rows while retaining their IDs therefore preserves each
-named score and its exact-score tie block.
+where \eqn{e_{ij,k} = P(\theta_{ik} \le \theta_{jk})} and \code{b} are \code{weights}.
+Columns are summed in sorted \code{entity_id} order so permuting entity rows
+preserves exact floating-point scores and tie blocks.
 }
 \examples{
 postrank_expected_rank(pr_tutorial$one)
+
 pw <- postrank_pairwise(postrank_toy)
-postrank_expected_rank(pw, c(need_A = .6, need_B = .4))
+postrank_expected_rank(pw, c(need_A = 0.6, need_B = 0.4))
 }
 \seealso{
-\code{\link[=postrank_cuts]{postrank_cuts()}}, \code{\link[=postrank_compare]{postrank_compare()}}
+\code{\link[=postrank_cuts]{postrank_cuts()}}, \code{\link[=postrank_composite]{postrank_composite()}}, \code{\link[=postrank_compare]{postrank_compare()}}
 }
 \concept{baselines}

@@ -1,12 +1,12 @@
-# Typed policy settings (Chapter 10, postrank_settings) and the public adapters that
-# map them onto the unchanged legacy builders. The typed object is policy only:
-# label, provenance and warnings never enter problem$settings or any identity.
+# Typed policy settings (postrank_settings) and binding helpers for problem
+# construction. The typed object holds policy only: label, provenance, and
+# warnings never enter problem$settings or any content hash.
 
 .pr_settings_fields <- c("weights", "tau", "G_max", "q", "exact_G", "objective", "minimax_criteria",
   "minimax_refine", "label", "weight_sum_tolerance", "schema_version", "provenance", "warnings")
 .pr_policy_args <- c("weights", "tau", "G_max", "objective", "q", "exact_G", "minimax_criteria", "minimax_refine")
 
-# Advisory provenance of a new (non-legacy) object; never part of a legacy hash.
+# Provenance metadata for result objects; excluded from content hashes.
 .pr_provenance <- function(producing_function, ...) {
   c(list(package_version = as.character(utils::packageVersion("postrank")),
     created_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
@@ -57,54 +57,76 @@
 
 #' Choose the Loss and Allowed Grade Reports
 #'
-#' The settings specify criterion weights, the withholding cost, the maximum
-#' number of grades and optional error budgets or an exact grade count for
-#' [postrank()] or [postrank_problem()]. They define the decision problem
-#' without fitting a posterior or selecting grades. Computation limits are
-#' specified separately by [postrank_control()].
+#' `postrank_settings()` defines the loss function and allowed grade reports
+#' for [postrank()] and [postrank_problem()]: criterion weights, the cost `tau`
+#' of leaving a pair unordered, the maximum number of grades `G_max`, and
+#' optional per-criterion error budgets `q` or an exact grade count `exact_G`.
+#' Computation limits are set separately by [postrank_control()].
 #'
-#' @param weights Nonnegative finite criterion weights summing to one within
-#'   `1e-12`; no automatic normalization is performed. Names identify criteria.
-#'   Unnamed weights are matched in criterion order when used with an input.
-#'   This constructor always requires weights, including weight 1 for one criterion.
-#' @param tau Cost of a withheld comparison, `0 < tau <= 0.5`.
-#' @param G_max Positive integer upper bound on occupied grades. Fewer grades
-#'   are allowed unless `exact_G` is supplied.
-#' @param q `NULL` or a uniquely criterion-named vector of budgets in `[0, 1]`.
-#'   Each included criterion requires `E_k <= q_k * N`, including criteria with
-#'   zero objective weight. At N=0 the count constraint holds, while `E_k/N`
-#'   is undefined. These are expected-error budgets, not simultaneous guarantees.
-#' @param exact_G `NULL` or the required number of nonempty grades, at most
-#'   `G_max`. This requirement is never relaxed to fit the input.
-#' @param objective `"weighted"` (default) minimizes the weighted average of
-#'   criterion risks; `"minimax"` minimizes the largest selected criterion risk.
-#' @param minimax_criteria `NULL` (all criteria) or criterion IDs included in
-#'   the minimax objective. Only allowed with `objective = "minimax"`.
-#' @param minimax_refine `"weighted"` (default) refines a minimax solution using
-#'   the original weighted risk; `"none"` keeps the first-stage action.
-#'   See [postrank_solve()] for additional zero-weight refinement and its
-#'   numerical qualifications. Ignored for weighted problems.
-#' @param label Optional short display label for grids and figures.
-#' @return A `postrank_settings` named list with the policy arguments,
-#'   `label`, `weight_sum_tolerance`, `schema_version`, `provenance` and `warnings`.
-#' @details When settings are used with an input, named weights must cover its
-#'   criteria and `q` must name known criteria. `G_max` is capped at the number
-#'   of entities, with the requested and resolved caps recorded in the bound
-#'   copy's provenance. `exact_G` cannot exceed the entity count.
+#' @param weights Criterion weights: nonnegative finite numbers summing to one
+#'   within `1e-12`. They are never rescaled automatically. Always required by
+#'   `postrank_settings()`, including weight `1` for a single criterion. Names
+#'   identify criteria; unnamed weights are matched in criterion order when
+#'   combined with an input.
+#' @param tau Cost of leaving a pair unordered, relative to a cost of 1 for a
+#'   wrong-order pair. Must satisfy `0 < tau <= 0.5`.
+#' @param G_max Largest number of occupied grades, a positive integer. Fewer
+#'   grades are allowed unless `exact_G` is given.
+#' @param q `NULL` (the default) or a vector of per-criterion expected-error
+#'   budgets in `[0, 1]`, uniquely named by criterion. Each named criterion `k`
+#'   requires `E_k <= q_k * N`, where `E_k` is the expected number of
+#'   wrong-order ordered pairs on criterion `k` and `N` is the number of
+#'   ordered pairs (including criteria with weight 0 in `weights`). When
+#'   `N = 0`, the count constraint `0 <= 0` holds while `E_k / N` is `NA`.
+#'   These constrain posterior expected error counts, not simultaneous error
+#'   rates.
+#' @param exact_G `NULL` (the default) or a positive integer giving the exact
+#'   number of occupied grades required, at most `G_max`. Unlike `G_max`, this
+#'   value is never reduced automatically to fit the number of entities.
+#' @param objective `"weighted"` (the default) minimizes the weighted sum of
+#'   criterion losses; `"minimax"` minimizes the largest loss among the
+#'   selected criteria.
+#' @param minimax_criteria `NULL` (the default, all criteria) or a character
+#'   vector of criterion IDs included in the minimax objective. Allowed only
+#'   when `objective = "minimax"`.
+#' @param minimax_refine How a minimax solution is refined when
+#'   `objective = "minimax"`: `"weighted"` (the default) minimizes the weighted
+#'   loss while keeping the first-stage minimax value, and `"none"` keeps the
+#'   first-stage grading. Ignored when `objective = "weighted"`. See
+#'   [postrank_solve()] for additional refinement on zero-weight criteria.
+#' @param label Optional non-empty string used to label this setting in grids
+#'   and figures. Defaults to `"tau=<tau>, G_max=<G_max>"`. Does not change the
+#'   decision problem.
+#' @returns A `postrank_settings` object, a named list containing:
+#'   * `weights`, `tau`, `G_max`, `q`, `exact_G`, `objective`,
+#'     `minimax_criteria`, `minimax_refine` and `label`: the validated
+#'     settings;
+#'   * `weight_sum_tolerance`: `1e-12`;
+#'   * `schema_version`: `"1"`, the version of this object's layout;
+#'   * `provenance`: package and R versions, creation time, and function name;
+#'   * `warnings`: character vector of notes added when the settings are bound
+#'     to an input.
+#' @details When settings are combined with an input in [postrank()] or
+#'   [postrank_problem()], named weights must cover all criteria, `q` must name
+#'   known criteria, and `exact_G` cannot exceed the number of entities. If
+#'   `G_max` exceeds the number of entities, the bound copy reduces `G_max` to
+#'   that number, records `requested_G_max` and `resolved_G_max` in
+#'   `provenance`, and appends a note to `warnings`.
 #'
-#'   Ordinary draw and exact finite-law pairwise inputs support validated
-#'   combinations of weighted/minimax objectives, error budgets and exact
-#'   grade counts. Problems built by [postrank_problem()] or [postrank()] from
-#'   Gaussian/mixture coefficients or supplied probabilities currently support
-#'   weighted at-most-G settings only. Constructing settings
-#'   alone does not establish that a particular input supports them.
-#'   Display labels and provenance do not alter the decision problem.
-#' @seealso [postrank_control()], [postrank_problem()], [postrank()]
+#'   Posterior draws and exact finite-law inputs support weighted and minimax
+#'   objectives, `q` and `exact_G`. Normal or mixture posteriors
+#'   ([postrank_gaussian_coefficients()], [postrank_mixture_coefficients()])
+#'   and supplied probabilities ([postrank_probabilities()]) support only the
+#'   weighted objective without `q`, `exact_G` or `minimax_criteria`. Creating
+#'   a `postrank_settings` object checks the arguments on their own; whether an
+#'   input supports them is checked when building or solving the problem.
+#' @seealso [postrank()], [postrank_problem()], [postrank_control()]
 #' @examples
-#' one <- postrank_settings(weights = c(score_A = 1), tau = .2, G_max = 3L)
+#' one <- postrank_settings(weights = c(score_A = 1), tau = 0.2, G_max = 3L)
 #' one$tau
-#' protected <- postrank_settings(weights = c(need_A = .6, need_B = .4),
-#'   tau = .25, G_max = 3L, q = c(need_B = .3))
+#'
+#' protected <- postrank_settings(weights = c(need_A = 0.6, need_B = 0.4),
+#'   tau = 0.25, G_max = 3L, q = c(need_B = 0.3))
 #' protected$q
 #' @concept settings
 #' @export
@@ -151,8 +173,8 @@ postrank_settings <- function(weights, tau = 0.25, G_max = 4L, q = NULL, exact_G
 }
 
 # Bind typed settings to a pairwise/coefficient object: name positional weights,
-# cap G_max at n (typed route only) and return the bound settings plus the legacy
-# policy arguments in builder order.
+# cap G_max at n, and return the bound settings plus core policy arguments in
+# problem-constructor order.
 .pr_settings_bind <- function(settings, pairwise) {
   .pr_validate_settings(settings)
   ids <- pairwise$criterion_ids; n <- length(pairwise$entity_ids)
@@ -173,7 +195,7 @@ postrank_settings <- function(weights, tau = 0.25, G_max = 4L, q = NULL, exact_G
     minimax_criteria = settings$minimax_criteria, minimax_refine = settings$minimax_refine))
 }
 
-# Typed settings reconstructed from a legacy problem$settings list (fit reuse).
+# Reconstruct typed settings from a problem$settings list (for fit reuse).
 .pr_settings_from_problem <- function(problem) {
   s <- problem$settings
   postrank_settings(weights = s$weights, tau = s$tau, G_max = s$G_max, q = s$q, exact_G = s$exact_G,
@@ -181,7 +203,7 @@ postrank_settings <- function(weights, tau = 0.25, G_max = 4L, q = NULL, exact_G
     minimax_refine = if (is.null(s$minimax_refine)) "weighted" else s$minimax_refine)
 }
 
-# Typed settings -> the legacy settings list accepted by the MC diagnostics.
+# Convert typed settings into the plain policy list used by MC diagnostic helpers.
 .pr_settings_legacy_list <- function(settings, x) {
   p <- .pr_settings_bind(settings, list(criterion_ids = x$criterion_ids, entity_ids = x$entity_ids))$policy
   p[!vapply(p, is.null, logical(1L))]

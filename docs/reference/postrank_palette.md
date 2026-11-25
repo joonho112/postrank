@@ -1,8 +1,10 @@
 # Choose Colors for Grades and Pair Relations
 
-The palettes define the colors used for grades, relations, relation
-changes and probabilities. Grade colors progress from dark for the
-highest-priority grade 1 to lighter colors for larger grade numbers.
+`postrank_palette()` returns the color vectors used in `postrank`
+figures for grades, pair relations, relation changes, and
+directional-error probabilities. Grade colors run from dark blue
+(`"#153653"`) for the highest-priority grade `1` to lighter blue-teal
+(`"#4F879E"`) for larger grade numbers.
 
 ## Usage
 
@@ -14,35 +16,44 @@ postrank_palette(n, which = c("grade", "relation", "change", "sequential"))
 
 - n:
 
-  Number of grades, from 1 to 64, for `which = "grade"`. Ignored for
-  other palettes and may be omitted for them.
+  Integer number of grades from `1` to `64` when `which = "grade"`.
+  Ignored (and may be omitted) for the other palettes.
 
 - which:
 
-  `"grade"`, `"relation"`, `"change"` or `"sequential"`.
+  Palette to return: `"grade"` (the default), `"relation"`, `"change"`,
+  or `"sequential"`.
 
 ## Value
 
-A character vector of R color specifications. Grade colors are named
-`"1"` through `"n"`; relation and change colors are named by state. The
-seven-stop sequential vector is unnamed. Some state colors use R gray
-names rather than hexadecimal notation.
+A character vector of R color specifications (hexadecimal strings and,
+for neutral states, R gray names):
+
+- `"grade"`: named `"1"` through `as.character(n)`.
+
+- `"relation"`: named `"above"`, `"withheld"`, and `"below"`.
+
+- `"change"`: named `"unchanged"`, `"newly disclosed"`,
+  `"newly withheld"`, and `"reversed"`.
+
+- `"sequential"`: unnamed seven-stop light-to-dark blue ramp.
 
 ## Details
 
-The grade palette interpolates sRGB channels from `#153653` to
-`#4F879E`. Across its supported sizes, luminance increases with grade
-number and colors retain at least 3:1 contrast against white. For a
-single grade, the sole color is `#153653`.
+For `which = "grade"`, sRGB channels are linearly interpolated from
+`"#153653"` to `"#4F879E"` (`"#153653"` when `n = 1`), giving strictly
+increasing luminance with grade number and at least 3:1 contrast against
+white across `1..64`. Values of `n` outside `1..64` stop with an error;
+[`postrank_plot_report_card()`](https://joonho112.github.io/postrank/reference/postrank_plot_report_card.md)
+switches to neutral dark gray above 64 grades.
 
-The relation palette names `above`, `withheld` and `below`, with gray
-for withholding. The change palette names `unchanged`,
-`newly disclosed`, `newly withheld` and `reversed`; unchanged is light
-gray, newly withheld is medium gray. Unchanged pairs may be ordered or
-withheld. The colored states use selected Okabe-Ito colors.
-`"sequential"` provides a light-to-dark Blues ramp used for
-probabilities. A grade palette supports at most 64 grades; the
-report-card view uses neutral ink and labels beyond that limit.
+In `"relation"`, `"above"` (`"#0072B2"`) and `"below"` (`"#E69F00"`) use
+Okabe-Ito colors and `"withheld"` uses `"grey80"`. In `"change"`,
+`"unchanged"` (`"grey92"`, covering pairs ordered the same way or
+withheld in both gradings) is light gray, `"newly withheld"`
+(`"#999999"`) is medium gray, `"newly disclosed"` is `"#0072B2"`, and
+`"reversed"` is `"#D55E00"`. `"sequential"` runs from `"#EFF3FF"` to
+`"#084594"` for probability heat maps.
 
 ## See also
 

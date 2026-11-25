@@ -1,14 +1,15 @@
 # An Additional Three-Criterion Example with 4000 IID Draws
 
-A validated joint `postrank_draws` object with all eight scientific
-declarations. A synthetic dataset was generated from a Gaussian model (K
-= 3, latent covariance `.4 I + .6 s s'` with `s = (1, 1, -1)`, cyclic
-precision groups of ten sites) and passed through the known-Gaussian
-posterior; the resulting law (30 x 3 means, 3 x 3 x 30 covariances) was
-frozen and 4000 IID draws were generated from it once (seed 20261024).
-The criteria are named `poverty`, `frl` and `snap` for illustration
-only; the values are synthetic latent needs, not real measures. The same
-law is shipped as
+`pr_example_draws` is a synthetic `postrank_draws` dataset for 30
+fictional sites (`site001` through `site030`) on three criteria
+(`poverty`, `frl` and `snap`), carrying all eight scientific
+declarations. Synthetic observations were simulated from a
+three-criterion normal model (latent covariance `0.4 I + 0.6 s s'` with
+`s = (1, 1, -1)` and cyclic precision groups of 10 sites, seed
+`20261023`), yielding a conjugate normal posterior from which 4,000 IID
+draws were sampled once (seed `20261024`). The criterion names are
+illustrative labels only, not measurements of real sites. The underlying
+normal posterior is also provided analytically in
 [pr_example_gaussian](https://joonho112.github.io/postrank/reference/pr_example_gaussian.md).
 
 ## Usage
@@ -20,25 +21,31 @@ pr_example_draws
 ## Format
 
 A `postrank_draws` object whose `joint_draws$tensor$values` is a 4000 x
-30 x 3 array (draw, entity `site001`-`site030`, criterion `poverty`,
-`frl`, `snap`); the remaining fields follow the legacy schema.
+30 x 3 numeric array (draws x entities `site001`-`site030` x criteria
+`poverty`, `frl`, `snap`), together with its target, context and
+sampling descriptions and `validation` record.
 
 ## Source
 
-`data-raw/make-pr-example-law.R` (law stage, seed 20261023) and
-`data-raw/make-pr-example-draws.R` (draw stage, seed 20261024); the
-frozen law and configuration are `data-raw/pr-example-law.json` and
-`data-raw/pr-example-config.json`.
+Built by `data-raw/make-pr-example-law.R` (posterior parameters, seed
+`20261023`) and `data-raw/make-pr-example-draws.R` (IID draws, seed
+`20261024`).
 
 ## Details
 
-The `snap` criterion is negatively related to the other two criteria,
-and the posteriors are imprecise. Under the illustrative policy
-`weights = c(poverty = .5, frl = .25, snap = .25)`, `G_max = 4`, the
-validated incumbent at `tau = .25` is the all-withheld grading (every
-comparison withheld, risk `tau`), and at `tau = .35` it discloses about
-63% of the pairs in four grades. Both results are provided as cached
-results for the vignettes.
+Because `snap` is negatively correlated with `poverty` and `frl` and the
+posteriors are noisy, under
+`weights = c(poverty = 0.5, frl = 0.25, snap = 0.25)` and `G_max = 4`
+the chosen grading at `tau = 0.25` leaves all pairs unordered (one
+shared grade, loss `tau`), whereas at `tau = 0.35` it orders about 63%
+of pairs across four grades (stored as
+`postrank_example("analysis_30x3")` and
+`postrank_example("analysis_30x3_tau35")`).
+
+## See also
+
+[pr_example_gaussian](https://joonho112.github.io/postrank/reference/pr_example_gaussian.md),
+[`postrank_example()`](https://joonho112.github.io/postrank/reference/postrank_example.md)
 
 ## Examples
 

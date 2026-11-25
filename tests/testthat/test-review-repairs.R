@@ -1,5 +1,5 @@
-# Regression tests for the findings of the Phase 6 independent review (log 010): each block
-# reproduces a reported failure on documented input and asserts the repaired behavior.
+# Regression tests covering edge cases in validation, baselines, formatting,
+# and plotting on boundary inputs.
 
 test_that("postrank() keeps its solve for minimax and for budgets given out of criterion order (H1)", {
   skip_if_not_installed("highs")

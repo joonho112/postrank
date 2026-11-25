@@ -11,87 +11,68 @@ postrank_compare(
 )
 }
 \arguments{
-\item{x}{A \code{postrank_fit} or \code{postrank_analysis} with a validated grade.}
+\item{x}{Reference \code{postrank_fit} or \code{postrank_analysis} object with a
+checked grading (\code{incumbent_validated = TRUE}).}
 
-\item{...}{Further \code{postrank_baseline} or \code{postrank_fit} objects, or named
-integer grade vectors (named arguments set the method label).}
+\item{...}{Additional \code{postrank_baseline}, \code{postrank_fit} or
+\code{postrank_analysis} objects (which must match \code{x}'s input identity and
+loss settings), or positive integer grade vectors named by \code{entity_ids}.
+Argument names set the method labels.}
 
-\item{baselines}{Built-in baselines to add: any of \code{"expected_rank"} and
-\code{"composite"}; \code{character()} for none.}
+\item{baselines}{Character vector of built-in optimal-cut baselines to
+include: subset of \code{c("expected_rank", "composite")} (both by default), or
+\code{character()} for none.}
 
-\item{means}{Optional \verb{n x K} posterior mean matrix for the composite.}
+\item{means}{Optional \verb{n x K} matrix of posterior means for the
+\code{"composite"} baseline when \code{x} is a \code{postrank_fit} built from a bare
+\code{postrank_pairwise} object (otherwise \code{missing_posterior_means} is raised).}
 }
 \value{
-A \code{postrank_comparison} object. Its \code{table} includes method, risk,
-disclosure, grade count, status, bounds, criterion error profiles,
-\code{family_feasible} and \code{feasibility_reason}; \code{grades}, \code{relation_codes} and
-\code{relations} use the same unique method IDs. \code{grades} is an entity-by-method
-integer matrix and \code{relation_codes} an entity-by-entity-by-method array;
-no-action columns are \code{NA}. \code{relations} has one row per non-reference
-method, with \code{n_same}, \code{n_new_disclosed}, \code{n_new_withheld}, \code{n_reversed}
-and \code{agreement} (the unchanged fraction of all unordered pairs).
-\code{reference}, bound \code{settings}, \code{input_identity}, \code{schema_version},
-\code{provenance} and \code{warnings} complete the object. Select table columns by
-name rather than relying on their positions.
-
-\code{reason} explains an unavailable action; \code{feasibility_reason} explains an
-evaluated action outside the declared family. They are separate fields.
-Duplicate method labels receive collision-free suffixes shared by all
-result components. Use the returned IDs instead of predicting a suffix.
-Older saved comparisons without feasibility metadata remain displayable,
-with the absence of these records indicated. Checking constraints requires
-recreating the comparison; displays do not calculate missing metadata.
+A \code{postrank_comparison} object containing:
+\itemize{
+\item \code{reference}: \code{"joint"};
+\item \code{table}: one row per method with \code{method}, \code{risk} (primary loss), \code{N},
+\code{disclosure_rate}, \code{G}, \code{status}, \code{optimality_scope}, \code{reason},
+\code{risk_lower_bound}, \code{risk_absolute_gap}, \verb{E_over_N_<k>}, \verb{E_over_M_<k>},
+\code{family_feasible} and \code{feasibility_reason};
+\item \code{relations}: one row per non-reference method with \code{n_same},
+\code{n_new_disclosed}, \code{n_new_withheld}, \code{n_reversed} (summing to \code{M}) and
+\code{agreement} (\code{n_same / M});
+\item \code{grades} (\verb{n x methods} integer matrix) and \code{relation_codes}
+(\verb{n x n x methods} array);
+\item \code{settings}, \code{input_identity}, \code{schema_version}, \code{provenance} and
+\code{warnings}.
+}
 }
 \description{
-Alternative reports are evaluated under a common reference posterior and
-loss, and changes in their pairwise relations are recorded. By default,
-score-order baselines with optimal cuts are also calculated. With \code{baselines = character()}, evaluation is restricted to the reference and supplied
-actions, without optimization of cuts.
+\code{postrank_compare()} evaluates alternative gradings under the same posterior
+probabilities and loss settings as a reference fit or analysis \code{x} (labeled
+\code{"joint"}), and counts how many pairwise orderings change relative to
+\code{"joint"}. By default it adds optimal-cut baselines on expected rank and on
+the posterior-mean composite; no external optimization solver is called.
 }
 \details{
-The common grade of \code{x} is labelled \code{"joint"}. Built-in
-baselines use the same coefficients and policy: expected rank +
-optimal cuts and posterior-mean composite + optimal cuts (\code{scales = 1},
-\code{centers = 0}), plus any baselines, fits or named grade vectors supplied
-through \code{...}. Every action is evaluated under the reference settings, and
-relation changes are read from the reference to the compared action.
+Built-in \code{"expected_rank"} and \code{"composite"} (\code{scales = 1}, \code{centers = 0})
+baselines call \code{\link[=postrank_cuts]{postrank_cuts()}} with \code{rule = "optimal"}; if \code{x} uses
+settings that \code{\link[=postrank_cuts]{postrank_cuts()}} does not optimize (such as \code{q} or
+\code{"minimax"}), the built-in row is recorded with \code{status = "not_comparable"}
+and \code{reason} giving the error code rather than stopping.
 
-Each row retains its status and scope: the joint row records solver status,
-bounds and gap; an optimal-cuts baseline has \code{status = "optimal"} with its restricted
-optimality scope; quantile and supplied-action rows have status \code{"evaluated"}. Baseline
-rows have no full-family bound (\code{NA}). A supplied fit without a validated
-grade stays as a status row with \code{NA} action metrics and reason
-\code{"no_validated_incumbent"}; an impossible requested baseline is
-\code{"not_comparable"} with its error code as reason. A supplied fit or baseline
-must match the reference policy and input identity. A named grade vector
-carries no such policy record and is explicitly evaluated under the
-reference loss, even if it was originally chosen for another objective.
-
-A supplied grade may be evaluated even when it is outside the reference
-action family. \code{table$family_feasible} records grade-cap, exact-grade and
-error-budget feasibility, with codes in \code{feasibility_reason}; no-action
-rows have \code{NA}. All rows use the reference fit's recorded feasibility
-tolerance for the raw budget residual \code{E_k - q_k * N}. This tolerance is
-stored as \code{provenance$family_feasibility_tolerance} (the usual validator
-default is used only if the reference receipt lacks it). Grade counts are
-checked exactly. This is a numerical check, not a certificate. Outside-family
-actions retain their risk and relations, and are marked in print and figures;
-they do not support claims about minima over the same feasible family.
-
-Composite scores need posterior means: an explicit \code{means} matrix, the input
-of a \code{postrank_analysis}, or the stored means of typed coefficients. A fit
-built from empirical pairwise coefficients alone has no means; requesting
-the composite baseline then raises \code{missing_posterior_means}.
+Supplied grade vectors are evaluated under \code{x}'s loss even if they violate
+\code{G_max}, \code{exact_G} or \code{q} (checked within \code{family_feasibility_tolerance}).
+\code{table$family_feasible} (\code{TRUE}/\code{FALSE}/\code{NA}) and \code{feasibility_reason} flag
+rows outside \code{x}'s constraint family, whereas \code{reason} explains rows with no
+grading (\code{NA} loss). Duplicate method labels receive unique \verb{_2}, \verb{_3}, ...
+suffixes across all components.
 }
 \examples{
-if (requireNamespace("highs", quietly = TRUE)) {
-  fit <- postrank(postrank_toy, weights = c(need_A = .6, need_B = .4), tau = .25,
-    G_max = 3L, backend = "highs", fragility = FALSE)
-  cmp <- postrank_compare(fit)
-  cmp$table[, c("method", "risk", "disclosure_rate", "G", "status")]
-}
+toy <- postrank_example("toy_analysis")
+cmp <- postrank_compare(toy)
+cmp$table[, c("method", "risk", "disclosure_rate", "G", "status")]
+cmp$relations
 }
 \seealso{
-\code{\link[=postrank_cuts]{postrank_cuts()}}, \code{\link[=postrank_sensitivity]{postrank_sensitivity()}}
+\code{\link[=postrank_cuts]{postrank_cuts()}}, \code{\link[=postrank_plot_compare]{postrank_plot_compare()}},
+\code{\link[=postrank_sensitivity]{postrank_sensitivity()}}
 }
 \concept{baselines}

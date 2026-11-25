@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Construct Inner and Outer Problems for Criterion Protections — postrank_protection_envelopes • postrank</title>
+<title>Build Inner and Outer Problems for Error Budgets — postrank_protection_envelopes • postrank</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,15 +16,23 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Construct Inner and Outer Problems for Criterion Protections — postrank_protection_envelopes">
-<meta name="description" content="Two empirical problems are constructed from a weighted problem with
-criterion-specific error budgets. Simultaneous coefficient-error radii are
-used to tighten the budgets for the inner problem and relax them for the
-outer problem. The construction itself requires no optimization.">
-<meta property="og:description" content="Two empirical problems are constructed from a weighted problem with
-criterion-specific error budgets. Simultaneous coefficient-error radii are
-used to tighten the budgets for the inner problem and relax them for the
-outer problem. The construction itself requires no optimization.">
+<meta property="og:title" content="Build Inner and Outer Problems for Error Budgets — postrank_protection_envelopes">
+<meta name="description" content="postrank_protection_envelopes() builds two empirical grading problems from
+a weighted problem that carries criterion error budgets q_k. Here a
+protection envelope is the pair of tightened (inner, using
+q_k - epsilon_k) and relaxed (outer, using q_k + epsilon_k) problems
+formed with simultaneous IID probability radii epsilon_k from
+postrank_iid_bounds() so that, on the simultaneous 1 - alpha event, their
+feasible sets bracket the unknown true budget-constrained set. Building the
+envelopes runs no solver.">
+<meta property="og:description" content="postrank_protection_envelopes() builds two empirical grading problems from
+a weighted problem that carries criterion error budgets q_k. Here a
+protection envelope is the pair of tightened (inner, using
+q_k - epsilon_k) and relaxed (outer, using q_k + epsilon_k) problems
+formed with simultaneous IID probability radii epsilon_k from
+postrank_iid_bounds() so that, on the simultaneous 1 - alpha event, their
+feasible sets bracket the unknown true budget-constrained set. Building the
+envelopes runs no solver.">
 <meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
 </head>
 <body>
@@ -35,7 +43,7 @@ outer problem. The construction itself requires no optimization.">
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +52,7 @@ outer problem. The construction itself requires no optimization.">
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -62,16 +70,20 @@ outer problem. The construction itself requires no optimization.">
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Construct Inner and Outer Problems for Criterion Protections</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Build Inner and Outer Problems for Error Budgets</h1>
 
       <div class="d-none name"><code>postrank_protection_envelopes.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>Two empirical problems are constructed from a weighted problem with
-criterion-specific error budgets. Simultaneous coefficient-error radii are
-used to tighten the budgets for the inner problem and relax them for the
-outer problem. The construction itself requires no optimization.</p>
+    <p><code>postrank_protection_envelopes()</code> builds two empirical grading problems from
+a weighted problem that carries criterion error budgets <code>q_k</code>. Here a
+<em>protection envelope</em> is the pair of tightened (<code>inner</code>, using
+<code>q_k - epsilon_k</code>) and relaxed (<code>outer</code>, using <code>q_k + epsilon_k</code>) problems
+formed with simultaneous IID probability radii <code>epsilon_k</code> from
+<code><a href="postrank_iid_bounds.html">postrank_iid_bounds()</a></code> so that, on the simultaneous <code>1 - alpha</code> event, their
+feasible sets bracket the unknown true budget-constrained set. Building the
+envelopes runs no solver.</p>
     </div>
 
     <div class="section level2">
@@ -88,70 +100,85 @@ outer problem. The construction itself requires no optimization.</p>
 <dl>
 <dt id="arg-problem">problem<a class="anchor" aria-label="anchor" href="#arg-problem"></a>
 </dt>
-<dd><p>A public weighted <code><a href="postrank_problem.html">postrank_problem()</a></code> with nonempty <code>q</code>
-budgets. Begin with the original public problem, not a previously created
-envelope. Minimax is unsupported.</p></dd>
+<dd><p>Original public weighted <code>postrank_problem</code> from
+<code><a href="postrank_problem.html">postrank_problem()</a></code> with non-empty <code>q</code> budgets (<code>objective = "weighted"</code>
+and no existing <code>protection_envelope</code>). <code>objective = "minimax"</code> is not
+supported.</p></dd>
 
 
 <dt id="arg-bounds">bounds<a class="anchor" aria-label="anchor" href="#arg-bounds"></a>
 </dt>
-<dd><p>A <code><a href="postrank_iid_bounds.html">postrank_iid_bounds()</a></code> object from exactly the same posterior
-input, retaining every declared criterion, including zero-weight criteria.</p></dd>
+<dd><p>A <code>postrank_iid_bounds</code> object from <code><a href="postrank_iid_bounds.html">postrank_iid_bounds()</a></code>
+built on the exact same posterior input, retaining every declared criterion
+in <code>problem</code> (including zero-weight criteria) in the same order.</p></dd>
 
 </dl>
 </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
 </h2>
-    <p>A <code>postrank_protection_envelopes</code> object containing the original
-<code>public_problem</code>, <code>bounds</code>, <code>public_q</code>, internal <code>inner_problem</code> and
-<code>outer_problem</code>, and their signed <code>thresholds</code>. The original problem and
-public budgets are preserved. No statistical or numerical certificate is
-issued.</p>
+    <p>A <code>postrank_protection_envelopes</code> list containing <code>public_problem</code>,
+<code>public_q</code>, <code>bounds</code>, <code>inner_problem</code>, <code>outer_problem</code>, signed
+<code>thresholds = list(inner = ..., outer = ...)</code>, <code>envelope_identity</code>, and
+status fields (<code>status = "diagnostic_only"</code>, <code>bound_computed = FALSE</code>, and
+<code>guarantee_issued = FALSE</code>). This object does not issue a statistical or
+numerical certificate.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
 </h2>
-    <p><span>The empirical rows are
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>E</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><mo>≤</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>q</mi><mi>k</mi></msub><mo>−</mo><msub><mi>ε</mi><mi>k</mi></msub><mo stretchy="false" form="postfix">)</mo><mi>N</mi></mrow><annotation encoding="application/x-tex">\widehat E_k\leq(q_k-\varepsilon_k)N</annotation></semantics></math> for the inner problem and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>E</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><mo>≤</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>q</mi><mi>k</mi></msub><mo>+</mo><msub><mi>ε</mi><mi>k</mi></msub><mo stretchy="false" form="postfix">)</mo><mi>N</mi></mrow><annotation encoding="application/x-tex">\widehat E_k\leq(q_k+\varepsilon_k)N</annotation></semantics></math> for the outer problem.
-Here </span><code>N</code> counts disclosed pairs, not all possible pairs; <code>E</code> is the sum
-of directional-error probabilities on that criterion. Thresholds are
-deliberately not clipped to the public <code>q</code> range.</p>
-<p>On the simultaneous coefficient event, the inner feasible family lies
-inside the true protected family, which lies inside the outer family,
-subject also to valid numerical feasibility checks. A negative inner
-threshold excludes positive disclosure on that protected criterion. An
-all-withheld action has <code>N = 0</code> and satisfies these rows when the action
-family permits it; exact-G with more than one nonempty grade excludes it.
-Thus an infeasible inner problem does not establish infeasibility of the
-original protected problem. A zero criterion-loss weight does not remove
-an explicit protection or its need for a coefficient radius.</p>
-<p>The models retain the original objective and grade-count family. Their
-signed thresholds are internal linear inequalities, not new accepted
-values for the public <code>q</code> argument. <code><a href="postrank_protection_analysis.html">postrank_protection_analysis()</a></code> can
-solve the two problems and combine an inner action with a whole-outer
-lower bound. Construction alone does not establish that an action satisfies
-the error budgets under the supplied posterior law.</p>
+    <p>For each protected criterion <code>k</code><span>, the empirical linear inequality is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>E</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><mo>≤</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>q</mi><mi>k</mi></msub><mo>−</mo><msub><mi>ε</mi><mi>k</mi></msub><mo stretchy="false" form="postfix">)</mo><mi>N</mi></mrow><annotation encoding="application/x-tex">\widehat E_k \le (q_k - \varepsilon_k) N</annotation></semantics></math> in </span><code>inner_problem</code><span> and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>E</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><mo>≤</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>q</mi><mi>k</mi></msub><mo>+</mo><msub><mi>ε</mi><mi>k</mi></msub><mo stretchy="false" form="postfix">)</mo><mi>N</mi></mrow><annotation encoding="application/x-tex">\widehat E_k \le (q_k + \varepsilon_k) N</annotation></semantics></math> in </span><code>outer_problem</code>, where <code>N</code><span>
+is the number of disclosed (ordered) pairs and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>E</mi><mo accent="true">̂</mo></mover><mi>k</mi></msub><annotation encoding="application/x-tex">\widehat E_k</annotation></semantics></math> is the
+empirical sum of wrong-direction probabilities on criterion </span><code>k</code>. The signed
+thresholds <code>q_k - epsilon_k</code> and <code>q_k + epsilon_k</code> are internal linear
+constraint coefficients and are not clipped to <code>(0, 1)</code> (nor accepted by the
+public <code>q</code> argument of <code><a href="postrank_settings.html">postrank_settings()</a></code>).</p>
+<p>On the simultaneous <code>1 - alpha</code> coefficient event (and subject to valid
+numerical feasibility checks), every grading feasible for <code>inner_problem</code>
+satisfies the true posterior <code>q</code> budgets, and every grading satisfying the
+true posterior <code>q</code> budgets is feasible for <code>outer_problem</code>. When
+<code>q_k - epsilon_k &lt; 0</code>, no grading with <code>N &gt; 0</code> can satisfy that inner row,
+whereas the single-grade all-withheld grading has <code>N = 0</code> and remains
+feasible whenever <code>G = 1</code> is allowed (<code>exact_G &gt;= 2</code> excludes <code>G = 1</code>).
+Therefore an infeasible <code>inner_problem</code> does not prove that the true
+budget-constrained problem is infeasible. Setting a criterion's objective
+<code>weight</code> to <code>0</code> keeps any explicit <code>q_k</code> budget and its <code>epsilon_k</code> radius
+active.</p>
+<p>Pass the returned object to <code><a href="postrank_protection_analysis.html">postrank_protection_analysis()</a></code> to solve both
+problems and compare an inner grading against an outer whole-problem lower
+bound.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
 </h2>
-    <div class="dont-index"><p><code><a href="postrank_iid_bounds.html">postrank_iid_bounds()</a></code>, <code><a href="postrank_protection_analysis.html">postrank_protection_analysis()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="postrank_iid_bounds.html">postrank_iid_bounds()</a></code>, <code><a href="postrank_protection_analysis.html">postrank_protection_analysis()</a></code>,
+<code><a href="postrank_guarantee_capabilities.html">postrank_guarantee_capabilities()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
 </h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">bounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_iid_bounds.html">postrank_iid_bounds</a></span><span class="op">(</span><span class="va">postrank_toy</span>, alpha <span class="op">=</span> <span class="fl">.05</span>,</span></span>
-<span class="r-in"><span>  alpha_by_criterion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">.025</span>, need_B <span class="op">=</span> <span class="fl">.025</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  design <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sample_sizes_fixed_before_sampling <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>    alpha_fixed_before_sampling <span class="op">=</span> <span class="cn">TRUE</span>, adaptive_stopping <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">bounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_iid_bounds.html">postrank_iid_bounds</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">postrank_toy</span>,</span></span>
+<span class="r-in"><span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span></span>
+<span class="r-in"><span>  alpha_by_criterion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">0.025</span>, need_B <span class="op">=</span> <span class="fl">0.025</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  design <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    sample_sizes_fixed_before_sampling <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>    alpha_fixed_before_sampling <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>    adaptive_stopping <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>    planned_sample_sizes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">32L</span>, need_B <span class="op">=</span> <span class="fl">32L</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    declaration_note <span class="op">=</span> <span class="st">"Prespecified in the bundled synthetic Normal generator"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">problem</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_problem.html">postrank_problem</a></span><span class="op">(</span><span class="fu"><a href="postrank_pairwise.html">postrank_pairwise</a></span><span class="op">(</span><span class="va">postrank_toy</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">.6</span>, need_B <span class="op">=</span> <span class="fl">.4</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.25</span>, G_max <span class="op">=</span> <span class="fl">3L</span>,</span></span>
-<span class="r-in"><span>  q <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">.2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    declaration_note <span class="op">=</span> <span class="st">"Prespecified in the bundled synthetic Normal generator"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">problem</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_problem.html">postrank_problem</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="postrank_pairwise.html">postrank_pairwise</a></span><span class="op">(</span><span class="va">postrank_toy</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">0.6</span>, need_B <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  tau <span class="op">=</span> <span class="fl">0.25</span>,</span></span>
+<span class="r-in"><span>  G_max <span class="op">=</span> <span class="fl">3L</span>,</span></span>
+<span class="r-in"><span>  q <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">envelopes</span> <span class="op">&lt;-</span> <span class="fu">postrank_protection_envelopes</span><span class="op">(</span><span class="va">problem</span>, <span class="va">bounds</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">envelopes</span><span class="op">$</span><span class="va">thresholds</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inner</span>

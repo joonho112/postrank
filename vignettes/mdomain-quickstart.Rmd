@@ -1,59 +1,65 @@
 ---
-title: "A first multidomain report card"
+title: "Grading entities across multiple domains"
 output:
   rmarkdown::html_vignette:
     math_method: mathml
 vignette: >
-  %\VignetteIndexEntry{A first multidomain report card}
+  %\VignetteIndexEntry{Grading entities across multiple domains}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ```{r mdomain-setup, include=FALSE}
-library(postrank)
 have_gmp <- requireNamespace("gmp", quietly = TRUE)
 knitr::opts_chunk$set(eval = have_gmp, collapse = TRUE, comment = "#>",
   fig.width = 7, fig.height = 4.5, dpi = 120, out.width = "100%")
 options(width = 82)
 ```
 
-A multidomain report gives each unit a grade in each domain. A unit can
-have higher reported priority in one domain and lower priority in another.
-Grade 1 is highest; equal grades withhold the pair's direction in that
-domain. The input supplies posterior information: postrank does not fit
-the underlying model.
+Whereas `postrank()` assigns one common grade shared across criteria, a
+multidomain report card assigns each unit a **separate integer grade in each
+domain**. A unit can receive higher priority in one domain and lower priority in
+another. Within each domain, Grade 1 is the highest priority, and giving two
+units the same grade leaves that pair unordered in that domain without claiming
+that their underlying targets are equal. As throughout `postrank`, statistical
+model fitting happens outside the package and results depend on the posterior
+you supply.
 
-This article builds a small fictional law, evaluates a proposed card,
-searches a declared set of alternatives, and displays three views. All
-data are defined below, so the example runs offline and needs no optimizer
-backend. The suggested package `gmp` supplies the exact arithmetic used by
-the multidomain interface. Install it with `install.packages("gmp")` if
-needed.
+This article builds a two-state discrete probability distribution for three
+units across two domains, evaluates a proposed multidomain report card, searches
+a declared set of candidate grade columns, plots three views of the selected
+card, and compares exact, IID, and MCMC assessment modes. All calculations run
+offline without an external MIP or LP solver when the suggested `gmp` package
+(used for exact rational arithmetic) is installed via `install.packages("gmp")`.
 
-```{r mdomain-dependency-note, echo=FALSE, results='asis', eval=TRUE}
-if (!have_gmp) cat("**Computation skipped:** the optional package `gmp` is not installed. The code and explanation remain available; install `gmp` and rebuild to run the examples.\n")
+```{r mdomain-load, eval=TRUE}
+library(postrank)
 ```
 
-The eight functions have separate jobs:
+```{r mdomain-dependency-note, echo=FALSE, results='asis', eval=TRUE}
+if (!have_gmp) cat("**Computation skipped:** the optional package `gmp` is not installed. Install `gmp` and rebuild to run the examples.\n")
+```
 
-| Function | Job |
+The multidomain workflow uses eight functions:
+
+| Function | Role |
 |:--|:--|
-| `postrank_mdomain_input()` | Bind identified states to targets and provenance. |
-| `postrank_mdomain_decision()` | Specify loss weights, withholding cost and protection. |
-| `postrank_mdomain_evaluate()` | Evaluate a fixed named grade matrix. |
-| `postrank_mdomain_grades()` | Extract verified grades from a card or fit. |
-| `postrank_mdomain_family()` | Declare the candidate columns to consider. |
-| `postrank_mdomain_solve()` | Search their complete Cartesian product. |
-| `postrank_mdomain_assess()` | Assess a fixed card under an explicit finite, iid or MCMC route. |
-| `postrank_plot_mdomain()` | Display grades, profile cells or a selected pair. |
+| `postrank_mdomain_input()` | Attach joint or domain-wise states to target definitions and source metadata. |
+| `postrank_mdomain_decision()` | Set domain loss weights, withholding costs, expected-error budgets, and joint exceedance caps. |
+| `postrank_mdomain_evaluate()` | Evaluate a fixed unit-by-domain integer grade matrix. |
+| `postrank_mdomain_grades()` | Extract the verified grade matrix from an evaluated card or solved fit. |
+| `postrank_mdomain_family()` | Declare the candidate grade columns allowed in each domain. |
+| `postrank_mdomain_solve()` | Evaluate every combination in the declared candidate set and select an optimal feasible card. |
+| `postrank_mdomain_assess()` | Check joint-exceedance quantities under `"exact"`, `"iid"`, or `"mcmc"` rules. |
+| `postrank_plot_mdomain()` | Plot domain grades (`"grades"`), profile cells (`"cells"`), or two-unit comparisons (`"pair"`). |
 
-## Supply identified joint states
+## Building a multidomain input from joint states
 
-The array dimensions are **state by unit by domain**. A state contains
-all units and domains together; its dependence is part of the supplied
-law. The two slices below exhaust a specified finite law, with probability
-9/10 on the usual state and 1/10 on a reversal. They are complete support,
-rather than a two-draw approximation to another posterior.
+Joint state arrays have dimensions **`state x unit x domain`**, where each state
+slice holds all units and all domains together so cross-unit and cross-domain
+dependence are preserved. Below, two slices specify a complete discrete
+posterior—putting probability `9/10` on `"usual"` and `1/10` on `"reversal"`
+rather than approximating a continuous distribution with two Monte Carlo draws:
 
 ```{r mdomain-states}
 unit_ids <- c("Alder", "Birch", "Cedar")
@@ -66,11 +72,12 @@ states["reversal", , "attainment"] <- c(2, 3, 1)
 states["reversal", , "community"] <- c(3, 2, 1)
 ```
 
-Every target is already oriented so that larger means higher priority.
-`equality_classes` declares model identities. Distinct labels say that
-the model imposes no structural identity between distinct units; they do
-not rule out equality in an individual posterior state. Here there are no
-such equalities either.
+Every domain must already be oriented so that larger values mean higher
+priority (`orientation = "larger_is_higher"`). In each domain's target record,
+`equality_classes` declares structural model identities across units: giving
+each unit its own class label states that the model does not force two units to
+share an identical target (even if two units happen to tie in an individual
+state):
 
 ```{r mdomain-targets}
 targets <- setNames(lapply(domain_ids, function(d) list(
@@ -80,7 +87,13 @@ targets <- setNames(lapply(domain_ids, function(d) list(
   equality_classes = setNames(unit_ids, unit_ids),
   equality_provenance = "The model imposes no identity between distinct units."
 )), domain_ids)
+```
 
+Next we describe where the distribution came from (`provenance`) and combine the
+states, target definitions, and exact rational state probabilities (`masses`) in
+`postrank_mdomain_input()`:
+
+```{r mdomain-provenance}
 provenance <- list(
   input_id = "three-unit-support", law_id = "fictional-two-state-law",
   proper_law = TRUE, producer = "Self-contained teaching example",
@@ -89,27 +102,30 @@ provenance <- list(
     "of all units and domains."),
   sampling_assumptions = list(finite_support_origin = paste(
     "These two states exhaust the specified fictional law;",
-    "they are not sampled draws.")))
+    "they are not sampled draws."))
+)
+```
 
+```{r mdomain-input}
 input <- postrank_mdomain_input(states, targets = targets,
   provenance = provenance, representation = "exact_finite_law",
   masses = c("9/10", "1/10"))
 input
 ```
 
-The constructor checks these declarations for consistency. It does not
-verify that a producer's law is scientifically valid or properly sampled.
-Keep the array's unit and domain order when supplying target lists,
-named policy vectors and grades. Matching state labels in separately
-generated domain histories do not establish a joint law.
+`postrank_mdomain_input()` checks array dimensions, ID ordering, probability
+masses, and required metadata fields; it does not verify that an upstream model
+is well specified or properly sampled. Keep the same unit order and domain order
+across `targets`, policy vectors, and grade matrices (and never pair separate
+domain simulations by row number as if they came from a joint state).
 
-## Choose a decision and evaluate a card
+## Choosing a decision rule and evaluating a profile card
 
-The decision uses equal domain weights and a withholding cost of 1/5.
-There are no expected-error guards (`q = NULL`). Joint protection requires
-the probability of **any** protected domain's strict error-proportion
-exceedance to be at most `alpha = 1/5`. With `t = 0`, one false disclosed
-direction triggers that domain's event.
+Our policy gives equal weight (`"1/2"` and `"1/2"`) to the two domains, charges
+`tau = "1/5"` per unordered pair, omits per-domain expected-error budgets
+(`q = NULL`), and bounds the **joint** exceedance probability across domains by
+`alpha = "1/5"` at error-proportion threshold `t = "0"` (at `t = "0"`, a single
+wrong-direction ordered pair in either domain triggers the exceedance event):
 
 ```{r mdomain-fixed-card}
 decision <- postrank_mdomain_decision(
@@ -123,52 +139,56 @@ card
 postrank_mdomain_grades(card)
 ```
 
-Alder's profile is (1, 2), and Birch's is (2, 1): the directions cross.
-There is no single overall ordering implied by these two profiles.
-The card has expected loss `1/30` and joint-event probability `1/10`,
-so it meets the specified cap under this declared finite law. The reversal
-causes errors in both domains at once; the union counts that state once.
+Notice that `Alder` has profile `(1, 2)` while `Birch` has `(2, 1)`: `Alder`
+ranks higher in `attainment` and `Birch` ranks higher in `community`, with no
+single combined ranking forced onto the two units. Under the supplied finite
+distribution, this card has exact additive loss `1/30` (`risk_exact`) and exact
+joint exceedance probability `1/10` (`J_exact`), satisfying `alpha = "1/5"`
+because the `"reversal"` state causes wrong-direction orders in both domains
+simultaneously and is counted once in the union event:
 
 ```{r mdomain-tables}
-card$domain_table[, c("domain_id", "N", "EF_exact", "loss_exact")]
-card$event_table[, c("domain_id", "N", "cutoff_exact", "p_exact")]
-card$feasible_for_represented_measure
+card[["domain_table"]][, c("domain_id", "N", "EF_exact", "loss_exact")]
+card[["event_table"]][, c("domain_id", "N", "cutoff_exact", "p_exact")]
+card[["feasible_for_represented_measure"]]
 ```
 
-`M = choose(3, 2) = 3` is the original number of unordered pairs. Each
-domain's loss divides expected false directions plus `tau` times withheld
-pairs by this original `M`. By contrast, the protected error proportion
-uses `N`, the number of directions disclosed **in its scope**. Its strict
-event is `F/N > t`, with first triggering count `floor(t*N) + 1`.
+With three units, every domain has `M = choose(3, 2) = 3` unordered pairs. Domain
+loss divides expected wrong-direction pairs plus `tau` times unordered pairs by
+`M`, whereas the protected error proportion divides wrong-direction pairs `F` by
+`N`, the number of ordered (`disclosed`) pairs in that scope—triggering when
+`F / N > t` (that is, `F >= floor(t * N) + 1`). Ordering two units strictly when
+their targets are equal counts as a wrong-direction error. Within each domain,
+units sharing that domain's `equality_classes` label must receive the same
+grade, even when the domain has weight zero. Two units can therefore share an
+attainment grade and receive different community grades if the community model
+assigns them to distinct classes.
 
-Equal grades withhold direction; they do not claim equal targets. A strict
-direction asserted when targets are equal is false. Model identities
-declared in `equality_classes` must remain tied in every supplied card,
-including domains with zero loss weight.
-
-For an all-withheld card, `N = 0`. Its ratio is undefined (`eFDP = NA`),
-while the no-disclosure convention `eFDP_zero` is zero and the exceedance
-event is analytically false. This differs from observing zero events in
-a finite sample.
+When a column leaves all pairs unordered (`N = 0`), the error proportion `eFDP`
+is `NA`, the zero-when-withheld convention `eFDP_zero` is `0` (with
+`eFDP_zero_exact` equal to `"0"`), and `F / N > t` cannot occur in any state
+(which is structural, distinct from observing zero exceedances in a small Monte
+Carlo sample):
 
 ```{r mdomain-withholding}
 withheld <- postrank_mdomain_evaluate(input, G * 0 + 1, decision)
-withheld$scope_table[, c("domain_id", "N", "eFDP", "eFDP_zero")]
-withheld$status$joint
+withheld[["scope_table"]][, c("domain_id", "N", "eFDP", "eFDP_zero")]
+withheld[["status"]][["joint"]]
 ```
 
-Use strings such as `"1/10"` or `"0.1"` when the policy is that exact
-rational number. An R numeric value such as `0.1` retains its stored
-binary value. The two representations can differ at a strict policy
-boundary. Grade labels have a different role: they encode order and ties
-and are canonicalized to consecutive occupied integers. Labels 10, 20,
-30 produce the same card as 1, 2, 3.
+Pass exact fractions or decimal strings (such as `"1/10"` or `"0.1"`) in
+`postrank_mdomain_decision()` whenever a policy threshold is an exact rational
+number; a bare R numeric literal such as `0.1` keeps its binary floating-point
+value, which can differ at strict inequality boundaries. Integer grade labels
+only encode order and shared grades and are relabeled to `1, 2, ...` (`10, 20, 30`
+defines the exact same card as `1, 2, 3`).
 
-## Search a declared set of candidate columns
+## Searching a declared set of candidate columns
 
-Give each domain a bank of permitted grade vectors in original unit order.
-Here each bank contains its proposed column; the constructor always adds
-the all-withheld column. Two choices per domain give four candidate cards.
+`postrank_mdomain_family()` lists the grade columns allowed in each domain in
+original unit order (always including the 1-grade all-withheld column). With two
+allowed columns in each of two domains, the Cartesian product contains four
+candidate report cards, and `postrank_mdomain_solve()` evaluates all four:
 
 ```{r mdomain-search}
 family <- postrank_mdomain_family(input, columns = list(
@@ -177,133 +197,150 @@ family <- postrank_mdomain_family(input, columns = list(
   max_actions = 4L)
 fit <- postrank_mdomain_solve(input, family, decision, max_actions = 4L)
 fit
-fit$candidate_table[, c("risk_exact", "J_exact",
+fit[["candidate_table"]][, c("risk_exact", "J_exact",
   "feasible_for_represented_measure", "optimal", "selected")]
 postrank_mdomain_grades(fit)
 ```
 
-The crossing card is the unique minimum-loss feasible candidate among
-these four. This is **candidate-restricted optimality**: no claim is made
-about unlisted ordered partitions. The search retains every exact
-optimizer and selects the first in canonical lexicographic grade order
-when there is a tie. `max_actions` refuses an oversized product before
-enumeration; it never truncates the search.
+Among these four candidates, the crossing card (`risk_exact = "1/30"`,
+`J_exact = "1/10"`) achieves the smallest loss while meeting the joint
+exceedance cap. **Optimality holds only within the declared candidate set:**
+`postrank_mdomain_solve()` makes no claim about grade partitions outside
+`family`. When multiple candidates tie at the minimum exact loss, all tied
+optimizers are flagged (`optimal = TRUE`) and the first in lexicographic order
+of the renumbered (`1..K_d`) grade columns is marked `selected = TRUE`. The
+`max_actions` cap stops with an error before enumerating an oversized Cartesian
+product rather than truncating the search.
 
-For a larger ordered bank, supply domain-specific unit-ID permutations
-through `order` and permitted cut positions through `cuts`. Neither is
-guessed. The explicit choice `order = "posterior_mean"` records that the
-same supplied states informed the ordering. Such construction records
-do not provide independent validation.
+To build larger ordered candidate sets per domain, pass unit-ID permutations to
+`order` and allowed cutpoints to `cuts` in `postrank_mdomain_family()`. Choosing
+`order = "posterior_mean"` computes each domain's ordering from the supplied
+states and records that data-dependent choice in metadata (which is not an
+independent held-out validation).
 
-## Read three views of the same card
+## Plotting three views of a multidomain card
 
-The grade view shows each unit's profile. Labels can change for display
-without changing the IDs used for evaluation.
+`postrank_plot_mdomain()` renders three views from the stored card or solved fit
+without running new evaluations. Setting `domain_labels` or `unit_labels`
+relabels axes for display while keeping underlying IDs intact:
 
-```{r mdomain-grades-view, fig.alt="Grades of Alder, Birch and Cedar in attainment and community; Alder and Birch exchange first and second grades."}
+```{r mdomain-grades-view, fig.cap="Multidomain grade profiles for Alder, Birch, and Cedar across Attainment and Community; Alder is Grade 1 in Attainment and Grade 2 in Community, whereas Birch reverses those two grades.", fig.alt="Two-column grade plot for Alder, Birch, and Cedar across Attainment and Community showing crossed first and second grades for Alder and Birch and Grade 3 for Cedar."}
 postrank_plot_mdomain(fit, view = "grades",
   domain_labels = c(attainment = "Attainment", community = "Community"))
 ```
 
-The cell view locates occupied grade combinations. Empty combinations
-remain visible; cells do not impose an overall ordering of the profiles.
+`view = "cells"` counts how many units fall in each `(attainment, community)`
+grade combination while keeping empty cells visible (profile cells are a
+two-dimensional grid rather than a single combined ranking):
 
-```{r mdomain-cells-view, fig.alt="Three occupied profile cells at grades (1,2), (2,1) and (3,3), with other combinations empty."}
+```{r mdomain-cells-view, fig.cap="Occupied and empty profile cells across the three Attainment grades and three Community grades, with one unit each at (1, 2), (2, 1), and (3, 3).", fig.alt="Three-by-three grid of Attainment-by-Community grade cells showing count 1 at (1, 2), (2, 1), and (3, 3) and count 0 elsewhere."}
 postrank_plot_mdomain(fit, view = "cells")
 ```
 
-The pair view states the crossing directions for Alder and Birch.
-Filtering a view changes the display; captioned risk and protection
-continue to refer to the original card and its full declared scope.
+`view = "pair"` compares two selected units across every domain (`units` filters
+only what is drawn, while caption losses and exceedance probabilities still
+describe the full report card):
 
-```{r mdomain-pair-view, fig.alt="Alder has higher reported priority in attainment and Birch in community."}
+```{r mdomain-pair-view, fig.cap="Pairwise domain comparison between Alder and Birch: Alder has higher reported priority in attainment and Birch has higher reported priority in community.", fig.alt="Two-domain comparison diagram showing Alder ahead of Birch in attainment and Birch ahead of Alder in community."}
 postrank_plot_mdomain(fit, view = "pair", units = c("Alder", "Birch"))
 ```
 
-## Use draws and choose the assessment route
+## Using posterior draws and choosing `"exact"`, `"iid"`, or `"mcmc"` assessment
 
-For actual joint iid draws, keep each whole state together and use unique
-draw IDs. This small independent simulation samples complete states from
-the teaching law; the new input describes the empirical measure of 20
-draws rather than its known source probabilities.
+When your posterior comes from Monte Carlo simulation rather than a closed
+finite distribution, keep all units and domains from each draw together in one
+slice with unique draw IDs (you can also pass an existing validated
+`postrank_draws` object directly to `postrank_mdomain_input()` with
+`provenance = list(input_id = ..., law_id = ..., proper_law = TRUE)`, leaving
+`targets = NULL` so its stored target definitions and sampling metadata carry
+over). Below we draw `20` independent states from the two-state distribution:
 
-```{r mdomain-iid-input}
+```{r mdomain-iid-draws}
 set.seed(120)
-draw_rows <- sample.int(2L, 20L, replace = TRUE, prob = c(.9, .1))
+draw_rows <- sample.int(2L, 20L, replace = TRUE, prob = c(0.9, 0.1))
 joint_draws <- states[draw_rows, , , drop = FALSE]
 dimnames(joint_draws)[[1L]] <- paste0("draw-", seq_len(20L))
 draw_provenance <- provenance
-draw_provenance$input_id <- "three-unit-iid-draws"
-draw_provenance$joint_generation <- "Independent draws of complete two-domain states."
-draw_provenance$sampling_assumptions <- list(
+draw_provenance[["input_id"]] <- "three-unit-iid-draws"
+draw_provenance[["joint_generation"]] <- "Independent draws of complete two-domain states."
+draw_provenance[["sampling_assumptions"]] <- list(
   iid_mechanism = "Independent categorical draws from the two-state law.",
-  target_assertion = "Each complete draw targets fictional-two-state-law.")
+  target_assertion = "Each complete draw targets fictional-two-state-law."
+)
+```
+
+```{r mdomain-iid-eval}
 draw_input <- postrank_mdomain_input(joint_draws, targets = targets,
   provenance = draw_provenance, representation = "iid_equal_weight_draws")
 draw_card <- postrank_mdomain_evaluate(draw_input, G, decision)
-draw_card$assurance$numerical_basis
-draw_card$assurance$intended_posterior_feasibility_certified
+draw_card[["assurance"]][c("numerical_basis",
+  "intended_posterior_feasibility_certified")]
 ```
 
-Exact arithmetic on draw counts does not certify feasibility for the
-intended posterior. For iid assurance, freeze the card, decision, target
-law, sample size and numerical budget **before** collecting independent
-validation states, then use `postrank_mdomain_assess(method = "iid")`
-with the documented design record. Reusing exploration states does not
-establish that design.
+**Exact rational arithmetic (`gmp`) over empirical draw counts or a finite
+distribution is not a numerical guarantee about the intended posterior**
+(`intended_posterior_feasibility_certified` is `FALSE`). Match
+`postrank_mdomain_assess()` to how your states were produced:
 
-For MCMC draws, use `representation = "mcmc_equal_weight_draws"` and
-provide `state_origin` with original `source_index`, `chain_id` and
-`iteration_id` in supplied state order. Assess them with `method = "mcmc"`
-for empirical diagnostics. Zero observed hits and chain diagnostics
-do not establish iid assurance or convergence.
-
-Our complete finite law instead uses the explicit finite-law route:
+- **`method = "iid"`**: evaluates a fixed-sample binomial tail check when the
+  grade matrix, decision policy, target law, sample size, and failure budget
+  were fixed *before* drawing independent validation states (reusing states that
+  selected or ordered the card does not satisfy that design).
+- **`method = "mcmc"`**: requires `representation = "mcmc_equal_weight_draws"`
+  with `state_origin` (`source_index`, `chain_id`, `iteration_id` in supplied
+  state order) and computes descriptive chain and batch summaries; zero observed
+  exceedances and chain summaries do not provide an IID guarantee or prove
+  convergence.
+- **`method = "exact"`**: evaluates the exact joint-exceedance probability under
+  a complete `exact_finite_law` (describing that finite distribution without
+  checking model calibration, expected-error budgets `q`, or optimality):
 
 ```{r mdomain-assessment}
 assessed <- postrank_mdomain_assess(input, fit, method = "exact")
 assessed
-assessed$certificate_scope
+assessed[["certificate_scope"]]
 ```
 
-This route computes the specified joint-event probability under the declared
-finite law. It does not establish model calibration, mean guards or report
-optimality. See [Multidomain decisions](mdomain-decisions.html) for the
-dependence examples and assessment details.
+See
+[Separate domain rules versus joint multidomain protection](mdomain-decisions.html)
+for cross-domain dependence examples and MCMC chain diagnostics.
 
-## Repair two common input errors
+## Fixing two common input mistakes
 
-Errors from this interface inherit `postrank_mdomain_error` and carry
-`code` and `field`. Catching that class lets an application explain the
-repair without parsing an error message.
+Multidomain validation errors inherit class `"postrank_mdomain_error"` and store
+machine-readable `code` and `field` entries so scripts can inspect what failed
+without parsing error text. First, omitting `joint_generation` on a 3D state
+array stops on `provenance.joint_generation`:
 
 ```{r mdomain-missing-joint}
 incomplete <- provenance
-incomplete$joint_generation <- NULL
+incomplete[["joint_generation"]] <- NULL
 missing_joint <- tryCatch(
   postrank_mdomain_input(states, targets = targets, provenance = incomplete,
     representation = "exact_finite_law", masses = c("9/10", "1/10")),
   postrank_mdomain_error = identity)
-c(code = missing_joint$code, field = missing_joint$field)
+c(code = missing_joint[["code"]], field = missing_joint[["field"]])
 ```
 
-Restore the producer's actual `joint_generation` explanation and rebuild
-the input, as in the first constructor call. If the domain histories
-were generated separately, supply a domain-named list and the appropriate
-`within_domain_joint` declaration. Do not claim joint generation solely
-because their row counts or labels match.
+Supply your actual `joint_generation` statement when states come from one joint
+distribution, or pass a domain-named list of 2D `state x unit` matrices with
+`within_domain_joint` in `provenance` when domains come from separate fits
+(never claim joint generation just because separate fits have the same number of
+rows).
+
+Second, passing a grade matrix whose row order differs from `input$unit_ids`
+stops on `grades`:
 
 ```{r mdomain-reordered-grades}
 reordered <- G[c("Birch", "Alder", "Cedar"), , drop = FALSE]
 bad_ids <- tryCatch(postrank_mdomain_evaluate(input, reordered, decision),
   postrank_mdomain_error = identity)
-c(code = bad_ids$code, field = bad_ids$field)
+c(code = bad_ids[["code"]], field = bad_ids[["field"]])
 
-# Reorder the values by verified IDs; changing labels alone would misidentify them.
-repaired <- reordered[input$unit_ids, input$domain_ids, drop = FALSE]
+repaired <- reordered[input[["unit_ids"]], input[["domain_ids"]], drop = FALSE]
 postrank_mdomain_grades(postrank_mdomain_evaluate(input, repaired, decision))
 ```
 
-Both dimensions must match the original input order. Preserve the names
-when subsetting (`drop = FALSE`), and rebuild the input if the source
-states or scientific declarations change.
+Reorder rows and columns by name (`[input$unit_ids, input$domain_ids, drop = FALSE]`)
+rather than overwriting `rownames()` or `colnames()`, which would attach grades
+to the wrong units.

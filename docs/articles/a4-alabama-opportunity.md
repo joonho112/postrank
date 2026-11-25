@@ -1,17 +1,20 @@
-# Economic opportunity in Alabama: income and incarceration
+# Grading Alabama counties on income and incarceration
 
-A common ordering of counties may require comparisons across outcomes
-whose directions of association differ. We consider income and
-incarceration for all 67 Alabama counties, accounting for posterior
-uncertainty in each outcome. The analysis examines the comparisons
-disclosed by a common grading and evaluates that grading alongside
-separate outcome-specific reports.
+Grading geographic areas on multiple socioeconomic outcomes requires a
+common ordering rule even when two outcomes rank areas differently or
+differ in precision. Here we grade all `67` Alabama counties across
+adult household income rank and adult incarceration rate using
+`pr_case_alabama`, then compare that shared grading against separate
+single-outcome gradings.
 
-The targets concern historical outcomes of children from families with
-low parental income. Higher priority corresponds to higher income and
-lower incarceration, rather than greater need for funding. Grade 1 is
-the most favorable group under these directions. Comparisons within a
-grade are withheld without an assertion that county outcomes are equal.
+Higher priority (grade 1) corresponds to more favorable historical
+cohort outcomes: higher adult income and lower incarceration (rather
+than greater funding need). Sharing a grade leaves two counties
+unordered without claiming equal outcomes. All posterior inputs and
+optimization results below are stored in the package and loaded without
+fitting a model or running a solver during rendering.
+
+## Cohort, outcome dates, and source license
 
 ``` r
 
@@ -19,34 +22,33 @@ library(postrank)
 alabama <- pr_case_alabama
 ```
 
-The results use a prepared HiGHS analysis of the supplied input.
-Rendering the article requires neither model fitting nor optimization.
-An optional call specifies recomputation when HiGHS is available.
+`pr_case_alabama` is adapted from Chetty, Friedman, Hendren, Jones, and
+Porter (2022), *Replication Data for: The Opportunity Atlas: Mapping the
+Childhood Roots of Social Mobility* (Harvard Dataverse V1.0,
+[doi:10.7910/DVN/NKCQM1](https://doi.org/10.7910/DVN/NKCQM1); source:
+Opportunity Insights and the U.S. Census Bureau), distributed under [CC
+BY 4.0](https://creativecommons.org/licenses/by/4.0/) (no endorsement by
+the original authors or agencies is implied; see
+[`?pr_case_alabama`](https://joonho112.github.io/postrank/reference/pr_case_alabama.md)
+and the installed `DATA-NOTICE.md`).
 
-## Population and outcomes
+The observations describe children born in `1978-1983` whose parents
+were at the 25th national income percentile, pooled across race and
+gender, across all `67` Alabama counties (2010 Census county boundaries;
+every county has both published estimates and positive standard errors):
 
-The [Opportunity Atlas replication
-data](https://doi.org/10.7910/DVN/NKCQM1) describe children born in
-1978–1983, with outcomes evaluated at the 25th percentile of parental
-income and pooled across race and gender. The geography uses 2010 county
-identifiers. All 67 Alabama counties have both published estimates and
-positive standard errors, so none is omitted from this analysis.
+- **Adult income (`income`)**: mean household income percentile rank
+  (`0` to `100` percentile points), measured from `2014-2015` tax
+  records.
+- **Incarceration (`incarceration`)**: percentage residing in a
+  correctional facility on `April 1, 2010` (a single-day Census snapshot
+  rather than lifetime incarceration or current crime; see the
+  [Opportunity Atlas
+  codebook](https://opportunityinsights.org/wp-content/uploads/2019/07/Codebook-for-Table-2.pdf)).
 
-The two outcomes refer to different dates. Income is the child’s
-household income rank, based on income averaged over 2014–2015.
-Incarceration is the probability of residing in a correctional facility
-on April 1, 2010. It is a snapshot, rather than lifetime incarceration
-or current crime. The underlying variable definitions are described in
-the [county data
-codebook](https://opportunityinsights.org/wp-content/uploads/2019/07/Codebook-for-Table-2.pdf).
 These historical conditional outcomes do not identify the causal effect
-of growing up in a particular county or of changing a policy today.
-
-The package retains the published estimates, standard errors and county
-names. Income ranks are expressed in percentile points, and
-incarceration probabilities in percent with standard errors in
-percentage points. The following table contains the observations
-entering the model, before posterior estimation:
+of growing up in a county or of changing local policy today. Below are
+four example counties from `alabama$units` before posterior shrinkage:
 
 ``` r
 
@@ -67,93 +69,77 @@ knitr::kable(observed, row.names = FALSE, digits = 2,
 | Crenshaw County |       40.95 |      1.01 |              0.42 |             0.14 |
 | Russell County  |       33.12 |      0.37 |              4.49 |             0.44 |
 
-The published standard errors account for sampling uncertainty and
-privacy noise. They enter the model once, without an additional privacy
-variance. The population-count column is descriptive; it serves neither
-as a binomial denominator nor as a weight in the grading loss.
+Published standard errors already combine sampling error and Census
+privacy noise, so they enter the observation model once without adding a
+second privacy variance; the published cohort-count column is
+descriptive rather than a binomial denominator or loss weight.
 
-## From published estimates to posterior comparisons
+## Separate posterior models and target orientation
 
-The prepared analysis fitted each outcome separately. Its observation
-model treats a published estimate as Gaussian around a latent county
-mean, with the published standard error. A logistic-normal model
-partially pools those latent means across Alabama counties. The latent
-means lie between zero and one on the original fraction scale; the noisy
-observations are not clipped to that range.
+Each outcome was fitted separately across the `67` Alabama counties
+using a Gaussian observation likelihood around a logistic-normal county
+random effect. The logit-scale intercept had a normal prior with
+standard deviation `1.5` and mean `qlogis(0.40)` for income or
+`qlogis(0.03)` for incarceration. The between-county logit standard
+deviation had a half-normal prior with scale `1`. To align priority
+directions so larger values mean more favorable outcomes on both
+criteria, `income` is `100` times the latent income rank fraction
+(percentile points) and `incarceration` is `-100` times the latent
+incarceration probability (negative percentage points, so `-1` ranks
+above `-4`).
 
-On the original fraction scale, the intercept prior is centered at .40
-for income and .03 for incarceration; its logit-scale standard deviation
-is 1.5. The between-county logit standard deviation has a half-normal
-prior with scale 1. Those choices and the Alabama-only pooling
-population are part of the interpretation of the resulting uncertainty.
-The supplied probabilities are conditional on this model and these
-observations.
-
-For grading, the income target is 100 times the latent income fraction;
-the incarceration target is minus 100 times the latent incarceration
-probability. Thus a target of −1 is more favorable than −4 on the
-incarceration panel. Larger values therefore receive higher priority for
-both oriented targets.
-
-`alabama$input` contains estimated probabilities of a wrong-direction
-comparison for every pair and each criterion, together with marginal
-means and 95% equal-tail posterior intervals for these same targets. The
-probabilities came from the selected numerical pool A. The original
-within-criterion draws retained dependence among counties, including
-dependence induced by shared model parameters.
-
-Separate criterion fits suffice for the weighted sum of expected losses,
-but do not identify the posterior probability of simultaneous
-improvement in both outcomes. The compact input contains probability
-tables and marginal summaries without chains, effective sample sizes or
-information for new Monte Carlo diagnostics. Report cards therefore
-require the supplied interval level explicitly; other interval levels
-cannot be recovered from these summaries.
+`alabama$input` is a `postrank_probabilities` object built from MCMC
+pool A (the primary `16,000`-draw MCMC run per criterion in the source
+study, compared with a second `8,000`-draw MCMC run, pool B, in the
+final section), storing the `67 x 67 x 2` directional-error
+probabilities together with 95% equal-tail marginal intervals
+(`level = 0.95`). Fitting the two criteria separately preserves
+within-criterion cross-county dependence and suffices for the additive
+weighted loss below, while leaving joint simultaneous-improvement
+probabilities and raw MCMC chains unavailable:
 
 ``` r
 
-posterior_means <- postrank_posterior_means(alabama$input, level = .95)
-posterior_means[show, ]
-#>        criterion
-#> entity    income incarceration
-#>   01003 38.84718    -2.2332325
-#>   01037 35.52763    -3.8426327
-#>   01041 40.39833    -0.6706353
-#>   01113 33.21921    -4.2114555
+posterior_means <- postrank_posterior_means(alabama$input)
+data.frame(
+  County = alabama$units$county_name[show],
+  round(posterior_means[show, ], 2),
+  row.names = NULL
+)
+#>            County income incarceration
+#> 1  Baldwin County  38.85         -2.23
+#> 2    Coosa County  35.53         -3.84
+#> 3 Crenshaw County  40.40         -0.67
+#> 4  Russell County  33.22         -4.21
 ```
 
-## Loss for the common grading
+## Two-criterion loss, grades, and criterion error rates
 
-The analysis assigns equal weights to income and incarceration, permits
-at most five grades and sets the loss for withholding a pair to .20:
+In this example, we weight directional errors on `income` and
+`incarceration` equally (`0.5` and `0.5`), set the unordered-pair cost
+to `tau = 0.20`, and allow up to `G_max = 5` grades:
 
 ``` r
 
 settings <- postrank_settings(
-  weights = c(income = .5, incarceration = .5),
-  tau = .20, G_max = 5L
+  weights = c(income = 0.5, incarceration = 0.5),
+  tau = 0.20, G_max = 5L
 )
 ```
 
-For each pair assigned different grades, the loss uses the weighted
-posterior probability that its announced direction is wrong. A pair in
-the same grade contributes `tau`. The reported risk averages these costs
-over all county pairs. Equal weights here give equal weight to the two
-error probabilities; they do not add income points to incarceration
-percentage points. Each county pair has equal weight.
-
-These settings express illustrative preferences rather than estimates
-from the Atlas. Increasing the withholding cost increases the loss
-assigned to an unordered comparison. The five-grade cap constrains the
-complete report while allowing solutions with fewer groups.
-
-The following optional calculation uses the settings of the prepared
-result and is not executed during article rendering:
+Equal weights average the directional-error probabilities across the two
+criteria rather than adding income percentile points to incarceration
+percentage points. Recomputing the grading requires a solver (Gurobi is
+the default and needs a license; `backend = "highs"` uses `highs` from
+`install.packages("highs")`). The solver call is shown below with
+`eval = FALSE`, and the stored result from an equivalent call is loaded
+with
+[`postrank_example()`](https://joonho112.github.io/postrank/reference/postrank_example.md):
 
 ``` r
 
 common <- postrank(
-  alabama$input, settings = settings, level = .95,
+  alabama$input, settings = settings, level = 0.95,
   backend = "highs",
   control = postrank_control(time_limit = 30, threads = 1L, seed = 1304L),
   fragility = FALSE
@@ -162,6 +148,7 @@ common <- postrank(
 
 ``` r
 
+common <- postrank_example("case_alabama67")
 common
 #> <postrank_analysis>  67 entities in 5 grades (sizes 1 / 31 / 32 / 1 / 2)
 #>   2 criteria: income, incarceration.
@@ -177,10 +164,10 @@ common
 #>     all grades.
 ```
 
-The common report occupies 5 grades, orders 1,249 of 2,211 county pairs
-(56.5%), and withholds the remaining 962 pairs. Its expected loss is
-0.150394, compared with .20 for withholding every pair. The groups are
-uneven:
+The common grading uses all `5` permitted grades (`1 / 31 / 32 / 1 / 2`
+counties), ordering `1,249` of the `2,211` county pairs (`56.5%`) and
+leaving `962` pairs unordered, with loss `0.150394` compared with
+`0.200000` for leaving all pairs unordered:
 
 ``` r
 
@@ -198,15 +185,10 @@ knitr::kable(grade_sizes, row.names = FALSE)
 | 4     |        1 |
 | 5     |        2 |
 
-The large middle grade reflects the selected loss and grade cap, which
-allow many within-group comparisons to remain withheld. Its membership
-has no interpretation as equality of county outcomes. The two outcomes
-can also support different comparison directions.
-
 ``` r
 
 profile <- get_profile(common)
-knitr::kable(profile[c("criterion", "E", "E_over_N", "risk")],
+knitr::kable(profile[, c("criterion", "E", "E_over_N", "risk")],
   digits = 4, row.names = FALSE,
   col.names = c("Criterion", "Expected wrong directions",
     "Errors per ordered pair", "Criterion loss"))
@@ -217,30 +199,24 @@ knitr::kable(profile[c("criterion", "E", "E_over_N", "risk")],
 | income | 64.9662 | 0.0520 | 0.1164 |
 | incarceration | 215.2747 | 0.1724 | 0.1844 |
 
-The denominator of the third column is the 1,249 ordered pairs. The
-income error rate is 5.2%, while incarceration’s is 17.2%. Equal loss
-weights do not imply equal expected error rates. The final column
-includes the cost of withheld pairs and therefore differs from the
-expected error rate among ordered pairs.
+Across the `1,249` ordered pairs, expected wrong-direction errors per
+ordered pair are `5.2%` (`0.0520`) on `income` and `17.2%` (`0.1724`) on
+`incarceration`. The solver finished with status `"optimal"` and
+optimization gap `1.11e-16`, which measures agreement between the
+checked grading and the solver’s lower bound on the pool-A probability
+array rather than Monte Carlo or model uncertainty.
 
-The prepared solve records optimal status and an absolute optimization
-gap of 1.11e-16. That gap compares a feasible grading’s loss with a
-numerical lower bound for the supplied pool-A probabilities. It does not
-measure posterior uncertainty, Monte Carlo error in those probabilities,
-or the model’s accuracy for the population.
+## Report card for selected counties
 
-## County posterior summaries and grades
-
-The figure displays 12 counties distributed across all five grades,
-using county names and the original units after the stated sign change.
-This selection concerns presentation only; all 67 counties enter the
-analysis. Setting `max_rows = NULL` includes every county and requires a
-taller saved figure. Alternatively, `entities` specifies county IDs for
-display.
+To keep county labels readable, `max_rows = 12` displays `12` counties
+spanning all `5` grades (all `67` counties enter the optimization and
+remain in `as.data.frame(common)`; pass `max_rows = NULL` on a tall
+canvas to plot every county):
 
 ``` r
 
-county_names <- setNames(alabama$units$county_name, alabama$units$entity_id)
+units_df <- alabama$units
+county_names <- setNames(units_df[["county_name"]], units_df[["entity_id"]])
 postrank_plot_report_card(common, max_rows = 12,
   entity_labels = county_names,
   criterion_labels = c(
@@ -250,35 +226,25 @@ postrank_plot_report_card(common, max_rows = 12,
 )
 ```
 
-![Selected counties from the full 67-county report. Points are posterior
-means and bars are supplied 95% equal-tail marginal intervals. Income is
-in percentile points; incarceration is negative percentage points. The
-intervals are conditional on the fitted model and are not simultaneous
-bands. Shared grades withhold
-comparisons.](a4-alabama-opportunity_files/figure-html/a4-report-card-1.png)
+![Two-panel horizontal dot-and-interval report card for 12 Alabama
+counties across grades 1 through 5 on income rank (percentile points)
+and lower incarceration (negative percentage
+points).](a4-alabama-opportunity_files/figure-html/a4-report-card-1.png)
 
-Selected counties from the full 67-county report. Points are posterior
-means and bars are supplied 95% equal-tail marginal intervals. Income is
-in percentile points; incarceration is negative percentage points. The
-intervals are conditional on the fitted model and are not simultaneous
-bands. Shared grades withhold comparisons.
+Posterior means and 95% equal-tail marginal intervals on adult income
+rank and negated incarceration rate for 12 selected Alabama counties
+across grades 1 to 5.
 
-Crenshaw County is the single county in grade 1. Its posterior mean
-income rank is 40.4 percentile points and its posterior mean
-incarceration probability is 0.67% on the original positive scale.
-Montgomery and Russell counties share grade 5; the report leaves their
-mutual comparison unordered. A grade number does not give the size of an
-outcome difference between counties.
+`Crenshaw County` (`"01041"`) is the sole county in grade `1`, with
+posterior mean adult income rank `40.4` percentile points and posterior
+mean incarceration rate `0.67%` (`-0.67` on the negated scale).
+`Montgomery County` (`"01101"`) and `Russell County` (`"01113"`) share
+grade `5`, so their mutual comparison is left unordered. Horizontal bars
+show 95% marginal intervals for each county’s target one county at a
+time rather than simultaneous bands or intervals for the integer grades.
 
-Within each panel, horizontal intervals describe posterior uncertainty
-in county targets. They do not represent uncertainty in grade labels.
-The grading uses pairwise probabilities to select a coherent ordered
-grouping across both criteria, so marginal interval overlap alone does
-not determine disclosure. A shared grade likewise makes no assertion
-that either interval contains the other county’s target value.
-
-County IDs are retained when names are used as display labels. The
-complete grade membership table is obtained without a new optimization:
+To build a full 67-county membership table with names and Census FIPS
+codes:
 
 ``` r
 
@@ -287,26 +253,27 @@ membership <- data.frame(
   county = unname(county_names[names(grades)]),
   grade = unname(grades)
 )
-membership[order(membership$grade, membership$county), ]
+head(membership[order(membership$grade, membership$county), ], 8)
+#>    county_id          county grade
+#> 21     01041 Crenshaw County     1
+#> 2      01003  Baldwin County     2
+#> 5      01009   Blount County     2
+#> 11     01021  Chilton County     2
+#> 12     01023  Choctaw County     2
+#> 13     01025   Clarke County     2
+#> 14     01027     Clay County     2
+#> 15     01029 Cleburne County     2
 ```
 
-## Comparison with outcome-specific reports
+## Comparing expected-rank cuts and single-outcome gradings
 
-The case includes archived income-only and incarceration-only grade
-vectors, called D1 and D2, plus an expected-rank cut rule called B3. B3
-fixes the order of counties using weighted expected ranks, then chooses
-the best contiguous grade boundaries in that order. Its optimization
-covers those boundaries; the common optimization can search beyond that
-fixed order.
-
-The common report and B3 have identical grades and pair relations in
-this example, and hence there is no improvement over B3. This agreement
-does not establish equivalence of the methods in other settings. In
-particular, a fixed-order optimization alone cannot provide a lower
-bound over all ordered groupings.
-
-The stored alternatives can be evaluated under the same two-criterion
-loss without further optimization:
+`alabama$reference$actions` stores single-criterion gradings optimized
+for income alone (`D1`) and incarceration alone (`D2`), an all-unordered
+vector (`B0`), and an expected-rank contiguous-cut rule (`B3`, which
+sorts counties by weighted expected rank and chooses optimal contiguous
+cutpoints along that fixed order). Below we evaluate all four fixed
+vectors on the two-criterion loss using
+[`postrank_compare()`](https://joonho112.github.io/postrank/reference/postrank_compare.md):
 
 ``` r
 
@@ -317,7 +284,7 @@ comparison <- postrank_compare(common,
   `Withhold all` = alabama$reference$actions$B0,
   baselines = character()
 )
-knitr::kable(comparison$table[c("method", "risk", "N", "G")],
+knitr::kable(comparison$table[, c("method", "risk", "N", "G")],
   digits = 6, row.names = FALSE,
   col.names = c("Report", "Two-criterion loss", "Ordered pairs", "Grades"))
 ```
@@ -330,47 +297,49 @@ knitr::kable(comparison$table[c("method", "risk", "N", "G")],
 | Incarceration alone |           0.199764 |          1572 |      5 |
 | Withhold all        |           0.200000 |             0 |      1 |
 
-The `joint` row is the prepared common result. The other rows evaluate
-supplied grade vectors; this call does not attach their historical
-solver bounds to the two-criterion loss. In particular, an income-only
-optimization bound concerns income’s objective, not the loss obtained by
-applying those grades to both outcomes.
-
 ``` r
 
 postrank_plot_compare(comparison)
 ```
 
-![All reports evaluated on pool A with weights .5/.5, withholding cost
-.20, and at most five grades. Supplied alternatives are evaluated
-actions, not new solves. The common report and expected-rank cuts
-coincide; withholding every pair has no defined error rate among ordered
-pairs.](a4-alabama-opportunity_files/figure-html/a4-comparison-plot-1.png)
+![Comparison plot showing identical two-criterion loss of 0.150394 for
+joint and Expected-rank cuts, 0.190573 for Income alone, 0.199764 for
+Incarceration alone, and 0.200000 for Withhold
+all.](a4-alabama-opportunity_files/figure-html/a4-comparison-plot-1.png)
 
-All reports evaluated on pool A with weights .5/.5, withholding cost
-.20, and at most five grades. Supplied alternatives are evaluated
-actions, not new solves. The common report and expected-rank cuts
-coincide; withholding every pair has no defined error rate among ordered
-pairs.
+Two-criterion loss (weights 0.5/0.5, tau = 0.20, G_max = 5) on pool A
+for the common grading and four fixed reference gradings.
 
-Each separate report can also be evaluated under its own criterion. The
-following table compares that loss with the corresponding criterion loss
-in the common report:
+In this dataset, the unrestricted common grading (`joint`) and the
+expected-rank cut rule (`B3`) produce identical grades and pair
+relations (loss `0.150394`, `1,249` ordered pairs), so joint
+mixed-integer programming (MIP) search offers zero loss reduction beyond
+`B3` here (while additionally supplying an unrestricted lower bound
+across all 5-grade groupings). Evaluating `D1` (`Income alone`) and `D2`
+(`Incarceration alone`) on the two-criterion loss gives `0.190573` and
+`0.199764`.
+
+Conversely, we can evaluate how much extra single-criterion loss the
+shared common grading incurs on each outcome relative to `D1` and `D2`
+on their own objectives:
 
 ``` r
 
 single <- alabama$reference$single_criterion
 single_loss <- vapply(seq_len(nrow(single)), function(i) {
-  criterion <- single$criterion[i]
+  crit <- single$criterion[i]
   postrank_evaluate(alabama$reference$actions[[single$method[i]]],
-    alabama$alternatives[[criterion]], weights = setNames(1, criterion),
-    tau = settings$tau)$primary_risk
+    alabama$alternatives[[crit]], weights = setNames(1, crit),
+    tau = 0.20)$primary_risk
 }, numeric(1))
 common_loss <- profile$risk[match(single$criterion, profile$criterion)]
-cost <- data.frame(Criterion = single$criterion,
-  Common = common_loss, Separate = single_loss,
+cost <- data.frame(
+  Criterion = single$criterion,
+  Common = common_loss,
+  Separate = single_loss,
   Difference = common_loss - single_loss,
-  Archived_gap = single$gap)
+  Archived_gap = single$gap
+)
 knitr::kable(cost, digits = 6, row.names = FALSE,
   col.names = c("Criterion", "Common loss", "Separate loss",
     "Extra loss for common grades", "Separate solver gap"))
@@ -381,106 +350,89 @@ knitr::kable(cost, digits = 6, row.names = FALSE,
 | income | 0.116403 | 0.061578 | 0.054824 | 0 |
 | incarceration | 0.184385 | 0.119857 | 0.064528 | 0 |
 
-The separate optimizations were recorded as optimal by postrank 0.9.0
-with HiGHS 1.12.0.3. Here their fixed grades are reevaluated and their
-archived bounds retained, without repeating the full optimizations. The
-differences quantify the loss incurred by requiring a common report
-instead of separate outcome-specific reports. Their equal-weight average
-is 0.059676. This quantity is expressed in loss units; it is neither a
-monetary cost nor a posterior credible interval. The separate reports
-are also not an admissible replacement when a single common grading is
-required.
+Requiring one shared grading across both outcomes adds `0.054824`
+expected loss on `income` (`0.116403` versus `0.061578`) and `0.064528`
+on `incarceration` (`0.184385` versus `0.119857`), for an equal-weight
+average extra loss of `0.059676` (measured in expected-loss units rather
+than dollars or posterior score intervals).
 
-## Numerical replication with fixed observations
+## Numerical replication across MCMC pools A and B
 
-Pool B is a separate numerical run using the same models and
-observations. The source retained 16,000 draws per criterion in A and
-8,000 in B. These are draw counts from the original runs; the package
-input contains the resulting summaries. Pool B assesses numerical
-integration without providing additional counties or independent
-observational replication.
-
-We evaluate the fixed pool-A grades under both probability inputs:
+`alabama$alternatives$pool_B` comes from a second MCMC run (`8,000`
+retained draws per criterion versus `16,000` in pool A) fitted to the
+exact same 67 county estimates and priors. Comparing pool A and pool B
+checks Monte Carlo integration stability without adding new data:
 
 ``` r
 
 ev_A <- postrank_evaluate(grades, alabama$input, settings = settings)
 ev_B <- postrank_evaluate(grades, alabama$alternatives$pool_B,
   settings = settings)
-pool_check <- data.frame(Pool = c("A", "B"),
+knitr::kable(data.frame(
+  Pool = c("A (16,000 draws)", "B (8,000 draws)"),
   Fixed_report_loss = c(ev_A$primary_risk, ev_B$primary_risk),
-  Ordered_pairs = c(ev_A$N, ev_B$N))
-knitr::kable(pool_check, digits = 6, row.names = FALSE)
+  Ordered_pairs = c(ev_A$N, ev_B$N)
+), digits = 6, row.names = FALSE)
 ```
 
-| Pool | Fixed_report_loss | Ordered_pairs |
-|:-----|------------------:|--------------:|
-| A    |          0.150394 |          1249 |
-| B    |          0.150342 |          1249 |
+| Pool             | Fixed_report_loss | Ordered_pairs |
+|:-----------------|------------------:|--------------:|
+| A (16,000 draws) |          0.150394 |          1249 |
+| B (8,000 draws)  |          0.150342 |          1249 |
 
-The loss changes by -0.000051; the number of ordered pairs stays fixed
-because the grade vector stays fixed. The source also reselected a
-report using B and recorded 0 changed pair relations relative to A. That
-is a descriptive numerical stability result. Selecting and evaluating on
-B would not make B an independent evaluation of the newly selected
-report.
+Evaluating the pool-A grading on pool B shifts the loss by `-0.000051`
+(`0.150394` to `0.150342`), and re-optimizing on pool B in the source
+study changed `0` of the `2,211` pair relations
+(`alabama$reference$relation_stability`). In the source chain
+diagnostics (`alabama$reference$numerical_pools`), pool B’s pairwise
+Monte Carlo standard errors (MCSEs) exceeded the `0.005` screen on `486`
+directional entries (maximum `0.005867`), while its chain-based MCSE for
+the fixed grading’s aggregate loss was `0.000096` (`9.62e-05`, below the
+`0.001` target): aggregate loss averages across `2,211` pairs and can be
+estimated much more precisely than individual borderline pairs. Pairs
+where all retained draws fell on one side (`0` or `1` frequencies) have
+zero sample variance across draws (so their chain MCSE is unavailable
+rather than proving posterior certainty), and agreement between pools A
+and B does not validate the model on external data.
 
-Pool B did not meet the sensitive-pair Monte Carlo standard-error target
-of .005 in 486 directional criterion rows; its maximum was 0.005867. The
-archived Monte Carlo standard error for the fixed common report’s pool-B
-loss was 0.0000962, which met the separate .001 fixed-risk target. Thus
-precision of the aggregate loss can be satisfactory even when some
-sensitive pair probabilities fail their precision criterion.
+## Substantive scope and data attribution
 
-Those standard errors were calculated from the original chains and are
-reported here from the source results. They are not recalculated from
-these summaries. Constant-trace pair standard errors were unavailable;
-estimated probabilities of zero or one are not proof of posterior
-certainty. Neither the numerical repetition nor the optimizer’s small
-gap validates the model against new observations.
+In this historical Alabama cohort, requiring one common grading across
+adult income and incarceration leaves `43.5%` of county pairs unordered,
+agrees with expected-rank contiguous cuts, and yields different expected
+error rates across the two outcomes (`5.2%` versus `17.2%`). Choosing
+between one common grading and separate outcome-specific gradings is a
+policy choice about what the report must communicate.
 
-## Interpretation and scope
-
-For these historical outcomes, the common grading withholds many county
-comparisons, has different expected error rates across outcomes and
-agrees with the expected-rank cut baseline. Separate reports address
-distinct single-outcome losses. The choice between these formulations is
-substantive: a lower risk under a different loss does not establish
-improvement for the original decision problem.
-
-Application to another setting requires specification of the population,
-target directions, posterior model and intended use of the common
-grading. The [posterior-input
-article](https://joonho112.github.io/postrank/articles/a5-your-posterior-results.md)
-describes input preparation, [reading and exporting
-results](https://joonho112.github.io/postrank/articles/a6-reading-exporting-results.md)
-documents the result tables, and [figures and sensitivity
-analysis](https://joonho112.github.io/postrank/articles/a7-figures-sensitivity.md)
-examines changes to settings and figure presentation. A smaller
-introductory example uses [one or several
-criteria](https://joonho112.github.io/postrank/articles/a1-getting-started.md).
-
-The data source is Raj Chetty, John Friedman, Nathaniel Hendren, Maggie
-R. Jones and Sonya R. Porter (2022), *Replication Data for: The
+Data attribution: Raj Chetty, John Friedman, Nathaniel Hendren, Maggie
+R. Jones, and Sonya R. Porter (2022), *Replication Data for: The
 Opportunity Atlas: Mapping the Childhood Roots of Social Mobility*,
-Harvard Dataverse, V1.0,
-[doi:10.7910/DVN/NKCQM1](https://doi.org/10.7910/DVN/NKCQM1). Source:
-Opportunity Insights and the U.S. Census Bureau. The selected [county
-CSV](https://opportunityinsights.org/wp-content/uploads/2018/10/county_outcomes_simple.csv)
-and documented derivatives are used under [CC BY
-4.0](https://creativecommons.org/licenses/by/4.0/). Changes include
-selecting Alabama, adding county identifiers and names, converting
-display units, reversing the incarceration direction, fitting separate
-posterior models, and preparing the probabilities and summaries used
-here. The grades and interpretation are this example’s analysis; no
-endorsement by the original authors or agencies is implied. These are
-the older historical county outcomes, distinct from a later policy-needs
-analysis with different directions and targets.
+Harvard Dataverse V1.0,
+[doi:10.7910/DVN/NKCQM1](https://doi.org/10.7910/DVN/NKCQM1); source:
+Opportunity Insights and the U.S. Census Bureau ([county
+CSV](https://opportunityinsights.org/wp-content/uploads/2018/10/county_outcomes_simple.csv)),
+used under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+Adaptations include filtering to Alabama, adding county identifiers and
+names, scaling units and negating incarceration, fitting separate
+hierarchical models, and extracting compact pairwise probabilities and
+95% intervals; no endorsement by the original authors or agencies is
+implied.
 
-[Posterior
-inputs](https://joonho112.github.io/postrank/articles/m3-posterior-inputs.md)
-specifies the probability information required by this loss. The
-[uncertainty
-article](https://joonho112.github.io/postrank/articles/m6-uncertainty-diagnostics.md)
-explains why a stable aggregate risk can coexist with less precise
-individual comparisons.
+## Where next
+
+- For a smaller introductory example, see [Getting started: grading with
+  one or two
+  criteria](https://joonho112.github.io/postrank/articles/a1-getting-started.md).
+- To prepare inputs from your own MCMC fits, read [Preparing your
+  posterior draws and comparison
+  probabilities](https://joonho112.github.io/postrank/articles/a5-your-posterior-results.md).
+- To export tables and customize plots, read [Reading and exporting
+  grading
+  results](https://joonho112.github.io/postrank/articles/a6-reading-exporting-results.md)
+  and [Figures and sensitivity to reporting
+  settings](https://joonho112.github.io/postrank/articles/a7-figures-sensitivity.md).
+- For the theory of posterior probability inputs and Monte Carlo
+  precision, see [Posterior representations and pairwise comparison
+  probabilities](https://joonho112.github.io/postrank/articles/m3-posterior-inputs.md)
+  and [Monte Carlo diagnostics, cross-fitting, and IID
+  bounds](https://joonho112.github.io/postrank/articles/m6-uncertainty-diagnostics.md).

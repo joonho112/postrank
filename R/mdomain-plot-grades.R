@@ -1,4 +1,4 @@
-# Grade views consume the frozen table prepared by .md_plot_prepare().
+# Grade views consume the table prepared by .md_plot_prepare().
 # Display columns are separate from the stored IDs and integer grades.
 .md_plot_grades <- function(data, title = NULL, base_size = 11) {
   if (is.null(title)) title <- "Domain grade report card"

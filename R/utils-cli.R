@@ -1,8 +1,8 @@
 # Null default (base R >= 4.4 has %||%; defined here for R 4.1-4.3).
 `%||%` <- function(x, y) if (is.null(x)) y else x
 
-# Console helpers (Chapter 13 SPEC-13.1-13.4). Every formatter returns a character
-# vector, has no side effect and recomputes nothing: it formats stored slots only.
+# Console formatting helpers. Every formatter returns a character vector,
+# has no side effect, and formats stored fields without recomputing results.
 
 .pr_cli_tier <- function(tier = NULL) {
   if (!is.null(tier)) {
@@ -29,7 +29,7 @@
   invisible(TRUE)
 }
 
-# Number policy (SPEC-13.3): risks/bounds 4 decimals; ratios/agreement 3; rates one-decimal
+# Display rounding: risks/bounds 4 decimals; ratios/agreement 3; rates one-decimal
 # percentages; gaps/tolerances/MCSE format(digits = 3); counts integer; NA verbatim.
 .pr_fmt <- function(x, kind = c("risk", "ratio", "pct", "gap", "count", "num")) {
   kind <- match.arg(kind)
@@ -78,7 +78,7 @@
     paste0(strrep(" ", indent), c(pieces[1L], if (length(pieces) > 1L) paste0("  ", pieces[-1L])))
   }), use.names = FALSE)
 }
-# Tier 1 adds ANSI styling only; ansi_strip(tier 1) == tier 2 byte for byte (T-ux-07).
+# Tier 1 adds ANSI styling only; ansi_strip(tier 1) == tier 2 byte for byte.
 .pr_cli_style <- function(lines, tier) {
   if (!identical(tier, 1L)) return(lines)
   vapply(lines, function(l) {
@@ -93,8 +93,8 @@
 }
 .pr_cli_finish <- function(lines, width, tier) .pr_cli_style(.pr_cli_wrap(lines, width), tier)
 
-# Contextual wording guard (SPEC-13.3): a lint aid for authored text, not a runtime filter.
-# Flags misleading affirmative statements; allows negations and stored identifiers.
+# Contextual wording guard: a lint check for authored documentation text, not a runtime filter.
+# Flags unqualified overclaims while allowing same-sentence negations and code identifiers.
 .pr_cli_guard <- function(text) {
   text <- tolower(paste(text, collapse = " "))
   text <- gsub("\\s+", " ", text)

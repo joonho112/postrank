@@ -1,11 +1,12 @@
 # Convert Stored Results to Tables
 
-The [`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html)
-methods return complete tables of stored results. For a fit, analysis or
-baseline, the default table has exactly two columns, `entity_id` and
-integer `grade`, in the original input order. Grade 1 has highest
-priority. A shared grade withholds the comparison without asserting
-equality of the latent targets.
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html) extracts
+complete data frames from stored `postrank` results without row limits
+or solver calls. For a `postrank_fit`, `postrank_analysis` or
+`postrank_baseline`, the default table has two columns, `entity_id` and
+integer `grade`, in input entity order. Grade 1 is the highest priority;
+entities sharing a grade are left unordered without claiming they are
+equal.
 
 ## Usage
 
@@ -34,19 +35,17 @@ as.data.frame(x, row.names = NULL, optional = FALSE, ...)
 - x:
 
   A `postrank_fit`, `postrank_analysis`, `postrank_baseline` or
-  `postrank_report_card`.
+  `postrank_report_card` object.
 
 - row.names:
 
-  Optional row names for the returned table; their length must match its
-  number of rows. `NULL` uses default row names.
+  Optional row names matching the number of returned rows, or `NULL` for
+  default row names.
 
 - optional:
 
-  Logical; accepted by the
-  [`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html)
-  generic. Basic table names are already valid R names; report-card
-  column names are retained.
+  Logical passed to
+  [`base::as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html).
 
 - ...:
 
@@ -54,37 +53,31 @@ as.data.frame(x, row.names = NULL, optional = FALSE, ...)
 
 - what:
 
-  For an analysis, either `"grades"` (default) or `"report_card"`.
-  Supply this argument by name.
+  For a `postrank_analysis`, `"grades"` (the default two-column table)
+  or `"report_card"` (the full stored report-card table). Pass by name.
 
 ## Value
 
-A data frame. The basic table has character `entity_id` and integer
-`grade` columns. The report-card table has all columns of the prepared
-card.
+A data frame: `data.frame(entity_id, grade)` (zero rows when `x` has no
+checked grading), or the full report-card table when `x` is a
+`postrank_report_card` or `what = "report_card"`.
 
 ## Details
 
-For an analysis, `what = "report_card"` selects the full prepared card,
-ordered by grade and then its recorded secondary key. Calling
-[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html) on a
-report card returns the same full table. The table retains raw entity
-IDs, regardless of labels used in a figure. Select rows or columns from
-the returned data frame using ordinary R indexing.
+`as.data.frame(analysis, what = "report_card")` and
+`as.data.frame(report_card)` return every entity row of the prepared
+report card, ordered by `grade` and then the card's secondary sort key,
+keeping raw `entity_id` values regardless of plot display labels.
+Requesting `what = "report_card"` when `analysis$report_card` is `NULL`
+stops with `report_card_unavailable`.
 
-A fit or analysis without a validated grade returns zero rows with the
-basic column types; it does not substitute an all-withheld grade. A
-request for an unavailable card gives an explanatory error. Conversion
-does not solve a problem, evaluate a grade or compute missing summaries.
-Unlike a shortened console display or a plot with a row limit, table
-conversion includes every available row and has no paging limit.
-
-**Migration to 1.0:** an analysis previously returned its full report
-card by default when available. The default now always returns the basic
-grade table. Use `as.data.frame(analysis, what = "report_card")` for the
-former report-card output. CSV preserves a table; RDS preserves the
-complete object, including settings and solver qualifications, for later
-views.
+Unlike console printing or plot row limits,
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html) always
+returns all available rows. Note that before postrank 1.0,
+`as.data.frame(analysis)` returned the report card when present; pass
+`what = "report_card"` to obtain that table. Saving to CSV exports a
+table, whereas [`saveRDS()`](https://rdrr.io/r/base/readRDS.html)
+preserves the full object with its settings, bounds and warnings.
 
 ## See also
 
@@ -96,19 +89,24 @@ views.
 ## Examples
 
 ``` r
-if (requireNamespace("highs", quietly = TRUE)) {
-  one <- postrank(pr_tutorial$one, tau = .2, G_max = 3L, backend = "highs",
-    control = postrank_control(time_limit = 10), fragility = FALSE)
-  grades <- as.data.frame(one)
-  card <- as.data.frame(one, what = "report_card")
-  grades
-  card[, c("entity_id", "grade", "mean_score_A", "lower_score_A", "upper_score_A")]
-  csv <- tempfile(fileext = ".csv")
-  rds <- tempfile(fileext = ".rds")
-  write.csv(grades, csv, row.names = FALSE)
-  saveRDS(one, rds)
-  identical(read.csv(csv), grades)
-  identical(as.data.frame(readRDS(rds)), grades)
-  unlink(c(csv, rds))
-}
+one <- postrank_example("tutorial_one")
+grades <- as.data.frame(one)
+grades
+#>   entity_id grade
+#> 1         A     1
+#> 2         B     1
+#> 3         C     2
+#> 4         D     2
+#> 5         E     3
+#> 6         F     3
+
+card <- as.data.frame(one, what = "report_card")
+card[, c("entity_id", "grade", "mean_score_A", "lower_score_A", "upper_score_A")]
+#>   entity_id grade mean_score_A lower_score_A upper_score_A
+#> 1         A     1         1.20    0.87102927     1.5289707
+#> 2         B     1         0.95    0.62102927     1.2789707
+#> 3         C     2         0.25   -0.07897073     0.5789707
+#> 4         D     2         0.15   -0.17897073     0.4789707
+#> 5         E     3        -0.50   -0.82897073    -0.1710293
+#> 6         F     3        -0.80   -1.12897073    -0.4710293
 ```

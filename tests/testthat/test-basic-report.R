@@ -6,7 +6,7 @@ testthat::test_that("basic report makes all-tie abstention and undefined conditi
   testthat::expect_equal(report$disclosure$N,0)
   testthat::expect_true(all(is.na(report$criterion_profile$error_per_disclosed_pair)))
   testthat::expect_equal(report$objective$risk_upper_bound,.25)
-  # 0.9.0 D-7 migration: the inherited Korean assertion becomes its English semantic replacement.
+  # Verify English section headings in the generated HTML report.
   testthat::expect_match(paste(capture.output(print(report)),collapse="\n"),"All comparisons withheld")
 })
 testthat::test_that("no-incumbent report exposes absence instead of invented grade or zero risk",{
@@ -15,6 +15,6 @@ testthat::test_that("no-incumbent report exposes absence instead of invented gra
   report<-postrank_report(.pr_normalize_solver_result(p,raw,.pr_control()))
   testthat::expect_null(report$grade);testthat::expect_null(report$disclosure)
   testthat::expect_true(is.na(report$objective$risk_upper_bound))
-  # 0.9.0 D-7 migration: the inherited Korean assertion becomes its English semantic replacement.
+  # Verify English diagnostic unavailability text in the generated HTML report.
   testthat::expect_match(paste(capture.output(print(report)),collapse="\n"),"No validated grades")
 })

@@ -40,7 +40,7 @@ testthat::test_that("offline HTML preserves NA, abstention, provenance and refus
   r<-postrank_report(f,z,file)
   testthat::expect_true(file.exists(r$output_file))
   html<-paste(readLines(file,warn=FALSE),collapse="\n")
-  # 0.9.0 D-7 migrations: inherited Korean HTML assertions -> English semantic replacements.
+  # Verify English section text in HTML reports built with diagnostic summaries.
   testthat::expect_match(html,"All comparisons withheld",fixed=TRUE)
   testthat::expect_match(html,"E/N is NA",fixed=TRUE)
   testthat::expect_match(html,"post-selection",fixed=TRUE)

@@ -1,9 +1,11 @@
 # One or Two Criteria for Six Fictional Sites
 
-This Gaussian example illustrates the disclosure and withholding of
-pairwise comparisons through integer grades. All means and variances are
-specified directly, so the posterior laws are illustrative rather than
-fitted to observations.
+`pr_tutorial` is a synthetic normal-posterior dataset for six fictional
+sites (`A` through `F`) on one criterion (`score_A`) or two criteria
+(`score_A` and `score_B`). All means and standard deviations are
+specified directly rather than fitted to real data, providing the
+introductory examples used in
+[`vignette("a1-getting-started", package = "postrank")`](https://joonho112.github.io/postrank/articles/a1-getting-started.md).
 
 ## Format
 
@@ -11,47 +13,50 @@ A named list with four elements:
 
 - one:
 
-  A `postrank_coefficients` input with one criterion, `score_A`, for
-  sites A through F.
+  A `postrank_coefficients` object with one criterion (`score_A`) for
+  sites `A` through `F`.
 
 - two:
 
-  A `postrank_coefficients` input for the same six sites with `score_A`
-  and `score_B`. The law of `score_A` is identical to that in `one`.
+  A `postrank_coefficients` object for the same six sites on `score_A`
+  and `score_B`, keeping the exact same marginal distribution for
+  `score_A` as `one`.
 
 - units:
 
-  Site IDs and display labels in input order.
+  Data frame of site IDs and display labels in input order.
 
 - law:
 
-  The fixed means, covariance matrices, conditioning statement,
-  direction, units and maintainer source information.
+  List of the specified means, covariance matrices, conditioning note,
+  priority direction, units and construction metadata.
 
 ## Source
 
-Maintainer-created synthetic law in `data-raw/pr-tutorial-law.json`; no
-external observations.
+Synthetic normal distribution specified in
+`data-raw/pr-tutorial-law.json`; no external data.
 
 ## Details
 
-Each site has a bivariate normal law. Both marginal standard deviations
-are 0.2. The two criteria are independent within each site, and sites
-are independent. Higher values have higher priority on both criteria.
-Scores are in illustrative standardized units with no empirical
-calibration. Continuous normal laws have zero equality probability.
+Each site follows an independent bivariate normal distribution with
+marginal standard deviations `0.2` and zero within-site correlation
+between `score_A` and `score_B`. Larger values mean higher priority on
+both criteria, and distinct sites have zero probability of exact
+equality.
 
-Analytic comparison probabilities and marginal summaries are calculated
-from the same specified law. The example contains no draws, fitted-model
-uncertainty or Monte Carlo diagnostics. Addition of the second criterion
-changes the decision problem while retaining the first criterion's
-marginal law.
+Pairwise comparison probabilities and marginal summaries come
+analytically from the normal distribution, so `pr_tutorial` contains no
+posterior draws or Monte Carlo error. Stored grading results for
+`pr_tutorial$one` and `pr_tutorial$two` are available through
+`postrank_example("tutorial_one")` and
+`postrank_example("tutorial_two")`.
 
 ## See also
 
-[`vignette("a1-getting-started", package = "postrank")`](https://joonho112.github.io/postrank/articles/a1-getting-started.md),
+[`postrank_example()`](https://joonho112.github.io/postrank/reference/postrank_example.md),
 [`postrank_gaussian_coefficients()`](https://joonho112.github.io/postrank/reference/postrank_gaussian_coefficients.md),
-[`postrank()`](https://joonho112.github.io/postrank/reference/postrank.md)
+[`postrank()`](https://joonho112.github.io/postrank/reference/postrank.md),
+[`vignette("a1-getting-started", package = "postrank")`](https://joonho112.github.io/postrank/articles/a1-getting-started.md)
 
 ## Examples
 
@@ -61,15 +66,6 @@ names(pr_tutorial)
 pr_tutorial$one
 #> <postrank_coefficients>  6 entities under a declared conditional law
 #>   One criterion: score_A.
-#>   Gaussian comparison probabilities and marginal summaries are available.
-#>   Supported decisions use weighted loss and an upper limit on grades. Target
-#>     draws, q constraints, exact grade counts and minimax decisions are
-#>     unsupported here.
-#>   i summary(x, details = TRUE) retains the conditional-law declarations and
-#>     source records.
-pr_tutorial$two
-#> <postrank_coefficients>  6 entities under a declared conditional law
-#>   2 criteria: score_A, score_B.
 #>   Gaussian comparison probabilities and marginal summaries are available.
 #>   Supported decisions use weighted loss and an upper limit on grades. Target
 #>     draws, q constraints, exact grade counts and minimax decisions are

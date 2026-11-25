@@ -1,11 +1,10 @@
 # Evaluate the Posterior Loss of Supplied Grades
 
-Disclosed comparisons, expected directional errors and loss are
-calculated for an existing grade vector without optimization. Smaller
-grades indicate higher priority. Equal grades withhold a direction
-without asserting equality of the latent targets. The resulting
-quantities are conditional on the supplied posterior probabilities and
-chosen loss.
+`postrank_evaluate()` computes the ordered pair count, posterior
+expected wrong-order errors and posterior expected loss for a supplied
+integer grade vector, without running an optimization solver. Grade 1 is
+the highest priority; entities given the same grade are left unordered
+without claiming they are equal.
 
 ## Usage
 
@@ -25,86 +24,96 @@ postrank_evaluate(
 
 - grade:
 
-  Numeric vector of positive integer grades, named in exactly the
-  input's entity order. Occupied labels are renumbered consecutively.
+  Positive integer vector named in the exact `entity_ids` order of
+  `pairwise`. Occupied grade numbers are renumbered to `1, ..., G` by
+  [`canonical_postrank_grade()`](https://joonho112.github.io/postrank/reference/canonical_postrank_grade.md).
 
 - pairwise:
 
-  A `postrank_pairwise`, `postrank_coefficients`, or
+  Pairwise directional-error probabilities: a `postrank_pairwise`,
+  `postrank_coefficients` or
   [`postrank_probabilities()`](https://joonho112.github.io/postrank/reference/postrank_probabilities.md)
-  object. Gaussian/mixture coefficients and supplied probabilities
-  currently support weighted expected risk only.
+  object. Normal/mixture posteriors and supplied probabilities support
+  only `objective = "weighted"` without `minimax_criteria`.
 
 - weights:
 
-  Nonnegative finite criterion-named weights summing to one. Supply
-  every criterion exactly once, including weight 1 for a single
-  criterion, unless using `settings`. Weights are not normalized
+  Nonnegative finite weights summing to one within `1e-12`, uniquely
+  named by criterion (covering every criterion once, including weight
+  `1` for one criterion). Omit when passing `settings`; never rescaled
   automatically.
 
 - tau:
 
-  Cost of a withheld comparison, with `0 < tau <= 0.5`.
+  Cost of leaving a pair unordered (`0 < tau <= 0.5`). Omit when passing
+  `settings`.
 
 - objective:
 
-  `"weighted"` or `"minimax"`. The latter uses the largest expected
-  criterion risk, not an expectation of statewise maximum loss.
+  `"weighted"` (the default) or `"minimax"`. Minimax uses the largest
+  posterior expected criterion loss among the selected criteria, not the
+  expected statewise maximum.
 
 - minimax_criteria:
 
-  Optional nonempty criterion subset for minimax; `NULL` uses all
-  criteria. Only allowed with `objective = "minimax"`.
+  Optional character vector of criterion IDs included when
+  `objective = "minimax"` (`NULL` uses all criteria). Must be `NULL`
+  when `objective = "weighted"`.
 
 - settings:
 
   Optional
   [`postrank_settings()`](https://joonho112.github.io/postrank/reference/postrank_settings.md)
-  supplying weights, tau, objective and minimax criteria instead of the
-  separate arguments. Explicitly supplying both is a `settings_conflict`
-  error.
+  object supplying `weights`, `tau`, `objective` and `minimax_criteria`
+  instead of separate arguments; supplying both stops with
+  `settings_conflict`.
 
 ## Value
 
-An unclassed list with the canonical `grade`, occupied count `G`, total
-unordered pairs `M`, disclosed pairs `N`, and directed disclosure matrix
-`x`. `disclosure_rate = N/M` and `abstention_rate = (M-N)/M`.
-Criterion-named `E`, `E_over_M`, `E_over_N` and `criterion_risk` give
-expected error counts, their two normalizations and loss including
-withholding. `weighted_risk`, `minimax_risk` and `primary_risk`
-distinguish the weighted, largest selected-criterion and requested
-objectives. `weighted_raw_objective = sum(weights * E) - tau * N` is in
-centered raw units. `objective`, `minimax_criteria`, `settings`,
-`schema_version` and input/pairwise identities record what was
-evaluated.
+An unclassed named list containing:
+
+- `grade` and `G`: the renumbered integer grades (`1, ..., G`) and
+  number of occupied grades;
+
+- `M`, `N`, `x`, `disclosure_rate` (`N / M`) and `abstention_rate`
+  (`(M - N) / M`): total unordered pairs, ordered (`disclosed`) pairs,
+  the `n x n` logical ordering matrix (`x[i, j]` is `TRUE` when
+  `grade[i] < grade[j]`), and pair fractions;
+
+- `E`, `E_over_M`, `E_over_N` and `criterion_risk`: criterion-named
+  expected wrong-order pair counts, counts divided by `M` and by `N`
+  (`NA` when `N = 0`), and per-criterion loss
+  `(E_k + tau * (M - N)) / M`;
+
+- `weighted_risk`, `minimax_risk`, `primary_risk` and
+  `weighted_raw_objective` (`sum(weights * E) - tau * N`);
+
+- `objective`, `minimax_criteria`, `settings`, `schema_version`,
+  `input_identity` and `pairwise_identity`.
 
 ## Details
 
-For criterion k, risk is `(E_k + tau * (M - N)) / M`. When all
-comparisons are withheld, N=0, conditional error ratios `E_over_N` are
-`NA`, and risk is tau. This is a valid action, distinct from a solve
-with no validated grade.
-
-Evaluation does not check membership in a grade-cap, exact-grade or
-error-budget family, even when those restrictions appear in `settings`.
-Use
+When every entity is given the same grade (`G = 1`), `N = 0`, `E_over_N`
+is `NA`, and every criterion's loss equals `tau`. `postrank_evaluate()`
+scores any valid grade vector; it does not check whether `grade`
+satisfies `G_max`, `exact_G` or `q` constraints in `settings` (see
 [`postrank_problem()`](https://joonho112.github.io/postrank/reference/postrank_problem.md)
-to specify that family;
-[`postrank_compare()`](https://joonho112.github.io/postrank/reference/postrank_compare.md)
-records membership separately when comparing actions.
+and
+[`postrank_compare()`](https://joonho112.github.io/postrank/reference/postrank_compare.md)).
 
 ## See also
 
 [`postrank_problem()`](https://joonho112.github.io/postrank/reference/postrank_problem.md),
 [`postrank_settings()`](https://joonho112.github.io/postrank/reference/postrank_settings.md),
-[`get_profile()`](https://joonho112.github.io/postrank/reference/get_profile.md)
+[`get_profile()`](https://joonho112.github.io/postrank/reference/get_profile.md),
+[`canonical_postrank_grade()`](https://joonho112.github.io/postrank/reference/canonical_postrank_grade.md)
 
 ## Examples
 
 ``` r
 grade <- c(A = 1L, B = 1L, C = 2L, D = 2L, E = 3L, F = 3L)
 ev <- postrank_evaluate(grade, pr_tutorial$one,
-  weights = c(score_A = 1), tau = .2)
+  weights = c(score_A = 1), tau = 0.2)
 ev[c("N", "M", "E_over_N", "primary_risk")]
 #> $N
 #> [1] 12
@@ -119,8 +128,9 @@ ev[c("N", "M", "E_over_N", "primary_risk")]
 #> $primary_risk
 #> [1] 0.04165164
 #> 
+
 held <- postrank_evaluate(setNames(rep(1L, 6), names(grade)),
-  pr_tutorial$one, weights = c(score_A = 1), tau = .2)
+  pr_tutorial$one, weights = c(score_A = 1), tau = 0.2)
 held[c("N", "E_over_N", "primary_risk")]
 #> $N
 #> [1] 0

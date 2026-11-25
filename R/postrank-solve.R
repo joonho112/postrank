@@ -1,110 +1,139 @@
 #' Find Grades and Report Their Optimization Bounds
 #'
-#' A grading is sought within the family specified by [postrank_problem()].
-#' Returned grades must satisfy an independent feasibility check. The fit
-#' retains the candidate, its directly recomputed posterior risk, the reported
-#' lower bound and the termination status. These records distinguish the
-#' available action from the numerical conclusions about optimality.
+#' `postrank_solve()` solves an optimization problem built by
+#' [postrank_problem()], checks any candidate grading independently with
+#' [validate_postrank_solution()], and returns the checked grades, recomputed
+#' posterior expected loss, lower bound and solver status.
 #'
-#' @param problem A `postrank_problem` specifying the supplied probabilities,
-#'   loss, grade limit and any supported error-budget or exact-count constraints.
-#' @param backend `NULL` (default), `"gurobi"` or `"highs"`. An explicit choice
-#'   takes precedence; otherwise `getOption("postrank.backend")` is used, then Gurobi if unset.
-#'   The chosen name and source (`"explicit"`, `"option"` or `"default"`) are
-#'   recorded in `fit$backend`. HiGHS must be chosen explicitly or through the
-#'   option. A missing, failed or timed-out backend is never replaced automatically.
-#' @param control A [postrank_control()] object or named list of time, thread,
-#'   seed, gap and tolerance controls. `engine` contains staged-search options.
-#'   Package progress messages and native solver logs have separate switches.
-#' @param strategy `NULL` uses `control$strategy`, or `"staged"` if absent.
-#'   An explicit `"staged"` or `"label_mip"` overrides the control object's choice.
-#' @return A `postrank_fit`. `incumbent_validated` identifies whether `grade`
-#'   and `evaluation` are available; `solution_validation` retains the independent
-#'   check. `status` contains `raw_code`, `raw_message`, `normalized` and
-#'   `termination_reason`. `objective` contains `primary_action_risk`,
-#'   `risk_upper_bound`, `risk_lower_bound`, `risk_absolute_gap`, raw objective
-#'   values and their conversion, and the `bound_source`.
-#'   `problem`, `settings`, `backend`, `engine`, warnings and numerical issues
-#'   preserve the calculation's context. Minimax refinement adds `minimax_refine`.
-#' @section Candidate feasibility and optimization bounds:
-#'   A validated candidate's recomputed primary risk is the upper bound U.
-#'   A usable lower bound L concerns the whole declared problem; the absolute
-#'   risk gap is U-L. For minimax, U is the grade's largest included criterion
-#'   risk, not a possibly slack auxiliary variable. A weighted raw gap must be
-#'   converted using `R = tau + Z/M`; a raw relative gap is not the same as a
-#'   relative gap in risk.
+#' Solving requires an optimization solver. HiGHS is free: install the `highs`
+#' package (`install.packages("highs")`) and pass `backend = "highs"` or set
+#' `options(postrank.backend = "highs")`. Gurobi (the default when no solver is
+#' specified) is commercial software requiring a license. `postrank` never
+#' switches solvers on its own.
 #'
-#'   `optimal` is a numerical conclusion subject to recorded gap controls and
-#'   tolerances. A backend's optimal label becomes `feasible_not_certified`
-#'   if a valid candidate lacks a usable bound or has an excessive gap.
-#'   A `time_limit` result may
-#'   or may not contain a validated grade. With no validated grade, action risk
-#'   and gap are unavailable, even if a useful lower bound remains. This is
-#'   different from a valid one-grade report withholding all comparisons.
+#' @param problem A `postrank_problem` object created by [postrank_problem()].
+#' @param backend Solver to use, `"gurobi"` or `"highs"`. If `NULL` (the
+#'   default), `getOption("postrank.backend")` is used, or `"gurobi"` if unset.
+#'   The chosen solver and how it was selected (`"explicit"`, `"option"` or
+#'   `"default"`) are recorded in `fit$backend`. If the chosen solver is not
+#'   installed, cannot be loaded, or throws an uncaught R execution error (such
+#'   as a missing Gurobi license under `strategy = "label_mip"` or LP setup),
+#'   the call stops with an error.
+#' @param control Solver controls from [postrank_control()] or a named list of
+#'   options (`time_limit`, `threads`, `seed`, `absolute_risk_gap`,
+#'   `relative_gap`, `strategy`, `engine`, `verbose`, `output`, `tolerances`).
+#' @param strategy Search method, `"staged"` or `"label_mip"`. If `NULL` (the
+#'   default), `control$strategy` is used, or `"staged"` when `control` is a
+#'   list without `strategy`. A non-`NULL` `strategy` overrides
+#'   `control$strategy`.
+#' @returns A `postrank_fit` object, a list containing:
+#'   * `has_incumbent` and `incumbent_validated`: whether the solver returned a
+#'     candidate grading ("incumbent"), and whether it passed
+#'     [validate_postrank_solution()];
+#'   * `grade`, `evaluation` and `relations`: the checked integer grade vector,
+#'     its loss summary from [postrank_evaluate()] and its pairwise relation
+#'     matrix, each `NULL` when `incumbent_validated` is `FALSE`;
+#'   * `solution_validation`: the [validate_postrank_solution()] record;
+#'   * `status`: list with `raw_code`, `raw_message`, `normalized`
+#'     (`"optimal"`, `"feasible_not_certified"`, `"time_limit"`,
+#'     `"infeasible"`, `"unbounded"`, `"numerical_error"` or `"unknown"`) and
+#'     `termination_reason`;
+#'   * `objective`: list with `primary_action_risk` (upper bound `U`),
+#'     `risk_upper_bound`, `risk_lower_bound` (`L`, a loss no feasible grading
+#'     can beat up to solver and floating-point tolerances), `risk_absolute_gap`
+#'     (`U - L`), raw objective values and `bound_source`;
+#'   * `problem`, `settings`, `backend`, `engine`, `runtime`, `raw_solution`,
+#'     `raw_backend_result`, `warnings`, `numerical_issues`, `input_identity`,
+#'     `problem_identity`, `solution_identity` and `schema_version`;
+#'   * `minimax_refine`: refinement record when
+#'     `problem$settings$objective == "minimax"` (stage-by-stage results when
+#'     `minimax_refine = "weighted"`, or `list(mode = "none", applied = FALSE)`
+#'     when `minimax_refine = "none"`).
+#' @section Optimization status and bounds:
+#'   The solver's `status`, `risk_lower_bound` and `risk_absolute_gap` describe
+#'   optimization over the supplied pairwise probabilities up to solver and
+#'   floating-point tolerances (they are not exact numerical certificates,
+#'   posterior uncertainty intervals, Monte Carlo error bounds, or proof that
+#'   the optimal grading is unique). For weighted problems, raw solver
+#'   objectives `Z` convert to normalized loss via `R = tau + Z / M`, so a raw
+#'   `relative_gap` on centered `Z` differs from a relative gap in `R`; for
+#'   minimax problems, `U` is the grade's recomputed largest selected criterion
+#'   loss rather than a possibly slack auxiliary variable. In returned fields
+#'   and printed output, `"risk"` means posterior expected loss, `"disclosed"`
+#'   means ordered pairs, and `"withheld"` means unordered pairs.
 #'
-#'   Inconsistent bounds can be rejected while independently validated grades
-#'   remain available. Small bound inversions within the recorded objective
-#'   tolerance may instead be clamped with a warning. Inspect `bound_source`,
-#'   numerical issues and warnings; these are not exact numerical certificates,
-#'   posterior uncertainty intervals, or proof of a unique optimal grade.
+#'   For a solver-reported `"optimal"` result, a checked grading and a usable
+#'   lower bound must meet the gap tolerances. A valid grading with a missing
+#'   bound or a gap above tolerance gives `"feasible_not_certified"` when the
+#'   numerical checks otherwise pass. A missing or invalid grading, or a serious
+#'   numerical inconsistency, gives `"numerical_error"`. Check `incumbent_validated`
+#'   before interpreting the grades. Invalid `problem`, `control` or
+#'   `backend` arguments, an unavailable solver, and uncaught solver execution
+#'   errors (such as `"label_mip"` or LP setup failing without an active Gurobi
+#'   license) stop the call. Read `fit$status` for the overall outcome, including
+#'   infeasibility, a time limit, or numerical termination. In staged search,
+#'   caught LP round errors appear in `fit$engine$stages$lp$status` and its
+#'   `trace`. A caught final MIP error appears in `fit$engine$stages$mip$error`
+#'   and `fit$warnings`. When
+#'   a time limit ends without a checked grading, `grade` and `evaluation` are
+#'   `NULL` (`risk_absolute_gap = NA`), which is distinct from a valid
+#'   one-grade report leaving all pairs unordered (loss `tau`). Small bound
+#'   inversions (`L > U`) within the objective tolerance are clamped to `U`
+#'   with a warning; larger inversions exclude the bound (`risk_lower_bound = NA`).
 #'
 #' @section Search strategies:
-#'   `"label_mip"` sends the integer-label model to the selected backend.
-#'   `"staged"` first constructs candidates using contiguous cuts of several
-#'   priority orders and local search. It then solves a linear relaxation with
-#'   comparison constraints, including separated triangle inequalities and
-#'   disclosure-count bounds implied by the grade limits. This can bound the
-#'   full problem even though the initial candidate searches use fixed orders.
-#'   If a gap remains and the size/settings permit, it runs a strengthened
-#'   label MIP. Gurobi can use the candidate as a MIP start.
+#'   `"staged"` (the default) first builds candidate gradings from contiguous
+#'   cuts along priority orders and local search, then solves a linear
+#'   programming (LP) relaxation with separated triangle inequalities
+#'   (transitivity constraints on pairwise orderings) and grade-count bounds
+#'   (limits on how many pairs `G_max` or `exact_G` can order) to obtain a
+#'   whole-problem lower bound `L`, and finally runs a strengthened
+#'   mixed-integer program (MIP) if a gap remains and `engine$mip` allows it
+#'   (passing the best candidate to Gurobi as an initial starting grading).
+#'   `"label_mip"` sends the integer-label MIP directly to the solver. Model
+#'   construction, validation and refinement add overhead, so `time_limit` is
+#'   not a strict wall-clock cap on the whole R call.
 #'
-#'   Staged-search defaults in `control$engine` are `local_search_passes = 20`,
-#'   `local_search_starts = 5`, `max_cut_rounds = 60`, `cuts_per_round = NULL`
-#'   (meaning `max(200, 10 * n)`), `lp_time_share = .5`, `mip = "auto"` and
-#'   `mip_max_n = 200`. `mip` may also be `"always"` or `"never"`; `"auto"`
-#'   runs the MIP only up to `mip_max_n`. With a possible MIP stage, the LP gets
-#'   `lp_time_share` of the remaining budget. Otherwise it can use the remainder
-#'   less a reserve for candidate construction and validation: the largest of
-#'   one second, 1% of the time limit and twice the initial candidate-stage time.
-#'   It receives at least the usual LP share. `fit$engine$stages` records what
-#'   ran, including the LP `time_budget` and `time_budget_rule`.
+#'   Defaults in `control$engine` are `local_search_passes = 20L`,
+#'   `local_search_starts = 5L`, `max_cut_rounds = 60L`, `cuts_per_round = NULL`
+#'   (`max(200, 10 * n)`), `lp_time_share = 0.5`, `mip = "auto"` (`"auto"`,
+#'   `"always"` or `"never"`) and `mip_max_n = 200L` (`"auto"` runs the MIP
+#'   stage when `n <= mip_max_n`). When the MIP stage may run, the LP gets
+#'   `lp_time_share` of the remaining time; otherwise it gets the remaining
+#'   time minus a reserve (`max(1, 0.01 * time_limit, 2 * elapsed_candidate_stage)`
+#'   seconds), never less than `lp_time_share` of the remaining time.
+#'   `fit$engine$stages` records each stage that ran.
 #'
-#' @section Interpretation of minimax refinement:
-#'   With `minimax_refine = "weighted"`, the first stage minimizes the largest
-#'   selected criterion risk. A second stage minimizes the original weighted
-#'   risk while retaining the first-stage criterion caps. If any weight is zero,
-#'   a third stage minimizes uniform criterion risk while also retaining a cap
-#'   on the original weighted objective. No weight perturbation is used.
-#'   Centered/scaled internal calculations retain the original public risk units.
-#'
-#'   Stage 1 receives three quarters of the time budget. Refinement shares
-#'   the remainder, with at least one second in total after stage 1; with zero
-#'   weights, stage 2 initially receives half and stage 3 the time left.
-#'   Heuristic fallbacks share their stage's deadline. Construction and
-#'   validation add overhead, so `time_limit` is not a strict wall-clock bound.
-#'   The final primary status and lower bound come from stage 1 and are checked
-#'   against the released action. A candidate that breaches primary caps or
-#'   worsens the original weighted objective beyond machine rounding is excluded.
-#'
-#'   `fit$minimax_refine` records stage results, budgets and the released action.
-#'   `lexicographic_certified` requires primary and original-weighted
-#'   certification for that action; `pareto_certified` also requires the
-#'   zero-weight third stage when applicable. These flags remain subject to
-#'   solver gaps and floating-point tolerances. Skipped or uncertified refinement
-#'   is reported with a warning when a first-stage action is available.
-#'   `minimax_refine = "none"` keeps the first-stage action.
-#'   `fit$backend$options` retains the first-stage options.
-#' @seealso [postrank_problem()], [postrank_control()],
+#' @section Minimax refinement:
+#'   When `objective = "minimax"` and `minimax_refine = "weighted"`, stage 1
+#'   (given `3/4` of `time_limit`) minimizes the largest selected criterion
+#'   loss. Stage 2 minimizes the weighted loss subject to keeping the stage-1
+#'   minimax cap; if any criterion has weight `0`, stage 3 minimizes the
+#'   uniform average criterion loss while keeping both caps (splitting the
+#'   remaining time, at least 1 second total after stage 1). Weights are never
+#'   perturbed, and any candidate that violates earlier caps beyond rounding is
+#'   discarded. Top-level `fit$status$normalized` and
+#'   `fit$objective$risk_lower_bound` come from stage 1; skipped or uncertified
+#'   later stages record a warning in `fit$warnings`. In `fit$minimax_refine`,
+#'   `lexicographic_certified` indicates that both stage-1 minimax loss and
+#'   stage-2 weighted loss met optimality tolerances, and `pareto_certified`
+#'   requires stage-3 zero-weight refinement as well when applicable (both
+#'   subject to solver gaps and floating-point tolerances).
+#' @seealso [postrank()], [postrank_problem()], [postrank_control()],
 #'   [validate_postrank_solution()], [get_risk()]
 #' @examples
+#' # Inspect the fit inside a stored example without running a solver:
+#' stored_fit <- postrank_example("tutorial_one")$fit
+#' stored_fit$status$normalized
+#' get_risk(stored_fit)
+#' @examplesIf requireNamespace("highs", quietly = TRUE)
+#' # Solve a problem directly with the optional highs package:
 #' problem <- postrank_problem(pr_tutorial$one, weights = c(score_A = 1),
-#'   tau = .2, G_max = 3L)
-#' if (requireNamespace("highs", quietly = TRUE)) {
-#'   fit <- postrank_solve(problem, backend = "highs",
-#'     control = postrank_control(time_limit = 10))
-#'   fit$status$normalized
-#'   fit$objective[c("risk_lower_bound", "risk_upper_bound", "risk_absolute_gap")]
-#' }
+#'   tau = 0.2, G_max = 3L)
+#' fit <- postrank_solve(problem, backend = "highs",
+#'   control = postrank_control(time_limit = 10))
+#' fit$status$normalized
+#' get_risk(fit)
 #' @concept decision
 #' @export
 postrank_solve <- function(problem, backend = NULL, control = list(), strategy = NULL) {
@@ -120,7 +149,6 @@ postrank_solve <- function(problem, backend = NULL, control = list(), strategy =
   fit
 }
 
-# Unchanged 0.0.1.9002 body, moved behind the public adapter (freeze manifest: moved_from postrank_solve).
 .pr_solve_core <- function(problem, backend = c("gurobi", "highs"), control = list(),
                            strategy = c("staged", "label_mip")) {
   .pr_validate_problem(problem); backend <- match.arg(backend); strategy <- match.arg(strategy)

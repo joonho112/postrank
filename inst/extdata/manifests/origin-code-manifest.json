@@ -1,0 +1,496 @@
+{
+  "manifest_schema_version": "1",
+  "origin_package_version": "1.1.0",
+  "origin_source_id": "13176e916e963aa905dda60d8add3f81f8c78fc85f208527c8b2aeff666b7ef8",
+  "origin_source_manifest_sha256": "fbc44fcc363bb01f7f9e9d7697be479ad0ca1a2b1d5af1b04876992df8f251cd",
+  "r_version": "R version 4.6.0 (2026-04-24)",
+  "method": "code_sha256 is the SHA-256 of the newline-joined deparse(width.cutoff = 500, control = c(\"keepInteger\", \"showAttributes\", \"keepNA\", \"niceNames\", \"hexNumeric\")) of every top-level expression of parse(file, keep.source = FALSE, encoding = \"UTF-8\"). Comments and roxygen blocks are not part of the parse result.",
+  "purpose": "Code identity of the original 1.1.0 R files and inst/scripts/build-cached-assets.R. The compatibility validator accepts a byte change in these files only when the code identity is unchanged (comments and documentation only).",
+  "entries": [
+    {
+      "path": "R/accessors.R",
+      "origin_sha256": "2556a6792e9730e4aba6ebc12e578f28f6fb1bd11a4ae99799d377649b0fc8e4",
+      "code_sha256": "770393a0b7776490b23c6bf27f8f546b723b909f7cf86c188be440a4b5338bb7"
+    },
+    {
+      "path": "R/as-postrank-posterior.R",
+      "origin_sha256": "e9479d3d7ae6288e4fc8c82d8ed82052b6c2c9c9d893bbf1f962f267cb431dd5",
+      "code_sha256": "9407f3b9aedfe008f1c616e3c169c5e7c6f0b35481c119a7c999519c8d0a7836"
+    },
+    {
+      "path": "R/backend-availability.R",
+      "origin_sha256": "0b3763835aabf3a1b5b03f753dc9c0a496fa76b0343363cb09b69760e2cd3f19",
+      "code_sha256": "79a25242e315aa9eee46e89fc685afdcc340a46206f7c36274719c6cb152acc1"
+    },
+    {
+      "path": "R/backend-gurobi.R",
+      "origin_sha256": "0c6bc2a7f81815ebd80761b2d78d472f6e9bc9f2e3599bd20e94188cb142b8c3",
+      "code_sha256": "6d1d4293138d729f6983eea8bbfe63e156933d44fc6b61d6d24da50f009936fe"
+    },
+    {
+      "path": "R/backend-highs.R",
+      "origin_sha256": "e5ab7e38e355a86bbca0e4bad41d8199b5d1f6e80083eeec12a32a91614111e3",
+      "code_sha256": "88a846aeb36b6f79bab8863597536de851440f583b6a7e64d8c1d8300d9aeef2"
+    },
+    {
+      "path": "R/baselines.R",
+      "origin_sha256": "e7202fa5d3d211290c9130f9374134ceed577a393b90d1780e694a913de2ebbe",
+      "code_sha256": "72b9566995c9dd8fb9e096b8176a9816a9e59425bbb1f988b7b3f21b5b9f102e"
+    },
+    {
+      "path": "R/cache.R",
+      "origin_sha256": "eaa7eee90606155e7c528868f4abffe348d4c9df4d8cd933c52f7226463403e0",
+      "code_sha256": "f3a73af3be422b83c58d6033349801f4022bb90231696756bdeef7057782162a"
+    },
+    {
+      "path": "R/canonical-grade.R",
+      "origin_sha256": "fd524e71da9b7ed865bb5cc0e049a35a6db03bd5d46b080b0a1ffe879fb8dcfd",
+      "code_sha256": "8898a8434bb2cb6e8fea2fe9d50031f95186fd547efa2a3c191e2f8e5ec2810a"
+    },
+    {
+      "path": "R/coefficient-diagnostics.R",
+      "origin_sha256": "c403ef0e53e753920815dc36094b67683ad9f1a41926a0ea2e1ef67cde91c7af",
+      "code_sha256": "9f75aefa5ef8abc4b8051aeb684638bb838313af5ae5737e486463365f7af006"
+    },
+    {
+      "path": "R/coefficient-gaussian.R",
+      "origin_sha256": "55abe6f3a7020023911c869524707e5a561df2bade3aa6c5b848556695be3476",
+      "code_sha256": "757735a9a9f54874bf78ce9e838fd650969ff6c771f1b5e9eea21af6a19a02f1"
+    },
+    {
+      "path": "R/coefficient-identity.R",
+      "origin_sha256": "919cb5079022ffa07789272d6bcf6501d82be4e0b945b19e50f1abf0a60e6aeb",
+      "code_sha256": "30ad029365c31b8437730bf8c05ec65f546e5c45bfb31571bfc9b03743b6d4cb"
+    },
+    {
+      "path": "R/coefficient-mixture.R",
+      "origin_sha256": "1fc00b968f42e46e06dd38363513db6dfe0515e9c20e92aed4c13d15ad339422",
+      "code_sha256": "54109dc7a0fa3857c3d52310cfbb6e2d37cb2f470a7441c93a8c5c904bf6499d"
+    },
+    {
+      "path": "R/coefficient-problem-adapter.R",
+      "origin_sha256": "8380befeb246d5fe419b9d4461ecf1f85cbac611d9ba99104b2e6889a596438a",
+      "code_sha256": "6973eb121243c5f21ef1a3dee675415e490aba7b02ea816b17d86a53c53f3613"
+    },
+    {
+      "path": "R/coefficient-validation.R",
+      "origin_sha256": "481760f221124b35b03d6eccceb50e8e46f7ce1797f02d304ec0fb59a9065e72",
+      "code_sha256": "d4f722d987e5d41f44e48444b8d7122c2987eb3c0a0456d10666666974380896"
+    },
+    {
+      "path": "R/compare.R",
+      "origin_sha256": "1dd536160e40b80cacda7d063de8fa2ffa9980ffb877ac213fe99e912c13a1d6",
+      "code_sha256": "c3b5ad1b87694c9f8fdcc71cbc465a63e1d957f71392a0c1115ffefa42707158"
+    },
+    {
+      "path": "R/control.R",
+      "origin_sha256": "9c103e911e90205dcc25975cd263685c6af7db4066cb995ec831561485e2c08b",
+      "code_sha256": "fe127caf8374321dfe45d1222c1e7a210fc5ebd2783994893523d1c3f0f2aada"
+    },
+    {
+      "path": "R/data-case-alabama.R",
+      "origin_sha256": "956a8c16b342500f84106bba20168aea96fd6dc41301797d40c7048b72632ec1",
+      "code_sha256": "90d04bf7f7f8165ebd68f454cc5b7b40f2fcd5048ea11676c0969c44fd912bb8"
+    },
+    {
+      "path": "R/data-case-cde.R",
+      "origin_sha256": "aaa35cc5b4901a545ff3f460b149d9509d4ce5fcc62f32c387e2d32711cbf55a",
+      "code_sha256": "5abb24cf5bcf036f85d473d435ef9bf5ee197ac77a867a08dec6c4ec149f488e"
+    },
+    {
+      "path": "R/data-case-krw.R",
+      "origin_sha256": "726f512dc3a601d2856d594b985e6279fe8944040415662bb2dc674b4cd2715f",
+      "code_sha256": "1d0ee4c64b68f8160b707a3b62599fc2c4496a1791f89f2c21a98c282024b36a"
+    },
+    {
+      "path": "R/data-tutorial.R",
+      "origin_sha256": "9cf8ed9bfb8e8fa42187b15100dad4a16d7a0f3cc10815c69592ad6554cc5cb3",
+      "code_sha256": "fb329000228cc5a24c264c57139de8bf854fc86fc18bf1c04ab61a2b5cb4b921"
+    },
+    {
+      "path": "R/data.R",
+      "origin_sha256": "9622b26fe864362e15713ee5f9b719348d687d2d5f44389e837ff21ff8b8333e",
+      "code_sha256": "24dd218de357e135cc15664bb1fb4910c8126a605059c411f33a3a83992dd57c"
+    },
+    {
+      "path": "R/decision-frontier.R",
+      "origin_sha256": "35b56cf13988ae723ff4b44dc83103b04ba37207a3c1bf4754b97dc48d05b79b",
+      "code_sha256": "0687ac5a9123710206e95b58ab0d6ede692b01fc38636b7a7c67ff316ce1d0a6"
+    },
+    {
+      "path": "R/decision-traces.R",
+      "origin_sha256": "4f166f8297d3319e6eb1aac6a3eb1b793c352905858c63420eb87e3ec24e5db8",
+      "code_sha256": "5ac7bcb429723db3a5513cc0214eda97ac989600523d6dcc5abadc7c5038c928"
+    },
+    {
+      "path": "R/diagnose-mcmc.R",
+      "origin_sha256": "cb0f333a5f59ac4bd0253165a825da734a6d1713ffdd073ebd35074ff25fd189",
+      "code_sha256": "f3b1727ff2f751141804a87b59e03ba90bcbc08e81149384d5ba5805579a65c8"
+    },
+    {
+      "path": "R/diagnose-regime.R",
+      "origin_sha256": "b643bf4ef985bc5618034845ee62434e3d2d02dfab8eb4bcf915708c3c81cd11",
+      "code_sha256": "ae9d33007a405895f6aaaad4d7440c778e547f62d52a25a2055f67817feaa790"
+    },
+    {
+      "path": "R/diagnose-stability.R",
+      "origin_sha256": "777c126ecb7c6e7307d9f87fd8e006b04bff996efb4e4471d1e00357d3eaab13",
+      "code_sha256": "9336f2fc0f95a11132049aaba966d4826976037c6354483eda33c40ff9bb8db0"
+    },
+    {
+      "path": "R/draws-builder.R",
+      "origin_sha256": "5e56e5615e8e037e98b4e20f4e25c388aa501b03c964b000a7a9f8f58ba3a3fa",
+      "code_sha256": "ae90b437cf71ed932c808395672b8f251009f48e8faadcae5e1ffdb195fd3d13"
+    },
+    {
+      "path": "R/draws-class.R",
+      "origin_sha256": "cb82968c9832a3128fc8089b4fcd4e187e1ba7edcdc364ccaa7b1697f9e784f4",
+      "code_sha256": "f1300617fcd0ecfb6d61926c293823d2594508d804592222fefb4c78cc3299dd"
+    },
+    {
+      "path": "R/draws-criterionwise.R",
+      "origin_sha256": "3e3a8d737c4a2b045cc0a85bc7265e731e0f0491a73dc5cc2e1c8275be298280",
+      "code_sha256": "2c708174f6be4bcbec730e8f6dedc631b14d4d3d7f80268372e62c92676414e4"
+    },
+    {
+      "path": "R/draws-exact.R",
+      "origin_sha256": "98563453a23e247c33709c3d45abe5e73ce69b2d6ce5228c1567ea7cc225ade2",
+      "code_sha256": "b87520659e89bb1d8d78859e689e3bfc98762f8eb1d8abd42185598799a721bb"
+    },
+    {
+      "path": "R/draws-friendly.R",
+      "origin_sha256": "b83321e6b8b2ef3dfa87ade334a1a55058dee7527b8292e986f1668e249a7f9b",
+      "code_sha256": "f5307545f9370494f400c9154082f430c77cb0cd3e9c58c2abce847be1f3c31e"
+    },
+    {
+      "path": "R/draws-joint.R",
+      "origin_sha256": "de108adc08dbf08773cb0b62b70043c45f2822506feec54f8873f63ca592291a",
+      "code_sha256": "c1546f29fb072f435900261a85ab5480db6a8c7858ea3c467a153d972c12b737"
+    },
+    {
+      "path": "R/draws-serialization.R",
+      "origin_sha256": "27f598dfb690d0cf55cea2f98d88a3e4369f329d50721e2a7d98bb4cdec207a3",
+      "code_sha256": "c92c2df88a3e791b39c2fa8a3c2969d7afe0729ffee9929b5167da0c0194487a"
+    },
+    {
+      "path": "R/draws-subset.R",
+      "origin_sha256": "49ea2217b1a43fc687f1a863a03c33bb6f6a9fb0c5de80fa54d7c5fd7f93122d",
+      "code_sha256": "56b93a98d306ad29956adb42421bf90a29e65287776547e42b0a85ce948862a9"
+    },
+    {
+      "path": "R/engine-dp.R",
+      "origin_sha256": "e7e61c680b6167fb038919a8b205c02b55bceba7dcc1a5ea891254b8aa8dd6c7",
+      "code_sha256": "78d4175cbd2da417b0d6213ec030f035eabe60b504c9fa2f14fd73a471f08f63"
+    },
+    {
+      "path": "R/engine-local-search.R",
+      "origin_sha256": "990ce054e9fc6638eacd1e59b109f405c55235c513a49840c10a826a30a63570",
+      "code_sha256": "7a6e65bf932282c0814de77194c345a57b9bda8f1e590d1d53c60ac9f0b0bbb2"
+    },
+    {
+      "path": "R/engine-lp.R",
+      "origin_sha256": "b2982a884ebff0861cf86eab9552741a61ec3535a1f6866c31784fec411db2c4",
+      "code_sha256": "8f42d9283e56d4e2139e591bfc5f8527c893aba3a9dea8a590cc168d6147c36b"
+    },
+    {
+      "path": "R/engine-solve.R",
+      "origin_sha256": "a4b2b2885c302ca71c9e13f51b7f0689c2e106c63c862d6306cbbce6bb8af8a1",
+      "code_sha256": "7ef8c5f030a7d6281385ca7fcc2c2957058f979deb40a64418a43039e2d6182b"
+    },
+    {
+      "path": "R/engine-spec.R",
+      "origin_sha256": "e56085dd063bca3a63d351f45184f60fe0d53a30263d9fff99074349897bc041",
+      "code_sha256": "951b56444b8656703aa7a86d79720ef217c1b781601a8af0c622a01d225f33f9"
+    },
+    {
+      "path": "R/evaluate-grade.R",
+      "origin_sha256": "0d66fc2a813859d2e48f0abc0b4362c5a81eaf488a597b141d7d3819914aab4c",
+      "code_sha256": "287daac5c1390465dd4535c522b0748ffe88e8db80b0be854843297e9a5edda4"
+    },
+    {
+      "path": "R/guarantee-status.R",
+      "origin_sha256": "5f3a213246221c368517740f080274f50c68e4beb7ff96ef1c7ef7aa24265f94",
+      "code_sha256": "854469d1094730a934cbd29335e08047b626f0248a88ab10f890d679d3246d6a"
+    },
+    {
+      "path": "R/iid-coefficient-bounds.R",
+      "origin_sha256": "66825054264aa2d3551b97eeca1ab52b7cc1abb0f1af6af3c19ff1dcff1f667e",
+      "code_sha256": "e0a423d1d72d29f2329e5669b5735f0b59d6ad08ba2571442dd1397bb037f729"
+    },
+    {
+      "path": "R/mc-diagnostics.R",
+      "origin_sha256": "612ba03c5ee8a189cae26fcb29cb490ffa28decfc3fd7a058e08c2fd91b16228",
+      "code_sha256": "d510e49b3d0e2826fffa4a70db7de327839221ef37ced4d4bccf9c3faa280e52"
+    },
+    {
+      "path": "R/minimax-refine.R",
+      "origin_sha256": "334a31a7dd1b31aff6f004160bbf38f8c48d781ab0ba98ac058fea49a153514f",
+      "code_sha256": "ab7185cb6584a856df5d0781ed8c8f60433796543671dcf193f0c6a73f15cdcc"
+    },
+    {
+      "path": "R/normalize-solver-result.R",
+      "origin_sha256": "6b4e3d80ca56bb7150f3a5550280bdf1d81e5385bbebec6ebf3919353394a2a2",
+      "code_sha256": "2ab6ec01794789797642c0c0c79807cf12881e0f0074ea4fbcc6e7cd6389567e"
+    },
+    {
+      "path": "R/options.R",
+      "origin_sha256": "8939a1391b0483452bd148b1a5b185da6128269ed88cc8b773639d3c30e96018",
+      "code_sha256": "fb329000228cc5a24c264c57139de8bf854fc86fc18bf1c04ab61a2b5cb4b921"
+    },
+    {
+      "path": "R/pairwise-blocks.R",
+      "origin_sha256": "b9c79b872d759c5dfe6ceab891c11fe28816d8795f70aba3b036910007a29671",
+      "code_sha256": "4b2b1aa46ed98657a8259c384a98b557b7df625ddb8213f7e1ab458a4f618fae"
+    },
+    {
+      "path": "R/pairwise-dispatch.R",
+      "origin_sha256": "4639a6cbde4dd852fb2d3418b9991184a18a77ef4f62d9920d1d880c3ac985da",
+      "code_sha256": "280f373bacab94c9a9ce3d5abb668886183ffa5d40ca848ca474fa045ef2e8d2"
+    },
+    {
+      "path": "R/pairwise-exact.R",
+      "origin_sha256": "33eee73451d58b17a32a24c18560b8703ad5337750749c0a4d902fea9c10ea7f",
+      "code_sha256": "9d36dfad04210992ee2d03389e88fb7b79a336dd403cb630e1792997a70a74b0"
+    },
+    {
+      "path": "R/pairwise-reference.R",
+      "origin_sha256": "068fb365d7712abf351cfe7202dd5c2387e063870feef82d20fb0c1b3fe73fdf",
+      "code_sha256": "04f58217b5f37a40a5363cf022ba0ac79a2cb9c18b71c2df6cb09fdcecc2412f"
+    },
+    {
+      "path": "R/plots-card.R",
+      "origin_sha256": "88965fdb9c37cc70d8d120f0b5585d343267075837479ac76fdf51bb3a3ea445",
+      "code_sha256": "bb5391ce5fa507095ed78f21a0cf33c789316a68378917c5fb5e5b576ada1bc9"
+    },
+    {
+      "path": "R/plots-compare.R",
+      "origin_sha256": "8aeece7346f9636365d1d2ca7629ee06b7fec73c0067dce9e53f42c90bbf84cd",
+      "code_sha256": "a7d1aff2e7a6f457fd06915e6748247f878f8e32e479499f43fd4bd15b775718"
+    },
+    {
+      "path": "R/plots-data.R",
+      "origin_sha256": "76247e780828a4b83ca703a3e5bc13cfd9346e50b6031d2a8e23c4b0f7562f97",
+      "code_sha256": "f5fd0fcee1c4324d63666d8a70b6ecb4b4d6c364c2fd32691b29f7f5b13365f9"
+    },
+    {
+      "path": "R/plots-frontier.R",
+      "origin_sha256": "4768289f7c76bc5a58915ed0aa0dd175d773aa177b97f37826f04e7b360b0adf",
+      "code_sha256": "4d0cb2d2e1ee601d0bae5962e20467f643474f3361ea9bd27c23d2a9154c783c"
+    },
+    {
+      "path": "R/plots-pairwise.R",
+      "origin_sha256": "bad7a7a2177ffd942f524166660e62f23271b803136c13ef411ae99204815f3f",
+      "code_sha256": "ea40a0c982241eb76bf8ffdc86c0ebd4cc6721803192ca198ce78dc4f699fa94"
+    },
+    {
+      "path": "R/plots-profile.R",
+      "origin_sha256": "f35238eadb57d80a734f0edf9dbf92d16c70d7ec402e707dcb13d1ac7b43f862",
+      "code_sha256": "c270d54d3661a04ba092c3f6ed3aa263b0b3147af0860af35c387dd86089caaf"
+    },
+    {
+      "path": "R/plots-relations.R",
+      "origin_sha256": "18b5a8896446f144576298c7b6e2be38f767685330c266da3f91af6e9978d6bb",
+      "code_sha256": "af32550ceb9e918a88542264af0cffe2634dfbc2ab9b526cdd044ad971e5aaac"
+    },
+    {
+      "path": "R/plots-utils.R",
+      "origin_sha256": "0614fdb7a299b1f125b1da11547b89beeaa9e17870937107f5ff551c00638e01",
+      "code_sha256": "567c38e6cd812c21f9786ccd357611d0c3ae1a2200650e0eb56a0176e57e7ec4"
+    },
+    {
+      "path": "R/posterior-summaries.R",
+      "origin_sha256": "2438ac1128838d155cebeb261901eff52021aa9667118ed1e8b3904ef788b4b2",
+      "code_sha256": "956c4e7c721968b4a7a6d44f83f021080e89791a5e930901e9e20803849c8c56"
+    },
+    {
+      "path": "R/postrank-analysis.R",
+      "origin_sha256": "fedbc4e489d36a866b5355f0c257149bc8b674016018058335ed3b08b42d4e33",
+      "code_sha256": "ba3d8efe4edf1b07be9b90eb54e0db36bb5d03489dd5db5fc07b4375db5461a3"
+    },
+    {
+      "path": "R/postrank-diagnose.R",
+      "origin_sha256": "69ac763c866fd0c4408a5c0e8386793c612e021ea9125ad91823421973c240b7",
+      "code_sha256": "e3841640c1e21351fff1b992440ad112ad25b181b40119864719b3e06e186117"
+    },
+    {
+      "path": "R/postrank-package.R",
+      "origin_sha256": "53126a668d956708b7f0e915278e5c6342026b6040fcba3fe9b4487d46a6bb63",
+      "code_sha256": "b7b08d0361db7bbc6ff340662752c293a0cde9ca43aad4f3a979f5cd4d5182e0"
+    },
+    {
+      "path": "R/postrank-report.R",
+      "origin_sha256": "01c6a0393c52856602a66cb42ac8fc1646671cd5428a973649700a5dddfe9e7e",
+      "code_sha256": "544c279e22e68d2a1437f710416cde61d9cbb7f4fbdcc5790b782dd768bb982a"
+    },
+    {
+      "path": "R/postrank-solve.R",
+      "origin_sha256": "3b873856996de1190e2df40c66c931ea8ef7684c9c8f345d2bbaad04451cf244",
+      "code_sha256": "5c70ddc41e96a280984376b21f50b91b44eebbd4313522d3819940a243bcfeeb"
+    },
+    {
+      "path": "R/print-methods.R",
+      "origin_sha256": "5c20991c3c2a15a9b915da1a1a87585a4afb2c74bc9862c5cbf1451f54fa02f8",
+      "code_sha256": "4970768776b9cb0adf336d5f581a4dd59a026586f2de1bfdd1b3b43381345dad"
+    },
+    {
+      "path": "R/probabilities.R",
+      "origin_sha256": "8331daa40716081f8bb92143af5852f078a38f3bd8554609dda2cd7d2a9eb238",
+      "code_sha256": "4f9ecca149a0463b08f7835374807dc5e15ce01e3315f4127b5d6d623a9dd174"
+    },
+    {
+      "path": "R/problem-class.R",
+      "origin_sha256": "99599419eaa94aa882a97199340f935966ae84e62f015f05a04e9f871638f836",
+      "code_sha256": "3d5b880a5d6656d0b5194e2650d3631d2793e7c90790aa49de75c98be6f695e8"
+    },
+    {
+      "path": "R/problem-encoding.R",
+      "origin_sha256": "e022acb5dd48c55b2e42beff1bcd831ef954b166dbfd924ad86434099881bcdc",
+      "code_sha256": "6bdf975f3f0a8a3bf94c93e15e5d47b006299f1862f90f686d982de9f3a59081"
+    },
+    {
+      "path": "R/problem-exact-grades.R",
+      "origin_sha256": "137ad5ee9abc7b7af87222d5ee413f4d5a810985da3b6c2ad397506170f7fa8a",
+      "code_sha256": "1ff283474dce482c0644df71e291983b3fc74db816028df07ebab18683bc6e3d"
+    },
+    {
+      "path": "R/problem-minimax.R",
+      "origin_sha256": "28432b771573b4a9eca906ce3468f3b62cf02ab852af72d188875393bb37cece",
+      "code_sha256": "c7a3dee1be988ccecf4159f64ebf12f4716e59ad1a414ca8db5ce18e472f64c9"
+    },
+    {
+      "path": "R/problem-protection.R",
+      "origin_sha256": "209a3aaabe3c6c2bb28f1f4da5b357d2a4682f0a92f9babdaf36e8ea9ea79fe4",
+      "code_sha256": "eba7e5404582bd108790d229c4d07b7312accd0885927865c1c08835989a585c"
+    },
+    {
+      "path": "R/problem-weighted.R",
+      "origin_sha256": "d7731945ef8334e1c33654f9d03e0dad077ebdf62d47707d5a2e56182dedf69d",
+      "code_sha256": "0497492d5a0e06e3ce73d3304b7f574d13279a8361fdc282ce8b6d6318934916"
+    },
+    {
+      "path": "R/protection-constraint-settings.R",
+      "origin_sha256": "a5954de463597d9845fc6c6852da2d354de976690439753f37ae9958c81acfa6",
+      "code_sha256": "2d1f2f15283791014cd2229a5aaa84b6993113dab4fdaa1a98839832b20bd678"
+    },
+    {
+      "path": "R/protection-envelopes.R",
+      "origin_sha256": "3dfd798a4ffb807c370b9e48dfd64e07423f7da1078b93fee6b0a3a9e07a9d19",
+      "code_sha256": "b970438c21f753ba75853ba7c675b2b059b8519fc265d8438c0ca253f115e6ca"
+    },
+    {
+      "path": "R/report-card.R",
+      "origin_sha256": "4e0e29a1ae6dfb06a980668de5bd15715b66151aff5f6b708f0e9ec6bcbd9292",
+      "code_sha256": "69a74f5f88b887e04f39726ea62034ba0d7030c795e166a079981f47600b78b4"
+    },
+    {
+      "path": "R/risk-regret-bounds.R",
+      "origin_sha256": "24ed147a40790c1026fca6f4aea4950ff11bdedbb7f55439fae88f16ce4489f9",
+      "code_sha256": "a0dc914f9012f2b1bbf33df7eebe4aec3047c8671acf9ebf0924701a4dc3e4ce"
+    },
+    {
+      "path": "R/sensitivity.R",
+      "origin_sha256": "fe3413cd2928c7c42d6a7eb704447f1a51e9a048a86f62c98ac107a238b6d577",
+      "code_sha256": "2b0f1b1867d4677d8f0a9fa32f30de4804cecee6d7924151632d842b08618ae1"
+    },
+    {
+      "path": "R/settings.R",
+      "origin_sha256": "fc6c564f8166eec54442f936a22c6dc81c7192bc60d464c2cc0657e3e829333d",
+      "code_sha256": "87ae86420cd2d46ee910d2280e385e9457943e4ad225b900a146612eeeef6cf5"
+    },
+    {
+      "path": "R/solution-class.R",
+      "origin_sha256": "36868b6aa91d906dbee9342b1fcc2ed876e28ce7060941115515ec20dc0d2ed8",
+      "code_sha256": "afcf3f9a3c86911a5fdf40d3a85ec677900ef88b20efc47700ac388efad1d4b6"
+    },
+    {
+      "path": "R/solution-identity.R",
+      "origin_sha256": "85718f9d39cd143e96c96c15e8ad8c7bfe400d54622563513f89cc82da4e872c",
+      "code_sha256": "36162771c9b503832e3aafe0cb3a83123ef419aa65db81e59985d4cb66b5f3b7"
+    },
+    {
+      "path": "R/theme.R",
+      "origin_sha256": "509bc9afe354456792fedc2866c7a5b4c91755f8f11ecb1efc9c6f03aa8a21bb",
+      "code_sha256": "ab464ce95739e1920b6e3e2559d2e8756bcd9f6c1effd6525bf2815e2a2e591c"
+    },
+    {
+      "path": "R/tie-backend.R",
+      "origin_sha256": "974a1888b0077ba3f4dde17dc9546214909d77b2e29cc0f371f2284661a5751f",
+      "code_sha256": "4e65cb7e241d76ef182a02db1600394366e81b266467f69a8dcd0493c72654df"
+    },
+    {
+      "path": "R/tie-evaluate.R",
+      "origin_sha256": "adbbf947c0e0f6374664a31bc69e7d027af18feef72e1f24a23362c3b6a59df5",
+      "code_sha256": "d5bb308a441f6aa3b7d6ec1121ee36825f303c019246cdb484188c44769dd4d1"
+    },
+    {
+      "path": "R/tie-input.R",
+      "origin_sha256": "b3fe2ea6356303ab9feb70ac316ab565714e585b069bf593f36df664cfbbd873",
+      "code_sha256": "64fc455706151eb781d961f0e5a2a13fd853c637ba327fb6c5e809133751ccae"
+    },
+    {
+      "path": "R/tie-json-scan.R",
+      "origin_sha256": "a4d1d6ee9a80b3e8983ce3f65d85abd87c2630cc9a34a2729a1fb3f7a2c098a2",
+      "code_sha256": "7fc1ea7807ead7e402d3df8c0e7c01022ce36f72a58a7871f493655866881b61"
+    },
+    {
+      "path": "R/tie-normalize.R",
+      "origin_sha256": "059324367235313ed983dead32ae72c2bde8fe8149b1788df77f34154de4f26b",
+      "code_sha256": "20f90be65e54b7f9d1ded60a488254c421e5e78def90009680b9ae1317602fd5"
+    },
+    {
+      "path": "R/tie-pairwise.R",
+      "origin_sha256": "8ad12e624fb2e81e9c257fd2bf8fc991d9d840c042089fd3e5c20b48bf2d3104",
+      "code_sha256": "9056ea2a1c0054b55481eb13c472907bc8b6b2ee0e6c5c65fd8bb6bc6411fb9a"
+    },
+    {
+      "path": "R/tie-problem.R",
+      "origin_sha256": "95d02593754ba4906071b83568abe30fe018be7b0fdb083e3a7e932776b003dd",
+      "code_sha256": "b0fc2adf1f5e238ac75f0b4c9345ff509ee53f6452c5487a12e7ca91f0a6ae2b"
+    },
+    {
+      "path": "R/tie-serialization.R",
+      "origin_sha256": "a5d781e1a4fecac246303bd972f82111ec491c9e83f554400d98a3107d02fb34",
+      "code_sha256": "4e43051b9f9c1d2d67c46bb5e9b8e2bb40eb1805d85aa337171c0cddf89a5d25"
+    },
+    {
+      "path": "R/tie-solution.R",
+      "origin_sha256": "fece876d66a395292c12fb07f473b3d6626764f2cd72e9ada7f0e0baab939081",
+      "code_sha256": "85fc9dcedcc91767bc72862ac524693254736d0ed58c3ccb455594bf7ea3b3e2"
+    },
+    {
+      "path": "R/tie-solve.R",
+      "origin_sha256": "ff4e91d9883e0465017edab281028d25c00516b0cae0ed81ecead6a0d87aba3c",
+      "code_sha256": "a1e9a94b92911613674d6b02aefe2f655b383f04997fb9bf34c0840053d4bc4a"
+    },
+    {
+      "path": "R/utils-cli.R",
+      "origin_sha256": "fa80a459db3d7f7706fb9080b0bb2cc90f9cdb37acd72f1d271e6ab6a3e2d7e2",
+      "code_sha256": "c68818a470f25598e81d90f485e7749b8ac49cbc81c53d0525f1fd9094f13636"
+    },
+    {
+      "path": "R/utils-digest.R",
+      "origin_sha256": "d25ee1cb7a506ed349404d115567e7f1f2408ca6ad95172261a3d1764374d192",
+      "code_sha256": "3d9876e2061b8bc62164d9bb08ed2721d62f70878a5f77af18275f16a7dfd949"
+    },
+    {
+      "path": "R/validate-draw-history.R",
+      "origin_sha256": "e50e1f8d98e0af5b72b39a6ab9413960af26642e229c65f54ccab5910a1ad798",
+      "code_sha256": "f91b5248f150fd62a292685a0ccc45620d4e2afd870dae9be30182329145d3d1"
+    },
+    {
+      "path": "R/validate-draws-common.R",
+      "origin_sha256": "129e1d5ae7d065d744f3e60972968447e28dc08f3c88360c5f89c795bf0c121a",
+      "code_sha256": "d57f5d0ac2e922e019f63e134a9b298a0712fb959d734f708d358a25430183f2"
+    },
+    {
+      "path": "R/validate-solution.R",
+      "origin_sha256": "7f556b9a679e1a23ba0d10a272340fc43a061b54c90801182b2b6ed750a1604a",
+      "code_sha256": "115df48071ea6c498f6050b48d58fc4f753cdf88c772f7b348867572b62eed0c"
+    },
+    {
+      "path": "inst/scripts/build-cached-assets.R",
+      "origin_sha256": "1b36263bc0cc20cf9793274f1990ee3c9a0b152cce30f412ce163a6441823158",
+      "code_sha256": "62fdf8f6f1e104b843f6778f08e92fd54304221266629a16c2fdef3adcbed846"
+    }
+  ]
+}

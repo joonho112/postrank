@@ -1,10 +1,12 @@
 # Plot Posterior Estimates and Grade Membership
 
-The figure displays the stored posterior mean and central interval for
-each selected entity, with one panel per criterion and color indicating
-grade membership. Grade 1 has highest priority. The intervals describe
-uncertainty in the targets, whereas a shared grade denotes a withheld
-comparison without asserting target equality.
+`postrank_plot_report_card()` plots the stored posterior mean and
+central interval for each displayed entity, with one panel per criterion
+and color showing grade membership. Grade 1 is the highest priority, and
+larger target values mean higher priority as declared when the input was
+built. Each horizontal bar summarizes marginal uncertainty for one
+entity's target at a time; entities in the same grade are left unordered
+(withheld), which does not mean their targets are equal.
 
 ## Usage
 
@@ -29,88 +31,119 @@ postrank_plot_report_card(
 - x:
 
   A `postrank_report_card` or a `postrank_analysis` with a prepared
-  card.
+  report card.
 
 - criteria:
 
-  Optional nonempty subset and display order of criterion IDs.
+  Optional character vector of distinct criterion IDs from the card,
+  giving the subset and left-to-right (or top-to-bottom) panel order.
+  `NULL` (the default) shows all criteria in stored weight order.
 
 - order:
 
-  Within-grade order: `"grade"` preserves the stored card order;
-  `"expected_rank"` uses weighted expected rank across all criteria;
-  `"mean"` uses one criterion's mean; `"label"` sorts raw entity IDs.
+  Ordering of entities within each grade: `"grade"` (the default) keeps
+  the report card's stored `sort_rank` (`1..n` row order);
+  `"expected_rank"` sorts by weighted expected rank across all criteria
+  in the card; `"mean"` sorts by descending posterior mean on one
+  criterion; `"label"` sorts by raw entity ID in locale-independent
+  byte/ASCII lexicographic (`"radix"`) order.
 
 - max_rows:
 
-  Positive integer display limit, default 30. `NULL` shows every row.
-  Explicit `entities` override this limit.
+  Positive integer cap on automatically displayed entities (default
+  `30L`), or `NULL` to show every entity. Ignored when `entities` is
+  supplied.
 
 - show_withheld:
 
-  Logical; include full grade sizes in the subtitle.
+  Logical scalar (`TRUE` by default). When `TRUE` and the full card has
+  more than one grade, includes full-report grade sizes in the subtitle.
 
 - ...:
 
-  Unused; nonempty arguments are rejected.
+  Unused; passing any argument in `...` stops with an error. Pass
+  arguments after `...` by name.
 
 - entities:
 
-  Optional distinct entity IDs to show. All selected entities are shown,
-  even if their number exceeds `max_rows`. Their display order follows
-  `order`, not the order of this vector.
+  Optional character vector of distinct entity IDs from the card to
+  display. All named entities are shown even when `length(entities)`
+  exceeds `max_rows`; their vertical order follows `order`, not the
+  order of `entities`.
 
 - entity_labels:
 
-  Optional named character vector mapping IDs to display names. Partial
-  maps retain the other IDs. Final display names must be distinct;
-  include an ID when names repeat. Newlines can break long labels.
+  Optional named character vector mapping known raw entity IDs in the
+  card to non-blank display names. Unmapped IDs keep their raw IDs.
+  Resulting display names must be distinct across the full card (include
+  an ID when two names would match); `"\n"` may be used to break long
+  labels.
 
 - criterion_labels:
 
-  Optional named criterion-to-label vector. Partial maps use readable
-  criterion names for the remainder. Final labels must be distinct.
-  Labels may include units or newlines without changing values.
+  Optional named character vector mapping known criterion IDs in the
+  card to non-blank panel strip labels. Unmapped IDs replace underscores
+  with spaces unless that would create duplicate labels. Resulting strip
+  labels must be distinct across all criteria in the card.
 
 - ncol:
 
-  Positive integer number of facet columns; default at most three. Use
-  `ncol = 1` with a taller figure for a narrow page.
+  Positive integer number of facet columns. `NULL` (the default) uses
+  `min(3, length(criteria_shown))`; values above the number of displayed
+  criteria are capped at that count. Use `ncol = 1` for narrow pages.
 
 - order_by:
 
-  Criterion used with `order = "mean"`. Required when several criteria
-  are displayed; otherwise the sole displayed criterion is used. An
-  explicit criterion may be any criterion of the card.
+  Single criterion ID used when `order = "mean"`. Must be `NULL` for
+  other `order` choices. Required when `order = "mean"` and more than
+  one criterion is displayed; when `NULL` with a single displayed
+  criterion, that criterion is used. An explicit `order_by` may name any
+  criterion in the card, even one omitted from `criteria`.
 
 ## Value
 
-A `ggplot` object whose data retain raw entity and criterion IDs. If an
-analysis has no prepared card, a status panel explains the recorded
-reason; a card and grades must already be available.
+A `ggplot` object whose `$data` table holds the same columns as
+`postrank_plot_data(x, "report_card")` for the displayed entities and
+criteria, ordered by `order` with `entity_id`, `criterion`, and `grade`
+stored as factors (over raw IDs and `1..G`) alongside `sort_rank`
+(`1..n` row order stored in the card), `n_withheld` (number of other
+entities in the same grade), `mean`, `lower`, `upper`, and
+`expected_rank`. If `x` is a `postrank_analysis` whose `report_card`
+slot is `NULL`, returns an empty status `ggplot` stating why no report
+card is available.
 
 ## Details
 
-The figure uses stored means, interval endpoints and grades without
-recomputing summaries or solving. Means are never clipped to intervals:
-a skewed distribution can have its mean outside its central interval.
-The caption gives the stored interval level and distinguishes supplied
-central summaries from computed equal-tail posterior intervals. These
-are not confidence intervals for the grades or solver bounds.
+The plot reads stored means, interval endpoints, and grades without
+solving or recomputing posterior summaries. Points mark posterior means
+and segments mark central intervals (`lower` to `upper`) on
+`"Posterior target"`; means are never clipped to interval endpoints
+because a skewed posterior can have its mean outside its central
+interval. The caption records the stored percentage level
+(`100 * card$level`, where `card` is `x` or `x$report_card`) and states
+whether the intervals came from supplied marginal summaries or computed
+equal-tail posterior intervals (from draws, an exact finite law, or
+normal/mixture posteriors). These intervals are marginal posterior
+summaries for individual targets, not simultaneous intervals and not
+confidence intervals for grade labels or solver bounds.
 
-All ordering keeps grades contiguous. `order = "expected_rank"` uses the
-card's weights across all criteria, even when only some panels are
-shown. `order = "mean"` uses the larger mean first within each grade;
-means in different units are never added for ordering. Labels affect
-display only.
+Grades always stay in contiguous vertical blocks (`1` at the top), with
+light gray background bands on odd-numbered grades. When
+`order = "expected_rank"`, expected ranks are combined using the card's
+criterion weights across all criteria, even if `criteria` displays a
+subset. When `order = "mean"`, means on different criteria are never
+added together. Display labels affect axis and strip text only.
 
-Automatic row selection spreads up to `max_rows` rows across grades.
-Where possible, each grade receives a row; remaining rows are allocated
-by grade size and spaced within each grade. If fewer rows than grades
-are requested, some grades are omitted. This is a display selection, not
-a representative sample or a new analysis. Grade colors and subtitle
-counts refer to the full report. For about 30 rows, consider a 7 by 8
-inch output; smaller selections and `ncol = 1` suit narrow pages.
+When `entities` is `NULL` and the card has more than `max_rows`
+entities, deterministic display selection gives at least one row to each
+grade when `max_rows >= G`, allocates remaining rows in proportion to
+grade size, and spaces rows across each grade; if `max_rows < G`, some
+grades are omitted and the subtitle notes this. That subset is for
+visual layout only, not a statistical sample or a re-grading. Colors use
+[`scale_colour_grade()`](https://joonho112.github.io/postrank/reference/scale_colour_grade.md)
+with the full report's grade count `G` up to 64 grades (and neutral dark
+gray without a legend when `G > 64`), so subsets keep their original
+grade colors.
 
 ## See also
 
@@ -122,18 +155,20 @@ inch output; smaller selections and `ncol = 1` suit narrow pages.
 ## Examples
 
 ``` r
-# Read prepared tutorial results; no model fitting or optimization.
-source(system.file("scripts", "_vignette-setup.R", package = "postrank"),
-  local = TRUE)
-one <- load_or_compute("tutorial_one")
-p <- postrank_plot_report_card(one, max_rows = NULL,
-  criterion_labels = c(score_A = "Score A (standardized units)"))
-p
+one <- postrank_example("tutorial_one")
+postrank_plot_report_card(
+  one,
+  max_rows = NULL,
+  criterion_labels = c(score_A = "Score A (standardized units)")
+)
 
 
-# The same six sites on two criteria, with one panel per row.
-two <- load_or_compute("tutorial_two")
-postrank_plot_report_card(two, ncol = 1, entities = c("A", "C", "F"),
+two <- postrank_example("tutorial_two")
+postrank_plot_report_card(
+  two,
+  ncol = 1,
+  entities = c("A", "C", "F"),
   entity_labels = c(A = "Site A", C = "Site C", F = "Site F"),
-  criterion_labels = c(score_A = "Score A", score_B = "Score B"))
+  criterion_labels = c(score_A = "Score A", score_B = "Score B")
+)
 ```

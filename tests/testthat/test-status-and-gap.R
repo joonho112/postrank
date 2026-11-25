@@ -73,7 +73,7 @@ testthat::test_that("invalid primal cannot release a grade despite optimal solve
 })
 
 testthat::test_that("tiny positive bound inversions are clamped to the action risk and flagged", {
-  # 014 repair policy (CP-3): a reported bound above the validated action risk by
+  # A reported lower bound exceeding the validated action risk by at most the
   # at most the objective tolerance is floating-point rounding or a solver
   # tolerance effect; it is clamped (gap 0) and flagged instead of discarding the bound.
   p <- pr_status_problem(); raw <- pr_status_raw(p, lower = 1e-12)
@@ -88,7 +88,7 @@ testthat::test_that("tiny positive bound inversions are clamped to the action ri
   testthat::expect_match(fit$warnings, "clamped to the action risk", all = FALSE)
   testthat::expect_false(any(grepl("larger than the requested gap", fit$warnings)))
   testthat::expect_false(fit$objective$numerical_certification)
-  # Phase 5 review of L5: a clamped inversion above the absolute gap control is
+  # A clamped bound inversion larger than the requested absolute gap control is
   # still clamped, with an extra warning (here 2e-8 risk > 1e-8 requested).
   wide <- .pr_normalize_solver_result(p, pr_status_raw(p, lower = 6e-8), .pr_control())
   testthat::expect_true(wide$objective$bound_inversion_within_tolerance)

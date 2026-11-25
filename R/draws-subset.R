@@ -1,5 +1,5 @@
-# Internal, ordered selection of existing joint draws. The receipt preserves
-# source history separately when entire chains are omitted from the new input.
+# Ordered subsetting of existing joint draws. Original chain history is kept
+# separately when entire chains are omitted from the subsetted input.
 .pr_subset_joint_draws <- function(draws, keep, selection = list()) {
   draws <- as_postrank_draws(draws)
   .pr_assert(identical(draws$input_kind, "equal_weight_draws") && identical(draws$dependence_mode, "joint_model"),

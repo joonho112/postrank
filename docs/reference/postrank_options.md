@@ -1,64 +1,70 @@
 # Session Options for Solving and Reporting
 
-Session options specify the default backend, progress messages and
-report language. They are read at call time and are not set when the
-package is loaded. A temporary change can be reversed by `options(old)`,
-as illustrated below.
+`postrank` reads three session options at call time. Loading the package
+does not set any option. Save the return value of
+[`options()`](https://rdrr.io/r/base/options.html) to restore the
+previous state after a temporary change.
 
 ## Details
 
 - `postrank.backend`:
 
-  Unset by default. The backend used when an optimization function is
-  called with `backend = NULL`: the explicit `backend` argument takes
-  precedence, followed by this option, then `"gurobi"`. The value must
-  be `"gurobi"` or `"highs"`; anything else raises `invalid_backend`. If
-  the resolved backend is not installed or not usable the call stops
-  with both remedies; postrank never switches to another backend.
+  Solver used when an optimization function is called with
+  `backend = NULL`. Unset (`NULL`) by default. A non-`NULL` `backend`
+  argument overrides this option; if both are `NULL`, `"gurobi"` is
+  used. Must be `"gurobi"` or `"highs"`; any other value stops with
+  error code `invalid_backend`. If the chosen solver is not installed or
+  cannot be loaded, the call stops with an error explaining how to
+  install HiGHS or configure Gurobi; `postrank` never switches solvers
+  on its own.
 
 - `postrank.lang`:
 
-  Default `"en"`. Official report and summary text is English only.
-  Language-sensitive views
-  ([`postrank_report()`](https://joonho112.github.io/postrank/reference/postrank_report.md)
-  and the [`summary()`](https://rdrr.io/r/base/summary.html) methods)
-  reject any other value with `unsupported_language`.
+  Language for [`summary()`](https://rdrr.io/r/base/summary.html)
+  methods and
+  [`postrank_report()`](https://joonho112.github.io/postrank/reference/postrank_report.md).
+  Default `"en"`. English (`"en"`) is the only supported value; any
+  other value stops with `unsupported_language`. Passing `lang = "en"`
+  to
   [`postrank_report()`](https://joonho112.github.io/postrank/reference/postrank_report.md)
-  has a `lang` argument, and an explicit `lang = "en"` there overrides
-  the option; the [`summary()`](https://rdrr.io/r/base/summary.html)
-  methods have no such argument and always read the option.
-  [`print()`](https://rdrr.io/r/base/print.html) and the formatters do
-  not read it.
+  overrides this option, whereas
+  [`summary()`](https://rdrr.io/r/base/summary.html) methods always read
+  it. [`print()`](https://rdrr.io/r/base/print.html) and
+  [`format()`](https://rdrr.io/r/base/format.html) do not read
+  `postrank.lang`.
 
 - `postrank.verbose`:
 
-  Default `FALSE`. A logical scalar controlling start and completion
-  messages from
+  Whether
   [`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md)
   and the main solve in
-  [`postrank()`](https://joonho112.github.io/postrank/reference/postrank.md).
-  It is read when solving. An explicit `verbose = TRUE` or
-  `verbose = FALSE` in the control overrides it; `verbose = NULL`
-  inherits it. Nested diagnostic and grid solves produce no progress
-  messages. This option does not change numerical settings, results, or
-  the separate solver `output` control.
+  [`postrank()`](https://joonho112.github.io/postrank/reference/postrank.md)
+  print start and completion messages. Default `FALSE`. Must be `TRUE`
+  or `FALSE`. Setting `verbose = TRUE` or `verbose = FALSE` in
+  [`postrank_control()`](https://joonho112.github.io/postrank/reference/postrank_control.md)
+  overrides this option, while `verbose = NULL` reads it at solve time.
+  Nested diagnostic and grid solves never print progress messages. This
+  option does not affect numerical results or the solver's own log
+  controlled by `output` in
+  [`postrank_control()`](https://joonho112.github.io/postrank/reference/postrank_control.md).
 
-The environment variable `POSTRANK_TEST_GUROBI` is for the package's own
-test suite only: set to `"true"`, it enables the tests that run the
-licensed Gurobi backend. Ordinary use never reads it.
+The environment variable `POSTRANK_TEST_GUROBI` is read only by the
+package's own test suite (`"true"` enables tests that call a licensed
+Gurobi installation). Package functions do not read it.
 
 ## See also
 
-[`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md),
 [`postrank()`](https://joonho112.github.io/postrank/reference/postrank.md),
+[`postrank_control()`](https://joonho112.github.io/postrank/reference/postrank_control.md),
+[`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md),
 [`postrank_report()`](https://joonho112.github.io/postrank/reference/postrank_report.md)
 
 ## Examples
 
 ``` r
-getOption("postrank.backend")             # when unset, solving verbs default to "gurobi"
+getOption("postrank.backend")              # unset: solver defaults to "gurobi"
 #> NULL
-old <- options(postrank.backend = "highs") # select HiGHS for this session
+old <- options(postrank.backend = "highs") # choose HiGHS for this session
 getOption("postrank.backend")
 #> [1] "highs"
 options(old)

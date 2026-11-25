@@ -17,16 +17,18 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Compute Comparisons from a Conditional Gaussian Law — postrank_gaussian_coefficients">
-<meta name="description" content="Directional-error probabilities are calculated from conditional means and
-covariance matrices without simulation of the target values. The input may
-contain one or several criteria, with dependence among criteria within an
-entity. Entities are assumed independent conditional on the supplied shared
-state.">
-<meta property="og:description" content="Directional-error probabilities are calculated from conditional means and
-covariance matrices without simulation of the target values. The input may
-contain one or several criteria, with dependence among criteria within an
-entity. Entities are assumed independent conditional on the supplied shared
-state.">
+<meta name="description" content="postrank_gaussian_coefficients() computes pairwise directional-error
+probabilities analytically from entity posterior means and within-entity
+covariance matrices under a normal (Gaussian) posterior, without simulating
+draws. For distinct entities i and j on criterion k,
+\(e_{ij,k} = P(\theta_{i,k} \le \theta_{j,k})\) is the probability that
+reporting i above j is in the wrong order (diagonal entries are NA).">
+<meta property="og:description" content="postrank_gaussian_coefficients() computes pairwise directional-error
+probabilities analytically from entity posterior means and within-entity
+covariance matrices under a normal (Gaussian) posterior, without simulating
+draws. For distinct entities i and j on criterion k,
+\(e_{ij,k} = P(\theta_{i,k} \le \theta_{j,k})\) is the probability that
+reporting i above j is in the wrong order (diagonal entries are NA).">
 <meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
 </head>
 <body>
@@ -37,7 +39,7 @@ state.">
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +48,7 @@ state.">
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -70,11 +72,12 @@ state.">
     </div>
 
     <div class="ref-description section level2">
-    <p>Directional-error probabilities are calculated from conditional means and
-covariance matrices without simulation of the target values. The input may
-contain one or several criteria, with dependence among criteria within an
-entity. Entities are assumed independent conditional on the supplied shared
-state.</p>
+    <p><code>postrank_gaussian_coefficients()</code> computes pairwise directional-error
+probabilities analytically from entity posterior means and within-entity
+covariance matrices under a normal (Gaussian) posterior, without simulating
+draws. For distinct entities <code>i</code> and <code>j</code> on criterion <code>k</code><span>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>≤</mo><msub><mi>θ</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">e_{ij,k} = P(\theta_{i,k} \le \theta_{j,k})</annotation></semantics></math> is the probability that
+reporting </span><code>i</code> above <code>j</code> is in the wrong order (diagonal entries are <code>NA</code>).</p>
     </div>
 
     <div class="section level2">
@@ -96,82 +99,80 @@ state.</p>
 <dl>
 <dt id="arg-means">means<a class="anchor" aria-label="anchor" href="#arg-means"></a>
 </dt>
-<dd><p>Finite numeric matrix with dimension names
-<code>list(entity = entity_ids, criterion = criterion_ids)</code>. Supply at least
-two unique entity IDs and one criterion. Targets must already be oriented
-so that larger values mean higher reporting priority, in the declared units.</p></dd>
+<dd><p>Finite plain numeric <code>n x K</code> matrix (<code>n &gt;= 2</code>, <code>K &gt;= 1</code>) with
+named <code>dimnames</code>: <code>list(entity = entity_ids, criterion = criterion_ids)</code>.
+Larger values must already mean higher priority toward grade 1.</p></dd>
 
 
 <dt id="arg-covariance">covariance<a class="anchor" aria-label="anchor" href="#arg-covariance"></a>
 </dt>
-<dd><p>Finite, symmetric, positive definite conditional covariance
-array with dimensions criterion-by-criterion-by-entity and dimension names
-<code>list(criterion_i = criterion_ids, criterion_j = criterion_ids, entity = entity_ids)</code>. Each matrix describes dependence among criteria
-within one entity; it cannot encode covariance between entities. For one
-criterion, each matrix is its positive conditional variance. No jitter or
-covariance repair is applied.</p></dd>
+<dd><p>Finite symmetric positive-definite plain numeric <code>K x K x n</code>
+array with named <code>dimnames</code>:
+<code>list(criterion_i = criterion_ids, criterion_j = criterion_ids, entity = entity_ids)</code>.
+Each <code>K x K</code> slice gives within-entity covariance across criteria (positive
+variance when <code>K = 1</code>) and must satisfy exact symmetry <code>S == t(S)</code> with
+zero tolerance (symmetrize <code>(V + t(V)) / 2</code> beforehand if needed);
+cross-entity covariance cannot be encoded here, and singular or asymmetric
+matrices stop the call without repair.</p></dd>
 
 
 <dt id="arg-conditional-independence">conditional_independence<a class="anchor" aria-label="anchor" href="#arg-conditional-independence"></a>
 </dt>
-<dd><p>Explicitly <code>"entities_given_shared_h"</code>.
-This is a model assumption, not something inferred from marginal moments.</p></dd>
+<dd><p>Must be <code>"entities_given_shared_h"</code>, an
+explicit model declaration (not inferred from marginal moments) stating
+that entities are conditionally independent given the fixed conditioning
+state.</p></dd>
 
 
 <dt id="arg-provenance">provenance<a class="anchor" aria-label="anchor" href="#arg-provenance"></a>
 </dt>
-<dd><p>Named list with <code>producer_id</code>, <code>producer_version</code>,
-<code>posterior_id</code>, <code>input_payload_sha256</code>, <code>source_sha256</code>, and
-<code>config_sha256</code>; <code>model_sha256</code> is optional. Hashes must be lowercase
-SHA-256 strings describing the actual source and calculation. They record
-provenance but do not authenticate the fit or its scientific assumptions.</p></dd>
+<dd><p>Plain named list of non-empty character strings:
+<code>producer_id</code>, <code>producer_version</code>, <code>posterior_id</code>, <code>input_payload_sha256</code>,
+<code>source_sha256</code> and <code>config_sha256</code>, plus optional <code>model_sha256</code>. Every
+<code>*_sha256</code> entry must be a 64-character lowercase hexadecimal SHA-256
+digest.</p></dd>
 
 </dl>
 </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
 </h2>
-    <p>A <code>postrank_coefficients</code> object containing posterior <code>means</code>, an
-entity-by-entity-by-criterion directional-error array <code>e</code>, the supplied
-conditional law and provenance, and supported-operation indicators.
-No target draws or Monte Carlo sample sizes are created.</p>
+    <p>A <code>postrank_coefficients</code> object (<code>input_kind = "gaussian_conditional"</code>)
+containing <code>entity_ids</code>, <code>criterion_ids</code>, <code>means</code>, the <code>n x n x K</code>
+directional-error array <code>e</code>, <code>source</code>, <code>provenance</code>, <code>capabilities</code>,
+<code>validation</code>, <code>coefficient_identity</code>, <code>input_identity</code>, <code>pairwise_identity</code>,
+and <code>schema_version</code> (<code>"coefficient-0.1.0"</code>).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
 </h2>
-    <p><span>For distinct entities, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>≤</mo><msub><mi>θ</mi><mrow><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">e_{ij,k}=P(\theta_{i,k}\leq\theta_{j,k})</annotation></semantics></math>
-is the error probability for reporting entity i above entity j. Positive
-conditional variances and between-entity independence make equality have
-probability zero. Diagonals are </span><code>NA</code>: self-comparisons are not used.</p>
-<p>The normal difference uses the sum of the two conditional marginal
-variances. Both directions use the normal CDF directly to retain small
-tails. These are floating-point analytic calculations, not exact rational
-arithmetic or certified numerical error bounds.</p>
-<p>The native joint search through <code><a href="postrank_problem.html">postrank_problem()</a></code> supports weighted
-expected loss with an upper grade-count limit for this input. It does not
-support minimax, criterion protections <code>q</code>, or an exact grade count there.
-<code><a href="postrank_evaluate.html">postrank_evaluate()</a></code> can score a fixed report; scoring does not check its
-membership in a constrained action family. Other operations have their
-own documented support; see <code><a href="postrank_coefficient_capabilities.html">postrank_coefficient_capabilities()</a></code>.</p>
-<p>The package does not fit the model or verify that the supplied law follows
-from observed data. If an empirical Bayes prior estimate is held fixed,
-these probabilities condition on that estimate. Use
-<code><a href="postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code> to average conditional probabilities over
-explicitly supplied shared states; matching only their moments changes
-the law in general.</p>
+    <p>Each off-diagonal probability is computed directly in the lower tail of the
+normal distribution from <code>(means[j, k] - means[i, k]) / sqrt(v_i + v_j)</code> to
+preserve small tail values; positive variances and conditional independence
+across entities imply zero probability of exact equality. These are ordinary
+floating-point analytic calculations, not exact rational arithmetic or
+interval-verified bounds.</p>
+<p>In <code><a href="postrank.html">postrank()</a></code> and <code><a href="postrank_problem.html">postrank_problem()</a></code>, normal posterior coefficients
+support the weighted expected-loss objective with <code>G_max</code> (minimax, <code>q</code> error
+budgets and <code>exact_G</code> are not available there; see
+<code><a href="postrank_coefficient_capabilities.html">postrank_coefficient_capabilities()</a></code>). If an empirical-Bayes prior is held
+fixed, these probabilities condition on that estimate; to average over
+hyperparameter states, use <code><a href="postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code> rather than
+moment-matching to a single normal distribution. <code>postrank</code> does not fit the
+model or verify <code>provenance</code> hashes against external files.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
 </h2>
-    <div class="dont-index"><p><code><a href="validate_postrank_coefficients.html">validate_postrank_coefficients()</a></code>, <code><a href="postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code>,
+    <div class="dont-index"><p><code><a href="postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code>,
+<code><a href="validate_postrank_coefficients.html">validate_postrank_coefficients()</a></code>, <code><a href="postrank_coefficient_capabilities.html">postrank_coefficient_capabilities()</a></code>,
 <code><a href="postrank_coefficient_diagnose.html">postrank_coefficient_diagnose()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
 </h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Reconstruct the documented one-criterion tutorial law with its own provenance.</span></span></span>
-<span class="r-in"><span><span class="va">law</span> <span class="op">&lt;-</span> <span class="va">pr_tutorial</span><span class="op">$</span><span class="va">law</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">law</span> <span class="op">&lt;-</span> <span class="va">pr_tutorial</span><span class="op">$</span><span class="va">law</span></span></span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">postrank_gaussian_coefficients</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  means <span class="op">=</span> <span class="va">law</span><span class="op">$</span><span class="va">means</span><span class="op">[</span>, <span class="st">"score_A"</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span>  covariance <span class="op">=</span> <span class="va">law</span><span class="op">$</span><span class="va">covariance</span><span class="op">[</span><span class="st">"score_A"</span>, <span class="st">"score_A"</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,</span></span>

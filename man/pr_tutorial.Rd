@@ -6,49 +6,48 @@
 \format{
 A named list with four elements:
 \describe{
-\item{one}{A \code{postrank_coefficients} input with one criterion,
-\code{score_A}, for sites A through F.}
-\item{two}{A \code{postrank_coefficients} input for the same six sites
-with \code{score_A} and \code{score_B}. The law of \code{score_A}
-is identical to that in \code{one}.}
-\item{units}{Site IDs and display labels in input order.}
-\item{law}{The fixed means, covariance matrices, conditioning statement,
-direction, units and maintainer source information.}
+\item{one}{A \code{postrank_coefficients} object with one criterion (\code{score_A})
+for sites \code{A} through \code{F}.}
+\item{two}{A \code{postrank_coefficients} object for the same six sites on
+\code{score_A} and \code{score_B}, keeping the exact same marginal distribution for
+\code{score_A} as \code{one}.}
+\item{units}{Data frame of site IDs and display labels in input order.}
+\item{law}{List of the specified means, covariance matrices, conditioning
+note, priority direction, units and construction metadata.}
 }
 }
 \source{
-Maintainer-created synthetic law in
-\code{data-raw/pr-tutorial-law.json}; no external observations.
+Synthetic normal distribution specified in
+\code{data-raw/pr-tutorial-law.json}; no external data.
 }
 \description{
-This Gaussian example illustrates the disclosure and withholding of pairwise
-comparisons through integer grades. All means and variances are specified
-directly, so the posterior laws are illustrative rather than fitted to
-observations.
+\code{pr_tutorial} is a synthetic normal-posterior dataset for six fictional sites
+(\code{A} through \code{F}) on one criterion (\code{score_A}) or two criteria (\code{score_A}
+and \code{score_B}). All means and standard deviations are specified directly
+rather than fitted to real data, providing the introductory examples used in
+\code{vignette("a1-getting-started", package = "postrank")}.
 }
 \details{
-Each site has a bivariate normal law. Both marginal standard
-deviations are 0.2. The two criteria are independent within each site,
-and sites are independent. Higher values have higher priority on both
-criteria. Scores are in illustrative standardized units with no empirical
-calibration. Continuous normal laws have zero equality probability.
+Each site follows an independent bivariate normal distribution with marginal
+standard deviations \code{0.2} and zero within-site correlation between \code{score_A}
+and \code{score_B}. Larger values mean higher priority on both criteria, and
+distinct sites have zero probability of exact equality.
 
-Analytic comparison probabilities and marginal summaries are calculated from
-the same specified law. The example contains no draws, fitted-model
-uncertainty or Monte Carlo diagnostics. Addition of the second criterion
-changes the decision problem while retaining the first criterion's marginal
-law.
+Pairwise comparison probabilities and marginal summaries come analytically
+from the normal distribution, so \code{pr_tutorial} contains no posterior draws
+or Monte Carlo error. Stored grading results for \code{pr_tutorial$one} and
+\code{pr_tutorial$two} are available through \code{postrank_example("tutorial_one")}
+and \code{postrank_example("tutorial_two")}.
 }
 \examples{
 names(pr_tutorial)
 pr_tutorial$one
-pr_tutorial$two
 postrank_posterior_means(pr_tutorial$one)
 postrank_posterior_means(pr_tutorial$two)
 }
 \seealso{
-\code{vignette("a1-getting-started", package = "postrank")},
-\code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}}, \code{\link[=postrank]{postrank()}}
+\code{\link[=postrank_example]{postrank_example()}}, \code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}},
+\code{\link[=postrank]{postrank()}}, \code{vignette("a1-getting-started", package = "postrank")}
 }
 \concept{data}
 \keyword{datasets}

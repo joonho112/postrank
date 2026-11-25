@@ -1,58 +1,82 @@
 #' postrank: Posterior Ranking with Integer Grades
 #'
-#' Posterior information on one or several criteria is used to assign an
-#' integer grade to each entity under a declared loss. For several criteria,
-#' one common grade is assigned. The input is an existing posterior
-#' representation, supplied as draws, supported analytic laws or previously
-#' calculated comparison probabilities, together with scientific declarations
-#' and numerical qualifications. The package does not fit a statistical model.
+#' `postrank` assigns an integer grade to each entity (such as a school, an
+#' employer or an area) using posterior information that you supply: posterior
+#' draws, normal or mixture posteriors, or pairwise comparison probabilities.
+#' For one or several criteria, [postrank()] chooses a single common grading
+#' across entities; the multidomain functions (`postrank_mdomain_*`) instead
+#' assign a separate grade in each domain. The package does not fit a
+#' statistical model.
 #'
-#' @section Interpretation of grades:
-#' Grade 1 is the highest-priority block; larger targets mean higher priority,
-#' and only the order and equality of grade labels matter. A shared grade
-#' withholds the comparison of its members and asserts no equality of the
-#' entities. The procedure seeks a grade minimizing the declared weighted
-#' wrong-direction loss plus the withholding cost `tau`, and reports the
-#' validated incumbent with the solver's bound and gap; withholding every
-#' comparison, with risk `tau`, is a legitimate action.
+#' @section How grades work:
+#' Grade 1 is the highest priority; larger values of each target mean higher
+#' priority, as set when the input was built. Entities in different grades are
+#' reported in that order. Entities in the same grade are left unordered: the
+#' report withholds their comparison rather than claiming they are equal. By
+#' default, grades minimize the posterior expected loss averaged over all entity
+#' pairs, where reporting a pair in the wrong order costs 1 and leaving a pair
+#' unordered costs `tau`. Leaving every pair unordered (a single shared grade,
+#' with loss `tau`) is a valid result.
+#'
+#' @section Getting started:
+#' Start with `vignette("a1-getting-started", package = "postrank")`,
+#' [postrank()], [postrank_describe()] and [postrank_example()]. Stored example
+#' results from [postrank_example()] run without an optimization solver, and
+#' [pr_tutorial] holds the six fictional sites used in the introductory guide.
+#'
+#' Computing new grades with [postrank()] or [postrank_solve()] requires a
+#' solver. Install the free `highs` package (`install.packages("highs")`) and
+#' select it with `backend = "highs"` or `options(postrank.backend = "highs")`,
+#' or provide a licensed Gurobi installation (used by default when no solver is
+#' chosen). `postrank` never switches solvers on its own.
 #'
 #' @section Package functions:
 #' \tabular{ll}{
-#'   Input \tab [postrank_draws()], [postrank_declarations()], [read_postrank_draws()] and the strict constructors \cr
+#'   Input \tab [postrank_describe()], [postrank_draws()], [postrank_declarations()], [read_postrank_draws()], [as_postrank_draws()] \cr
 #'   Coefficients \tab [postrank_pairwise()], [postrank_gaussian_coefficients()], [postrank_mixture_coefficients()], [postrank_probabilities()] \cr
-#'   Settings and control \tab [postrank_settings()], [postrank_control()] \cr
+#'   Settings and control \tab [postrank_settings()], [postrank_control()], [postrank_options] \cr
 #'   Decision \tab [postrank()], [postrank_problem()], [postrank_solve()], [postrank_evaluate()] \cr
 #'   Baselines and comparison \tab [postrank_expected_rank()], [postrank_composite()], [postrank_cuts()], [postrank_compare()] \cr
 #'   Side outputs and grids \tab [postrank_commonality_cost()], [postrank_frontier()], [postrank_sensitivity()] \cr
 #'   Diagnostics \tab [postrank_crossfit()], [postrank_mc_fragility()], [postrank_diagnose()] \cr
-#'   Reporting \tab [postrank_report_card()], [postrank_report()], [get_grades()] and the console formatters \cr
-#'   Visualization \tab the seven `postrank_plot_*()` figures, [theme_postrank()], [postrank_palette()] \cr
-#'   Reference calculations \tab [postrank_iid_bounds()] and the conditional guarantee helpers
+#'   Reporting and stored examples \tab [postrank_report_card()], [postrank_report()], [get_grades()], [postrank_example()] \cr
+#'   Visualization \tab the seven `postrank_plot_*()` functions, [theme_postrank()], [postrank_palette()] \cr
+#'   Reference bounds \tab [postrank_iid_bounds()] and the conditional envelope functions \cr
+#'   Multidomain \tab [postrank_mdomain_input()], [postrank_mdomain_decision()], [postrank_mdomain_solve()], [postrank_plot_mdomain()]
 #' }
 #'
-#' @section Getting started:
-#' [pr_tutorial] provides the same six fictional sites with one or two
-#' criteria in `vignette("a1-getting-started", package = "postrank")`.
-#' The Applied guides present empirical cases and the Methods guides describe the
-#' loss, information requirements, optimization and numerical uncertainty.
-#' Stored-result views need no optimizer. A fresh solve uses an explicitly
-#' selected backend, the `postrank.backend` option, or Gurobi in that order.
-#' HiGHS is an explicit alternative; there is no silent backend fallback.
+#' @section Multidomain profiles:
+#' [postrank_mdomain_input()] represents entity-by-domain posteriors when a
+#' separate grade is reported in each domain rather than one common grade. Within
+#' each domain, a shared grade leaves the pair unordered.
+#' [postrank_mdomain_decision()] defines additive domain losses and optional
+#' mean or joint-event constraints. [postrank_mdomain_evaluate()] evaluates a
+#' given entity-by-domain grade matrix, while [postrank_mdomain_family()] and
+#' [postrank_mdomain_solve()] choose a matrix from a declared set of candidate
+#' profiles; optimality holds only within that candidate set.
+#' [postrank_mdomain_grades()] extracts checked grades,
+#' [postrank_mdomain_assess()] reports finite-law, conditional IID or
+#' descriptive MCMC summaries, and [postrank_plot_mdomain()] plots the results.
+#' Multidomain calculations need no mixed-integer solver and use exact rational
+#' arithmetic when the optional `gmp` package is installed; exact finite-law
+#' arithmetic does not verify the statistical model or intended posterior. See
+#' `vignette("mdomain-quickstart", package = "postrank")` and
+#' `vignette("mdomain-decisions", package = "postrank")`.
 #'
-#' @section Genuine target ties:
-#' The separate [postrank_tie_capabilities()] domain makes equality neutral
-#' in both wrong-direction and withheld-comparison loss. It supports guarded
-#' weighted at-most-G label-MIP problems through distinct `postrank_tie_*`
-#' entry points. Its all-withhold risk is R0, which can be below tau.
-#' Ordinary constructors retain their tie-free interpretation.
+#' @section Exact ties:
+#' Ordinary inputs assume that distinct entities have zero probability of being
+#' equal. For posteriors in which exact equality has positive probability, the
+#' `postrank_tie_*` functions (see [postrank_tie_capabilities()]) treat exact
+#' equality as having zero loss whether the pair is ordered or left unordered,
+#' so the single-grade loss `R0` can be below `tau`.
 #'
 #' @section Case-study data:
-#' The three case-study inputs are adapted from public sources and retain
-#' source-specific conditions, separate from the package code license. The CDE
-#' input preserves source attribution, KRW retains its source CC-BY-NC notice
-#' with the license version unspecified, and Alabama retains CC BY 4.0
-#' attribution. Details are given in the data help pages and the installed
-#' DATA-NOTICE.
+#' The three case-study datasets are adapted from public sources and keep their
+#' source conditions, separate from the package code license: [pr_case_cde]
+#' preserves source attribution, [pr_case_krw] retains its source CC-BY-NC
+#' notice (license version unspecified in the source), and [pr_case_alabama]
+#' retains CC BY 4.0 attribution. See each dataset's help page and the installed
+#' `DATA-NOTICE.md` file.
 #'
 #' @section Citation:
 #' `citation("postrank")` returns the package, its theory book and the
@@ -63,11 +87,13 @@
 #' report card*, American Economic Review, 114(8), 2472-2525,
 #' \doi{10.1257/aer.20230700}.
 #'
-#' @seealso [postrank_options], [pr_tutorial],
+#' @seealso [postrank()], [postrank_example()], [postrank_describe()],
+#'   [postrank_options], [pr_tutorial],
 #'   `vignette("a1-getting-started", package = "postrank")`
 #' @examples
-#' pr_tutorial$one
+#' one <- postrank_example("tutorial_one")
+#' get_grades(one)
+#' get_risk(one)
 #' postrank_expected_rank(pr_tutorial$one)
-#' pr_tutorial$two
 #' @keywords internal
 "_PACKAGE"

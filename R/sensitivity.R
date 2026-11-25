@@ -1,6 +1,6 @@
-# Settings grids and re-solves over them (Chapter 4/10/11, PR-DEC-04-A): the default is the
-# methods book's one-at-a-time protocol around a base setting; the Cartesian grid is opt-in.
-# The typed settings list-column is the reconstruction authority for every row.
+# Settings grids and sensitivity re-solves: the default varies one axis at a time
+# around a base setting while Cartesian expansion is opt-in.
+# The typed settings list-column reconstructs every row's policy.
 
 .pr_sensitivity_fields <- c("grid", "settings", "fits", "grades", "table", "changes", "reference_id", "backend", "control",
   "schema_version", "provenance", "warnings")
@@ -54,35 +54,36 @@
 
 #' Build a One-at-a-Time or Full Settings Grid
 #'
-#' Settings are constructed for [postrank_sensitivity()] without optimization.
-#' The default `design = "one_at_a_time"` varies each supplied axis separately
-#' around `base`, flags the base row with `is_reference = TRUE`, and removes
-#' rows equal to the base or to each other. With `design = "full"`, the
-#' Cartesian grid is constructed and the row equal to `base` is flagged as the
-#' reference. The complete [postrank_settings()] object in the `settings`
-#' list-column defines each row; the scalar columns provide its displayed
-#' summary.
+#' `postrank_settings_grid()` builds a table of [postrank_settings()] rows
+#' around a reference setting `base` for [postrank_sensitivity()], without
+#' running a solver. With `design = "one_at_a_time"` (the default), each
+#' supplied axis is varied separately while holding the other axes at `base`;
+#' with `design = "full"`, all combinations of `base` and the supplied axis
+#' values are formed. Duplicate policies are removed, and the `base` policy sits
+#' in row 1 (`setting_id = "S01"`, `is_reference = TRUE`).
 #'
-#' @details Profile names such as `base` are ordinary display labels, not reserved keys.
-#' Different policies receive distinct labels; a colliding user label is
-#' suffixed with its setting ID. Invalid fractional grade caps are refused.
-#'
-#' @param base A [postrank_settings()] object.
-#' @param tau Optional numeric vector of tau values.
-#' @param G_max Optional integer vector of grade caps.
-#' @param weights Optional named list of weight profiles (named numeric
-#'   vectors); the unique nonblank list names label the rows.
-#' @param q Optional uniquely criterion-named list of numeric error-budget
-#'   vectors.
-#' @param design `"one_at_a_time"` (default) or `"full"`.
-#' @return A data frame with `setting_id`, `label`, `tau`, `G_max`, `exact_G`,
-#'   `objective`, `minimax_refine`, `w_<k>`, `q_<k>`, `is_reference` and the
-#'   `settings` list-column.
-#' @seealso [postrank_sensitivity()]
+#' @param base Reference [postrank_settings()] object.
+#' @param tau Optional numeric vector of `tau` values in `(0, 0.5]`.
+#' @param G_max Optional positive integer vector of maximum grade counts
+#'   (non-integers are rejected rather than truncated).
+#' @param weights Optional named list of criterion weight vectors, with unique
+#'   non-blank list names used as row labels.
+#' @param q Optional list named by criteria in `base$weights`, where each
+#'   element is a numeric vector of error budgets in `[0, 1]` (`NA` is not
+#'   allowed).
+#' @param design `"one_at_a_time"` (the default) or `"full"`.
+#' @returns A data frame with columns `setting_id`, `label`, `tau`, `G_max`,
+#'   `exact_G`, `objective`, `minimax_refine`, `w_<k>`, `q_<k>`, `is_reference`
+#'   and list-column `settings` (holding the full `postrank_settings` objects).
+#' @details
+#' Each row's optimization settings come from `settings[[i]]`; scalar columns
+#' are display summaries checked for agreement by [postrank_sensitivity()].
+#' Colliding display labels receive a `" [<setting_id>]"` suffix.
+#' @seealso [postrank_sensitivity()], [postrank_settings()]
 #' @concept grids
 #' @examples
-#' base <- postrank_settings(c(need_A = .6, need_B = .4), tau = .25, G_max = 3L)
-#' g <- postrank_settings_grid(base, tau = c(.1, .35), G_max = 2L)
+#' base <- postrank_settings(c(need_A = 0.6, need_B = 0.4), tau = 0.25, G_max = 3L)
+#' g <- postrank_settings_grid(base, tau = c(0.1, 0.35), G_max = 2L)
 #' g[, c("setting_id", "label", "tau", "G_max", "is_reference")]
 #' @export
 postrank_settings_grid <- function(base, tau = NULL, G_max = NULL, weights = NULL, q = NULL,
@@ -172,46 +173,57 @@ postrank_settings_grid <- function(base, tau = NULL, G_max = NULL, weights = NUL
 
 #' Re-Solve a Decision Problem Over a Settings Grid
 #'
-#' A separate optimization is performed for each distinct policy using the same
-#' posterior coefficients. A working optimizer backend is required.
+#' `postrank_sensitivity()` solves one grading problem per setting in `grid` on
+#' the same pairwise comparison probabilities, and summarizes how grades,
+#' ordered pair counts and pairwise relations change relative to a reference
+#' row.
 #'
-#' @details One problem is solved per grid row using the same coefficients. The
-#' backend is resolved once and recorded. Each row reports risk, disclosure,
-#' grade count, status, bounds and relation changes relative to the reference
-#' row. Rows without a validated grade retain their status, reason and bounds,
-#' with `NA` action metrics and changes; they are not replaced by all-withheld
-#' actions. Grade caps exceeding the entity count are reduced when bound to the
-#' input. Rows that coincide only after this reduction are removed with a
-#' warning. Since raw risks are comparable only under a common loss, the table
-#' reports settings separately without ranking them.
+#' Solving requires an optimization solver: install the free `highs` package
+#' (`install.packages("highs")`) and use `backend = "highs"` or
+#' `options(postrank.backend = "highs")`, or provide a licensed Gurobi
+#' installation (the default). `postrank` never switches solvers on its own.
 #'
-#' @param x A `postrank_pairwise`, `postrank_coefficients`, or
-#'   `postrank_probabilities` object accepted by [postrank_problem()], or a
-#'   `postrank_analysis` whose coefficients are reused.
-#' @param grid A [postrank_settings_grid()] data frame or a list of
-#'   [postrank_settings()].
-#' @param backend `NULL` (option, then Gurobi) or `"gurobi"`/`"highs"`.
-#' @param control A [postrank_control()] object or bare control list.
-#' @param reference Optional `setting_id` of the reference row (default: the
-#'   row flagged `is_reference`).
-#' @param keep_fits Keep every fit (`TRUE` by default for at most 25 rows).
-#' @return A `postrank_sensitivity` list. `table` contains action metrics and
-#'   solver bounds, `changes` counts pair relations newly disclosed, newly
-#'   withheld or reversed against the reference, and `grades` stores entity
-#'   grades by setting. Changes compare relations, not numeric label differences.
-#'   `grid` and `settings` retain the bound policies; `fits` holds the full fits
-#'   when requested. `reference_id`, `backend`, `control`, `schema_version`,
-#'   `provenance` and `warnings` record the calculation.
-#' @seealso [postrank_settings_grid()], [postrank_frontier()]
+#' @param x Pairwise comparison probabilities (`postrank_pairwise`,
+#'   `postrank_coefficients` or [postrank_probabilities()]), or a
+#'   `postrank_analysis` whose `pairwise` component is reused.
+#' @param grid A [postrank_settings_grid()] data frame or a non-empty list of
+#'   [postrank_settings()] objects.
+#' @param backend Solver to use, `"gurobi"` or `"highs"`; `NULL` uses
+#'   `getOption("postrank.backend")`, or `"gurobi"` if unset.
+#' @param control Solver controls from [postrank_control()] or a named list.
+#' @param reference Optional `setting_id` of the reference row (defaults to the
+#'   row with `is_reference = TRUE`, or row 1).
+#' @param keep_fits Logical; whether to retain all `postrank_fit` objects in
+#'   `fits` (defaults to `TRUE` when at most 25 rows remain after binding).
+#' @returns A `postrank_sensitivity` list containing `grid`, bound `settings`,
+#'   `fits` (`NULL` when `keep_fits = FALSE`), `grades` (`n x L` integer
+#'   matrix), `table` (loss, `N`, `disclosure_rate`, `G`, `status`, `reason`,
+#'   bounds, gap and `E_over_N_<k>`), `changes` (`n_same`, `n_new_disclosed`,
+#'   `n_new_withheld`, `n_reversed` and `change_fraction` relative to
+#'   `reference_id`), `reference_id`, `backend`, `control`, `schema_version`,
+#'   `provenance` and `warnings`.
+#' @details
+#' Because changing `tau` or `weights` changes the loss definition itself,
+#' compare rows by their grades, ordered pair counts and `changes` rather than
+#' ranking settings by their `risk` numbers. If capping `G_max` at the entity
+#' count makes two grid rows identical, duplicates are dropped with a warning.
+#' Rows that finish without a checked grading record `NA` loss and `changes`
+#' with `reason = "no_validated_incumbent"`.
+#' @seealso [postrank_settings_grid()], [postrank_frontier()],
+#'   [postrank_example()]
 #' @concept grids
 #' @examples
-#' if (requireNamespace("highs", quietly = TRUE)) {
-#'   pw <- postrank_pairwise(postrank_toy)
-#'   base <- postrank_settings(c(need_A = .6, need_B = .4), tau = .25, G_max = 3L)
-#'   sens <- postrank_sensitivity(pw, postrank_settings_grid(base, tau = .4), backend = "highs",
-#'     control = postrank_control(time_limit = 10))
-#'   sens$table[, c("risk", "N", "G", "status")]
-#' }
+#' # Inspect a stored sensitivity grid without running a solver:
+#' sens0 <- postrank_example("tutorial_sensitivity")
+#' sens0$table[, c("setting_id", "risk", "N", "G", "status")]
+#' sens0$changes
+#' @examplesIf requireNamespace("highs", quietly = TRUE)
+#' # Solve a two-row grid directly with the optional highs package:
+#' pw <- postrank_pairwise(postrank_toy)
+#' base <- postrank_settings(c(need_A = 0.6, need_B = 0.4), tau = 0.25, G_max = 3L)
+#' sens <- postrank_sensitivity(pw, postrank_settings_grid(base, tau = 0.4),
+#'   backend = "highs", control = postrank_control(time_limit = 10))
+#' sens$table[, c("setting_id", "risk", "N", "G", "status")]
 #' @export
 postrank_sensitivity <- function(x, grid, backend = NULL, control = postrank_control(), reference = NULL, keep_fits = NULL) {
   pw <- if (inherits(x, "postrank_analysis")) x$pairwise else .pr_coefficient_source(x)

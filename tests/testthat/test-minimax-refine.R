@@ -1,7 +1,7 @@
-# 014 repair Phase 3 (Step 3.1): minimax as a secondary mode with a weighted
-# second stage, and the degeneracy diagnostic.
+# Lexicographic minimax refinement (weighted stage 2, uniform Pareto stage 3)
+# and degenerate-criterion diagnostics.
 pr_r03_payload <- function() {
-  # 014 R03(a): criterion 1 puts entity 1 on top and reverses 2-3-4 in three of
+  # Four-entity fixture: criterion 1 puts entity 1 on top and reverses 2-3-4 in three of
   # four draws; criterion 2 is the clear order 1 > 2 > 3 > 4.
   x <- pr_test_payload(S = 4L, n = 4L, K = 2L); v <- x$joint_draws$tensor$values
   v[1, , 1] <- c(10, 1, 2, 3); for (s in 2:4) v[s, , 1] <- c(10, 3, 2, 1)
@@ -171,8 +171,8 @@ testthat::test_that("legacy minimax fits keep working with diagnostics and stabi
   testthat::expect_identical(cf$settings$minimax_refine, "none")
 })
 
-# AUD-01: literal six-state counterexample. Its selected minimax criterion is
-# constant, while the small positive ORIGINAL weight must still be optimized.
+# Six-state counterexample: the selected minimax criterion is constant while
+# a tiny positive weight on the secondary criterion must still be optimized.
 pr_aud01_payload <- function() {
   x <- pr_test_payload(S = 6L, n = 5L, K = 3L)
   x$joint_draws$tensor$values[] <- c(1,1,5,5,5,1,5,5,1,1,1,5,3,2,2,3,4,4,4,4,4,2,2,2,2,3,3,4,3,3,

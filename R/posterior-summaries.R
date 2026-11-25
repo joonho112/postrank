@@ -1,4 +1,4 @@
-# Posterior marginal summaries per entity and criterion (Chapter 10 report card rules):
+# Posterior marginal summaries per entity and criterion:
 # draws -> equal-weight means and stats::quantile(type = 7); exact finite law ->
 # probability-weighted means and the generalized inverse Q(p) = inf{x : F(x) >= p};
 # Gaussian coefficients -> stored means and analytic quantiles; shared-state mixtures ->
@@ -153,38 +153,41 @@
 
 #' Posterior Means and Intervals per Entity and Criterion
 #'
-#' Marginal posterior means are returned as a matrix. When `level` is supplied,
-#' central equal-tail intervals are added for the same oriented targets. These
-#' are marginal target summaries rather than simultaneous bands or intervals
-#' for grade numbers.
+#' `postrank_posterior_means()` computes an entity-by-criterion matrix of
+#' marginal posterior means, and optionally attaches central equal-tail
+#' posterior intervals at `level`. Intervals summarize marginal target
+#' uncertainty one entity and criterion at a time, not simultaneous coverage or
+#' intervals for grade numbers.
 #'
-#' @details Draw inputs use equal-weight means and
-#' `stats::quantile(type = 7)`; an exact finite law uses probability-weighted
-#' means and the generalized inverse \eqn{Q(p) = \inf\{x : F(x) \ge p\}};
-#' Gaussian coefficients use their stored means and analytic quantiles; a
-#' shared-state mixture uses its stored means and a bracketed root of the
-#' marginal mixture CDF in standardized coordinates. Mixture endpoints are
-#' checked against their CDF with absolute probability tolerance `1e-10`;
-#' a numerically unrepresentable endpoint raises `posterior_quantile_failure`.
-#' Stored mixture weights are never changed. Means and quantiles are computed separately, so a
-#' mean may lie outside its central interval for a skewed law. A pairwise
-#' error array alone does not determine posterior means, so `postrank_pairwise`
-#' objects are not accepted. Inputs from [postrank_probabilities()] can return
-#' explicitly supplied marginal summaries. Those values are not inferred from
-#' the probabilities, and their fixed interval level cannot be changed.
+#' @param x A `postrank_draws` object, a `postrank_coefficients` object, or a
+#'   [postrank_probabilities()] object that stores `summaries`. Bare
+#'   `postrank_pairwise` objects do not determine marginal means and are
+#'   rejected.
+#' @param level `NULL` (the default, returning means only) or a central interval
+#'   level in `(0, 1)`. For a [postrank_probabilities()] input with stored
+#'   intervals, a non-`NULL` `level` must equal `x$summaries$level`.
+#' @returns An `n x K` numeric matrix with `dimnames` `entity` and `criterion`.
+#'   When `level` is non-`NULL`, attributes `lower`, `upper`, `level` and
+#'   `interval_source` (`"draws_equal_tail"`, `"exact_finite_law"`,
+#'   `"gaussian_analytic"`, `"mixture_analytic"` or
+#'   `"supplied_marginal_summaries"`) are attached.
+#' @details
+#' Calculation method by input type:
+#' * IID or MCMC draws: equal-weight column means and `stats::quantile(..., type = 7)`;
+#' * exact finite posterior: probability-weighted means and generalized inverse
+#'   quantile \eqn{Q(p) = \inf\{x : F(x) \ge p\}};
+#' * normal posterior coefficients: stored `means` and `stats::qnorm()`;
+#' * shared-state mixture coefficients: stored `means` and bracketed roots of
+#'   the marginal mixture CDF verified within probability tolerance `1e-10`
+#'   (stopping with `posterior_quantile_failure` if unrepresentable);
+#' * precomputed probabilities: stored `x$summaries` without recalculation.
 #'
-#' @param x A `postrank_draws`, `postrank_coefficients`, or
-#'   `postrank_probabilities` object with supplied marginal summaries.
-#' @param level `NULL` for means only, or a central interval level in `(0, 1)`.
-#'   A probability input with retained intervals supports only its supplied
-#'   level; `NULL` can still request its supplied means without intervals.
-#' @return An `n x K` numeric matrix with dimnames `entity` and `criterion`;
-#'   when `level` is given it carries attributes `lower`, `upper`, `level` and
-#'   `interval_source`.
-#' @seealso [postrank_report_card()]
+#' Because means and quantiles are computed separately, a posterior mean can lie
+#' outside an equal-tail interval under a skewed distribution.
+#' @seealso [postrank_report_card()], [postrank_composite()]
 #' @concept baselines
 #' @examples
-#' m <- postrank_posterior_means(postrank_toy, level = .9)
+#' m <- postrank_posterior_means(postrank_toy, level = 0.90)
 #' m
 #' attr(m, "lower")
 #' @export

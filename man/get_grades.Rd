@@ -6,35 +6,33 @@
 get_grades(x, ...)
 }
 \arguments{
-\item{x}{A \code{postrank_fit}, \code{postrank_analysis} or \code{postrank_baseline}.}
+\item{x}{A \code{postrank_fit}, \code{postrank_analysis} or \code{postrank_baseline}
+object.}
 
 \item{...}{Unused arguments for generic compatibility.}
 }
 \value{
-An integer vector named by entity ID, or \code{NULL} when a fit has no
-validated candidate. Fit/analysis grades retain the input's entity order.
+An integer vector named by \code{entity_id} in input entity order, or
+\code{NULL} when \code{x} has no checked grading (\code{incumbent_validated = FALSE}).
 }
 \description{
-The stored grades are returned as a named vector for subsequent analysis or
-export. Grade 1 has highest priority. Entities assigned the same grade have
-their comparison withheld; a common grade does not imply equality of their
-latent targets.
+\code{get_grades()} extracts the checked integer grade vector from a fit,
+analysis or baseline result. Grade 1 is the highest priority; entities given
+the same grade are left unordered without claiming they are equal.
 }
 \details{
-This accessor does not solve or choose a new grade report. A valid
-all-withheld report returns grade 1 for every entity; \code{NULL} instead means
-that no validated grades are available. Console truncation does not limit
-this vector. Use \link{postrank_tables} for a two-column data frame.
+\code{get_grades()} reads stored grades without running a solver. A
+valid grading that leaves all pairs unordered returns \code{1L} for every
+entity, whereas \code{NULL} means no checked grading is available. Unlike
+printed console output, the returned vector is never truncated; use
+\link{postrank_tables} (\code{as.data.frame(x)}) for a two-column data frame.
 }
 \examples{
-if (requireNamespace("highs", quietly = TRUE)) {
-  one <- postrank(pr_tutorial$one, tau = .2, G_max = 3L, backend = "highs",
-    control = postrank_control(time_limit = 10), fragility = FALSE)
-  grades <- get_grades(one)
-  grades
-}
+one <- postrank_example("tutorial_one")
+get_grades(one)
 }
 \seealso{
-\code{\link[=get_relations]{get_relations()}}, \code{\link[=get_profile]{get_profile()}}, \code{\link[=get_risk]{get_risk()}}
+\code{\link[=get_risk]{get_risk()}}, \code{\link[=get_profile]{get_profile()}}, \code{\link[=get_relations]{get_relations()}},
+\link{postrank_tables}
 }
 \concept{reporting}

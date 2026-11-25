@@ -11,14 +11,14 @@ Source:
 [`inst/CITATION`](https://github.com/joonho112/postrank/blob/HEAD/inst/CITATION)
 
 Lee, J. (2026). postrank: Posterior Ranking with Integer Grades. R
-package version 1.2.0. GitHub: https://github.com/joonho112/postrank.
+package version 1.3.0. GitHub: https://github.com/joonho112/postrank.
 Package documentation: https://joonho112.github.io/postrank/
 
     @Manual{,
       title = {postrank: Posterior Ranking with Integer Grades},
       author = {JoonHo Lee},
       year = {2026},
-      note = {R package version 1.2.0. Package documentation: https://joonho112.github.io/postrank/},
+      note = {R package version 1.3.0. Package documentation: https://joonho112.github.io/postrank/},
       url = {https://github.com/joonho112/postrank},
     }
 

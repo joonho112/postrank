@@ -1,6 +1,6 @@
-# T-ux-02 / T-ux-07 / T-ux-14: every printed class has a result-first English view whose
+# Console formatting coverage: every printed class stays within requested width,
 # formatter returns lines no wider than the requested width, and print() returns its input
-# invisibly. Objects come from sealed caches, pure constructors or (tier B) small HiGHS solves.
+# invisibly. Objects come from stored examples, constructors, or small HiGHS solves.
 pr_print_objects <- function() {
   ta <- pr_cached("toy_analysis"); fit <- ta$fit; pw <- postrank_pairwise(postrank_toy)
   design <- list(sample_sizes_fixed_before_sampling = TRUE, alpha_fixed_before_sampling = TRUE, adaptive_stopping = FALSE,

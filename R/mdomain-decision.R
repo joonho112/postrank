@@ -1,33 +1,61 @@
-#' Specify a Multidomain Reporting Decision
+#' Specify Loss and Error Controls for Multidomain Grading
 #'
-#' Creates a decision recipe. Domain and unit identities, mask dimensions, and
-#' protection rows are checked again when the recipe is bound to an input.
-#' Smaller grade labels report higher priority; a grade tie withholds direction.
+#' `postrank_mdomain_decision()` builds a decision specification setting domain
+#' weights, withholding costs `tau`, pair scopes, expected-error budgets `q`,
+#' and joint false-discovery-proportion (FDP) exceedance thresholds `t` and
+#' `alpha` for multidomain profile grading. Domain IDs, unit IDs, and scope
+#' dimensions are checked again when the specification is matched to a
+#' [postrank_mdomain_input()] object. Grade `1` is the highest priority within
+#' each domain, and equal grades leave a pair unordered. Requires optional
+#' package `gmp`.
 #'
-#' @param weights Domain weights, or `NULL` for exactly equal weights. Named
-#'   vectors must follow the input's domain order. Numeric weights whose total
-#'   is within the core tolerance are normalized using their exact stored binary
-#'   values; rational text weights must sum to exactly one. Zero weights are
-#'   permitted and do not disable protection rows.
-#' @param tau Tie loss in `(0, 1/2]`, as a scalar or a domain vector.
-#' @param scope `"all_pairs"`, or a named list of symmetric binary masks with
-#'   zero diagonals. Named masks must follow the input's unit order.
-#' @param q Expected-error guard in `[0, 1]`, as a scalar or domain vector.
-#'   `NULL` omits these guards.
-#' @param t Joint exceedance threshold in `[0, 1]`, as a scalar or domain
-#'   vector. `NULL` disables joint guards. An exceedance is strict, `F/N > t`.
-#' @param alpha Joint-event probability limit in `[0, 1]`.
-#' @param expected Explicit rows with `domain_id`, `scope_id`, and `q` columns.
-#'   These override the convenience `q` rows. An empty data frame disables them.
-#' @param joint Explicit rows with `domain_id`, `scope_id`, and `t` columns.
-#'   These override the convenience `t` rows. An empty data frame disables them.
-#' @details Convenience rows use a full-pair mask. A custom mask catalog without
-#'   a full-pair mask requires explicit rows, including an empty data frame to
-#'   disable a guard. Exact decimal/fraction strings retain their rational value;
-#'   numeric values retain their stored binary value. Joint guards default to
-#'   `t = "0"`, with `alpha = "1/20"`; expected guards default to disabled.
-#' @return A `postrank_mdomain_decision` recipe. Validation does not certify the
-#'   scientific or sampling provenance of the input.
+#' @param weights Domain weights (non-negative with positive total), or `NULL`
+#'   (the default) for exact equal weights `1 / D` on every domain. Named
+#'   vectors must match the input's domain order. Rational strings (such as
+#'   `c("3/5", "2/5")` or `c("0.6", "0.4")`) must sum to `1` exactly; numeric
+#'   weights within `1e-12` of `1` are normalized in exact stored-binary
+#'   rational arithmetic when bound to an input. Zero weights are allowed and
+#'   keep protection rows on that domain active.
+#' @param tau Withholding cost in `(0, 1/2]`, as a scalar or domain-ordered
+#'   vector (default `"1/10"`).
+#' @param scope `"all_pairs"` (the default), or a named list of symmetric
+#'   `n x n` binary (`0`/`1` or logical) matrices with zero diagonals (when
+#'   named, row and column names must match input unit order).
+#' @param q Optional expected wrong-direction error cap (`E / N <= q`) in
+#'   `[0, 1]`, as a scalar or domain-ordered vector. `NULL` (the default) omits
+#'   expected-error constraints unless `expected` is supplied.
+#' @param t Threshold in `[0, 1]` for strict scoped FDP exceedance events
+#'   `F / N > t`, as a scalar or domain-ordered vector (default `"0"`, so any
+#'   wrong-direction error `F >= 1` counts as an exceedance). Set `t = NULL` to
+#'   disable convenience joint constraints.
+#' @param alpha Upper bound in `[0, 1]` on the probability of the union of all
+#'   active `F / N > t` events across domains and scopes (default `"1/20"`).
+#' @param expected Optional data frame with columns `domain_id`, `scope_id`, and
+#'   `q`, overriding `q`. Pass a zero-row data frame to disable expected-error
+#'   constraints when using a custom `scope` catalog.
+#' @param joint Optional data frame with columns `domain_id`, `scope_id`, and
+#'   `t`, overriding `t`. Pass a zero-row data frame to disable joint FDP
+#'   constraints when using a custom `scope` catalog.
+#' @return A `postrank_mdomain_decision` list storing the validated policy
+#'   parameters and exact-rational `receipts`.
+#' @details
+#' Policy numbers (`weights`, `tau`, `q`, `t`, `alpha`) accept fraction or
+#' decimal strings (`"1/10"`, `"0.05"`), `gmp::bigq` rationals, or finite R
+#' `numeric` values. String fractions and decimals keep their exact rational
+#' value, whereas R `numeric` values keep their exact IEEE-754 binary floating
+#' value (for instance, numeric `0.1` is not `1/10`), so strings are recommended
+#' whenever exact decimal or fractional thresholds are intended.
+#'
+#' Convenience arguments `q` and `t` expand to one row per domain on the
+#' full-pair scope (`"full"`). If `scope` is a custom list of masks that omits a
+#' full-pair mask, supply `expected` and `joint` explicitly (or zero-row data
+#' frames to disable them).
+#' @seealso [postrank_mdomain_input()], [postrank_mdomain_evaluate()],
+#'   [postrank_mdomain_solve()], [postrank_mdomain_assess()]
+#' @examplesIf requireNamespace("gmp", quietly = TRUE)
+#' dec <- postrank_mdomain_decision(tau = "1/4", t = "1/10", alpha = "1/20")
+#' dec
+#' summary(dec)
 #' @concept multidomain
 #' @export
 postrank_mdomain_decision <- function(weights=NULL, tau="1/10", scope="all_pairs",
@@ -131,7 +159,7 @@ postrank_mdomain_decision <- function(weights=NULL, tau="1/10", scope="all_pairs
   if (!inherits(decision, "postrank_mdomain_decision"))
     .md_error("decision must be a postrank_mdomain_decision recipe",
               "mdomain_decision_invalid", "decision")
-  # Rebuild rather than trust a mutable recipe's class or cached receipts.
+  # Rebuild from fields rather than trusting an externally modified class or cached fields.
   recipe <- .md_attempt({
     fields <- c("weights", "tau", "scope", "q", "t", "alpha", "expected", "joint")
     if (!all(fields %in% names(decision))) p2_input_error("decision recipe is missing required fields")

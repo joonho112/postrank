@@ -1,5 +1,5 @@
-# The entity-level report card (Chapter 10 postrank_report_card). Summaries are
-# computed once here from the declared input law; views only read the stored table.
+# Entity-level report cards (postrank_report_card). Marginal summaries are
+# computed once here from the input posterior; views only read the stored table.
 
 .pr_report_card_fields <- c("data", "level", "interval_source", "secondary_order", "settings", "grade_identity",
   "input_identity", "schema_version", "provenance", "warnings")
@@ -19,66 +19,60 @@
 
 #' Prepare an Entity Report Card with Posterior Intervals
 #'
-#' A validated grading is combined with marginal posterior summaries in an
-#' entity-level report card. The table contains every entity, its grade, counts
-#' of comparisons reported above or below it or withheld, and each criterion's
-#' posterior mean, interval and expected rank. The table is used for detailed
-#' reporting and plotting; [postrank_tables] supplies the basic two-column
-#' grade table.
+#' `postrank_report_card()` combines a checked grading with marginal posterior
+#' means, central intervals and expected ranks in an entity-level table. Each
+#' row gives an entity's grade, how many other entities are reported above it,
+#' below it or in the same grade, and per-criterion posterior summaries. For a
+#' basic two-column grade table, use [postrank_tables].
 #'
-#' @param x A `postrank_fit` or `postrank_analysis` with a validated grade.
-#' @param draws Optional source input: `postrank_draws`,
-#'   `postrank_coefficients`, or `postrank_probabilities` with supplied marginal
-#'   intervals. It must have the same input identity as the fit.
-#' @param level Central posterior interval level in `(0, 1)`; default `0.90`.
-#'   For supplied marginal summaries, it must exactly match their stored level.
-#' @param order Secondary sort key within each grade: `"expected_rank"`
-#'   (weighted expected rank, default), `"mean"` (one criterion's posterior
-#'   mean, larger first) or `"label"` (entity ID).
-#' @param order_by Criterion used with `order = "mean"`. Required with several
-#'   criteria, optional with one. Leave `NULL` for other ordering rules.
-#' @return A `postrank_report_card` with the full table in `data`. Its other
-#'   fields record `level`, `interval_source`, `secondary_order`, `settings`,
-#'   `grade_identity`, `input_identity`, `schema_version`, `provenance` and
-#'   `warnings`. A selected mean-ordering criterion is recorded in
-#'   `provenance$ordering_criterion`.
-#' @details The table is ordered first by grade, then the secondary key, with
-#'   entity ID breaking remaining ties. Grade 1 has highest priority. Shared
-#'   grades withhold comparisons and do not establish latent equality.
-#'   `n_above` counts other entities this entity is reported above; `n_below`
-#'   counts those it is reported below. Together with `n_withheld`, they sum
-#'   to n-1 for each row. Columns `mean_`, `lower_`, `upper_` and
-#'   `expected_rank_` are suffixed with the criterion ID. Expected rank is
-#'   \eqn{1 + \sum_{j \ne i} e_{ij,k}}. Weighted ranks can set the row order;
-#'   means in different units are never added for this purpose.
+#' @param x A `postrank_fit` or `postrank_analysis` object with a checked
+#'   grading (`incumbent_validated = TRUE`; otherwise stops with
+#'   `no_validated_incumbent`).
+#' @param draws Optional posterior input matching `x`'s `input_identity`: a
+#'   `postrank_draws`, `postrank_coefficients`, or [postrank_probabilities()]
+#'   object with marginal interval summaries. Required when `x` is a
+#'   `postrank_fit` built from a `postrank_pairwise` object that does not store
+#'   the original draws.
+#' @param level Central posterior interval level in `(0, 1)` (default `0.90`).
+#'   For a [postrank_probabilities()] input with supplied intervals, `level`
+#'   must equal the stored `summaries$level`.
+#' @param order Secondary sort order within each grade: `"expected_rank"`
+#'   (weighted expected rank, the default), `"mean"` (descending posterior mean
+#'   on one criterion) or `"label"` (entity ID).
+#' @param order_by Criterion ID used when `order = "mean"` (required when
+#'   several criteria are present, optional with one; must be `NULL` for other
+#'   `order` values).
+#' @returns A `postrank_report_card` object with the full data frame in `data`,
+#'   plus `level`, `interval_source`, `secondary_order`, `settings`,
+#'   `grade_identity`, `input_identity`, `schema_version`, `provenance`
+#'   (recording `ordering_criterion` when `order = "mean"`) and `warnings`.
+#' @details
+#' Rows are sorted first by `grade` (grade 1 is highest priority; shared grades
+#' leave pairs unordered), then by `order`, with `entity_id` breaking remaining
+#' ties. In `data`, `n_above` counts entities graded below this entity
+#' (`grade[i] < grade[j]`), `n_below` counts entities graded above it, and
+#' `n_withheld` counts other entities sharing its grade; for every row,
+#' `n_above + n_below + n_withheld == n - 1`. Per-criterion columns are named
+#' `mean_<k>`, `lower_<k>`, `upper_<k>` and `expected_rank_<k>`, where expected
+#' rank is \eqn{1 + \sum_{j \ne i} e_{ij,k}}. When `order = "expected_rank"`,
+#' rows within a grade are ordered by weighted expected rank rather than adding
+#' means across criteria in different units.
 #'
-#'   The source comes from `draws`, then the analysis input, then a typed
-#'   coefficient or supplied-probability object stored in the fit. A bare
-#'   pairwise object contains no marginal posterior law, so supply its
-#'   original input through `draws`. Matching cached summaries are reused;
-#'   otherwise this function computes summaries from the source. It does not
-#'   solve for new grades. Figures and table conversion subsequently read the
-#'   prepared card without recomputing these summaries.
-#'
-#'   Intervals describe the supplied marginal posterior, not Monte Carlo
-#'   error or the probability that a grade is correct. A mean can lie outside
-#'   an equal-tail interval. Supplied probability matrices require genuine
-#'   same-target marginal intervals at their recorded level: a posterior law
-#'   or chain history is not inferred from the matrices. Without a validated
-#'   grade, the function stops with `no_validated_incumbent`.
-#'
-#'   The card always contains all entities. Row limits and display labels in
-#'   [postrank_plot_report_card()] affect only the figure.
-#' @seealso [postrank()], [postrank_posterior_means()], [postrank_tables]
+#' Cached summaries on a `postrank_analysis` at the requested `level` are
+#' reused; otherwise summaries are computed from the posterior source without
+#' re-solving for grades. Intervals summarize marginal target uncertainty (a
+#' posterior mean can lie outside an equal-tail interval), not Monte Carlo
+#' error or the probability that a grade assignment is right. `data` always
+#' retains all `n` entities; row caps in [postrank_plot_report_card()] affect
+#' only the plot.
+#' @seealso [postrank()], [postrank_tables], [postrank_plot_report_card()],
+#'   [postrank_posterior_means()]
 #' @concept reporting
 #' @examples
-#' if (requireNamespace("highs", quietly = TRUE)) {
-#'   one <- postrank(pr_tutorial$one, tau = .2, G_max = 3L, backend = "highs",
-#'     control = postrank_control(time_limit = 10), fragility = FALSE)
-#'   card <- postrank_report_card(one, level = .8, order = "mean")
-#'   as.data.frame(card)
-#'   card$interval_source
-#' }
+#' one <- postrank_example("tutorial_one")
+#' card <- postrank_report_card(one, level = 0.80, order = "mean")
+#' as.data.frame(card)
+#' card$interval_source
 #' @export
 postrank_report_card <- function(x, draws = NULL, level = 0.90, order = c("expected_rank", "mean", "label"), order_by = NULL) {
   order <- match.arg(order); level <- .pr_level(level)

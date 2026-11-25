@@ -1,9 +1,9 @@
 # Check an Imported Probability Input
 
-Directional errors, corrections and summaries are reconstructed from the
-stored source values and compared with the recorded probability input.
-These checks detect invalid content or changes introduced after
-construction, including changes in a loaded object.
+`validate_postrank_probabilities()` rebuilds a `postrank_probabilities`
+object from its stored raw probabilities, source settings, correction
+rule and marginal summaries, checking that nothing was altered after
+construction.
 
 ## Usage
 
@@ -15,24 +15,25 @@ validate_postrank_probabilities(x)
 
 - x:
 
-  An object from
+  A `postrank_probabilities` object created by
   [`postrank_probabilities()`](https://joonho112.github.io/postrank/reference/postrank_probabilities.md).
 
 ## Value
 
-Invisible `TRUE` on success. An invalid or altered object raises an
-error; values and source records are not repaired or replaced.
+`TRUE`, invisibly, when `x` is valid and unaltered; otherwise stops with
+an error (`invalid_probabilities` or `stale_probability_identity`).
 
 ## Details
 
-The checks repeat the constructor's requirements, including named axes,
-unused `NA` diagonals, probability range, reverse complements, and
-consistency of the requested correction. They do not establish joint-law
-coherence, the truth of the source description, or the accuracy of the
-supplied probabilities. A correction record is not an error certificate.
-To change probabilities, targets, or source descriptions, construct a
-new input with
-[`postrank_probabilities()`](https://joonho112.github.io/postrank/reference/postrank_probabilities.md).
+All checks from
+[`postrank_probabilities()`](https://joonho112.github.io/postrank/reference/postrank_probabilities.md)
+are re-run, including matching entity and criterion names, `NA`
+diagonals, values in `[0, 1]`, complement tolerances and `summaries`
+consistency. Passing these checks confirms that the stored object is
+intact; it does not verify joint-posterior coherence or the accuracy of
+the external calculation. To change probabilities or descriptions, call
+[`postrank_probabilities()`](https://joonho112.github.io/postrank/reference/postrank_probabilities.md)
+again.
 
 ## See also
 

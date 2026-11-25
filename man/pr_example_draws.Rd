@@ -5,40 +5,44 @@
 \title{An Additional Three-Criterion Example with 4000 IID Draws}
 \format{
 A \code{postrank_draws} object whose \code{joint_draws$tensor$values} is a
-4000 x 30 x 3 array (draw, entity \code{site001}-\code{site030}, criterion
-\code{poverty}, \code{frl}, \code{snap}); the remaining fields follow the legacy schema.
+4000 x 30 x 3 numeric array (draws x entities \code{site001}-\code{site030} x
+criteria \code{poverty}, \code{frl}, \code{snap}), together with its target, context and
+sampling descriptions and \code{validation} record.
 }
 \source{
-\code{data-raw/make-pr-example-law.R} (law stage, seed 20261023) and
-\code{data-raw/make-pr-example-draws.R} (draw stage, seed 20261024); the frozen
-law and configuration are \code{data-raw/pr-example-law.json} and
-\code{data-raw/pr-example-config.json}.
+Built by \code{data-raw/make-pr-example-law.R} (posterior parameters, seed
+\code{20261023}) and \code{data-raw/make-pr-example-draws.R} (IID draws, seed
+\code{20261024}).
 }
 \usage{
 pr_example_draws
 }
 \description{
-A validated joint \code{postrank_draws} object with all eight scientific
-declarations. A synthetic dataset was generated from a Gaussian model
-(K = 3, latent covariance \verb{.4 I + .6 s s'} with \verb{s = (1, 1, -1)}, cyclic
-precision groups of ten sites) and passed through the
-known-Gaussian posterior; the resulting law (30 x 3 means, 3 x 3 x 30
-covariances) was frozen and 4000 IID draws were generated from it once
-(seed 20261024). The criteria are named \code{poverty}, \code{frl} and \code{snap} for
-illustration only; the values are synthetic latent needs, not real measures.
-The same law is shipped as \link{pr_example_gaussian}.
+\code{pr_example_draws} is a synthetic \code{postrank_draws} dataset for 30 fictional
+sites (\code{site001} through \code{site030}) on three criteria (\code{poverty}, \code{frl} and
+\code{snap}), carrying all eight scientific declarations. Synthetic observations
+were simulated from a three-criterion normal model (latent covariance
+\verb{0.4 I + 0.6 s s'} with \verb{s = (1, 1, -1)} and cyclic precision groups of 10
+sites, seed \code{20261023}), yielding a conjugate normal posterior from which
+4,000 IID draws were sampled once (seed \code{20261024}). The criterion names are
+illustrative labels only, not measurements of real sites. The underlying
+normal posterior is also provided analytically in \link{pr_example_gaussian}.
 }
 \details{
-The \code{snap} criterion is negatively related to the other two criteria,
-and the posteriors are imprecise. Under the illustrative policy
-\code{weights = c(poverty = .5, frl = .25, snap = .25)}, \code{G_max = 4}, the validated
-incumbent at \code{tau = .25} is the all-withheld grading (every comparison withheld, risk
-\code{tau}), and at \code{tau = .35} it discloses about 63\% of the pairs in four
-grades. Both results are provided as cached results for the vignettes.
+Because \code{snap} is negatively correlated with \code{poverty} and \code{frl} and the
+posteriors are noisy, under \code{weights = c(poverty = 0.5, frl = 0.25, snap = 0.25)}
+and \code{G_max = 4} the chosen grading at \code{tau = 0.25} leaves all pairs
+unordered (one shared grade, loss \code{tau}), whereas at \code{tau = 0.35} it orders
+about 63\% of pairs across four grades (stored as
+\code{postrank_example("analysis_30x3")} and
+\code{postrank_example("analysis_30x3_tau35")}).
 }
 \examples{
 dim(pr_example_draws$joint_draws$tensor$values)
 pr_example_draws$criterion_ids
+}
+\seealso{
+\link{pr_example_gaussian}, \code{\link[=postrank_example]{postrank_example()}}
 }
 \concept{data}
 \keyword{datasets}

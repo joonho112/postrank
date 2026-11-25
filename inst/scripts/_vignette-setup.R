@@ -1,12 +1,12 @@
-# Reader of the sealed example assets. Vignettes source it with
+# Internal reader for the 21 precomputed example assets, called by postrank_example() or
 #   source(system.file("scripts", "_vignette-setup.R", package = "postrank"), local = TRUE)
-# load_or_compute() is not exported. It validates exact origin and reader versions, the
-# installed source/cache manifests, the asset file bytes and SHA-256, the timestamp and the
-# data/input identities, restores a stubbed bundled input losslessly and runs the class
-# validators. It never writes, repairs or recomputes in ordinary reading. Only live = TRUE
-# evaluates the caller's explicitly selected backend expression, after cache validation, and
-# reports both results; it never retries with another backend. Cross-version reads require
-# a separately sealed compatibility receipt; original computation provenance is unchanged.
+# load_or_compute() is not exported. It checks the origin and reader package versions, the
+# installed source and cache manifests, the asset file size, SHA-256 digest, UTC timestamp,
+# and bundled input identity, restores any stubbed bundled input, and runs the class
+# validators. In default mode (live = FALSE) it never writes files or runs a solver; live = TRUE
+# additionally evaluates the caller's solver expression and compares the two results without
+# automatic solver fallback. Cross-version reads verify cache-reader-compatibility.json while
+# keeping the original computation metadata intact.
 `%||%` <- function(x, y) if (is.null(x)) y else x
 .cache_source_id <- function(entries) digest::digest(paste(vapply(entries,
   function(e) paste0(e$path, "\t", e$sha256), ""), collapse = "\n"), algo = "sha256", serialize = FALSE)

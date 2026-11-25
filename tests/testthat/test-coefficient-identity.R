@@ -1,4 +1,4 @@
-# Self-contained since 0.9.0: tests call the package namespace directly.
+# Content-hash stability and validation checks for typed coefficient objects.
 ci_prov<-function()list(producer_id='fixed-identity-test',producer_version='1',posterior_id='literal-no-sampling',input_payload_sha256=strrep('a',64),source_sha256=strrep('b',64),config_sha256=strrep('c',64))
 ci_gaussian<-function() {
   m<-matrix(c(-1,1),2,1,dimnames=list(entity=c('A','B'),criterion='k'))
@@ -44,8 +44,8 @@ testthat::test_that('typed identity does not inherit a caller serialization defa
 testthat::test_that('explicit audit tests mathematical projection separately from immutable byte seal',{
   for(x in list(ci_gaussian(),ci_mixture())) {
     testthat::expect_true(validate_postrank_coefficients(x,recompute=TRUE))
-    # Deliberately untrusted new-domain negative artifact, never a public
-    # constructor/legacy-draw substitute. Importers also require expected ID.
+    # Deliberately malformed coefficient fixture rejected by importers and validators.
+    # Importers also check the expected content identity.
     b<-x;b$e[1,2,1]<-.3;b$e[2,1,1]<-.7;b<-.pr_coefficient_seal(b)
     testthat::expect_true(validate_postrank_coefficients(b))
     testthat::expect_error(validate_postrank_coefficients(b,recompute=TRUE),'projection')

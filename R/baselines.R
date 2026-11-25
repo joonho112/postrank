@@ -1,8 +1,7 @@
-# Score-order baselines (Chapter 6, PR-DEC-06-A, PR-DEC-11-C): expected-rank and composite
-# scores, and optimal (contiguous-partition DP) or quantile cuts of a declared score order.
-# Ported from the pilot's R/scores.R and R/optimal-cuts.R with the tie policy intact:
-# exactly equal stored scores are indivisible blocks (no epsilon); objective ties prefer
-# fewer occupied grades, then the lexicographically earlier vector of block cut positions.
+# Score-order baselines: expected-rank and composite scores, plus optimal
+# (contiguous-partition DP) or quantile cuts of a declared score order.
+# Equal stored scores form indivisible blocks (no epsilon); objective ties
+# prefer fewer occupied grades, then the lexicographically earliest cut vector.
 
 .pr_baseline_fields <- c("method", "scores", "direction", "order", "score_blocks", "cut_rule", "cuts", "grade",
   "evaluation", "objective", "risk", "optimality_scope", "tie_policy", "settings", "input_identity",
@@ -28,31 +27,33 @@
 
 #' Weighted Expected-Rank Scores from Pairwise Errors
 #'
-#' Each entity receives a score equal to its posterior expected rank averaged
-#' over the chosen criteria. Smaller scores indicate higher reporting priority.
-#' The resulting order can be partitioned into grades by [postrank_cuts()].
+#' `postrank_expected_rank()` computes each entity's posterior expected rank
+#' averaged across criteria, where `1` is the highest priority (smallest score =
+#' highest priority). Pass the resulting score vector to [postrank_cuts()] to
+#' partition that score order into integer grades.
 #'
-#' @details The expected-rank score is
+#' @param pairwise Pairwise directional-error probabilities: a
+#'   `postrank_pairwise`, `postrank_coefficients` or [postrank_probabilities()]
+#'   object.
+#' @param weights Nonnegative finite criterion weights summing to one within
+#'   `1e-12`, or `NULL` (the default) for equal weights `1 / K`. Unnamed weights
+#'   follow `pairwise$criterion_ids` order; named weights must name every
+#'   criterion once.
+#' @returns A numeric vector named by `entity_ids`, carrying attribute
+#'   `score_method = "expected_rank"`.
+#' @details
+#' Entity `i`'s score is
 #' \eqn{r_i = \sum_k b_k \{1 + \sum_{j \ne i} e_{ij,k}\}}
-#' with \eqn{e_{ij,k} = P(\theta_{ik} \le \theta_{jk} \mid Y)}: the posterior
-#' expected rank of entity `i` (1 = highest priority), averaged over criteria
-#' with weights `b`. Columns are summed in a stable entity-ID order.
-#' Reordering input rows while retaining their IDs therefore preserves each
-#' named score and its exact-score tie block.
-#'
-#' @param pairwise A `postrank_pairwise`, `postrank_coefficients`, or
-#'   `postrank_probabilities` object with tie-free directional errors.
-#' @param weights `NULL` for equal weights, or nonnegative criterion weights
-#'   summing to one. An unnamed vector follows criterion order; names must
-#'   cover every criterion exactly once.
-#' @return A named numeric vector, one score per entity (attribute
-#'   `score_method = "expected_rank"`).
-#' @seealso [postrank_cuts()], [postrank_compare()]
+#' where \eqn{e_{ij,k} = P(\theta_{ik} \le \theta_{jk})} and `b` are `weights`.
+#' Columns are summed in sorted `entity_id` order so permuting entity rows
+#' preserves exact floating-point scores and tie blocks.
+#' @seealso [postrank_cuts()], [postrank_composite()], [postrank_compare()]
 #' @concept baselines
 #' @examples
 #' postrank_expected_rank(pr_tutorial$one)
+#'
 #' pw <- postrank_pairwise(postrank_toy)
-#' postrank_expected_rank(pw, c(need_A = .6, need_B = .4))
+#' postrank_expected_rank(pw, c(need_A = 0.6, need_B = 0.4))
 #' @export
 postrank_expected_rank <- function(pairwise, weights = NULL) {
   pw <- .pr_coefficient_source(pairwise)
@@ -71,37 +72,38 @@ postrank_expected_rank <- function(pairwise, weights = NULL) {
 
 #' Posterior-Mean Composite Scores with Declared Scales
 #'
-#' Posterior means are combined using declared criterion weights, scales and
-#' centers. Larger scores indicate higher reporting priority. The resulting
-#' deterministic score defines an order; it does not specify a posterior
-#' distribution for the composite or the probability that one uncertain
-#' composite exceeds another.
+#' `postrank_composite()` combines entity posterior means across criteria into a
+#' weighted linear score using caller-supplied centers and scales (larger score
+#' = higher priority). Pass the resulting score vector to [postrank_cuts()] to
+#' partition that order into integer grades.
 #'
-#' @details The score is
-#' \eqn{c_i = \sum_k a_k (\bar\theta_{ik} - \mathrm{center}_k) / \mathrm{scale}_k}.
-#' Scales and centers are supplied by the caller; this function does not
-#' estimate standardization parameters. Ranking these scores and then cutting
-#' their order under criterion-weighted loss is different from grading a
-#' composite target's posterior. See
-#' `vignette("m2-several-criteria", package = "postrank")`.
-#'
-#' @param means An `n x K` numeric matrix of posterior means with entity
-#'   rownames and criterion colnames (for example from
+#' @param means Finite `n x K` numeric matrix of posterior means with entity
+#'   row names and criterion column names (for example from
 #'   [postrank_posterior_means()] or `coefficients$means`).
-#' @param weights Nonnegative criterion weights `a` summing to one, or `NULL`
-#'   for equal weights. Names are matched to criterion columns; an unnamed
-#'   vector follows column order.
-#' @param scales Positive scales: an unnamed scalar is recycled, an unnamed
-#'   length-K vector follows the columns of `means`, and a named vector must
-#'   contain every criterion ID exactly once (matched by name).
-#' @param centers Centers, with the same name-matching and recycling rules
-#'   as `scales`.
-#' @return A named numeric vector (attribute `score_method = "composite"`).
-#' @seealso [postrank_cuts()], [postrank_posterior_means()]
+#' @param weights Nonnegative finite criterion weights `a` summing to one within
+#'   `1e-12`, or `NULL` for equal weights `1 / K`. Unnamed weights follow column
+#'   order; named weights must name every criterion once.
+#' @param scales Positive finite scale value(s) (default `1`): an unnamed scalar
+#'   is recycled across criteria, an unnamed length-`K` vector follows column
+#'   order, and a named vector must name every criterion once.
+#' @param centers Finite center value(s) (default `0`), following the same
+#'   name-matching and recycling rules as `scales`.
+#' @returns A numeric vector named by `rownames(means)`, carrying attributes
+#'   `score_method = "composite"`, `scales` and `centers`.
+#' @details
+#' Entity `i`'s composite score is
+#' \eqn{c_i = \sum_k a_k (\bar\theta_{ik} - \mathrm{center}_k) / \mathrm{scale}_k}.
+#' `postrank_composite()` does not estimate empirical means or standard
+#' deviations across entities. Ordering entities by `c_i` and cutting that order
+#' under per-criterion pairwise loss differs from forming a posterior
+#' distribution of a single composite target; see
+#' `vignette("m2-several-criteria", package = "postrank")`.
+#' @seealso [postrank_cuts()], [postrank_posterior_means()],
+#'   [postrank_compare()]
 #' @concept baselines
 #' @examples
 #' m <- postrank_posterior_means(postrank_toy)
-#' postrank_composite(m, c(need_A = .6, need_B = .4))
+#' postrank_composite(m, c(need_A = 0.6, need_B = 0.4))
 #' @export
 postrank_composite <- function(means, weights, scales = 1, centers = 0) {
   .pr_assert(is.matrix(means) && is.numeric(means) && all(is.finite(means)) && !is.null(rownames(means)) &&
@@ -131,10 +133,10 @@ postrank_composite <- function(means, weights, scales = 1, centers = 0) {
   out
 }
 
-# The pilot's ordered-partition DP (pilot R/optimal-cuts.R), extended with an exact grade
-# count. e: n x n x K (dimnames entity order), w: weights in criterion order. Returns grades,
+# Ordered-partition dynamic program with optional exact grade count.
+# e: n x n x K (dimnames entity order), w: weights in criterion order. Returns grades,
 # cuts (block positions), objective (raw sum of weighted error minus tau over disclosed
-# pairs), subtraction-free risk, order and score blocks.
+# pairs), subtraction-free risk, order, and score blocks.
 .pr_lexicographic_less <- function(x, y) {
   if (is.null(y)) return(TRUE)
   different <- which(x != y)
@@ -217,60 +219,59 @@ postrank_composite <- function(means, weights, scales = 1, centers = 0) {
 
 #' Optimal or Quantile Cuts of a Declared Score Order
 #'
-#' A declared score order is partitioned into ordered grades, with exactly tied
-#' scores retained in the same grade. Optimal cuts minimize weighted loss over
-#' partitions of that order, whereas quantile cuts use fixed positions. The
-#' search therefore remains conditional on the declared order.
+#' `postrank_cuts()` partitions an entity score order into contiguous integer
+#' grades (grade 1 = highest priority), keeping entities with equal scores in
+#' the same grade. No external optimization solver is required.
 #'
-#' @details `rule = "optimal"` uses a contiguous-partition dynamic program
-#' (subject to ordinary floating-point arithmetic) under the settings' grade
-#' cap `G_max`, or the exact grade count `exact_G`; its optimality is
-#' restricted to contiguous partitions of this score order. `rule = "quantile"`
-#' uses the fixed positional labels \eqn{1 + \lfloor (p - 1) G_b / n \rfloor}
-#' and performs no optimization. Exactly equal stored scores are never split;
-#' a quantile boundary inside an exact-score block merges the grades it
-#' straddles, so the realized number of grades can be below `G_b`. The realized
-#' grade count must still satisfy `G_max` and `exact_G`; violations raise
-#' `baseline_grade_limit_violation` or `baseline_exact_grade_violation`.
+#' @param scores Finite numeric vector named by `pairwise$entity_ids`, for
+#'   example from [postrank_expected_rank()] or [postrank_composite()].
+#' @param pairwise A `postrank_pairwise`, `postrank_coefficients` or
+#'   [postrank_probabilities()] object supplying directional-error
+#'   probabilities.
+#' @param settings A [postrank_settings()] object specifying weighted `weights`,
+#'   `tau`, `G_max` and optional `exact_G`.
+#' @param direction Score direction: `"ascending"` (smaller score = higher
+#'   priority, the default, matching [postrank_expected_rank()]) or
+#'   `"descending"` (larger score = higher priority, matching
+#'   [postrank_composite()]).
+#' @param rule Cut rule: `"optimal"` (the default, dynamic programming over
+#'   contiguous cuts) or `"quantile"` (fixed positional cuts).
+#' @param G_b Positive integer requested grade count when `rule = "quantile"`
+#'   (defaults to `settings$exact_G`, or `settings$G_max`, capped at `n`; must
+#'   be `NULL` when `rule = "optimal"`).
+#' @param method Optional non-empty label for this baseline; defaults to
+#'   `attr(scores, "score_method")`, or `"user_scores"` if unset.
+#' @returns A `postrank_baseline` list containing `method`, `scores`,
+#'   `direction`, `order`, `score_blocks`, `cut_rule`, `cuts`, `grade`,
+#'   `evaluation`, `objective`, `risk`, `optimality_scope`, `tie_policy`, bound
+#'   `settings`, `input_identity`, `schema_version`, `provenance` and
+#'   `warnings`.
+#' @details
+#' `rule = "optimal"` uses dynamic programming (in ordinary floating-point
+#' arithmetic) to minimize weighted expected loss over contiguous partitions of
+#' the given score order under `G_max` or `exact_G` (breaking exact objective
+#' ties toward fewer occupied grades and then earlier block cuts). Optimality
+#' holds only within contiguous partitions of this score order, not across all
+#' allowed gradings. `rule = "quantile"` assigns raw positional grades
+#' \eqn{1 + \lfloor (p - 1) G_b / n \rfloor} without optimization, merging any
+#' grades straddled by equal scores (which can leave fewer than `G_b` occupied
+#' grades, recorded in `warnings`).
 #'
-#' The dynamic program optimizes the weighted objective only: settings with
-#' error budgets `q` or the minimax objective are refused
-#' (`unsupported_baseline_settings`); an `exact_G` larger than the number of
-#' exact-score blocks is refused (`exact_G_exceeds_blocks`). Typed Gaussian
-#' and mixture coefficients permit exact-count cuts within this fixed order,
-#' although their native joint problem constructor does not support exact-G.
-#' Direct [postrank_probabilities()] inputs are restricted to weighted
-#' at-most-G cuts, as well as weighted at-most-G native problems.
-#'
-#' @param scores A named score vector (one per entity), for example from
-#'   [postrank_expected_rank()] or [postrank_composite()].
-#' @param pairwise The `postrank_pairwise`, `postrank_coefficients`, or
-#'   `postrank_probabilities` object whose directional errors define the loss.
-#' @param settings A [postrank_settings()] object (weights, tau, grade rule).
-#' @param direction `"ascending"` (smaller score = higher priority, as for
-#'   expected rank) or `"descending"` (larger = higher, as for composites).
-#' @param rule `"optimal"` or `"quantile"`.
-#' @param G_b For `rule = "quantile"`, the requested number of grades
-#'   (default: the settings' `exact_G`, else `G_max`, capped at `n`).
-#' @param method Optional label; defaults to the score's `score_method`
-#'   attribute, else `"user_scores"`.
-#' @return A `postrank_baseline` list. `scores`, `direction`, `order` and
-#'   `score_blocks` record the declared order and its indivisible exact-score
-#'   blocks. `cut_rule`, `cuts` (block positions) and the entity-named `grade`
-#'   record the action. `evaluation` contains the fixed-action metrics;
-#'   `risk` is the weighted loss and `objective` its raw optimization value.
-#'   `optimality_scope` distinguishes optimal partitions of this score order
-#'   from quantile cuts; neither provides a full-family solver bound.
-#'   `method`, `tie_policy`, bound `settings`, `input_identity`,
-#'   `schema_version`, `provenance` and `warnings` retain the construction
-#'   record. When the requested grade count is impossible, the function raises
-#'   an error rather than returning an all-withheld report.
-#' @seealso [postrank_expected_rank()], [postrank_composite()], [postrank_compare()]
+#' Settings with `q` error budgets or `objective = "minimax"` stop with
+#' `unsupported_baseline_settings`, and `exact_G` exceeding the number of
+#' distinct score blocks stops with `exact_G_exceeds_blocks` (or
+#' `baseline_exact_grade_violation` when quantile merging leaves fewer grades).
+#' [postrank_probabilities()] inputs support at-most-`G_max` cuts without
+#' `exact_G`, whereas `postrank_pairwise` and `postrank_coefficients` also allow
+#' `exact_G`.
+#' @seealso [postrank_expected_rank()], [postrank_composite()],
+#'   [postrank_compare()]
 #' @concept baselines
 #' @examples
 #' pw <- postrank_pairwise(postrank_toy)
-#' s <- postrank_settings(c(need_A = .6, need_B = .4), tau = .25, G_max = 3L)
-#' er <- postrank_cuts(postrank_expected_rank(pw, s$weights), pw, s, direction = "ascending")
+#' s <- postrank_settings(c(need_A = 0.6, need_B = 0.4), tau = 0.25, G_max = 3L)
+#' er <- postrank_cuts(postrank_expected_rank(pw, s$weights), pw, s,
+#'   direction = "ascending")
 #' get_grades(er)
 #' @export
 postrank_cuts <- function(scores, pairwise, settings, direction = c("ascending", "descending"),

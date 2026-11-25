@@ -2,8 +2,8 @@
   .pr_fields(settings,c("weights","tau"),c("weights","tau","G_max","objective","q","exact_G","minimax_criteria","minimax_refine","weight_sum","weight_sum_tolerance"),"$.settings")
   G<-if(is.null(settings$G_max))length(pairwise$entity_ids) else settings$G_max
   objective<-if(is.null(settings$objective))"weighted" else settings$objective
-  # A missing minimax_refine follows the reference fit; legacy (0.0.1) minimax
-  # fits have none and were single-stage.
+  # Inherit minimax_refine from reference fit; saved single-stage minimax fits
+  # without a minimax_refine slot use "none".
   legacy<-!is.null(reference)&&identical(objective,"minimax")&&is.null(reference$minimax_refine)
   refine<-if(!is.null(settings$minimax_refine))settings$minimax_refine else if(legacy)"none" else
     if(!is.null(reference$minimax_refine))reference$minimax_refine else "weighted"
@@ -43,84 +43,90 @@
 }
 #' Inspect Monte Carlo Precision for Reports or Pairs
 #'
-#' The diagnostics summarize target draws, requested pair-error traces and the
-#' loss of a supplied grading. Posterior target intervals describe uncertainty
-#' under the model, whereas Monte Carlo standard errors describe the numerical
-#' precision with which features of that law are estimated.
+#' `postrank_diagnose()` summarizes posterior target distributions, requested
+#' directed-pair error traces, and per-draw loss traces for a supplied grading,
+#' with optional subset or settings-grid stability re-solves. Posterior target
+#' intervals describe uncertainty under your statistical model, whereas Monte
+#' Carlo standard errors (MCSEs) describe simulation precision when estimating
+#' summaries of that posterior from finite draws.
 #'
-#' @param draws Ordinary input from [postrank_draws()] or [as_postrank_draws()],
-#'   including a specified finite law, or Gaussian/mixture coefficients. The
-#'   latter delegate to [postrank_coefficient_diagnose()] and have no latent
-#'   target-draw traces. Supplied probability arrays and equality-neutral inputs
-#'   do not provide this diagnostic route.
-#' @param fit Optional `postrank_fit` from exactly the same input. Its settings
-#'   and validated grade are used; results are marked descriptive after selection
-#'   on those draws. A fit without a validated incumbent supplies no fixed grade.
-#' @param grade Optional named fixed grade vector, with smaller grades indicating
-#'   higher priority. It must agree with `fit` when both are supplied. The
-#'   software cannot verify that a manually supplied grade was chosen independently
-#'   of these draws.
-#' @param settings Explicit `weights` and `tau` for a grade without a fit, plus
-#'   optional problem settings. `G_max` is required for stability solves.
-#' @param pairs Explicit list of records or a data.frame with `entity_i`,
-#'   `entity_j`, and `criterion_id`, naming up to 500 distinct directed comparisons.
-#'   Each trace is the indicator that the row entity's target is less than or
-#'   equal to the column entity's. `NULL` requests no pair traces.
-#' @param stability Optional request for additional optimization runs, with
-#'   explicit `backend` and `control` (`threads = 1`). `prefixes`, `include_full`,
-#'   `chain_subsets`, and `settings_grid` select at most `max_solves` attempts
-#'   (default and hard maximum 12); the settings grid has at most six overrides.
-#'   Joint equal-weight draws are required. IID inputs allow full-input settings
-#'   grids only; chain subsets and per-chain prefixes require original MCMC history.
-#' @return For draw input, a `postrank_diagnostics` list containing `traces`,
-#'   their `summaries`, `posterior_profiles`, `total_loss` availability, and any
-#'   `stability` results, along with grade, settings, sampling regimes, selection
-#'   context, and warnings. Metric records retain `value`, `available`,
-#'   `unavailable_reason`, and `method`; unavailable is not zero.
-#'   Gaussian/mixture input instead returns `postrank_coefficient_diagnostics`;
+#' @param draws Posterior draws from [postrank_draws()] or [as_postrank_draws()]
+#'   (equal-weight IID or MCMC draws, or an exact finite law), or a
+#'   `postrank_coefficients` object (Gaussian or mixture, which delegates to
+#'   [postrank_coefficient_diagnose()]). Pre-computed [postrank_probabilities()]
+#'   and tie-mode inputs (`postrank_tie_*`) are not accepted.
+#' @param fit Optional `postrank_fit` (for example `analysis$fit`) solved on
+#'   `draws`. Supplies problem settings and, when a checked grading is present,
+#'   its grade vector; results are marked `post_selection_descriptive = TRUE`.
+#' @param grade Optional named integer vector of fixed grades (`1` = highest
+#'   priority). Must match `fit$grade` when both are supplied; requires
+#'   `settings` when `fit` is `NULL`. `postrank` cannot verify whether a
+#'   manually supplied `grade` was chosen independently of `draws`.
+#' @param settings Named list (or `postrank_settings` fields) with `weights` and
+#'   `tau` when `grade` is supplied without `fit`, plus optional `G_max`,
+#'   `objective`, `q`, `exact_G`, `minimax_criteria`, and `minimax_refine`.
+#'   `G_max` is required when `stability` is requested.
+#' @param pairs Optional list of records or data frame with columns `entity_i`,
+#'   `entity_j`, and `criterion_id` naming up to 500 distinct directed pairs.
+#'   Each pair trace records the per-draw indicator `I(theta_i <= theta_j)`.
+#'   `NULL` (the default) requests no pair traces.
+#' @param stability Optional named list requesting up to `max_solves` (default
+#'   and maximum `12L`) re-solves on joint equal-weight draws. Requires explicit
+#'   `backend` (`"gurobi"` or `"highs"`) and `control` with `threads = 1L`, plus
+#'   optional `prefixes`, `include_full`, `chain_subsets`, and `settings_grid`
+#'   (at most 6 overrides). Chain subsets and per-chain prefixes require MCMC
+#'   chain history; IID inputs support full-draw `settings_grid` runs only.
+#' @return For draw inputs, a `postrank_diagnostics` list containing `traces`,
+#'   `summaries`, `posterior_profiles`, `total_loss`, `stability`, `grade`,
+#'   `settings`, `regimes`, `post_selection_descriptive`, and `warnings`. Each
+#'   diagnostic metric record stores `value`, `available`, `unavailable_reason`,
+#'   and `method` (unavailable metrics remain `NA`, never zero). For
+#'   `postrank_coefficients` inputs, returns `postrank_coefficient_diagnostics`;
 #'   see [postrank_coefficient_diagnose()].
-#' @details IID trace MCSE is sample SD divided by the square root of the actual
-#'   retained count. Eligible MCMC traces use the optional `posterior` package
-#'   for MCSE, R-hat, and ESS. Original chain/iteration history is retained;
-#'   unequal chains are not truncated or padded to obtain cross-chain metrics.
-#'   Missing, nonfinite, or inapplicable metrics keep their reasons. A complete
-#'   finite law uses its stated masses and has no Monte Carlo error to diagnose.
+#' @details
+#' For IID draws, trace MCSE is `sd(z) / sqrt(S)` using the retained draw count
+#' `S`. For MCMC draws with equal-length chains and the optional `posterior`
+#' package installed, `postrank_diagnose()` computes `mcse_mean`, `rhat`,
+#' `ess_bulk`, and `ess_tail` from the original chain-by-iteration layout;
+#' unequal chains are never truncated or padded to force cross-chain metrics. An
+#' exact finite law uses its rational state masses (`gmp` quantiles at `1/40`,
+#' `1/2`, and `39/40`) and has zero Monte Carlo error.
 #'
-#'   Joint inputs combine criterion losses within the same state, preserving
-#'   covariance in the total-loss trace. Criterion-wise blocks can provide
-#'   individual traces without a joint total-loss MCSE. Under minimax, a weighted
-#'   total-loss trace is auxiliary; it is not MCSE for the maximum of expected
-#'   criterion risks. Without a fixed grade, no total-loss trace is produced.
+#' Joint draws (`dependence_mode = "joint_model"`) combine criterion losses
+#' within each draw to form `weighted_total_loss`, preserving cross-criterion
+#' covariance; criterion-wise draw blocks provide per-criterion traces without a
+#' joint total-loss MCSE. Under `objective = "minimax"`, `weighted_total_loss`
+#' is marked `"weighted_auxiliary"` because minimax optimizes the maximum of
+#' expected criterion risks rather than an expectation of per-draw maxima.
+#' Without a fixed grade, no loss trace is computed.
 #'
-#' Pointwise MCSE for a grading selected on the same draws is a descriptive
-#' measure and does not automatically provide post-selection coverage or regret
-#' bounds. An all-withheld report has constant ordinary loss `tau`, which
-#' provides no information about exploration of the targets. Similarly, a
-#' constant observed pair trace does not establish a posterior probability of
-#' zero or one. Stability across overlapping subsets is insufficient to
-#' establish convergence. Changes in grades after changes in policy settings
-#' may reflect the decision problem rather than simulation error.
-#'
-#'   Gaussian/mixture inputs reject pair traces and stability solves. This
-#'   wrapper supplies no original hyperparameter chain history; use
-#'   [postrank_coefficient_diagnose()] with explicit `chain_history` for eligible
-#'   conditional expected-risk metrics. No route here verifies convergence,
-#'   numerical accuracy, or external repeated-data calibration.
+#' An all-withheld single-grade report has constant per-draw loss `tau` (zero
+#' variance), and an all-zero or all-one pair indicator trace does not establish
+#' an exact posterior probability of `0` or `1`. Gaussian and mixture
+#' coefficient inputs reject `pairs` and `stability`; call
+#' [postrank_coefficient_diagnose()] directly when supplying hyperparameter
+#' `chain_history`. These diagnostics are descriptive summaries and do not
+#' provide post-selection coverage, convergence proof, or a finite-sample
+#' guarantee.
 #' @seealso [postrank_mc_fragility()], [postrank_crossfit()],
-#'   [postrank_iid_bounds()]
+#'   [postrank_coefficient_diagnose()], [postrank_iid_bounds()]
 #' @examples
-#' # Begin with one explicitly named directional comparison.
-#' pair <- data.frame(entity_i = "001", entity_j = "site-B",
-#'   criterion_id = "need_A")
+#' pair <- data.frame(
+#'   entity_i = "001",
+#'   entity_j = "site-B",
+#'   criterion_id = "need_A"
+#' )
 #' d <- postrank_diagnose(postrank_toy, pairs = pair)
 #' d$summaries$pair_1$diagnostics$mcse_mean
 #'
-#' # A declared report, evaluated without optimizing its grades.
 #' grade <- c("001" = 1L, "site-B" = 1L, "site C" = 2L)
-#' d <- postrank_diagnose(postrank_toy, grade = grade,
-#'   settings = list(weights = c(need_A = .6, need_B = .4), tau = .25))
-#' d$summaries$weighted_total_loss$mean
-#' d$post_selection_descriptive
+#' d_grade <- postrank_diagnose(
+#'   postrank_toy,
+#'   grade = grade,
+#'   settings = list(weights = c(need_A = 0.6, need_B = 0.4), tau = 0.25)
+#' )
+#' d_grade$summaries$weighted_total_loss$mean
+#' d_grade$post_selection_descriptive
 #' @concept diagnostics
 #' @export
 postrank_diagnose <- function(draws,fit=NULL,grade=NULL,settings=NULL,pairs=NULL,stability=NULL) {

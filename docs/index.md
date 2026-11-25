@@ -2,21 +2,26 @@
 
 Author and maintainer: JoonHo Lee (<jlee296@ua.edu>).
 
-postrank assigns integer grades to entities on the basis of posterior
-information for one or several criteria. Grade 1 denotes the highest
-priority. Different grades disclose a direction of comparison, whereas a
-common grade indicates that the comparison is withheld. Equality of
-grades therefore does not imply equality of the underlying targets.
+`postrank` assigns integer grades (`1, 2, ..., G`) to entities—such as
+schools, employers, or geographic areas—from posterior draws, normal or
+mixture distributions, or precomputed pairwise comparison probabilities
+on one or several criteria. Grade 1 denotes the highest priority.
+Assigning two entities to different grades reports an ordering between
+them; assigning them to the same grade leaves the pair unordered rather
+than claiming that their underlying values are equal.
 
-The objective is to minimize posterior expected loss, with a penalty for
-an incorrect direction and a cost `tau` for each withheld comparison.
-For several criteria, specified weights combine criterion-specific
-losses to obtain a common grading. The posterior information is supplied
-to the package; model estimation is conducted separately.
+Grades minimize posterior expected wrong-direction errors (cost `1`)
+plus a cost `tau` for each pair left unordered in the same grade,
+averaged over all entity pairs. Across multiple criteria, user-chosen
+weights combine criterion-specific losses into one common grading, or
+the multidomain functions (`postrank_mdomain_*`) report a separate grade
+per domain under joint error-exceedance caps. Statistical model fitting
+takes place outside `postrank`; all results are conditional on the
+posterior you supply.
 
-## Installation and computational requirements
+## Installation and solvers
 
-Install postrank from [GitHub](https://github.com/joonho112/postrank):
+Install `postrank` from [GitHub](https://github.com/joonho112/postrank):
 
 ``` r
 
@@ -25,67 +30,87 @@ remotes::install_github("joonho112/postrank")
 library(postrank)
 ```
 
-The GitHub installation includes the required R dependencies.
-Optimization backends are installed separately.
+Loading bundled datasets, reading precomputed examples with
+[`postrank_example()`](https://joonho112.github.io/postrank/reference/postrank_example.md),
+extracting tables, drawing plots, writing HTML reports, and running
+multidomain profile calculations do not require an optimization solver.
 
-Gurobi is the default backend. It requires Gurobi Optimizer (version 10
-or later), a compatible `gurobi` R package and a valid license. Follow
-the official instructions to install [Gurobi
-Optimizer](https://support.gurobi.com/hc/en-us/articles/4534161999889-How-do-I-install-Gurobi-Optimizer),
-configure the
-[license](https://support.gurobi.com/hc/en-us/articles/12872879801105-How-do-I-retrieve-and-set-up-a-Gurobi-license)
-and install the [R
-interface](https://support.gurobi.com/hc/en-us/articles/14462206790033-How-do-I-install-Gurobi-for-R)
-for the platform and R version in use. The R interface is supplied in
-the `R` subdirectory of the Gurobi installation.
+Computing new common-grade solutions with
+[`postrank()`](https://joonho112.github.io/postrank/reference/postrank.md)
+or
+[`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md)
+requires a mixed-integer solver, installed separately:
 
-HiGHS is an alternative backend and is used explicitly in the examples
-below. To install it and select it for the current R session:
+- **HiGHS (free, open source on CRAN):** install once and set it for the
+  R session with:
 
-``` r
+  ``` r
 
-install.packages("highs")
-options(postrank.backend = "highs")
-```
+  install.packages("highs")
+  options(postrank.backend = "highs")
+  ```
 
-For each optimization, an explicit `backend` argument takes precedence
-over `getOption("postrank.backend")`; if neither is specified, Gurobi is
-used. Use `backend = "gurobi"` or `backend = "highs"` to select a solver
-for an individual call. An unavailable selected backend stops the call;
-there is no silent fallback. Loading data and displaying stored results
-do not require an optimizer.
+- **Gurobi (default when no solver is specified):** requires Gurobi
+  Optimizer version 10 or later, a valid license, and the `gurobi` R
+  package from the `R` subdirectory of the Gurobi installation. Follow
+  Gurobi’s guides to install [Gurobi
+  Optimizer](https://support.gurobi.com/hc/en-us/articles/4534161999889-How-do-I-install-Gurobi-Optimizer),
+  set up a
+  [license](https://support.gurobi.com/hc/en-us/articles/12872879801105-How-do-I-retrieve-and-set-up-a-Gurobi-license),
+  and install the [R
+  interface](https://support.gurobi.com/hc/en-us/articles/14462206790033-How-do-I-install-Gurobi-for-R).
 
-The three case-study inputs are adapted from public sources and retain
-source-specific conditions. CDE source attribution is preserved, the KRW
-input retains its source CC-BY-NC notice with the license version
-unspecified, and Alabama retains CC BY 4.0 attribution. Source details
-and modification notices are given in the installed
-`extdata/case-studies/DATA-NOTICE.md`.
+An explicit `backend = "highs"` or `backend = "gurobi"` argument
+overrides `getOption("postrank.backend")`; if neither is set, `"gurobi"`
+is used. If the selected solver is not installed or cannot be loaded,
+`postrank` stops with an error; it never switches to the other solver,
+even if a run reaches its time limit or encounters solver trouble.
 
-## Analysis with one criterion
+### Case-study data conditions
 
-`pr_tutorial` contains six fictional sites, A through F. The normal
-distributions of the scores are specified directly, with standard
-deviation 0.2. Sites and criteria are independent, and higher values
-have higher priority. The example is synthetic and does not represent
-empirical observations or a fitted model.
+The three bundled case-study datasets are adapted from public sources
+and keep their source-specific conditions, separate from the MIT code
+license: `pr_case_cde` preserves California Department of Education
+source attribution (2025–26 Dashboard) without substituting MIT or
+Creative Commons terms or implying CDE endorsement; `pr_case_krw`
+retains the noncommercial `CC-BY-NC` notice (license version unspecified
+in the source) from Kline, Rose, and Walters (2024; openICPSR
+`E198284V1`); and `pr_case_alabama` retains `CC BY 4.0` attribution to
+Opportunity Insights and the U.S. Census Bureau (Chetty et al., 2022;
+Harvard Dataverse `doi:10.7910/DVN/NKCQM1`). Full details and adaptation
+notes are in
+`system.file("extdata", "case-studies", "DATA-NOTICE.md", package = "postrank")`.
 
-With HiGHS installed, the one-criterion analysis is obtained as follows:
+## First example: one criterion
+
+`pr_tutorial` contains six synthetic sites (`A` through `F`) whose score
+distributions are specified directly as independent normal posteriors
+with standard deviation `0.2` (higher values mean higher priority;
+simulated teaching data, not empirical observations).
+
+With HiGHS installed, run
+[`postrank()`](https://joonho112.github.io/postrank/reference/postrank.md)
+directly:
 
 ``` r
 
 one <- postrank(pr_tutorial$one, tau = .2, G_max = 3L,
   backend = "highs",
   control = postrank_control(time_limit = 60, threads = 1L, seed = 1304L))
-one
 ```
 
-The displayed result is a stored analysis obtained with the explicitly
-selected highs backend under these settings. The weight for a single
-criterion is one. The grade cap specifies at most three occupied grades,
-allowing solutions with fewer grades.
+Without running a solver, load the precomputed result from an equivalent
+call with
+[`postrank_example()`](https://joonho112.github.io/postrank/reference/postrank_example.md).
+These stored results were computed with the explicitly selected highs
+backend (`backend = "highs"`) under the settings shown above
+(`G_max = 3L` caps the report at three occupied grades, and a single
+criterion receives weight `1`):
 
-``` R
+``` r
+
+one <- postrank_example("tutorial_one")
+one
 #> <postrank_analysis>  6 entities in 3 grades (sizes 2 / 2 / 2)
 #>   One criterion: score_A.
 #>   Posterior loss: 0.0417.
@@ -103,7 +128,13 @@ allowing solutions with fewer grades.
 #>     all grades.
 ```
 
-The entity identifiers and grades are returned in a stable table:
+In the console output, `"Disclosed"` counts ordered pairs, `"withheld"`
+counts unordered pairs (shared grades), and the recorded warning notes
+that floating-point tolerances placed the raw solver lower bound
+slightly above the checked grading’s loss (`"validated action risk"`),
+so `postrank` clamped the bound to the loss and recorded gap `0`.
+
+Extract the two-column `(entity_id, grade)` table in input entity order:
 
 ``` r
 
@@ -117,10 +148,11 @@ as.data.frame(one)
 #> 6         F     3
 ```
 
-The report card additionally contains marginal posterior intervals and
-counts of disclosed relations. The plot displays score uncertainty
-alongside the selected grades. The intervals refer to the scores and do
-not assign probabilities to grade labels.
+Plot the report card with `postrank_plot_report_card(one)` (or
+`plot(one)`) to view the assigned grades alongside 90% marginal
+posterior intervals for each site’s score (these intervals summarize
+score uncertainty one site at a time and do not assign probabilities to
+grade labels):
 
 ``` r
 
@@ -130,13 +162,13 @@ postrank_plot_report_card(one)
 ![Six fictional sites on score A, with marginal intervals and three
 ordered grade groups.](reference/figures/README-one-figure-1.png)
 
-## A common grading for two criteria
+## A common grading across two criteria
 
-The input `pr_tutorial$two` includes score B while retaining the
-distribution of score A for the same sites. Equal loss weights are
-specified below. These weights express a policy choice; neither the
-posterior distributions nor the units of the scores determine their
-values.
+`pr_tutorial$two` adds `score_B` while keeping the `score_A` posterior
+for the same six sites. With multiple criteria, `weights` is a required
+policy choice that sets how wrong-direction errors trade off across
+criteria (neither score units nor posterior spread determine the
+weights):
 
 ``` r
 
@@ -144,10 +176,12 @@ two <- postrank(pr_tutorial$two,
   weights = c(score_A = .5, score_B = .5), tau = .2, G_max = 3L,
   backend = "highs",
   control = postrank_control(time_limit = 60, threads = 1L, seed = 1304L))
-two
 ```
 
-``` R
+``` r
+
+two <- postrank_example("tutorial_two")
+two
 #> <postrank_analysis>  6 entities in 3 grades (sizes 4 / 1 / 1)
 #>   2 criteria: score_A, score_B.
 #>   Posterior loss: 0.0933.
@@ -164,10 +198,11 @@ two
 #>     all grades.
 ```
 
-The resulting grades apply to both criteria. Some comparisons disclosed
-under score A alone are withheld under the common grading. The objective
-is a weighted average of criterion-specific losses, which differs from
-the loss for ranking an uncertain composite score.
+One shared grading now applies to both criteria, leaving unordered
+several pairs that were separated on `score_A` alone.
+[`postrank_plot_profile()`](https://joonho112.github.io/postrank/reference/postrank_plot_profile.md)
+shows the expected wrong-direction errors per ordered pair (`E/N`) on
+each criterion:
 
 ``` r
 
@@ -178,36 +213,64 @@ postrank_plot_profile(two)
 for the common two-score
 grade.](reference/figures/README-two-figure-1.png)
 
-The optimization result is characterized by the validated incumbent,
-normalized status, lower bound and numerical gap. The gap is the
-difference between the incumbent loss and its numerical lower bound,
-conditional on the supplied probabilities. Posterior calibration and
-Monte Carlo error require separate assessment.
+Solver status, lower bound, and optimization gap describe optimization
+over the supplied comparison probabilities; posterior model adequacy and
+Monte Carlo simulation error require separate checks.
 
-## Domain-specific report cards
+## Passing your own posterior draws
 
-The multidomain interface assigns a separate grade column to each
-domain. A unit can have higher reported priority in one domain and lower
-priority in another. It evaluates a named unit-by-domain matrix and can
-search an explicit, bounded set of candidate columns. It uses the
-suggested package `gmp` for arithmetic and requires no optimization
-backend.
-
-This interface requires **postrank 1.2.0 or later**. During
-release-candidate review, the GitHub command above may still install the
-earlier public release. Install the supplied local release tarball
-before loading the package:
-`install.packages("postrank_1.2.0.tar.gz", repos = NULL, type = "source")`.
-
-This self-contained finite-law example has two fictional units and two
-domains. Each array slice is one complete joint state; its probability
-is specified explicitly. The declarations describe this teaching law.
+To grade entities from your own `draws x entities x criteria` numeric
+array, describe the posterior in plain arguments with
+[`postrank_describe()`](https://joonho112.github.io/postrank/reference/postrank_describe.md)
+and wrap the array with
+[`postrank_draws()`](https://joonho112.github.io/postrank/reference/postrank_draws.md):
 
 ``` r
 
-if (utils::packageVersion("postrank") < "1.2.0") {
-  message("Multidomain example skipped: install postrank 1.2.0 or later.")
-} else if (requireNamespace("gmp", quietly = TRUE)) {
+set.seed(901)
+arr <- array(rnorm(120 * 4 * 1), dim = c(120, 4, 1),
+  dimnames = list(NULL, paste0("site_", 1:4), "need"))
+decl <- postrank_describe(
+  estimand = c(need = "Latent site need in a specified standard normal law"),
+  population = "Four illustrative sites", time = "Static illustration",
+  units = "Standardized need units", data = "No external observations; specified law",
+  model = "Independent standard normal coordinates",
+  identification = "Each site coordinate is defined directly by the law.",
+  joint = "Each draw holds one value per site.",
+  sampling = "120 independent rnorm() draws after set.seed(901); no warmup or thinning.",
+  ties = "Continuous normal coordinates have zero probability of exact equality.",
+  software = "Base R rnorm()", source = "In-memory array arr",
+  label = "readme-draws", data_version = "1", values = arr)
+draws <- postrank_draws(arr, regime = "iid", declarations = decl)
+draws$entity_ids
+#> [1] "site_1" "site_2" "site_3" "site_4"
+```
+
+Other posterior representations have matching constructors:
+
+| Posterior representation | Functions |
+|:---|:---|
+| Posterior draw arrays, matrix lists, or [`posterior::draws_array`](https://rdrr.io/pkg/posterior/man/draws_array.html) | [`postrank_describe()`](https://joonho112.github.io/postrank/reference/postrank_describe.md), [`postrank_declarations()`](https://joonho112.github.io/postrank/reference/postrank_declarations.md), [`postrank_draws()`](https://joonho112.github.io/postrank/reference/postrank_draws.md), [`as_postrank_posterior()`](https://joonho112.github.io/postrank/reference/as_postrank_posterior.md) |
+| Analytic normal or shared-state normal mixture posterior | [`postrank_gaussian_coefficients()`](https://joonho112.github.io/postrank/reference/postrank_gaussian_coefficients.md), [`postrank_mixture_coefficients()`](https://joonho112.github.io/postrank/reference/postrank_mixture_coefficients.md) |
+| Precomputed tie-free pairwise comparison probabilities | [`postrank_probabilities()`](https://joonho112.github.io/postrank/reference/postrank_probabilities.md) |
+| Posteriors with positive probability of exact equality | [`as_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_tie_draws.md), [`postrank_tie_pairwise()`](https://joonho112.github.io/postrank/reference/postrank_tie_pairwise.md), [`postrank_tie_solve()`](https://joonho112.github.io/postrank/reference/postrank_tie_solve.md) |
+| Separate grade per domain under joint error-exceedance caps | [`postrank_mdomain_input()`](https://joonho112.github.io/postrank/reference/postrank_mdomain_input.md), [`postrank_mdomain_decision()`](https://joonho112.github.io/postrank/reference/postrank_mdomain_decision.md), [`postrank_mdomain_solve()`](https://joonho112.github.io/postrank/reference/postrank_mdomain_solve.md) |
+
+Validation checks array shapes, probability bounds, and internal
+consistency with your declarations; scientific assumptions remain yours.
+
+## Multidomain profile report cards
+
+When entities should receive a separate grade in each domain rather than
+one common grade—for example, when priorities reverse across domains—the
+`postrank_mdomain_*` functions evaluate entity-by-domain grade matrices
+and search declared candidate sets under exact rational policy
+thresholds (via the optional `gmp` package, with no mixed-integer solver
+required):
+
+``` r
+
+if (requireNamespace("gmp", quietly = TRUE)) {
   ids <- c("Alder", "Birch")
   domains <- c("attainment", "community")
   x <- array(c(3, 2, 2, 3, 2, 3, 3, 2), c(2L, 2L, 2L),
@@ -241,92 +304,54 @@ if (utils::packageVersion("postrank") < "1.2.0") {
 ![Alder has higher reported priority in attainment and Birch in
 community.](reference/figures/README-mdomain-readme-1.png)
 
-Alder and Birch have crossing profiles. A grade tie withholds direction;
-it does not assert equality of their targets. Exact strings such as
-`"1/5"` retain their rational value, while numeric policies retain their
-stored binary value. Evaluation of draws describes their empirical
-measure; assessment of an intended posterior requires a separate
-sampling design. The installed
-[`vignette("mdomain-quickstart", package = "postrank")`](https://joonho112.github.io/postrank/articles/mdomain-quickstart.md)
-shows joint draws, candidate search, three plot views and input repairs.
-It is also available offline as
-[`vignette("mdomain-quickstart", package = "postrank")`](https://joonho112.github.io/postrank/articles/mdomain-quickstart.md).
+Pass exact rational or decimal strings such as `"1/5"` when policy
+thresholds are exact fractions. Optimality in
+[`postrank_mdomain_solve()`](https://joonho112.github.io/postrank/reference/postrank_mdomain_solve.md)
+holds within the declared candidate set, and exact arithmetic over a
+finite distribution or sample does not verify model specification.
 
-## Posterior inputs
-
-Supported inputs include joint or criterion-wise draws, complete exact
-finite laws, conditional Gaussian laws, shared-state Gaussian mixtures
-and previously calculated tie-free comparison probabilities. The
-corresponding constructors depend on the form of the available posterior
-information:
-
-| Available posterior information | Constructor |
-|:---|:---|
-| Draw arrays, matrix lists or `posterior` draws | [`postrank_draws()`](https://joonho112.github.io/postrank/reference/postrank_draws.md) and [`postrank_declarations()`](https://joonho112.github.io/postrank/reference/postrank_declarations.md) |
-| Conditional Gaussian or shared-state mixture law | [`postrank_gaussian_coefficients()`](https://joonho112.github.io/postrank/reference/postrank_gaussian_coefficients.md) or [`postrank_mixture_coefficients()`](https://joonho112.github.io/postrank/reference/postrank_mixture_coefficients.md) |
-| Previously calculated pairwise probabilities | [`postrank_probabilities()`](https://joonho112.github.io/postrank/reference/postrank_probabilities.md) |
-| Genuine equality with a declared joint law | The separate `postrank_tie_*` API |
-
-Each input requires target definitions, directions, conditioning
-information and provenance. Validation assesses structure and
-consistency with these declarations; their scientific validity remains
-an assumption of the analysis. Comparison probabilities alone do not
-identify a draw history or marginal summaries; structural validation
-does not provide an error certificate. The available native modes depend
-on the input, as documented in
-[`?postrank_problem`](https://joonho112.github.io/postrank/reference/postrank_problem.md)
-and
-[`?postrank_tie_capabilities`](https://joonho112.github.io/postrank/reference/postrank_tie_capabilities.md).
-
-For genuine equality, the separate tie-aware loss charges strict
-reversals and withholding of distinct targets. Its all-withhold
-benchmark is R0, which may be below `tau`. Ordinary constructors retain
-their tie-free loss.
-
-## Result extraction and graphical summaries
+## Extracting results and where to read next
 
 ``` r
 
 as.data.frame(two, what = "report_card")
 get_profile(two)
 get_relations(two)
-postrank_report(two$fit, analysis = two)  # stored results only
-postrank_plot_pairwise(two)          # prepared comparison probabilities
-postrank_plot_relations(two)         # disclosed and withheld relations
-format(two, width = 72, tier = 2)    # reusable console text
+postrank_report(two$fit, output_file = tempfile(fileext = ".html"), analysis = two)
+postrank_plot_pairwise(two)               # pairwise error probabilities
+postrank_plot_relations(two)              # ordered and unordered pairs
+format(two, width = 72, tier = 2)         # plain-text summary lines
 ```
 
-Seven plotting functions cover report cards, relations, criterion
-profiles, method comparisons, pairwise probabilities, tau frontiers and
-commonality costs. Frontier, sensitivity and commonality calculations
-run new optimizations when explicitly requested. Changing the
-withholding cost or criterion weights changes the loss under which risk
-is evaluated.
+The 16 shipped vignettes are organized by workflow stage (browse with
+`vignette(package = "postrank")` or on the [package
+website](https://joonho112.github.io/postrank/)):
 
-The installed documentation is organized into Applied and Methods
-series:
-
-- **Applied:** `a1-getting-started`, the CDE, KRW and Alabama cases,
-  `a5-your-posterior-results`, `a6-reading-exporting-results` and
-  `a7-figures-sensitivity`.
-- **Methods:** `m1-ranking-and-loss`, `m2-several-criteria`,
-  `m3-posterior-inputs`, `m4-ties-and-withholding`,
-  `m5-computing-grades` and `m6-uncertainty-diagnostics`.
-
-The introductory article is available through
-[`vignette("a1-getting-started", package = "postrank")`](https://joonho112.github.io/postrank/articles/a1-getting-started.md),
-and the complete index through `vignette(package = "postrank")`. A
-migration guide and figure gallery supplement these articles. Three
-additional articles cover the earlier workflow, posterior inputs and
-comparisons with fixed-order baselines.
+- **Start here:** `a1-getting-started` (first one- and two-criterion
+  analyses), `a5-your-posterior-results` (passing draws, normal/mixture
+  posteriors, or pairwise probabilities), `a6-reading-exporting-results`
+  (tables, plots, text, and HTML reports), and `a7-figures-sensitivity`
+  (baseline comparisons, `tau` frontiers, error budgets, and sensitivity
+  grids).
+- **Applied case studies:** `a2-cde-accountability` (California
+  schools), `a3-krw-race-gender` (97 large U.S. employers), and
+  `a4-alabama-opportunity` (67 Alabama counties).
+- **Multidomain profiles:** `mdomain-quickstart` and `mdomain-decisions`
+  (separate per-domain grades and joint error-exceedance protection).
+- **Methods and figure gallery:** `m1-ranking-and-loss`,
+  `m2-several-criteria`, `m3-posterior-inputs`,
+  `m4-ties-and-withholding`, `m5-computing-grades`,
+  `m6-uncertainty-diagnostics`, and `figure-gallery`. Release
+  compatibility notes are in
+  `system.file("MIGRATION-1.2.0.md", package = "postrank")`.
 
 ## Citation
 
-`citation("postrank")` provides the following references for the
-package, its theory book and the report-card method:
+`citation("postrank")` returns the package, its theory book, and the
+report-card method:
 
 1.  **R package.** Lee, J. (2026). *postrank: Posterior Ranking with
-    Integer Grades*. R package version 1.2.0. [GitHub
+    Integer Grades*. R package version 1.3.0. [GitHub
     repository](https://github.com/joonho112/postrank) · [Package
     documentation](https://joonho112.github.io/postrank/).
 

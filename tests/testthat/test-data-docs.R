@@ -1,5 +1,5 @@
-# T-doc-03: every bundled data object has a topic whose @format lists all of its columns
-# in their declared order (tables) or its typed dimensions (typed objects).
+# Every bundled dataset has an Rd topic documenting its dimensions and fields
+# in their declared order (tables) or its array dimensions (structured objects).
 pr_rd_text <- function(topic) {
   src <- pr_source_path("man", paste0(topic, ".Rd"))
   rd <- if (file.exists(src)) tools::parse_Rd(src) else tools::Rd_db("postrank", lib.loc = dirname(system.file(package = "postrank")))[[paste0(topic, ".Rd")]]

@@ -1,5 +1,5 @@
-# T-ref-01 / T-ref-04 / T-fig-07 / T-api-02: the exported surface equals release-roster.json
-# (83 legacy + 11 tie-aware + 2 supplied-probability + 1 visualization + 8 multidomain exports, 142 S3 registrations); unshipped designs are absent; layering holds.
+# Exported namespace symbols, S3 method registrations, and formal argument order
+# match tests/testthat/fixtures/release-roster.json (107 exports, 142 S3 methods).
 roster_path <- function() {
   cands <- c(test_path("fixtures", "release-roster.json"))
   cands[!is.na(cands) & file.exists(cands)][1]
@@ -11,17 +11,19 @@ test_that("exports and S3 registrations equal the release roster", {
   rp <- roster_path(); skip_if(is.na(rp), "roster file not available (installed package)")
   r <- jsonlite::fromJSON(rp)
   expect_setequal(exports, r$api$exports)
-  expect_identical(length(exports), 105L)
+  expect_identical(length(exports), 107L)
   expect_setequal(r$api$probability_input_additions$exports,
     c("postrank_probabilities", "validate_postrank_probabilities"))
   expect_length(setdiff(exports, c(r$api$tie_aware_additions$exports,
-    r$api$probability_input_additions$exports, r$api$v1_visualization_additions$exports, r$api$mdomain_additions$exports)), 83L)
+    r$api$probability_input_additions$exports, r$api$v1_visualization_additions$exports, r$api$mdomain_additions$exports,
+    r$api$v1_3_additions$exports)), 83L)
   expect_setequal(r$api$mdomain_additions$exports, c(
     "postrank_mdomain_input", "postrank_mdomain_evaluate", "postrank_mdomain_solve",
     "postrank_mdomain_assess", "postrank_mdomain_grades", "postrank_mdomain_decision",
     "postrank_mdomain_family", "postrank_plot_mdomain"))
   expect_length(r$api$v1_1_exports, 97L)
-  expect_setequal(setdiff(exports, r$api$mdomain_additions$exports), r$api$v1_1_exports)
+  expect_setequal(setdiff(exports, c(r$api$mdomain_additions$exports, r$api$v1_3_additions$exports)), r$api$v1_1_exports)
+  expect_setequal(r$api$v1_3_additions$exports, c("postrank_describe", "postrank_example"))
   expect_length(r$api$v1_1_s3_methods$generic, 127L)
   m <- getNamespaceInfo(ns, "S3methods")
   reg <- paste(r$api$s3_methods$generic, r$api$s3_methods$class, sep = ".")

@@ -1,5 +1,5 @@
-# T-doc-11: the fixed MCMC toy with complete declarations reproduces the methods book's
-# recorded diagnostics (pooled pair mean exactly; posterior diagnostics at 1e-6).
+# Two-state Markov chain dataset pr_toy_mcmc reproduces analytical stationary and
+# split-chain MCMC diagnostics (pooled pair mean exactly; posterior metrics within 1e-6).
 tm_wrap <- function() postrank_draws(pr_toy_mcmc, regime = "mcmc", chains = 4L, warmup_per_chain = 0L, thin = 1L,
   declarations = attr(pr_toy_mcmc, "law")$declarations)
 

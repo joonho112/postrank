@@ -22,25 +22,31 @@
 
 #' Inspect Solver Package Availability
 #'
-#' The installed Gurobi or HiGHS package is inspected through its package and
-#' linkage information. The inspection does not load the solver namespace,
-#' execute an optimization or check a license.
+#' `postrank_backend_available()` checks whether the `gurobi` or `highs` R
+#' package is installed and passes static runtime-linkage checks, without
+#' loading the solver namespace, running an optimization or querying a license.
 #'
-#' @param backend `"gurobi"` (default) or `"highs"`.
-#' @return A `postrank_backend_availability` list with `installed`,
-#'   `package_path`, `wrapper_version`, `available_for_attempt`, `runtime_check`
-#'   and `license_check`. `available_for_attempt = TRUE` means no known obstacle
-#'   was found by this inspection, not that a solve or license check succeeded.
-#' @details The inspection can identify a known macOS mismatch between Gurobi's
-#'   linked R runtime and the running R. Other runtime failures may only become
-#'   apparent when solving. It does not change library paths or select another
-#'   backend. Choose HiGHS explicitly in [postrank()] or [postrank_solve()];
-#'   neither function silently replaces an unavailable backend.
-#' @seealso [postrank_solve()], [postrank_control()]
+#' @param backend Solver package to inspect, `"gurobi"` (the default) or
+#'   `"highs"`.
+#' @returns A `postrank_backend_availability` list containing `backend`,
+#'   `installed`, `package_path`, `wrapper_version`, `available_for_attempt`,
+#'   `runtime_check`, `license_check` and `interpretation`.
+#' @details
+#' `available_for_attempt = TRUE` means the package directory was found and, on
+#' macOS for Gurobi, no mismatch between Gurobi's linked R library and the
+#' running R session was detected. Because no namespace is loaded and no
+#' license or test solve is run, `available_for_attempt = TRUE` does not
+#' confirm that a solve will succeed or that a Gurobi license is active.
+#'
+#' Calling this function does not change library paths or select a solver. To
+#' use HiGHS in [postrank()] or [postrank_solve()], pass `backend = "highs"` or
+#' set `options(postrank.backend = "highs")`; `postrank` never switches solvers
+#' automatically.
+#' @seealso [postrank()], [postrank_solve()], [postrank_options]
 #' @examples
-#' availability <- postrank_backend_available("highs")
-#' availability$available_for_attempt
-#' availability$runtime_check$executed
+#' avail <- postrank_backend_available("highs")
+#' avail$available_for_attempt
+#' avail$runtime_check$executed
 #' @concept decision
 #' @export
 postrank_backend_available <- function(backend = c("gurobi", "highs")) {
@@ -58,10 +64,10 @@ postrank_backend_available <- function(backend = c("gurobi", "highs")) {
   .pr_backend_availability_record(backend, metadata, linkage)
 }
 
-# Shared availability check for every solving path (label-MIP adapters and the
-# staged engine). It runs before any solver namespace is loaded, so a requested
-# but absent backend fails with its own condition code and never loads or
-# selects another backend.
+# Shared availability check for every solving path (label-MIP backend wrappers
+# and the staged engine). It runs before any solver namespace is loaded, so a
+# requested but absent backend fails with its own condition code and never loads
+# or selects another backend.
 .pr_backend_require <- function(backend) {
   .pr_assert(is.character(backend) && length(backend) == 1L && !is.na(backend) && backend %in% c("gurobi", "highs"),
     "backend must be gurobi or highs", "invalid_backend")

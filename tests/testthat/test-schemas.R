@@ -1,5 +1,5 @@
-# T-obj-02: every new constructor has its documented ordered schema; legacy objects keep
-# their source field sets without new audit fields.
+# Return-object field names and ordering across constructors and validators.
+#
 audit <- c("schema_version", "provenance", "warnings")
 
 test_that("new classes use their exact ordered fields", {
@@ -21,7 +21,7 @@ test_that("new classes use their exact ordered fields", {
 test_that("legacy objects gain no audit or display fields", {
   pw <- postrank_pairwise(postrank_toy)
   expect_false(any(c("summaries", "metadata", "provenance_display") %in% names(postrank_toy)))
-  # Source-derived legacy receipt fields (0.0.1.9002 validate_postrank_draws()).
+  # Required validation fields returned by validate_postrank_draws().
   expect_identical(names(postrank_toy$validation), c("valid", "schema_checked", "semantic_checks_completed",
     "source_values_checked", "jointness_verified", "convergence_verified", "eligible_functional", "input_identity",
     "validator_version", "check_results", "issues", "limitations"))

@@ -1,5 +1,5 @@
-# Self-contained since 0.9.0: fixture JSON and the independent mixture oracle
-# are packaged test copies (tests/fixtures/), loaded via helper-coefficient-oracles.R.
+# Shared-state Gaussian mixture checks using packaged JSON fixtures and independent
+# reference formulas from helper-coefficient-oracles.R.
 .cm_root <- pr_cf_fixture_root()
 read_fixed_gaussian_fixture <- pr_cf_oracle$read_fixed_gaussian_fixture
 oracle_mixture_conditional <- pr_cf_oracle$oracle_mixture_conditional

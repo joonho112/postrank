@@ -1,10 +1,12 @@
 # Compute Comparisons from a Conditional Gaussian Law
 
-Directional-error probabilities are calculated from conditional means
-and covariance matrices without simulation of the target values. The
-input may contain one or several criteria, with dependence among
-criteria within an entity. Entities are assumed independent conditional
-on the supplied shared state.
+`postrank_gaussian_coefficients()` computes pairwise directional-error
+probabilities analytically from entity posterior means and within-entity
+covariance matrices under a normal (Gaussian) posterior, without
+simulating draws. For distinct entities `i` and `j` on criterion `k`,
+\\e\_{ij,k} = P(\theta\_{i,k} \le \theta\_{j,k})\\ is the probability
+that reporting `i` above `j` is in the wrong order (diagonal entries are
+`NA`).
 
 ## Usage
 
@@ -21,82 +23,78 @@ postrank_gaussian_coefficients(
 
 - means:
 
-  Finite numeric matrix with dimension names
-  `list(entity = entity_ids, criterion = criterion_ids)`. Supply at
-  least two unique entity IDs and one criterion. Targets must already be
-  oriented so that larger values mean higher reporting priority, in the
-  declared units.
+  Finite plain numeric `n x K` matrix (`n >= 2`, `K >= 1`) with named
+  `dimnames`: `list(entity = entity_ids, criterion = criterion_ids)`.
+  Larger values must already mean higher priority toward grade 1.
 
 - covariance:
 
-  Finite, symmetric, positive definite conditional covariance array with
-  dimensions criterion-by-criterion-by-entity and dimension names
+  Finite symmetric positive-definite plain numeric `K x K x n` array
+  with named `dimnames`:
   `list(criterion_i = criterion_ids, criterion_j = criterion_ids, entity = entity_ids)`.
-  Each matrix describes dependence among criteria within one entity; it
-  cannot encode covariance between entities. For one criterion, each
-  matrix is its positive conditional variance. No jitter or covariance
-  repair is applied.
+  Each `K x K` slice gives within-entity covariance across criteria
+  (positive variance when `K = 1`) and must satisfy exact symmetry
+  `S == t(S)` with zero tolerance (symmetrize `(V + t(V)) / 2`
+  beforehand if needed); cross-entity covariance cannot be encoded here,
+  and singular or asymmetric matrices stop the call without repair.
 
 - conditional_independence:
 
-  Explicitly `"entities_given_shared_h"`. This is a model assumption,
-  not something inferred from marginal moments.
+  Must be `"entities_given_shared_h"`, an explicit model declaration
+  (not inferred from marginal moments) stating that entities are
+  conditionally independent given the fixed conditioning state.
 
 - provenance:
 
-  Named list with `producer_id`, `producer_version`, `posterior_id`,
-  `input_payload_sha256`, `source_sha256`, and `config_sha256`;
-  `model_sha256` is optional. Hashes must be lowercase SHA-256 strings
-  describing the actual source and calculation. They record provenance
-  but do not authenticate the fit or its scientific assumptions.
+  Plain named list of non-empty character strings: `producer_id`,
+  `producer_version`, `posterior_id`, `input_payload_sha256`,
+  `source_sha256` and `config_sha256`, plus optional `model_sha256`.
+  Every `*_sha256` entry must be a 64-character lowercase hexadecimal
+  SHA-256 digest.
 
 ## Value
 
-A `postrank_coefficients` object containing posterior `means`, an
-entity-by-entity-by-criterion directional-error array `e`, the supplied
-conditional law and provenance, and supported-operation indicators. No
-target draws or Monte Carlo sample sizes are created.
+A `postrank_coefficients` object (`input_kind = "gaussian_conditional"`)
+containing `entity_ids`, `criterion_ids`, `means`, the `n x n x K`
+directional-error array `e`, `source`, `provenance`, `capabilities`,
+`validation`, `coefficient_identity`, `input_identity`,
+`pairwise_identity`, and `schema_version` (`"coefficient-0.1.0"`).
 
 ## Details
 
-For distinct entities, \\e\_{ij,k}=P(\theta\_{i,k}\leq\theta\_{j,k})\\
-is the error probability for reporting entity i above entity j. Positive
-conditional variances and between-entity independence make equality have
-probability zero. Diagonals are `NA`: self-comparisons are not used.
+Each off-diagonal probability is computed directly in the lower tail of
+the normal distribution from
+`(means[j, k] - means[i, k]) / sqrt(v_i + v_j)` to preserve small tail
+values; positive variances and conditional independence across entities
+imply zero probability of exact equality. These are ordinary
+floating-point analytic calculations, not exact rational arithmetic or
+interval-verified bounds.
 
-The normal difference uses the sum of the two conditional marginal
-variances. Both directions use the normal CDF directly to retain small
-tails. These are floating-point analytic calculations, not exact
-rational arithmetic or certified numerical error bounds.
-
-The native joint search through
-[`postrank_problem()`](https://joonho112.github.io/postrank/reference/postrank_problem.md)
-supports weighted expected loss with an upper grade-count limit for this
-input. It does not support minimax, criterion protections `q`, or an
-exact grade count there.
-[`postrank_evaluate()`](https://joonho112.github.io/postrank/reference/postrank_evaluate.md)
-can score a fixed report; scoring does not check its membership in a
-constrained action family. Other operations have their own documented
-support; see
-[`postrank_coefficient_capabilities()`](https://joonho112.github.io/postrank/reference/postrank_coefficient_capabilities.md).
-
-The package does not fit the model or verify that the supplied law
-follows from observed data. If an empirical Bayes prior estimate is held
-fixed, these probabilities condition on that estimate. Use
+In
+[`postrank()`](https://joonho112.github.io/postrank/reference/postrank.md)
+and
+[`postrank_problem()`](https://joonho112.github.io/postrank/reference/postrank_problem.md),
+normal posterior coefficients support the weighted expected-loss
+objective with `G_max` (minimax, `q` error budgets and `exact_G` are not
+available there; see
+[`postrank_coefficient_capabilities()`](https://joonho112.github.io/postrank/reference/postrank_coefficient_capabilities.md)).
+If an empirical-Bayes prior is held fixed, these probabilities condition
+on that estimate; to average over hyperparameter states, use
 [`postrank_mixture_coefficients()`](https://joonho112.github.io/postrank/reference/postrank_mixture_coefficients.md)
-to average conditional probabilities over explicitly supplied shared
-states; matching only their moments changes the law in general.
+rather than moment-matching to a single normal distribution. `postrank`
+does not fit the model or verify `provenance` hashes against external
+files.
 
 ## See also
 
-[`validate_postrank_coefficients()`](https://joonho112.github.io/postrank/reference/validate_postrank_coefficients.md),
 [`postrank_mixture_coefficients()`](https://joonho112.github.io/postrank/reference/postrank_mixture_coefficients.md),
+[`validate_postrank_coefficients()`](https://joonho112.github.io/postrank/reference/validate_postrank_coefficients.md),
+[`postrank_coefficient_capabilities()`](https://joonho112.github.io/postrank/reference/postrank_coefficient_capabilities.md),
 [`postrank_coefficient_diagnose()`](https://joonho112.github.io/postrank/reference/postrank_coefficient_diagnose.md)
 
 ## Examples
 
 ``` r
-# Reconstruct the documented one-criterion tutorial law with its own provenance.
 law <- pr_tutorial$law
 x <- postrank_gaussian_coefficients(
   means = law$means[, "score_A", drop = FALSE],

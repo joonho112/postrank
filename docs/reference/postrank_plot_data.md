@@ -1,9 +1,9 @@
 # Extract Stored Data for a Figure
 
-The complete data underlying the seven postrank figure types are
-returned for inspection or alternative displays. Stored results are read
-and reshaped without optimization, action evaluation or calculation of
-posterior summaries. Plot row limits and display labels do not affect
+`postrank_plot_data()` returns the complete data frame (or named list of
+data frames) underlying the seven `postrank` plot types without solving,
+evaluating gradings, or recomputing posterior summaries. Plot display
+caps (`max_rows`, `max_entities`) and label maps do not filter or rename
 the returned tables.
 
 ## Usage
@@ -18,57 +18,84 @@ postrank_plot_data(x, which = NULL)
 
   A `postrank_analysis`, `postrank_fit`, `postrank_report_card`,
   `postrank_baseline`, `postrank_frontier`, `postrank_commonality_cost`,
-  `postrank_comparison`, or prepared pairwise/coefficient input.
+  `postrank_comparison`, `postrank_pairwise` (including
+  [`postrank_probabilities()`](https://joonho112.github.io/postrank/reference/postrank_probabilities.md)),
+  or `postrank_coefficients`.
 
 - which:
 
-  Optional component name. Analysis components are `"report_card"`,
-  `"relations"` and `"profile"`; `"pairwise"` explicitly requests
-  prepared probabilities. See Details for other classes.
+  Optional single string naming the component to extract. For a
+  `postrank_analysis`, `NULL` returns a named list of `"report_card"`,
+  `"relations"`, and `"profile"`, or pass one of `"report_card"`,
+  `"relations"`, `"profile"`, or `"pairwise"`. See Details for other
+  classes.
 
 ## Value
 
-A data frame, a named list for an analysis with `which = NULL`, or
-`NULL` for an unavailable card or relation component. A profile without
-a validated incumbent is an empty typed data frame. The analysis list
-has an `availability` attribute with an available flag and reason per
-component.
+A data frame, a named list of three components (with an `"availability"`
+attribute) when `x` is a `postrank_analysis` and `which = NULL`, or
+`NULL` when a requested `"report_card"` or `"relations"` table has no
+underlying report card or checked grading. When `profile` is requested
+without a checked grading, returns the zero-row data frame from
+[`get_profile()`](https://joonho112.github.io/postrank/reference/get_profile.md).
 
 ## Details
 
-For an analysis, `which = NULL` returns `report_card`, `relations` and
-`profile`. Pairwise probabilities are deliberately separate because the
-complete table has `n * n * K` rows. A fit defaults to `"relations"` and
-also accepts `"profile"` or `"pairwise"`. A report card returns its long
-table; a baseline returns its relations. Frontier and commonality
-objects return their stored tables. A comparison returns its summary
-table by default and its change-count table for `which = "relations"`.
+Accepted `which` values by input class:
 
-The report-card table has `entity_id`, `grade`, `sort_rank`,
-`n_withheld`, `criterion`, `mean`, `lower`, `upper` and `expected_rank`.
-Rows are grouped by criterion and follow stored card order within each
-criterion; interval level and source remain on the card object.
-Relations contain one row per unordered pair with `entity_i`,
-`entity_j`, `i_pos`, `j_pos`, `code` and `relation`, in grade-then-ID
-order. Code 1 means the first entity is above the second, 0 means
-withheld and -1 means below. Profile columns are listed in
-[`get_profile()`](https://joonho112.github.io/postrank/reference/get_profile.md).
+- `postrank_analysis`: `NULL` returns
+  `list(report_card = ..., relations = ..., profile = ...)` whose
+  `"availability"` attribute gives `list(available, reason)` for each
+  slot; `"pairwise"` must be requested by name because its table has
+  `n * n * K` rows.
 
-`which = "pairwise"` returns `entity_i`, `entity_j`, `criterion` and
-`error_probability`, including the `NA` diagonal. It preserves input ID
-order, with `entity_i` varying fastest. This component remains available
-for fits without a validated grade. Prepared
-pairwise/probability/coefficient objects return it by default, but raw
-draws must first be aggregated with
-[`postrank_pairwise()`](https://joonho112.github.io/postrank/reference/postrank_pairwise.md).
-The table is not a relation-change map; use
-[`postrank_plot_relations()`](https://joonho112.github.io/postrank/reference/postrank_plot_relations.md)
-with two actions for that view.
+- `postrank_fit`: defaults to `"relations"` and also accepts `"profile"`
+  or `"pairwise"`.
 
-The designs `"sensitivity"`, `"fragility"`, `"crossfit"`, `"trace"` and
-`"dispersion"` are reserved and raise `unshipped_figure`. This does not
-imply that all similarly named numerical diagnostic functions are
-unavailable.
+- `postrank_report_card`: returns the long report-card table.
+
+- `postrank_baseline`: returns the pair-relations table.
+
+- `postrank_frontier` and `postrank_commonality_cost`: return `x$table`.
+
+- `postrank_comparison`: returns `x$table` by default, or `x$relations`
+  when `which = "relations"`.
+
+- `postrank_pairwise` and `postrank_coefficients`: accept `NULL` or
+  `"pairwise"` and return the pairwise probability table (aggregate raw
+  `postrank_draws` with
+  [`postrank_pairwise()`](https://joonho112.github.io/postrank/reference/postrank_pairwise.md)
+  first).
+
+Returned columns for reshaped views:
+
+- `report_card`: `entity_id`, `grade`, `sort_rank`, `n_withheld`,
+  `criterion`, `mean`, `lower`, `upper`, and `expected_rank`, stacked by
+  criterion in stored card order (interval `level` and `interval_source`
+  stay on the `postrank_report_card` object).
+
+- `relations`: one row per unordered pair (`i_pos < j_pos`) in
+  grade-then-ID order with `entity_i`, `entity_j`, `i_pos`, `j_pos`,
+  integer `code` (`1L` = `"above"`, `0L` = `"withheld"`, `-1L` =
+  `"below"`), and factor `relation`.
+
+- `profile`: same columns as
+  [`get_profile()`](https://joonho112.github.io/postrank/reference/get_profile.md).
+
+- `pairwise`: `entity_i`, `entity_j`, `criterion`, and
+  `error_probability` (`n * n * K` rows in input order with `entity_i`
+  varying fastest, including `NA` diagonal entries; available even when
+  a fit has no checked grading).
+
+Passing `which` equal to `"sensitivity"`, `"fragility"`, `"crossfit"`,
+`"trace"`, or `"dispersion"` stops with condition code
+`"unshipped_figure"`; those figure names are not implemented as plot
+views, although the numerical functions
+[`postrank_sensitivity()`](https://joonho112.github.io/postrank/reference/postrank_sensitivity.md),
+[`postrank_mc_fragility()`](https://joonho112.github.io/postrank/reference/postrank_mc_fragility.md),
+and
+[`postrank_crossfit()`](https://joonho112.github.io/postrank/reference/postrank_crossfit.md)
+are available.
 
 ## See also
 
@@ -80,10 +107,7 @@ unavailable.
 ## Examples
 
 ``` r
-# Read prepared tutorial results; no model fitting or optimization.
-source(system.file("scripts", "_vignette-setup.R", package = "postrank"),
-  local = TRUE)
-one <- load_or_compute("tutorial_one")
+one <- postrank_example("tutorial_one")
 card_data <- postrank_plot_data(one, "report_card")
 head(card_data)
 #>   entity_id grade sort_rank n_withheld criterion  mean       lower      upper
@@ -100,19 +124,6 @@ head(card_data)
 #> 4      3.646891
 #> 5      5.129639
 #> 6      5.855084
-
-# Complete two-criterion probability table, including its gray diagonal cells.
-pair_data <- postrank_plot_data(pr_tutorial$two, "pairwise")
-nrow(pair_data)
-#> [1] 72
-head(pair_data)
-#>   entity_i entity_j criterion error_probability
-#> 1        A        A   score_A                NA
-#> 2        B        A   score_A         0.8116204
-#> 3        C        A   score_A         0.9996085
-#> 4        D        A   score_A         0.9998973
-#> 5        E        A   score_A         1.0000000
-#> 6        F        A   score_A         1.0000000
 attr(postrank_plot_data(one), "availability")
 #> $report_card
 #> $report_card$available
@@ -138,4 +149,16 @@ attr(postrank_plot_data(one), "availability")
 #> NULL
 #> 
 #> 
+
+pair_data <- postrank_plot_data(pr_tutorial$two, "pairwise")
+nrow(pair_data)
+#> [1] 72
+head(pair_data)
+#>   entity_i entity_j criterion error_probability
+#> 1        A        A   score_A                NA
+#> 2        B        A   score_A         0.8116204
+#> 3        C        A   score_A         0.9996085
+#> 4        D        A   score_A         0.9998973
+#> 5        E        A   score_A         1.0000000
+#> 6        F        A   score_A         1.0000000
 ```

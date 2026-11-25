@@ -1,11 +1,12 @@
 # Format postrank Results for Reading in the Console
 
-The `print(x)` method gives a concise display, `summary(x)` describes
-the results and settings, and `format(x)` returns the display as text.
-The methods use stored results without optimization or recalculation of
-posterior probabilities. Grade 1 has highest priority and shared grades
-withhold comparisons. Valid all-withheld grades are distinguished from
-fits for which no validated grades are available.
+In ordinary use, call `print(x)` for a concise console display,
+`summary(x)` (or `summary(x, details = TRUE)`) for a fuller summary of
+settings and bounds, and `format(x)` to get the console lines as a
+character vector. The 24 `format_postrank_*_cli()` functions return the
+exact same lines as `format(x)` when you want to set line width, styling
+tier or table row count directly and verify `x`'s class. None of these
+methods run a solver or recompute probabilities.
 
 ## Usage
 
@@ -124,91 +125,100 @@ format_postrank_summary_cli(
 
 - x:
 
-  An object of the class named by the formatter. A wrong class raises
-  `wrong_class`.
+  An object of the class named by the formatter (wrong classes stop with
+  error code `wrong_class`). `format_postrank_validation_cli()` accepts
+  both `postrank_validation` and `postrank_solution_validation`;
+  `format_postrank_guarantee_cli()` handles the conditional bound and
+  envelope records; `format_postrank_summary_cli()` formats objects
+  returned by [`summary()`](https://rdrr.io/r/base/summary.html).
 
 - ...:
 
-  Additional display arguments.
+  Additional display arguments passed between methods.
 
 - width:
 
-  Line width; `NULL` follows `getOption("width")`. Widths are floored at
-  40 characters.
+  Target line width in characters (`NULL` reads `getOption("width")`,
+  floored at `40`).
 
 - tier:
 
-  Styling: `NULL` detects the context, `1` uses ANSI styling, `2` is
-  plain text, and `3` is for knitted documents.
+  Styling mode: `NULL` detects the session context, `1` adds ANSI
+  terminal styling, `2` produces plain text (identical to tier `1` with
+  ANSI codes stripped), and `3` formats for knitted documents.
 
 - n_head:
 
-  Maximum number of rows displayed in table bodies. This affects
-  applicable displays only; it does not select or remove stored
-  entities.
+  Maximum number of rows shown in printed table bodies (default `10L`).
+  Does not drop or alter rows stored inside `x`.
 
 - details:
 
-  For the summary formatter, include technical source records and
-  identities. `NULL` follows the summary object's stored preference.
+  Logical for `format_postrank_summary_cli()` and
+  [`summary()`](https://rdrr.io/r/base/summary.html): whether to include
+  technical source records and hashes. `NULL` uses the setting stored on
+  the summary object.
 
 ## Value
 
-Each formatter returns a character vector with one element per console
-line. The matching [`format()`](https://rdrr.io/r/base/format.html)
-method returns the same lines for the same arguments.
+Each `format_postrank_*_cli()` function and
+[`format()`](https://rdrr.io/r/base/format.html) method returns a
+character vector with one element per line.
 [`print()`](https://rdrr.io/r/base/print.html) writes those lines and
-invisibly returns its input.
+returns `x` invisibly.
 [`summary()`](https://rdrr.io/r/base/summary.html) returns a structured
-summary with its own display.
+`postrank_summary` object with its own
+[`print()`](https://rdrr.io/r/base/print.html) and
+[`format()`](https://rdrr.io/r/base/format.html) methods (controlled by
+`postrank.lang`; see
+[postrank_options](https://joonho112.github.io/postrank/reference/postrank_options.md)).
 
 ## Details
 
-Default summaries emphasize grades, disclosure, expected loss and solver
-qualifications. Use `summary(x, details = TRUE)` to add technical
-details; structured fields remain available with either display setting.
-An optimization gap concerns the supplied numerical problem, separately
-from posterior uncertainty and Monte Carlo error.
-
-Large grade memberships and table bodies may be shortened for reading.
-Accessors and
+Console output uses `"disclosed"` for ordered pairs, `"withheld"` for
+unordered pairs (shared grades), and `"risk"` for posterior expected
+loss. Long grade member lists and tables are shortened for reading; use
+[`get_grades()`](https://joonho112.github.io/postrank/reference/get_grades.md),
+[`get_profile()`](https://joonho112.github.io/postrank/reference/get_profile.md),
+[`get_risk()`](https://joonho112.github.io/postrank/reference/get_risk.md)
+and
 [postrank_tables](https://joonho112.github.io/postrank/reference/postrank_tables.md)
-return the complete stored results, so use those for calculations, row
-selection or export. Console text is not a stable data format. Fix
-`width` and `tier = 2` when saving plain text.
-
-Styling tiers have the same content; stripping tier 1's ANSI styling
-gives tier 2. Entity IDs and stored warning text are preserved. The
-named formatter functions on this page remain available alongside
-[`format()`](https://rdrr.io/r/base/format.html). The validation
-formatter handles input and solution validations; the guarantee
-formatter handles conditional risk, regret and protection records; the
-summary formatter handles structured summaries.
+to extract complete results rather than parsing console text. When
+saving plain text, fix `width` and `tier = 2`.
 
 ## See also
 
 [`get_grades()`](https://joonho112.github.io/postrank/reference/get_grades.md),
 [`get_profile()`](https://joonho112.github.io/postrank/reference/get_profile.md),
 [`get_risk()`](https://joonho112.github.io/postrank/reference/get_risk.md),
-[`postrank_report()`](https://joonho112.github.io/postrank/reference/postrank_report.md)
+[postrank_tables](https://joonho112.github.io/postrank/reference/postrank_tables.md),
+[`postrank_report()`](https://joonho112.github.io/postrank/reference/postrank_report.md),
+[postrank_options](https://joonho112.github.io/postrank/reference/postrank_options.md)
 
 ## Examples
 
 ``` r
-lines <- format(pr_tutorial$one, width = 72, tier = 2)
+one <- postrank_example("tutorial_one")
+lines <- format(one, width = 72, tier = 2)
 cat(lines, sep = "\n")
-#> <postrank_coefficients>  6 entities under a declared conditional law
+#> <postrank_analysis>  6 entities in 3 grades (sizes 2 / 2 / 2)
 #>   One criterion: score_A.
-#>   Gaussian comparison probabilities and marginal summaries are
-#>     available.
-#>   Supported decisions use weighted loss and an upper limit on grades.
-#>     Target draws, q constraints, exact grade counts and minimax
-#>     decisions are unsupported here.
-#>   i summary(x, details = TRUE) retains the conditional-law
-#>     declarations and source records.
-identical(lines,
-  format_postrank_coefficients_cli(pr_tutorial$one, width = 72, tier = 2))
+#>   Posterior loss: 0.0417.
+#>   Disclosed 12 of 15 pairs (80.0%); withheld 3.
+#>   Expected error among disclosed pairs: score_A 0.002.
+#>   Solver: Optimal within solver tolerances.
+#>   Optimization gap: 0; requested absolute gap 1e-08.
+#>   Prepared: report card.
+#>   Grade 1 has highest priority; a shared grade withholds the comparison.
+#>   grade 1 (2): A, B
+#>   grade 2 (2): C, D
+#>   grade 3 (2): E, F
+#>   !  1 warning recorded: Reported lower bound exceeded the validated ...
+#>   i summary(x) explains the loss, settings and bounds; get_grades(x)
+#>     returns all grades.
+identical(lines, format_postrank_analysis_cli(one, width = 72, tier = 2))
 #> [1] TRUE
+
 summary(pr_tutorial$one)
 #> <postrank_coefficients_summary>
 #> Result:
@@ -220,8 +230,8 @@ summary(pr_tutorial$one)
 #>     unsupported here.
 #>   i summary(x, details = TRUE) adds source records and identities; structured
 #>     fields remain available.
-technical <- summary(pr_tutorial$one, details = TRUE)
-names(technical)
+tech <- summary(pr_tutorial$one, details = TRUE)
+names(tech)
 #> [1] "object_class"   "schema_version" "headline"       "provenance"    
 #> [5] "declarations"   "settings"       "identities"     "warnings"      
 #> [9] "interpretation"

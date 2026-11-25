@@ -161,9 +161,9 @@ testthat::test_that("analysis attempts both explicit-backend branches after erro
   testthat::expect_match(z$attempts$outer$warnings,"Explicit outer test warning")
   testthat::expect_identical(z$reasons,"inner_solve_error")
   testthat::expect_false(z$bound_computed)
-  # 0.9.0 migration (Appendix C note 2, D-1): backend = NULL now resolves to the
-  # option, then Gurobi, instead of requiring an explicit backend. The resolved name
-  # reaches the attempt runner; no other backend is substituted.
+  # backend = NULL resolves via getOption("postrank.backend") and then Gurobi,
+  # forwarding the resolved solver name to the envelope runner without fallback.
+  #
   seen <- (function() {
     seen <- character()
     testthat::local_mocked_bindings(.pr_run_protection_analysis = function(envelopes, backend, control, solver) {

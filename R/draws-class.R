@@ -9,31 +9,39 @@
 
 #' Check a Posterior Input and Inspect Its Validation Results
 #'
-#' The validator checks the target definitions, numerical values, axes and
-#' sampling history required by the ordinary input routes. Its `valid` and
-#' `issues` fields report whether the input meets those requirements.
+#' `validate_postrank_draws()` checks whether a `postrank_draws` object or an
+#' `applied-0.1` input list satisfies `postrank`'s structural, numeric and
+#' description requirements, returning a report rather than stopping on an
+#' invalid input.
 #'
-#' @param x A canonical `applied-0.1` named-list payload or a `postrank_draws`.
-#' @param source Reserved; leave `NULL`. To compare mapped values with a
-#'   `posterior` source object, use [as_postrank_posterior()].
-#' @return A `postrank_validation` list with logical `valid`, an `issues` list
-#'   of error codes, paths and messages, and separate check flags. Invalid
-#'   payloads are reported in this record rather than constructed as inputs.
+#' @param x A `postrank_draws` object or an `applied-0.1` named list.
+#' @param source Reserved; leave `NULL` (any non-`NULL` value stops with
+#'   `unsupported_source_audit`). To check values against a `posterior` package
+#'   object, use [as_postrank_posterior()].
+#' @returns A `postrank_validation` list with components:
+#'   * `valid`: `TRUE` if all R structural and semantic checks passed, `FALSE`
+#'     otherwise;
+#'   * `issues`: empty list when `valid` is `TRUE`, otherwise a list containing
+#'     the error `code`, `path`, `message` and `severity`;
+#'   * `semantic_checks_completed`: check IDs `"DC01"` through `"DC15"` when
+#'     `valid` is `TRUE`, otherwise `character()`;
+#'   * `eligible_functional`, `input_identity`, `validator_version`,
+#'     `check_results` and `limitations`;
+#'   * `schema_checked` (`FALSE`), `source_values_checked`,
+#'     `jointness_verified` (`FALSE`) and `convergence_verified` (`FALSE`).
 #' @details
-#' The checks cover the supported structures, ordered IDs, target and source
-#' declarations, numeric values, zero-tie policy and sampling history. They
-#' do not change the values or perform a fit. The function does not run a
-#' general JSON Schema validator, so `schema_checked` is `FALSE` even for a
-#' valid R input. The additional placeholder-text checks of
-#' [postrank_declarations()] are not applied here.
+#' The checks verify axis order, entity and criterion IDs, target and source
+#' descriptions, finite numeric values, absence of within-criterion ties, and
+#' MCMC chain-history consistency. They do not run an external Draft 2020-12
+#' JSON Schema validator (`schema_checked` is always `FALSE`), and they do not
+#' apply the placeholder-word list of [postrank_declarations()].
 #'
-#' `source_values_checked`, `jointness_verified` and `convergence_verified`
-#' are separate from `valid`. Source-value comparison is retained only when
-#' an existing object's successful [as_postrank_posterior()] audit matches
-#' its current input identity. Structural validity does not establish the
-#' scientific truth of the declarations, model adequacy or convergence.
-#' The tie-aware validator has a different return convention; see
-#' [validate_postrank_tie_draws()].
+#' `source_values_checked` is `TRUE` only when `x` is an unchanged
+#' `postrank_draws` object created by [as_postrank_posterior()], in which case
+#' `source_audit` is also retained. `valid = TRUE` means the input's structure
+#' and required descriptions are complete; it does not verify scientific
+#' identification, joint sampling or MCMC convergence. For exact-tie inputs,
+#' see [validate_postrank_tie_draws()], which uses a different return format.
 #' @seealso [as_postrank_draws()], [postrank_draws()], [as_postrank_posterior()]
 #' @concept input
 #' @examples
@@ -41,7 +49,7 @@
 #' check$valid
 #' check[c("source_values_checked", "jointness_verified", "convergence_verified")]
 #'
-#' # Deliberately omit required context to inspect the reported problem.
+#' # Omit required context to inspect the reported issue without throwing an error:
 #' bad <- postrank_toy
 #' bad$context <- NULL
 #' validate_postrank_draws(bad)$issues
@@ -72,53 +80,51 @@ validate_postrank_draws <- function(x, source = NULL) {
 
 #' Prepare a Fully Described Posterior Input
 #'
-#' A complete posterior description is validated and prepared for directional
-#' comparisons. This constructor accepts the full producer-supplied metadata,
-#' including an exact finite law or separate criterion-wise blocks. For a
-#' numeric joint array, [postrank_draws()] constructs the metadata from
-#' explicit scientific declarations.
+#' `as_postrank_draws()` validates a complete `applied-0.1` posterior input
+#' list (or revalidates an existing `postrank_draws` object) and returns a
+#' `postrank_draws` object. Use it when constructing separate criterion-wise
+#' draw blocks, an exact finite posterior law, or custom MCMC draw histories;
+#' for an ordinary numeric array of joint draws, [postrank_draws()] with
+#' [postrank_describe()] is simpler.
 #'
-#' @param x A canonical `applied-0.1` named-list payload, or an existing
-#'   `postrank_draws` to revalidate.
-#' @return A `postrank_draws` object containing the supplied values in their
-#'   declared order and a `validation` record. Invalid input raises a
-#'   structured error containing its code, path and message.
+#' @param x A complete `applied-0.1` named list, or an existing
+#'   `postrank_draws` object to revalidate.
+#' @returns A `postrank_draws` object storing the input fields in their
+#'   declared order, `input_schema_version` (`"applied-0.1"`), `schema_version`
+#'   (`"0.1.0"`), and a `validation` record from [validate_postrank_draws()].
+#'   Invalid input stops with the first reported issue (`code`, `path` and
+#'   `message`).
 #' @details
-#' The supported forms are joint equal-weight IID or MCMC draws
-#' (`joint_draws`), separate equal-weight criterion blocks (`criterion_blocks`),
-#' and a complete exact finite posterior (`finite_law`). Every form records
-#' entity/criterion IDs, target definitions, context, identification, the
-#' zero-equality policy and provenance. Joint arrays retain all three axes,
-#' including `S x n x 1` for a single criterion. Values must already be oriented
-#' so that larger means higher priority.
+#' Three posterior forms are accepted:
+#' * `joint_draws`: equal-weight IID or MCMC draws in an `S x n x K` array
+#'   (keeping `S x n x 1` when `K = 1`), with MCMC chain IDs, iteration numbers
+#'   and warmup/thinning history;
+#' * `criterion_blocks`: separate equal-weight `S_k x n` matrices per
+#'   criterion, preserving joint entity states within each criterion without
+#'   specifying dependence across criteria;
+#' * `finite_law`: an exact discrete posterior listing every positive-mass
+#'   state with safe-integer target values and positive integer probability
+#'   numerators summing to a common denominator (not a Monte Carlo sample;
+#'   evaluating it with [postrank_pairwise()] requires the optional `gmp`
+#'   package).
 #'
-#' MCMC inputs retain original chain IDs, iteration numbers, warmup and
-#' selection history. Criterion-wise blocks preserve joint entity states within
-#' each criterion without specifying dependence across criteria. An exact
-#' finite law specifies every positive-mass state, safe-integer target values
-#' and positive integer mass numerators summing to a common denominator. Such a
-#' law describes the complete posterior rather than a Monte Carlo sample; its
-#' evaluation requires the optional `gmp` package.
-#'
-#' The ordinary input domain assumes zero probability of within-criterion
-#' equality between distinct entities and rejects observed ties. Recover
-#' unrounded continuous values or use [as_postrank_tie_draws()] for genuine
-#' equality mass. Validation checks the structure and presence of declarations;
-#' it cannot verify their scientific truth or convergence. The extra
-#' placeholder checks of [postrank_declarations()] are not applied here.
-#' See [validate_postrank_draws()] for the separate check flags.
-#' @seealso [postrank_draws()], [read_postrank_draws()],
+#' Values must already be oriented so that larger values mean higher priority.
+#' Distinct entities must have zero probability of exact equality within each
+#' criterion, and observed ties stop the call; for posteriors with positive
+#' probability on ties, use [as_postrank_tie_draws()]. Required descriptions
+#' are checked for structure and non-empty text without the placeholder-word
+#' list of [postrank_declarations()].
+#' @seealso [postrank_draws()], [postrank_describe()], [read_postrank_draws()],
 #'   [validate_postrank_draws()],
 #'   `vignette("m3-posterior-inputs", package = "postrank")`
 #' @concept input
 #' @examples
-#' # The bundled generator supplies a complete two-criterion canonical input.
-#' # source() only defines this synthetic generator; it does not fit a model.
+#' # Build a complete synthetic two-criterion input list from the bundled script:
 #' generator <- new.env()
 #' sys.source(system.file("examples", "make-synthetic-input.R",
 #'   package = "postrank"), envir = generator)
-#' payload <- generator$make_postrank_synthetic_input()
-#' draws <- as_postrank_draws(payload)
+#' input_list <- generator$make_postrank_synthetic_input()
+#' draws <- as_postrank_draws(input_list)
 #' draws$criterion_ids
 #' dim(draws$joint_draws$tensor$values)
 #' @export

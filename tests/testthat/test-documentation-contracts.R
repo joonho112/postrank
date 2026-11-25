@@ -1,4 +1,4 @@
-# PKG-14: preserve legacy structural contracts while documenting the extra friendly lint.
+# Constructor placeholder-word lint vs. lower-level structural validation.
 test_that("declaration token lint is specific to the friendly array bundle", {
   d <- attr(pr_toy_mcmc, "law")$declarations
   args <- unclass(d)
@@ -57,7 +57,7 @@ test_that("posterior metadata preserves explicit legacy text", {
   expect_identical(friendly$identification$note, "TBD")
 })
 
-# PKG-16: every named formatter remains a compatibility entry point for format().
+# Named format_postrank_*_cli() wrappers return identical lines to format().
 test_that("all 24 named formatter wrappers equal their generic capture", {
   local_mocked_bindings(.pr_solve_core = pr_mock_solver())
   w <- c(need_A = .6, need_B = .4)

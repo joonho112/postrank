@@ -6,29 +6,33 @@
 \format{
 A \code{postrank_coefficients} object (\code{source$kind = "gaussian_conditional"}):
 \code{means} 30 x 3, \code{e} 30 x 30 x 3, \code{source$covariance} 3 x 3 x 30
-(criterion_i, criterion_j, entity), plus provenance, capabilities and
-identities.
+(criterion_i x criterion_j x entity), plus \code{provenance}, \code{capabilities} and
+identity hashes.
 }
 \source{
-\code{data-raw/make-pr-example-gaussian.R}.
+Built by \code{data-raw/make-pr-example-gaussian.R} from the same
+synthetic normal posterior as \link{pr_example_draws}.
 }
 \usage{
 pr_example_gaussian
 }
 \description{
-The frozen law behind \link{pr_example_draws} as a \code{postrank_coefficients}
-object built by \code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}}, with the explicit
-declaration \code{"entities_given_shared_h"} and the six strict provenance
-fields (\code{input_payload_sha256} hashes the frozen law file, \code{source_sha256}
-the law generator source and \code{config_sha256} the generation configuration).
-Analytic directional errors and marginal summaries describe this same law.
-The finite sample in \link{pr_example_draws} approximates it and need not give
-exactly the same coefficients or grades. See \link{pr_tutorial} for a smaller
-one-criterion example and \code{\link[=postrank_problem]{postrank_problem()}} for native mode restrictions.
+\code{pr_example_gaussian} is the synthetic analytic normal posterior underlying
+\link{pr_example_draws}, stored as a \code{postrank_coefficients} object built by
+\code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}} with \code{conditional_independence = "entities_given_shared_h"}.
+Its pairwise directional-error probabilities and marginal intervals follow
+analytically from the normal posterior (\code{provenance} records SHA-256 hashes
+of the parameter file, generator script and configuration). The 4,000 IID
+draws in \link{pr_example_draws} approximate this distribution and need not give
+identical probabilities or grades.
 }
 \examples{
 dim(pr_example_gaussian$e)
 postrank_coefficient_capabilities(pr_example_gaussian)$weighted_expected_risk
+}
+\seealso{
+\link{pr_example_draws}, \code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}},
+\code{\link[=postrank_example]{postrank_example()}}
 }
 \concept{data}
 \keyword{datasets}

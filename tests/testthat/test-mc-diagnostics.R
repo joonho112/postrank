@@ -1,4 +1,4 @@
-# 014 repair Phase 3 (Step 3.2): cross-fitted risk and MC-fragile pairs.
+# Split-sample cross-fitted risk and pairwise Monte Carlo fragility.
 pr_multichain_payload <- function(seed, chains, per_chain, n, K) {
   x <- pr_random_payload(seed, chains * per_chain, n, K)
   S <- chains * per_chain; chain_of <- rep(seq_len(chains), each = per_chain); iter_of <- rep(seq_len(per_chain), times = chains) + 2L
@@ -136,7 +136,7 @@ testthat::test_that("MC diagnostics validate the loss settings", {
     testthat::expect_error(postrank_mc_fragility(x, settings = bad), class = "postrank_input_error")
 })
 
-# AUD-02: exact enumeration, not a Monte Carlo simulation. The target law has
+# Exact two-state enumeration showing selection bias for empirical minimax maxima:
 # two equally likely states with opposing criterion errors (0,1) and (1,0).
 # With exact_G=2 every selected grade's true risk is 1/2 under either objective.
 testthat::test_that("cross-fit unbiasedness is confined to independent IID linear risk, not empirical minimax", {

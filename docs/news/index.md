@@ -1,5 +1,38 @@
 # Changelog
 
+## postrank 1.3.0
+
+### New functions
+
+- [`postrank_example()`](https://joonho112.github.io/postrank/reference/postrank_example.md)
+  lists the 21 precomputed analysis objects shipped with the package and
+  returns one by name after verifying compatibility, so help examples
+  and vignettes show the exact code that runs without calling a solver.
+- [`postrank_describe()`](https://joonho112.github.io/postrank/reference/postrank_describe.md)
+  builds the required posterior description for a numeric draw array
+  from plain arguments and passes it to
+  [`postrank_declarations()`](https://joonho112.github.io/postrank/reference/postrank_declarations.md).
+  Substantive statements are still written by the user; the helper fills
+  in identifiers and, when given the array, its type and dimensions.
+
+### Documentation and compatibility
+
+- Rewrote all 91 reference help pages, the shipped vignettes, `README`,
+  `DESCRIPTION`, and internal code comments in plain R-package prose,
+  removing software-development jargon and clarifying literature
+  attributions.
+- Consolidated four overlapping articles (`quickstart`,
+  `inputs-and-producers`, `baselines-and-the-cost-of-a-common-grade`,
+  and `migration-from-0-9`) into the Start here and Methods vignettes
+  and `system.file("MIGRATION-1.2.0.md", package = "postrank")`, with
+  pkgdown URL redirects preserved from the previous article paths.
+- Stored-result compatibility checks now hash parsed R expressions
+  rather than raw file bytes, so documentation and comment updates do
+  not invalidate the 21 shipped `.rds` example results.
+- Function arguments, defaults, return structures, console and HTML
+  report formatting, solver selection rules, and numerical results are
+  unchanged from version 1.2.0.
+
 ## postrank 1.2.0
 
 ### Multidomain profile report cards
@@ -8,54 +41,58 @@
   retains identified unit-by-domain states, declared target laws,
   structural identities and actual coupling/sampling provenance.
 - [`postrank_mdomain_decision()`](https://joonho112.github.io/postrank/reference/postrank_mdomain_decision.md)
-  specifies weights, withholding loss, mean guards, direct joint
-  exceedance thresholds and scopes using exact policy values.
+  sets domain weights and the cost of leaving a pair unordered. For
+  selected pairs in each domain, it can limit expected errors per
+  ordered pair and cap the probability that any protected error
+  proportion exceeds its threshold.
 - [`postrank_mdomain_evaluate()`](https://joonho112.github.io/postrank/reference/postrank_mdomain_evaluate.md)
   evaluates one fixed grade matrix, and
   [`postrank_mdomain_grades()`](https://joonho112.github.io/postrank/reference/postrank_mdomain_grades.md)
   extracts a verified evaluated or selected matrix.
 - [`postrank_mdomain_family()`](https://joonho112.github.io/postrank/reference/postrank_mdomain_family.md)
-  constructs explicit or ordered-cut product banks;
+  defines candidate grade columns explicitly or through cuts along a
+  specified ordering. When the number of combinations fits within
+  `max_actions`,
   [`postrank_mdomain_solve()`](https://joonho112.github.io/postrank/reference/postrank_mdomain_solve.md)
-  examines the complete declared bank with hard workload caps. Public
-  selection uses additive risk A and direct joint protection. Optimality
-  is restricted to that bank.
+  examines them all and selects a feasible card with the lowest weighted
+  expected loss, if one exists.
 - [`postrank_mdomain_assess()`](https://joonho112.github.io/postrank/reference/postrank_mdomain_assess.md)
   separates complete finite-law evaluation, conditional fixed-sample iid
-  count assurance and descriptive MCMC diagnostics. Producer
-  declarations remain declarations; no model-calibration certificate is
-  inferred. Exact represented-measure arithmetic is distinct from
-  numerical assurance about an intended posterior.
+  count bounds and descriptive MCMC diagnostics. Metadata fields record
+  how the input was constructed without verifying model calibration, and
+  exact rational arithmetic over the supplied distribution is distinct
+  from numerical bounds on an intended posterior.
 - [`postrank_plot_mdomain()`](https://joonho112.github.io/postrank/reference/postrank_plot_mdomain.md)
   displays stored grades, cell counts or pair directions.
   Filtering/labels preserve original grades and denominators. Stored
   plots need neither a solver nor optional exact-arithmetic tooling.
 - The quickstart and decision vignettes explain separable domain
   decisions, dependence-sensitive protection, crossed priorities and the
-  permitted synthetic 40-site illustration. Raw posterior archives are
-  not bundled.
+  synthetic 40-site illustration. Raw posterior archives are not
+  bundled.
 
 ### Compatibility
 
-- The existing 97 exports, 127 S3 registrations, P1 signatures, eight
-  datasets and common-grade behavior are retained. Eight exports and 15
-  stored-summary methods are added; the package now has 105 exports and
-  142 S3 registrations.
-- P1
+- The existing 97 exports, 127 S3 registrations, common-grade
+  signatures, eight datasets and common-grade behavior are retained.
+  Eight exports and 15 stored-summary methods are added; the package now
+  has 105 exports and 142 S3 registrations.
+- Common-grade
   [`get_profile()`](https://joonho112.github.io/postrank/reference/get_profile.md)
-  summarizes criterion contributions to a common grading. P2 uses a
-  unit-by-domain grade matrix; it does not replace that accessor.
-- Original prepared P1 results retain their computation versions, source
-  IDs, backend records and timestamps. A separately sealed,
-  exact-version reader compatibility receipt records their validation by
-  the new reader.
+  summarizes criterion contributions to a common grading. Multidomain
+  report cards use a unit-by-domain grade matrix and do not replace that
+  accessor.
+- Original precomputed common-grade results retain their computation
+  versions, source IDs, backend records and timestamps, and a versioned
+  reader compatibility check records their validation by the current
+  reader.
 - Numeric policy inputs mean their stored binary values. Use
   decimal/fraction strings when the scientific policy is an exact
   decimal or fraction. Numeric weights retain the existing normalization
   rule when bound to an input.
-- Existing P1 solver defaults are preserved. P2 finite-bank evaluation
-  and selection use optional `gmp` arithmetic and require no MIP
-  backend.
+- Existing common-grade solver defaults are preserved. Multidomain
+  finite-bank evaluation and selection use optional `gmp` arithmetic and
+  require no MIP backend.
 
 ## postrank 1.1.0
 
@@ -142,11 +179,11 @@ Alabama. Documentation and data inventories describe this distribution.
 
 ## postrank 0.9.0
 
-GitHub release candidate. The reviewed mathematical kernels and the
-legacy scientific payload identities are preserved; every inherited
-behavioral case remains an obligation, with reviewed public-adapter and
-English presentation expectation migrations. Acceptance of the new API
-precedes any 1.0.0 label.
+GitHub release candidate. The reviewed mathematical calculations and
+existing scientific outputs are preserved; all previous behavioral test
+cases are retained alongside updated public function interfaces and
+English console output. Acceptance of the new API precedes any 1.0.0
+label.
 
 ### Opt-in tie-aware mode (development addition)
 
@@ -400,15 +437,15 @@ was written for 0.9.0, which ports the candidate’s coefficient API.
 Development version with independent audit corrections and an LP
 time-budget repair.
 
-### Audit corrections
+### Review corrections
 
-- AUD-01: minimax refinement preserves the original weighted secondary
+- Minimax refinement preserves the original weighted secondary
   objective. Zero weights no longer trigger a perturbation of that
   objective. A separate Pareto tie-break, when applicable, preserves the
-  preceding objectives, and certification describes the action actually
+  preceding objectives, and solver status describes the action actually
   released.
-- AUD-02: cross-fit unbiasedness is conditional on independent IID folds
-  and a linear weighted or criterion-specific risk functional. Empirical
+- Cross-fit unbiasedness is conditional on independent IID folds and a
+  linear weighted or criterion-specific risk functional. Empirical
   minimax maxima and MCMC fold comparisons are descriptive; no exact
   unbiasedness guarantee is claimed for them. Numerical cross-fit
   summaries are unchanged.
@@ -454,10 +491,10 @@ Development version with an LP time-budget repair following version
   the run time used so far plus the remaining budget. HiGHS counts the
   limit against the solver object’s cumulative run time, so the cut
   separation between calls was never charged and the stage could overrun
-  its budget (in the weighted and q runs of the 014 Phase 2 benchmark,
-  by 10-13 s at n = 400 and 74-88 s at n = 807). A call that still runs
-  more than a second past the budget adds a warning. Gurobi already
-  received the remaining budget on each call.
+  its budget (by 10-13 s at n = 400 and 74-88 s at n = 807 in weighted
+  and error-budget benchmark runs). A call that still runs more than a
+  second past the budget adds a warning. Gurobi already received the
+  remaining budget on each call.
 - Without a MIP stage, the LP stage separates no more cuts once its
   budget is spent; they could only have served a MIP stage.
 
@@ -536,6 +573,4 @@ routines.
 
 ## postrank 0.0.1
 
-- Local research development edition
-  (`p1-applied-local-development-2026-10-19-r1`); see
-  `registry/release-manifest.json`.
+- Initial local research development version.

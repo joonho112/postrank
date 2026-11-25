@@ -1,4 +1,4 @@
-# T-fig-03 / T-fig-04: the grade ramp and named scales.
+# Grade color palettes and discrete color/fill ggplot2 scales.
 test_that("grade palettes have strictly increasing luminance and contrast >= 3 on white (n = 1..64)", {
   for (n in 1:64) {
     p <- postrank_palette(n)

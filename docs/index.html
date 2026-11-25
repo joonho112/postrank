@@ -17,8 +17,8 @@
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
 <meta property="og:title" content="Posterior Ranking with Integer Grades">
-<meta name="description" content="Assigns integer grades to entities using posterior information for one or several criteria, a specified directional loss and a cost for withheld comparisons. A common grading is obtained when several criteria are considered. Multidomain profiles instead retain a separate grade per domain, using additive losses and direct joint-event protection over a declared finite candidate family. Exact policy arithmetic, fixed-report iid assessment and descriptive MCMC diagnostics are provided for profiles. Inputs include validated equal-weight draws, exact finite laws, conditional Gaussian laws, shared-state Gaussian mixtures and previously calculated tie-free comparison probabilities. Model estimation is conducted separately. Optional modes add error budgets, minimax decisions, exact grade counts and a separate equality-neutral loss where supported. The default solver is Gurobi; HiGHS is an explicit alternative. Data loading and the display of stored results do not require either backend. Results retain validated grades, numerical solver bounds, criterion profiles and input-aware diagnostics. Seven common-grade ggplot2 figures and three profile views, English reports, applied and methodological articles and three case studies are provided for interpretation. The method builds on the integer-grade report card of Kline, Rose and Walters (2024) &lt;doi:10.1257/aer.20230700&gt;.">
-<meta property="og:description" content="Assigns integer grades to entities using posterior information for one or several criteria, a specified directional loss and a cost for withheld comparisons. A common grading is obtained when several criteria are considered. Multidomain profiles instead retain a separate grade per domain, using additive losses and direct joint-event protection over a declared finite candidate family. Exact policy arithmetic, fixed-report iid assessment and descriptive MCMC diagnostics are provided for profiles. Inputs include validated equal-weight draws, exact finite laws, conditional Gaussian laws, shared-state Gaussian mixtures and previously calculated tie-free comparison probabilities. Model estimation is conducted separately. Optional modes add error budgets, minimax decisions, exact grade counts and a separate equality-neutral loss where supported. The default solver is Gurobi; HiGHS is an explicit alternative. Data loading and the display of stored results do not require either backend. Results retain validated grades, numerical solver bounds, criterion profiles and input-aware diagnostics. Seven common-grade ggplot2 figures and three profile views, English reports, applied and methodological articles and three case studies are provided for interpretation. The method builds on the integer-grade report card of Kline, Rose and Walters (2024) &lt;doi:10.1257/aer.20230700&gt;.">
+<meta name="description" content="Assigns integer grades to entities from posterior draws, analytic normal or mixture distributions, or precomputed pairwise comparison probabilities on one or several criteria. Minimizes posterior expected wrong-direction errors plus a cost per pair left unordered in the same grade, producing one common grading across criteria or separate per-domain grades with joint error-exceedance caps (gmp). Model fitting takes place outside the package. Supports per-criterion error budgets, worst-criterion (minimax) loss, exact grade counts, and a separate loss mode for posteriors with exact ties. Uses Gurobi by default or HiGHS when selected, while stored examples, tables, ggplot2 figures, HTML reports, and Monte Carlo or IID diagnostics run without a solver. Builds on the report-card framework of Kline, Rose, and Walters (2024) &lt;doi:10.1257/aer.20230700&gt;.">
+<meta property="og:description" content="Assigns integer grades to entities from posterior draws, analytic normal or mixture distributions, or precomputed pairwise comparison probabilities on one or several criteria. Minimizes posterior expected wrong-direction errors plus a cost per pair left unordered in the same grade, producing one common grading across criteria or separate per-domain grades with joint error-exceedance caps (gmp). Model fitting takes place outside the package. Supports per-criterion error budgets, worst-criterion (minimax) loss, exact grade counts, and a separate loss mode for posteriors with exact ties. Uses Gurobi by default or HiGHS when selected, while stored examples, tables, ggplot2 figures, HTML reports, and Monte Carlo or IID diagnostics run without a solver. Builds on the report-card framework of Kline, Rose, and Walters (2024) &lt;doi:10.1257/aer.20230700&gt;.">
 <meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
 </head>
 <body>
@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="articles/index.html">Vignettes</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">News</a></li>
@@ -60,53 +60,65 @@
 <img src="logo.png" class="logo" alt=""><h1 id="postrank-">postrank <a class="anchor" aria-label="anchor" href="#postrank-"></a>
 </h1>
 </div>
-<p>Author and maintainer: JoonHo Lee (<a href="mailto:jlee296@ua.edu">jlee296@ua.edu</a>).</p>
-<p>postrank assigns integer grades to entities on the basis of posterior information for one or several criteria. Grade 1 denotes the highest priority. Different grades disclose a direction of comparison, whereas a common grade indicates that the comparison is withheld. Equality of grades therefore does not imply equality of the underlying targets.</p>
-<p>The objective is to minimize posterior expected loss, with a penalty for an incorrect direction and a cost <code>tau</code> for each withheld comparison. For several criteria, specified weights combine criterion-specific losses to obtain a common grading. The posterior information is supplied to the package; model estimation is conducted separately.</p>
+<p>Author and maintainer: JoonHo Lee (<a href="mailto:jlee296@ua.edu" class="email">jlee296@ua.edu</a>).</p>
+<p><code>postrank</code> assigns integer grades (<code>1, 2, ..., G</code>) to entities—such as schools, employers, or geographic areas—from posterior draws, normal or mixture distributions, or precomputed pairwise comparison probabilities on one or several criteria. Grade 1 denotes the highest priority. Assigning two entities to different grades reports an ordering between them; assigning them to the same grade leaves the pair unordered rather than claiming that their underlying values are equal.</p>
+<p>Grades minimize posterior expected wrong-direction errors (cost <code>1</code>) plus a cost <code>tau</code> for each pair left unordered in the same grade, averaged over all entity pairs. Across multiple criteria, user-chosen weights combine criterion-specific losses into one common grading, or the multidomain functions (<code>postrank_mdomain_*</code>) report a separate grade per domain under joint error-exceedance caps. Statistical model fitting takes place outside <code>postrank</code>; all results are conditional on the posterior you supply.</p>
 <div class="section level2">
-<h2 id="installation-and-computational-requirements">Installation and computational requirements<a class="anchor" aria-label="anchor" href="#installation-and-computational-requirements"></a>
+<h2 id="installation-and-solvers">Installation and solvers<a class="anchor" aria-label="anchor" href="#installation-and-solvers"></a>
 </h2>
-<p>Install postrank from <a href="https://github.com/joonho112/postrank" class="external-link">GitHub</a>:</p>
+<p>Install <code>postrank</code> from <a href="https://github.com/joonho112/postrank" class="external-link">GitHub</a>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"joonho112/postrank"</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joonho112/postrank" class="external-link">postrank</a></span><span class="op">)</span></span></code></pre></div>
-<p>The GitHub installation includes the required R dependencies. Optimization backends are installed separately.</p>
-<p>Gurobi is the default backend. It requires Gurobi Optimizer (version 10 or later), a compatible <code>gurobi</code> R package and a valid license. Follow the official instructions to install <a href="https://support.gurobi.com/hc/en-us/articles/4534161999889-How-do-I-install-Gurobi-Optimizer" class="external-link">Gurobi Optimizer</a>, configure the <a href="https://support.gurobi.com/hc/en-us/articles/12872879801105-How-do-I-retrieve-and-set-up-a-Gurobi-license" class="external-link">license</a> and install the <a href="https://support.gurobi.com/hc/en-us/articles/14462206790033-How-do-I-install-Gurobi-for-R" class="external-link">R interface</a> for the platform and R version in use. The R interface is supplied in the <code>R</code> subdirectory of the Gurobi installation.</p>
-<p>HiGHS is an alternative backend and is used explicitly in the examples below. To install it and select it for the current R session:</p>
+<p>Loading bundled datasets, reading precomputed examples with <code><a href="reference/postrank_example.html">postrank_example()</a></code>, extracting tables, drawing plots, writing HTML reports, and running multidomain profile calculations do not require an optimization solver.</p>
+<p>Computing new common-grade solutions with <code><a href="reference/postrank.html">postrank()</a></code> or <code><a href="reference/postrank_solve.html">postrank_solve()</a></code> requires a mixed-integer solver, installed separately:</p>
+<ul>
+<li>
+<p><strong>HiGHS (free, open source on CRAN):</strong> install once and set it for the R session with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"highs"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>postrank.backend <span class="op">=</span> <span class="st">"highs"</span><span class="op">)</span></span></code></pre></div>
-<p>For each optimization, an explicit <code>backend</code> argument takes precedence over <code>getOption("postrank.backend")</code>; if neither is specified, Gurobi is used. Use <code>backend = "gurobi"</code> or <code>backend = "highs"</code> to select a solver for an individual call. An unavailable selected backend stops the call; there is no silent fallback. Loading data and displaying stored results do not require an optimizer.</p>
-<p>The three case-study inputs are adapted from public sources and retain source-specific conditions. CDE source attribution is preserved, the KRW input retains its source CC-BY-NC notice with the license version unspecified, and Alabama retains CC BY 4.0 attribution. Source details and modification notices are given in the installed <code>extdata/case-studies/DATA-NOTICE.md</code>.</p>
+</li>
+<li><p><strong>Gurobi (default when no solver is specified):</strong> requires Gurobi Optimizer version 10 or later, a valid license, and the <code>gurobi</code> R package from the <code>R</code> subdirectory of the Gurobi installation. Follow Gurobi’s guides to install <a href="https://support.gurobi.com/hc/en-us/articles/4534161999889-How-do-I-install-Gurobi-Optimizer" class="external-link">Gurobi Optimizer</a>, set up a <a href="https://support.gurobi.com/hc/en-us/articles/12872879801105-How-do-I-retrieve-and-set-up-a-Gurobi-license" class="external-link">license</a>, and install the <a href="https://support.gurobi.com/hc/en-us/articles/14462206790033-How-do-I-install-Gurobi-for-R" class="external-link">R interface</a>.</p></li>
+</ul>
+<p>An explicit <code>backend = "highs"</code> or <code>backend = "gurobi"</code> argument overrides <code>getOption("postrank.backend")</code>; if neither is set, <code>"gurobi"</code> is used. If the selected solver is not installed or cannot be loaded, <code>postrank</code> stops with an error; it never switches to the other solver, even if a run reaches its time limit or encounters solver trouble.</p>
+<div class="section level3">
+<h3 id="case-study-data-conditions">Case-study data conditions<a class="anchor" aria-label="anchor" href="#case-study-data-conditions"></a>
+</h3>
+<p>The three bundled case-study datasets are adapted from public sources and keep their source-specific conditions, separate from the MIT code license: <code>pr_case_cde</code> preserves California Department of Education source attribution (2025–26 Dashboard) without substituting MIT or Creative Commons terms or implying CDE endorsement; <code>pr_case_krw</code> retains the noncommercial <code>CC-BY-NC</code> notice (license version unspecified in the source) from Kline, Rose, and Walters (2024; openICPSR <code>E198284V1</code>); and <code>pr_case_alabama</code> retains <code>CC BY 4.0</code> attribution to Opportunity Insights and the U.S. Census Bureau (Chetty et al., 2022; Harvard Dataverse <code>doi:10.7910/DVN/NKCQM1</code>). Full details and adaptation notes are in <code>system.file("extdata", "case-studies", "DATA-NOTICE.md", package = "postrank")</code>.</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="analysis-with-one-criterion">Analysis with one criterion<a class="anchor" aria-label="anchor" href="#analysis-with-one-criterion"></a>
+<h2 id="first-example-one-criterion">First example: one criterion<a class="anchor" aria-label="anchor" href="#first-example-one-criterion"></a>
 </h2>
-<p><code>pr_tutorial</code> contains six fictional sites, A through F. The normal distributions of the scores are specified directly, with standard deviation 0.2. Sites and criteria are independent, and higher values have higher priority. The example is synthetic and does not represent empirical observations or a fitted model.</p>
-<p>With HiGHS installed, the one-criterion analysis is obtained as follows:</p>
+<p><code>pr_tutorial</code> contains six synthetic sites (<code>A</code> through <code>F</code>) whose score distributions are specified directly as independent normal posteriors with standard deviation <code>0.2</code> (higher values mean higher priority; simulated teaching data, not empirical observations).</p>
+<p>With HiGHS installed, run <code><a href="reference/postrank.html">postrank()</a></code> directly:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/postrank.html">postrank</a></span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span>, tau <span class="op">=</span> <span class="fl">.2</span>, G_max <span class="op">=</span> <span class="fl">3L</span>,</span>
 <span>  backend <span class="op">=</span> <span class="st">"highs"</span>,</span>
-<span>  control <span class="op">=</span> <span class="fu"><a href="reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">60</span>, threads <span class="op">=</span> <span class="fl">1L</span>, seed <span class="op">=</span> <span class="fl">1304L</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">one</span></span></code></pre></div>
-<p>The displayed result is a stored analysis obtained with the explicitly selected highs backend under these settings. The weight for a single criterion is one. The grade cap specifies at most three occupied grades, allowing solutions with fewer grades.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co">#&gt; &lt;postrank_analysis&gt;  6 entities in 3 grades (sizes 2 / 2 / 2)</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt;   One criterion: score_A.</span></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt;   Posterior loss: 0.0417.</span></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt;   Disclosed 12 of 15 pairs (80.0%); withheld 3.</span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt;   Expected error among disclosed pairs: score_A 0.002.</span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt;   Solver: Optimal within solver tolerances.</span></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt;   Optimization gap: 0; requested absolute gap 1e-08.</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt;   Prepared: report card.</span></span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt;   Grade 1 has highest priority; a shared grade withholds the comparison.</span></span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt;   grade 1 (2): A, B</span></span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt;   grade 2 (2): C, D</span></span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt;   grade 3 (2): E, F</span></span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt;   !  1 warning recorded: Reported lower bound exceeded the validated action r...</span></span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt;   i summary(x) explains the loss, settings and bounds; get_grades(x) returns</span></span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt;     all grades.</span></span></code></pre></div>
-<p>The entity identifiers and grades are returned in a stable table:</p>
+<span>  control <span class="op">=</span> <span class="fu"><a href="reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">60</span>, threads <span class="op">=</span> <span class="fl">1L</span>, seed <span class="op">=</span> <span class="fl">1304L</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Without running a solver, load the precomputed result from an equivalent call with <code><a href="reference/postrank_example.html">postrank_example()</a></code>. These stored results were computed with the explicitly selected highs backend (<code>backend = "highs"</code>) under the settings shown above (<code>G_max = 3L</code> caps the report at three occupied grades, and a single criterion receives weight <code>1</code>):</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_one"</span><span class="op">)</span></span>
+<span><span class="va">one</span></span>
+<span><span class="co">#&gt; &lt;postrank_analysis&gt;  6 entities in 3 grades (sizes 2 / 2 / 2)</span></span>
+<span><span class="co">#&gt;   One criterion: score_A.</span></span>
+<span><span class="co">#&gt;   Posterior loss: 0.0417.</span></span>
+<span><span class="co">#&gt;   Disclosed 12 of 15 pairs (80.0%); withheld 3.</span></span>
+<span><span class="co">#&gt;   Expected error among disclosed pairs: score_A 0.002.</span></span>
+<span><span class="co">#&gt;   Solver: Optimal within solver tolerances.</span></span>
+<span><span class="co">#&gt;   Optimization gap: 0; requested absolute gap 1e-08.</span></span>
+<span><span class="co">#&gt;   Prepared: report card.</span></span>
+<span><span class="co">#&gt;   Grade 1 has highest priority; a shared grade withholds the comparison.</span></span>
+<span><span class="co">#&gt;   grade 1 (2): A, B</span></span>
+<span><span class="co">#&gt;   grade 2 (2): C, D</span></span>
+<span><span class="co">#&gt;   grade 3 (2): E, F</span></span>
+<span><span class="co">#&gt;   !  1 warning recorded: Reported lower bound exceeded the validated action r...</span></span>
+<span><span class="co">#&gt;   i summary(x) explains the loss, settings and bounds; get_grades(x) returns</span></span>
+<span><span class="co">#&gt;     all grades.</span></span></code></pre></div>
+<p>In the console output, <code>"Disclosed"</code> counts ordered pairs, <code>"withheld"</code> counts unordered pairs (shared grades), and the recorded warning notes that floating-point tolerances placed the raw solver lower bound slightly above the checked grading’s loss (<code>"validated action risk"</code>), so <code>postrank</code> clamped the bound to the loss and recorded gap <code>0</code>.</p>
+<p>Extract the two-column <code>(entity_id, grade)</code> table in input entity order:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   entity_id grade</span></span>
@@ -116,51 +128,115 @@
 <span><span class="co">#&gt; 4         D     2</span></span>
 <span><span class="co">#&gt; 5         E     3</span></span>
 <span><span class="co">#&gt; 6         F     3</span></span></code></pre></div>
-<p>The report card additionally contains marginal posterior intervals and counts of disclosed relations. The plot displays score uncertainty alongside the selected grades. The intervals refer to the scores and do not assign probabilities to grade labels.</p>
+<p>Plot the report card with <code>postrank_plot_report_card(one)</code> (or <code>plot(one)</code>) to view the assigned grades alongside 90% marginal posterior intervals for each site’s score (these intervals summarize score uncertainty one site at a time and do not assign probabilities to grade labels):</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/postrank_plot_report_card.html">postrank_plot_report_card</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span></code></pre></div>
 <p><a href="reference/figures/README-one-figure-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Six fictional sites on score A, with marginal intervals and three ordered grade groups." target="_blank" rel="noopener"><img src="reference/figures/README-one-figure-1.png" alt="Six fictional sites on score A, with marginal intervals and three ordered grade groups."></a><span class="figure-full-size-link d-block small"><a href="reference/figures/README-one-figure-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Six fictional sites on score A, with marginal intervals and three ordered grade groups.">Open full-size figure</a></span></p>
 </div>
 <div class="section level2">
-<h2 id="a-common-grading-for-two-criteria">A common grading for two criteria<a class="anchor" aria-label="anchor" href="#a-common-grading-for-two-criteria"></a>
+<h2 id="a-common-grading-across-two-criteria">A common grading across two criteria<a class="anchor" aria-label="anchor" href="#a-common-grading-across-two-criteria"></a>
 </h2>
-<p>The input <code>pr_tutorial$two</code> includes score B while retaining the distribution of score A for the same sites. Equal loss weights are specified below. These weights express a policy choice; neither the posterior distributions nor the units of the scores determine their values.</p>
+<p><code>pr_tutorial$two</code> adds <code>score_B</code> while keeping the <code>score_A</code> posterior for the same six sites. With multiple criteria, <code>weights</code> is a required policy choice that sets how wrong-direction errors trade off across criteria (neither score units nor posterior spread determine the weights):</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">two</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/postrank.html">postrank</a></span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">two</span>,</span>
 <span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">.5</span>, score_B <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.2</span>, G_max <span class="op">=</span> <span class="fl">3L</span>,</span>
 <span>  backend <span class="op">=</span> <span class="st">"highs"</span>,</span>
-<span>  control <span class="op">=</span> <span class="fu"><a href="reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">60</span>, threads <span class="op">=</span> <span class="fl">1L</span>, seed <span class="op">=</span> <span class="fl">1304L</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">two</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co">#&gt; &lt;postrank_analysis&gt;  6 entities in 3 grades (sizes 4 / 1 / 1)</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt;   2 criteria: score_A, score_B.</span></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt;   Posterior loss: 0.0933.</span></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt;   Disclosed 9 of 15 pairs (60.0%); withheld 6.</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt;   Expected error among disclosed pairs: score_A 0.018; score_B 0.027.</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt;   Solver: Optimal within solver tolerances.</span></span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt;   Optimization gap: 0; requested absolute gap 1e-08.</span></span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt;   Prepared: report card.</span></span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt;   Grade 1 has highest priority; a shared grade withholds the comparison.</span></span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt;   grade 1 (4): A, B, C, D</span></span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt;   grade 2 (1): E</span></span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt;   grade 3 (1): F</span></span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt;   i summary(x) explains the loss, settings and bounds; get_grades(x) returns</span></span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt;     all grades.</span></span></code></pre></div>
-<p>The resulting grades apply to both criteria. Some comparisons disclosed under score A alone are withheld under the common grading. The objective is a weighted average of criterion-specific losses, which differs from the loss for ranking an uncertain composite score.</p>
+<span>  control <span class="op">=</span> <span class="fu"><a href="reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">60</span>, threads <span class="op">=</span> <span class="fl">1L</span>, seed <span class="op">=</span> <span class="fl">1304L</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">two</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_two"</span><span class="op">)</span></span>
+<span><span class="va">two</span></span>
+<span><span class="co">#&gt; &lt;postrank_analysis&gt;  6 entities in 3 grades (sizes 4 / 1 / 1)</span></span>
+<span><span class="co">#&gt;   2 criteria: score_A, score_B.</span></span>
+<span><span class="co">#&gt;   Posterior loss: 0.0933.</span></span>
+<span><span class="co">#&gt;   Disclosed 9 of 15 pairs (60.0%); withheld 6.</span></span>
+<span><span class="co">#&gt;   Expected error among disclosed pairs: score_A 0.018; score_B 0.027.</span></span>
+<span><span class="co">#&gt;   Solver: Optimal within solver tolerances.</span></span>
+<span><span class="co">#&gt;   Optimization gap: 0; requested absolute gap 1e-08.</span></span>
+<span><span class="co">#&gt;   Prepared: report card.</span></span>
+<span><span class="co">#&gt;   Grade 1 has highest priority; a shared grade withholds the comparison.</span></span>
+<span><span class="co">#&gt;   grade 1 (4): A, B, C, D</span></span>
+<span><span class="co">#&gt;   grade 2 (1): E</span></span>
+<span><span class="co">#&gt;   grade 3 (1): F</span></span>
+<span><span class="co">#&gt;   i summary(x) explains the loss, settings and bounds; get_grades(x) returns</span></span>
+<span><span class="co">#&gt;     all grades.</span></span></code></pre></div>
+<p>One shared grading now applies to both criteria, leaving unordered several pairs that were separated on <code>score_A</code> alone. <code><a href="reference/postrank_plot_profile.html">postrank_plot_profile()</a></code> shows the expected wrong-direction errors per ordered pair (<code>E/N</code>) on each criterion:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/postrank_plot_profile.html">postrank_plot_profile</a></span><span class="op">(</span><span class="va">two</span><span class="op">)</span></span></code></pre></div>
 <p><a href="reference/figures/README-two-figure-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Criterion-specific expected wrong-direction errors per disclosed pair for the common two-score grade." target="_blank" rel="noopener"><img src="reference/figures/README-two-figure-1.png" alt="Criterion-specific expected wrong-direction errors per disclosed pair for the common two-score grade."></a><span class="figure-full-size-link d-block small"><a href="reference/figures/README-two-figure-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Criterion-specific expected wrong-direction errors per disclosed pair for the common two-score grade.">Open full-size figure</a></span></p>
-<p>The optimization result is characterized by the validated incumbent, normalized status, lower bound and numerical gap. The gap is the difference between the incumbent loss and its numerical lower bound, conditional on the supplied probabilities. Posterior calibration and Monte Carlo error require separate assessment.</p>
+<p>Solver status, lower bound, and optimization gap describe optimization over the supplied comparison probabilities; posterior model adequacy and Monte Carlo simulation error require separate checks.</p>
 </div>
 <div class="section level2">
-<h2 id="domain-specific-report-cards">Domain-specific report cards<a class="anchor" aria-label="anchor" href="#domain-specific-report-cards"></a>
+<h2 id="passing-your-own-posterior-draws">Passing your own posterior draws<a class="anchor" aria-label="anchor" href="#passing-your-own-posterior-draws"></a>
 </h2>
-<p>The multidomain interface assigns a separate grade column to each domain. A unit can have higher reported priority in one domain and lower priority in another. It evaluates a named unit-by-domain matrix and can search an explicit, bounded set of candidate columns. It uses the suggested package <code>gmp</code> for arithmetic and requires no optimization backend.</p>
-<p>This interface requires <strong>postrank 1.2.0 or later</strong>. During release-candidate review, the GitHub command above may still install the earlier public release. Install the supplied local release tarball before loading the package: <code>install.packages("postrank_1.2.0.tar.gz", repos = NULL, type = "source")</code>.</p>
-<p>This self-contained finite-law example has two fictional units and two domains. Each array slice is one complete joint state; its probability is specified explicitly. The declarations describe this teaching law.</p>
+<p>To grade entities from your own <code>draws x entities x criteria</code> numeric array, describe the posterior in plain arguments with <code><a href="reference/postrank_describe.html">postrank_describe()</a></code> and wrap the array with <code><a href="reference/postrank_draws.html">postrank_draws()</a></code>:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"postrank"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.2.0"</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"Multidomain example skipped: install postrank 1.2.0 or later."</span><span class="op">)</span></span>
-<span><span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"gmp"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">901</span><span class="op">)</span></span>
+<span><span class="va">arr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">120</span> <span class="op">*</span> <span class="fl">4</span> <span class="op">*</span> <span class="fl">1</span><span class="op">)</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">120</span>, <span class="fl">4</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"site_"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span>, <span class="st">"need"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">decl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/postrank_describe.html">postrank_describe</a></span><span class="op">(</span></span>
+<span>  estimand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need <span class="op">=</span> <span class="st">"Latent site need in a specified standard normal law"</span><span class="op">)</span>,</span>
+<span>  population <span class="op">=</span> <span class="st">"Four illustrative sites"</span>, time <span class="op">=</span> <span class="st">"Static illustration"</span>,</span>
+<span>  units <span class="op">=</span> <span class="st">"Standardized need units"</span>, data <span class="op">=</span> <span class="st">"No external observations; specified law"</span>,</span>
+<span>  model <span class="op">=</span> <span class="st">"Independent standard normal coordinates"</span>,</span>
+<span>  identification <span class="op">=</span> <span class="st">"Each site coordinate is defined directly by the law."</span>,</span>
+<span>  joint <span class="op">=</span> <span class="st">"Each draw holds one value per site."</span>,</span>
+<span>  sampling <span class="op">=</span> <span class="st">"120 independent rnorm() draws after set.seed(901); no warmup or thinning."</span>,</span>
+<span>  ties <span class="op">=</span> <span class="st">"Continuous normal coordinates have zero probability of exact equality."</span>,</span>
+<span>  software <span class="op">=</span> <span class="st">"Base R rnorm()"</span>, source <span class="op">=</span> <span class="st">"In-memory array arr"</span>,</span>
+<span>  label <span class="op">=</span> <span class="st">"readme-draws"</span>, data_version <span class="op">=</span> <span class="st">"1"</span>, values <span class="op">=</span> <span class="va">arr</span><span class="op">)</span></span>
+<span><span class="va">draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/postrank_draws.html">postrank_draws</a></span><span class="op">(</span><span class="va">arr</span>, regime <span class="op">=</span> <span class="st">"iid"</span>, declarations <span class="op">=</span> <span class="va">decl</span><span class="op">)</span></span>
+<span><span class="va">draws</span><span class="op">$</span><span class="va">entity_ids</span></span>
+<span><span class="co">#&gt; [1] "site_1" "site_2" "site_3" "site_4"</span></span></code></pre></div>
+<p>Other posterior representations have matching constructors:</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th align="left">Posterior representation</th>
+<th align="left">Functions</th>
+</tr></thead>
+<tbody>
+<tr>
+<td align="left">Posterior draw arrays, matrix lists, or <code><a href="https://rdrr.io/pkg/posterior/man/draws_array.html" class="external-link">posterior::draws_array</a></code>
+</td>
+<td align="left">
+<code><a href="reference/postrank_describe.html">postrank_describe()</a></code>, <code><a href="reference/postrank_declarations.html">postrank_declarations()</a></code>, <code><a href="reference/postrank_draws.html">postrank_draws()</a></code>, <code><a href="reference/as_postrank_posterior.html">as_postrank_posterior()</a></code>
+</td>
+</tr>
+<tr>
+<td align="left">Analytic normal or shared-state normal mixture posterior</td>
+<td align="left">
+<code><a href="reference/postrank_gaussian_coefficients.html">postrank_gaussian_coefficients()</a></code>, <code><a href="reference/postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code>
+</td>
+</tr>
+<tr>
+<td align="left">Precomputed tie-free pairwise comparison probabilities</td>
+<td align="left"><code><a href="reference/postrank_probabilities.html">postrank_probabilities()</a></code></td>
+</tr>
+<tr>
+<td align="left">Posteriors with positive probability of exact equality</td>
+<td align="left">
+<code><a href="reference/as_postrank_tie_draws.html">as_postrank_tie_draws()</a></code>, <code><a href="reference/postrank_tie_pairwise.html">postrank_tie_pairwise()</a></code>, <code><a href="reference/postrank_tie_solve.html">postrank_tie_solve()</a></code>
+</td>
+</tr>
+<tr>
+<td align="left">Separate grade per domain under joint error-exceedance caps</td>
+<td align="left">
+<code><a href="reference/postrank_mdomain_input.html">postrank_mdomain_input()</a></code>, <code><a href="reference/postrank_mdomain_decision.html">postrank_mdomain_decision()</a></code>, <code><a href="reference/postrank_mdomain_solve.html">postrank_mdomain_solve()</a></code>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Validation checks array shapes, probability bounds, and internal consistency with your declarations; scientific assumptions remain yours.</p>
+</div>
+<div class="section level2">
+<h2 id="multidomain-profile-report-cards">Multidomain profile report cards<a class="anchor" aria-label="anchor" href="#multidomain-profile-report-cards"></a>
+</h2>
+<p>When entities should receive a separate grade in each domain rather than one common grade—for example, when priorities reverse across domains—the <code>postrank_mdomain_*</code> functions evaluate entity-by-domain grade matrices and search declared candidate sets under exact rational policy thresholds (via the optional <code>gmp</code> package, with no mixed-integer solver required):</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"gmp"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alder"</span>, <span class="st">"Birch"</span><span class="op">)</span></span>
 <span>  <span class="va">domains</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"attainment"</span>, <span class="st">"community"</span><span class="op">)</span></span>
 <span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2L</span>, <span class="fl">2L</span>, <span class="fl">2L</span><span class="op">)</span>,</span>
@@ -190,74 +266,37 @@
 <span><span class="co">#&gt; Alder          1         2</span></span>
 <span><span class="co">#&gt; Birch          2         1</span></span></code></pre></div>
 <p><a href="reference/figures/README-mdomain-readme-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Alder has higher reported priority in attainment and Birch in community." target="_blank" rel="noopener"><img src="reference/figures/README-mdomain-readme-1.png" alt="Alder has higher reported priority in attainment and Birch in community."></a><span class="figure-full-size-link d-block small"><a href="reference/figures/README-mdomain-readme-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Alder has higher reported priority in attainment and Birch in community.">Open full-size figure</a></span></p>
-<p>Alder and Birch have crossing profiles. A grade tie withholds direction; it does not assert equality of their targets. Exact strings such as <code>"1/5"</code> retain their rational value, while numeric policies retain their stored binary value. Evaluation of draws describes their empirical measure; assessment of an intended posterior requires a separate sampling design. The installed <code><a href="articles/mdomain-quickstart.html">vignette("mdomain-quickstart", package = "postrank")</a></code> shows joint draws, candidate search, three plot views and input repairs. It is also available offline as <code><a href="articles/mdomain-quickstart.html">vignette("mdomain-quickstart", package = "postrank")</a></code>.</p>
+<p>Pass exact rational or decimal strings such as <code>"1/5"</code> when policy thresholds are exact fractions. Optimality in <code><a href="reference/postrank_mdomain_solve.html">postrank_mdomain_solve()</a></code> holds within the declared candidate set, and exact arithmetic over a finite distribution or sample does not verify model specification.</p>
 </div>
 <div class="section level2">
-<h2 id="posterior-inputs">Posterior inputs<a class="anchor" aria-label="anchor" href="#posterior-inputs"></a>
+<h2 id="extracting-results-and-where-to-read-next">Extracting results and where to read next<a class="anchor" aria-label="anchor" href="#extracting-results-and-where-to-read-next"></a>
 </h2>
-<p>Supported inputs include joint or criterion-wise draws, complete exact finite laws, conditional Gaussian laws, shared-state Gaussian mixtures and previously calculated tie-free comparison probabilities. The corresponding constructors depend on the form of the available posterior information:</p>
-<table class="table">
-<colgroup>
-<col width="50%">
-<col width="50%">
-</colgroup>
-<thead><tr>
-<th align="left">Available posterior information</th>
-<th align="left">Constructor</th>
-</tr></thead>
-<tbody>
-<tr>
-<td align="left">Draw arrays, matrix lists or <code>posterior</code> draws</td>
-<td align="left">
-<code><a href="reference/postrank_draws.html">postrank_draws()</a></code> and <code><a href="reference/postrank_declarations.html">postrank_declarations()</a></code>
-</td>
-</tr>
-<tr>
-<td align="left">Conditional Gaussian or shared-state mixture law</td>
-<td align="left">
-<code><a href="reference/postrank_gaussian_coefficients.html">postrank_gaussian_coefficients()</a></code> or <code><a href="reference/postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code>
-</td>
-</tr>
-<tr>
-<td align="left">Previously calculated pairwise probabilities</td>
-<td align="left"><code><a href="reference/postrank_probabilities.html">postrank_probabilities()</a></code></td>
-</tr>
-<tr>
-<td align="left">Genuine equality with a declared joint law</td>
-<td align="left">The separate <code>postrank_tie_*</code> API</td>
-</tr>
-</tbody>
-</table>
-<p>Each input requires target definitions, directions, conditioning information and provenance. Validation assesses structure and consistency with these declarations; their scientific validity remains an assumption of the analysis. Comparison probabilities alone do not identify a draw history or marginal summaries; structural validation does not provide an error certificate. The available native modes depend on the input, as documented in <code><a href="reference/postrank_problem.html">?postrank_problem</a></code> and <code><a href="reference/postrank_tie_capabilities.html">?postrank_tie_capabilities</a></code>.</p>
-<p>For genuine equality, the separate tie-aware loss charges strict reversals and withholding of distinct targets. Its all-withhold benchmark is R0, which may be below <code>tau</code>. Ordinary constructors retain their tie-free loss.</p>
-</div>
-<div class="section level2">
-<h2 id="result-extraction-and-graphical-summaries">Result extraction and graphical summaries<a class="anchor" aria-label="anchor" href="#result-extraction-and-graphical-summaries"></a>
-</h2>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">two</span>, what <span class="op">=</span> <span class="st">"report_card"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/get_profile.html">get_profile</a></span><span class="op">(</span><span class="va">two</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/get_relations.html">get_relations</a></span><span class="op">(</span><span class="va">two</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/postrank_report.html">postrank_report</a></span><span class="op">(</span><span class="va">two</span><span class="op">$</span><span class="va">fit</span>, analysis <span class="op">=</span> <span class="va">two</span><span class="op">)</span>  <span class="co"># stored results only</span></span>
-<span><span class="fu"><a href="reference/postrank_plot_pairwise.html">postrank_plot_pairwise</a></span><span class="op">(</span><span class="va">two</span><span class="op">)</span>          <span class="co"># prepared comparison probabilities</span></span>
-<span><span class="fu"><a href="reference/postrank_plot_relations.html">postrank_plot_relations</a></span><span class="op">(</span><span class="va">two</span><span class="op">)</span>         <span class="co"># disclosed and withheld relations</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">two</span>, width <span class="op">=</span> <span class="fl">72</span>, tier <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>    <span class="co"># reusable console text</span></span></code></pre></div>
-<p>Seven plotting functions cover report cards, relations, criterion profiles, method comparisons, pairwise probabilities, tau frontiers and commonality costs. Frontier, sensitivity and commonality calculations run new optimizations when explicitly requested. Changing the withholding cost or criterion weights changes the loss under which risk is evaluated.</p>
-<p>The installed documentation is organized into Applied and Methods series:</p>
+<span><span class="fu"><a href="reference/postrank_report.html">postrank_report</a></span><span class="op">(</span><span class="va">two</span><span class="op">$</span><span class="va">fit</span>, output_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".html"</span><span class="op">)</span>, analysis <span class="op">=</span> <span class="va">two</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/postrank_plot_pairwise.html">postrank_plot_pairwise</a></span><span class="op">(</span><span class="va">two</span><span class="op">)</span>               <span class="co"># pairwise error probabilities</span></span>
+<span><span class="fu"><a href="reference/postrank_plot_relations.html">postrank_plot_relations</a></span><span class="op">(</span><span class="va">two</span><span class="op">)</span>              <span class="co"># ordered and unordered pairs</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">two</span>, width <span class="op">=</span> <span class="fl">72</span>, tier <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>         <span class="co"># plain-text summary lines</span></span></code></pre></div>
+<p>The 16 shipped vignettes are organized by workflow stage (browse with <code>vignette(package = "postrank")</code> or on the <a href="https://joonho112.github.io/postrank/">package website</a>):</p>
 <ul>
 <li>
-<strong>Applied:</strong> <code>a1-getting-started</code>, the CDE, KRW and Alabama cases, <code>a5-your-posterior-results</code>, <code>a6-reading-exporting-results</code> and <code>a7-figures-sensitivity</code>.</li>
+<strong>Start here:</strong> <code>a1-getting-started</code> (first one- and two-criterion analyses), <code>a5-your-posterior-results</code> (passing draws, normal/mixture posteriors, or pairwise probabilities), <code>a6-reading-exporting-results</code> (tables, plots, text, and HTML reports), and <code>a7-figures-sensitivity</code> (baseline comparisons, <code>tau</code> frontiers, error budgets, and sensitivity grids).</li>
 <li>
-<strong>Methods:</strong> <code>m1-ranking-and-loss</code>, <code>m2-several-criteria</code>, <code>m3-posterior-inputs</code>, <code>m4-ties-and-withholding</code>, <code>m5-computing-grades</code> and <code>m6-uncertainty-diagnostics</code>.</li>
+<strong>Applied case studies:</strong> <code>a2-cde-accountability</code> (California schools), <code>a3-krw-race-gender</code> (97 large U.S. employers), and <code>a4-alabama-opportunity</code> (67 Alabama counties).</li>
+<li>
+<strong>Multidomain profiles:</strong> <code>mdomain-quickstart</code> and <code>mdomain-decisions</code> (separate per-domain grades and joint error-exceedance protection).</li>
+<li>
+<strong>Methods and figure gallery:</strong> <code>m1-ranking-and-loss</code>, <code>m2-several-criteria</code>, <code>m3-posterior-inputs</code>, <code>m4-ties-and-withholding</code>, <code>m5-computing-grades</code>, <code>m6-uncertainty-diagnostics</code>, and <code>figure-gallery</code>. Release compatibility notes are in <code>system.file("MIGRATION-1.2.0.md", package = "postrank")</code>.</li>
 </ul>
-<p>The introductory article is available through <code><a href="articles/a1-getting-started.html">vignette("a1-getting-started", package = "postrank")</a></code>, and the complete index through <code>vignette(package = "postrank")</code>. A migration guide and figure gallery supplement these articles. Three additional articles cover the earlier workflow, posterior inputs and comparisons with fixed-order baselines.</p>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<p><code>citation("postrank")</code> provides the following references for the package, its theory book and the report-card method:</p>
+<p><code>citation("postrank")</code> returns the package, its theory book, and the report-card method:</p>
 <ol style="list-style-type: decimal">
-<li><p><strong>R package.</strong> Lee, J. (2026). <em>postrank: Posterior Ranking with Integer Grades</em>. R package version 1.2.0. <a href="https://github.com/joonho112/postrank" class="external-link">GitHub repository</a> · <a href="https://joonho112.github.io/postrank/">Package documentation</a>.</p></li>
+<li><p><strong>R package.</strong> Lee, J. (2026). <em>postrank: Posterior Ranking with Integer Grades</em>. R package version 1.3.0. <a href="https://github.com/joonho112/postrank" class="external-link">GitHub repository</a> · <a href="https://joonho112.github.io/postrank/">Package documentation</a>.</p></li>
 <li><p><strong>Theory book.</strong> Lee, J. (2026). <em>Decisions from noisy multidimensional indicators: Theory, evidence, and posterior grading</em> (Version 1.0.0). Zenodo. <a href="https://doi.org/10.5281/zenodo.23790260" class="external-link uri">https://doi.org/10.5281/zenodo.23790260</a>. <a href="https://joonho112.github.io/postrank-theory-book/">Read online</a>.</p></li>
 <li><p><strong>Report-card method.</strong> Kline, P., Rose, E. K., and Walters, C. R. (2024). A discrimination report card. <em>American Economic Review</em>, 114(8), 2472–2525. <a href="https://doi.org/10.1257/aer.20230700" class="external-link uri">https://doi.org/10.1257/aer.20230700</a>.</p></li>
 </ol>

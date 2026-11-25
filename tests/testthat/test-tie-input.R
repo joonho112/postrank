@@ -1,4 +1,4 @@
-# New-domain input/aggregation tests. Existing 0.9 fixtures are never rewritten.
+# Tie-aware draw input, JSON round-trip, and pairwise aggregation tests.
 pr_tie_input_payload <- function(exact = FALSE, regime = "iid") {
   x <- if (exact) pr_test_exact() else pr_test_payload(regime = regime)
   x$schema_version <- "tie-aware-input-0.1"

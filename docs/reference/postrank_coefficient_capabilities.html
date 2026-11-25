@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Check Which Operations a Conditional-Law Input Supports — postrank_coefficient_capabilities • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Check Which Operations a Conditional-Law Input Supports — postrank_coefficient_capabilities"><meta name="description" content="These indicators describe the calculations supported for Gaussian or
-shared-state mixture coefficients. They concern the implemented operations
-and provide no assessment of the model assumptions or probability accuracy."><meta property="og:description" content="These indicators describe the calculations supported for Gaussian or
-shared-state mixture coefficients. They concern the implemented operations
-and provide no assessment of the model assumptions or probability accuracy."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Check Which Operations a Conditional-Law Input Supports — postrank_coefficient_capabilities • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Check Which Operations a Conditional-Law Input Supports — postrank_coefficient_capabilities"><meta name="description" content="postrank_coefficient_capabilities() validates a normal or shared-state
+mixture posterior input and returns logical flags telling which postrank
+functions and settings accept it."><meta property="og:description" content="postrank_coefficient_capabilities() validates a normal or shared-state
+mixture posterior input and returns logical flags telling which postrank
+functions and settings accept it."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -11,7 +11,7 @@ and provide no assessment of the model assumptions or probability accuracy."><me
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,7 +19,7 @@ and provide no assessment of the model assumptions or probability accuracy."><me
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -39,9 +39,9 @@ and provide no assessment of the model assumptions or probability accuracy."><me
     </div>
 
     <div class="ref-description section level2">
-    <p>These indicators describe the calculations supported for Gaussian or
-shared-state mixture coefficients. They concern the implemented operations
-and provide no assessment of the model assumptions or probability accuracy.</p>
+    <p><code>postrank_coefficient_capabilities()</code> validates a normal or shared-state
+mixture posterior input and returns logical flags telling which <code>postrank</code>
+functions and settings accept it.</p>
     </div>
 
     <div class="section level2">
@@ -54,50 +54,53 @@ and provide no assessment of the model assumptions or probability accuracy.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>An object from <code><a href="postrank_gaussian_coefficients.html">postrank_gaussian_coefficients()</a></code> or
-<code><a href="postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code>.</p></dd>
+<dd><p>A <code>postrank_coefficients</code> object from
+<code><a href="postrank_gaussian_coefficients.html">postrank_gaussian_coefficients()</a></code> or <code><a href="postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A named list of logical indicators, after validating <code>x</code>. These cover
-weighted expected risk, means, native problem types, target-draw quantities,
-conditional-risk traces, and eligibility for hyperparameter-MCMC metrics.</p>
-    </div>
+    <p>A named list of 12 logical flags:</p><ul><li><p><code>weighted_expected_risk</code>, <code>posterior_means</code> and
+<code>weighted_at_most_G_problem</code>: <code>TRUE</code>;</p></li>
+<li><p><code>minimax_problem</code>, <code>protection_problem</code> (<code>q</code>) and <code>exact_G_problem</code> (in
+<code><a href="postrank_problem.html">postrank_problem()</a></code>): <code>FALSE</code>;</p></li>
+<li><p><code>target_state_trace</code>, <code>target_quantiles</code> (empirical draw quantiles),
+<code>exact_rational</code> and <code>formal_numerical_certification</code>: <code>FALSE</code>;</p></li>
+<li><p><code>rb_conditional_risk_trace</code>: <code>TRUE</code> for mixtures, <code>FALSE</code> for a single
+normal posterior;</p></li>
+<li><p><code>hyperparameter_mcse_eligible</code>: <code>TRUE</code> only for mixtures with
+<code>source_regime == "hyperparameter_mcmc"</code>.</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The native <code><a href="postrank_problem.html">postrank_problem()</a></code> route supports weighted loss with an
-upper grade-count limit for these inputs. Its <code>minimax_problem</code>,
-<code>protection_problem</code>, and <code>exact_G_problem</code> indicators are <code>FALSE</code>.
-These are problem-construction limits; a fixed-action evaluator or
-fixed-order baseline has its own documented scope.</p>
-<p>A mixture can supply a trace of conditional expected risk across shared
-states. Eligibility for hyperparameter-MCMC diagnostics does not mean that
-sufficient original chain history was supplied or that sampling converged.
-Neither Gaussian nor mixture coefficients supply realized target-loss
-draws, target quantiles, exact rational coefficients, or a statistical or
-numerical certificate.</p>
+    <p><code>exact_G_problem = FALSE</code> applies to unrestricted optimization in
+<code><a href="postrank.html">postrank()</a></code> and <code><a href="postrank_problem.html">postrank_problem()</a></code>; fixed-order cuts in <code><a href="postrank_cuts.html">postrank_cuts()</a></code>
+do allow <code>exact_G</code> on <code>postrank_coefficients</code>. <code>hyperparameter_mcse_eligible = TRUE</code>
+indicates that <code><a href="postrank_coefficient_diagnose.html">postrank_coefficient_diagnose()</a></code> can compute MCMC metrics if
+valid <code>chain_history</code> records are supplied, not that sampling converged.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="postrank_coefficient_diagnose.html">postrank_coefficient_diagnose()</a></code>, <code><a href="validate_postrank_coefficients.html">validate_postrank_coefficients()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="postrank_gaussian_coefficients.html">postrank_gaussian_coefficients()</a></code>,
+<code><a href="postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code>, <code><a href="postrank_coefficient_diagnose.html">postrank_coefficient_diagnose()</a></code>,
+<code><a href="validate_postrank_coefficients.html">validate_postrank_coefficients()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">capabilities</span> <span class="op">&lt;-</span> <span class="fu">postrank_coefficient_capabilities</span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">capabilities</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"weighted_expected_risk"</span>, <span class="st">"weighted_at_most_G_problem"</span>,</span></span>
-<span class="r-in"><span>  <span class="st">"target_state_trace"</span>, <span class="st">"formal_numerical_certification"</span><span class="op">)</span><span class="op">]</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">caps</span> <span class="op">&lt;-</span> <span class="fu">postrank_coefficient_capabilities</span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">caps</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"weighted_expected_risk"</span>, <span class="st">"weighted_at_most_G_problem"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"minimax_problem"</span>, <span class="st">"rb_conditional_risk_trace"</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $weighted_expected_risk</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $weighted_at_most_G_problem</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $target_state_trace</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $minimax_problem</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $formal_numerical_certification</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $rb_conditional_risk_trace</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>

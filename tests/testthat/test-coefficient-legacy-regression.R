@@ -1,4 +1,4 @@
-# Fixed legacy laws, distinct from the new continuous coefficient constructors.
+# Regression checks confirming draw-based and finite-law paths stay unchanged.
 cl_actions <- function() {
   grid <- as.matrix(expand.grid(rep(list(1:3), 3)))
   canonical <- t(apply(grid, 1, function(g) match(g, sort(unique(g)))))

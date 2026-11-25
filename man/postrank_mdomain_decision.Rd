@@ -1,7 +1,7 @@
 % Please edit documentation in R/mdomain-decision.R
 \name{postrank_mdomain_decision}
 \alias{postrank_mdomain_decision}
-\title{Specify a Multidomain Reporting Decision}
+\title{Specify Loss and Error Controls for Multidomain Grading}
 \usage{
 postrank_mdomain_decision(
   weights = NULL,
@@ -15,45 +15,77 @@ postrank_mdomain_decision(
 )
 }
 \arguments{
-\item{weights}{Domain weights, or \code{NULL} for exactly equal weights. Named
-vectors must follow the input's domain order. Numeric weights whose total
-is within the core tolerance are normalized using their exact stored binary
-values; rational text weights must sum to exactly one. Zero weights are
-permitted and do not disable protection rows.}
+\item{weights}{Domain weights (non-negative with positive total), or \code{NULL}
+(the default) for exact equal weights \code{1 / D} on every domain. Named
+vectors must match the input's domain order. Rational strings (such as
+\code{c("3/5", "2/5")} or \code{c("0.6", "0.4")}) must sum to \code{1} exactly; numeric
+weights within \code{1e-12} of \code{1} are normalized in exact stored-binary
+rational arithmetic when bound to an input. Zero weights are allowed and
+keep protection rows on that domain active.}
 
-\item{tau}{Tie loss in \verb{(0, 1/2]}, as a scalar or a domain vector.}
+\item{tau}{Withholding cost in \verb{(0, 1/2]}, as a scalar or domain-ordered
+vector (default \code{"1/10"}).}
 
-\item{scope}{\code{"all_pairs"}, or a named list of symmetric binary masks with
-zero diagonals. Named masks must follow the input's unit order.}
+\item{scope}{\code{"all_pairs"} (the default), or a named list of symmetric
+\verb{n x n} binary (\code{0}/\code{1} or logical) matrices with zero diagonals (when
+named, row and column names must match input unit order).}
 
-\item{q}{Expected-error guard in \verb{[0, 1]}, as a scalar or domain vector.
-\code{NULL} omits these guards.}
+\item{q}{Optional expected wrong-direction error cap (\code{E / N <= q}) in
+\verb{[0, 1]}, as a scalar or domain-ordered vector. \code{NULL} (the default) omits
+expected-error constraints unless \code{expected} is supplied.}
 
-\item{t}{Joint exceedance threshold in \verb{[0, 1]}, as a scalar or domain
-vector. \code{NULL} disables joint guards. An exceedance is strict, \code{F/N > t}.}
+\item{t}{Threshold in \verb{[0, 1]} for strict scoped FDP exceedance events
+\code{F / N > t}, as a scalar or domain-ordered vector (default \code{"0"}, so any
+wrong-direction error \code{F >= 1} counts as an exceedance). Set \code{t = NULL} to
+disable convenience joint constraints.}
 
-\item{alpha}{Joint-event probability limit in \verb{[0, 1]}.}
+\item{alpha}{Upper bound in \verb{[0, 1]} on the probability of the union of all
+active \code{F / N > t} events across domains and scopes (default \code{"1/20"}).}
 
-\item{expected}{Explicit rows with \code{domain_id}, \code{scope_id}, and \code{q} columns.
-These override the convenience \code{q} rows. An empty data frame disables them.}
+\item{expected}{Optional data frame with columns \code{domain_id}, \code{scope_id}, and
+\code{q}, overriding \code{q}. Pass a zero-row data frame to disable expected-error
+constraints when using a custom \code{scope} catalog.}
 
-\item{joint}{Explicit rows with \code{domain_id}, \code{scope_id}, and \code{t} columns.
-These override the convenience \code{t} rows. An empty data frame disables them.}
+\item{joint}{Optional data frame with columns \code{domain_id}, \code{scope_id}, and
+\code{t}, overriding \code{t}. Pass a zero-row data frame to disable joint FDP
+constraints when using a custom \code{scope} catalog.}
 }
 \value{
-A \code{postrank_mdomain_decision} recipe. Validation does not certify the
-scientific or sampling provenance of the input.
+A \code{postrank_mdomain_decision} list storing the validated policy
+parameters and exact-rational \code{receipts}.
 }
 \description{
-Creates a decision recipe. Domain and unit identities, mask dimensions, and
-protection rows are checked again when the recipe is bound to an input.
-Smaller grade labels report higher priority; a grade tie withholds direction.
+\code{postrank_mdomain_decision()} builds a decision specification setting domain
+weights, withholding costs \code{tau}, pair scopes, expected-error budgets \code{q},
+and joint false-discovery-proportion (FDP) exceedance thresholds \code{t} and
+\code{alpha} for multidomain profile grading. Domain IDs, unit IDs, and scope
+dimensions are checked again when the specification is matched to a
+\code{\link[=postrank_mdomain_input]{postrank_mdomain_input()}} object. Grade \code{1} is the highest priority within
+each domain, and equal grades leave a pair unordered. Requires optional
+package \code{gmp}.
 }
 \details{
-Convenience rows use a full-pair mask. A custom mask catalog without
-a full-pair mask requires explicit rows, including an empty data frame to
-disable a guard. Exact decimal/fraction strings retain their rational value;
-numeric values retain their stored binary value. Joint guards default to
-\code{t = "0"}, with \code{alpha = "1/20"}; expected guards default to disabled.
+Policy numbers (\code{weights}, \code{tau}, \code{q}, \code{t}, \code{alpha}) accept fraction or
+decimal strings (\code{"1/10"}, \code{"0.05"}), \code{gmp::bigq} rationals, or finite R
+\code{numeric} values. String fractions and decimals keep their exact rational
+value, whereas R \code{numeric} values keep their exact IEEE-754 binary floating
+value (for instance, numeric \code{0.1} is not \code{1/10}), so strings are recommended
+whenever exact decimal or fractional thresholds are intended.
+
+Convenience arguments \code{q} and \code{t} expand to one row per domain on the
+full-pair scope (\code{"full"}). If \code{scope} is a custom list of masks that omits a
+full-pair mask, supply \code{expected} and \code{joint} explicitly (or zero-row data
+frames to disable them).
+}
+\examples{
+\dontshow{if (requireNamespace("gmp", quietly = TRUE)) withAutoprint(\{ # examplesIf}
+dec <- postrank_mdomain_decision(tau = "1/4", t = "1/10", alpha = "1/20")
+dec
+summary(dec)
+\dontshow{\}) # examplesIf}
+}
+\seealso{
+\code{\link[=postrank_mdomain_input]{postrank_mdomain_input()}}, \code{\link[=postrank_mdomain_evaluate]{postrank_mdomain_evaluate()}},
+\code{\link[=postrank_mdomain_solve]{postrank_mdomain_solve()}}, \code{\link[=postrank_mdomain_assess]{postrank_mdomain_assess()}}
 }
 \concept{multidomain}

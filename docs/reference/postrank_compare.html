@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Compare Grading Rules on One Posterior and Loss — postrank_compare • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Compare Grading Rules on One Posterior and Loss — postrank_compare"><meta name="description" content="Alternative reports are evaluated under a common reference posterior and
-loss, and changes in their pairwise relations are recorded. By default,
-score-order baselines with optimal cuts are also calculated. With baselines = character(), evaluation is restricted to the reference and supplied
-actions, without optimization of cuts."><meta property="og:description" content="Alternative reports are evaluated under a common reference posterior and
-loss, and changes in their pairwise relations are recorded. By default,
-score-order baselines with optimal cuts are also calculated. With baselines = character(), evaluation is restricted to the reference and supplied
-actions, without optimization of cuts."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Compare Grading Rules on One Posterior and Loss — postrank_compare • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Compare Grading Rules on One Posterior and Loss — postrank_compare"><meta name="description" content='postrank_compare() evaluates alternative gradings under the same posterior
+probabilities and loss settings as a reference fit or analysis x (labeled
+"joint"), and counts how many pairwise orderings change relative to
+"joint". By default it adds optimal-cut baselines on expected rank and on
+the posterior-mean composite; no external optimization solver is called.'><meta property="og:description" content='postrank_compare() evaluates alternative gradings under the same posterior
+probabilities and loss settings as a reference fit or analysis x (labeled
+"joint"), and counts how many pairwise orderings change relative to
+"joint". By default it adds optimal-cut baselines on expected rank and on
+the posterior-mean composite; no external optimization solver is called.'><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -13,7 +15,7 @@ actions, without optimization of cuts."><meta property="og:image" content="https
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,7 +23,7 @@ actions, without optimization of cuts."><meta property="og:image" content="https
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -41,10 +43,11 @@ actions, without optimization of cuts."><meta property="og:image" content="https
     </div>
 
     <div class="ref-description section level2">
-    <p>Alternative reports are evaluated under a common reference posterior and
-loss, and changes in their pairwise relations are recorded. By default,
-score-order baselines with optimal cuts are also calculated. With <code>baselines = character()</code>, evaluation is restricted to the reference and supplied
-actions, without optimization of cuts.</p>
+    <p><code>postrank_compare()</code> evaluates alternative gradings under the same posterior
+probabilities and loss settings as a reference fit or analysis <code>x</code> (labeled
+<code>"joint"</code>), and counts how many pairwise orderings change relative to
+<code>"joint"</code>. By default it adds optimal-cut baselines on expected rank and on
+the posterior-mean composite; no external optimization solver is called.</p>
     </div>
 
     <div class="section level2">
@@ -62,94 +65,77 @@ actions, without optimization of cuts.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>A <code>postrank_fit</code> or <code>postrank_analysis</code> with a validated grade.</p></dd>
+<dd><p>Reference <code>postrank_fit</code> or <code>postrank_analysis</code> object with a
+checked grading (<code>incumbent_validated = TRUE</code>).</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Further <code>postrank_baseline</code> or <code>postrank_fit</code> objects, or named
-integer grade vectors (named arguments set the method label).</p></dd>
+<dd><p>Additional <code>postrank_baseline</code>, <code>postrank_fit</code> or
+<code>postrank_analysis</code> objects (which must match <code>x</code>'s input identity and
+loss settings), or positive integer grade vectors named by <code>entity_ids</code>.
+Argument names set the method labels.</p></dd>
 
 
 <dt id="arg-baselines">baselines<a class="anchor" aria-label="anchor" href="#arg-baselines"></a></dt>
-<dd><p>Built-in baselines to add: any of <code>"expected_rank"</code> and
-<code>"composite"</code>; <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> for none.</p></dd>
+<dd><p>Character vector of built-in optimal-cut baselines to
+include: subset of <code>c("expected_rank", "composite")</code> (both by default), or
+<code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> for none.</p></dd>
 
 
 <dt id="arg-means">means<a class="anchor" aria-label="anchor" href="#arg-means"></a></dt>
-<dd><p>Optional <code>n x K</code> posterior mean matrix for the composite.</p></dd>
+<dd><p>Optional <code>n x K</code> matrix of posterior means for the
+<code>"composite"</code> baseline when <code>x</code> is a <code>postrank_fit</code> built from a bare
+<code>postrank_pairwise</code> object (otherwise <code>missing_posterior_means</code> is raised).</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>postrank_comparison</code> object. Its <code>table</code> includes method, risk,
-disclosure, grade count, status, bounds, criterion error profiles,
-<code>family_feasible</code> and <code>feasibility_reason</code>; <code>grades</code>, <code>relation_codes</code> and
-<code>relations</code> use the same unique method IDs. <code>grades</code> is an entity-by-method
-integer matrix and <code>relation_codes</code> an entity-by-entity-by-method array;
-no-action columns are <code>NA</code>. <code>relations</code> has one row per non-reference
-method, with <code>n_same</code>, <code>n_new_disclosed</code>, <code>n_new_withheld</code>, <code>n_reversed</code>
-and <code>agreement</code> (the unchanged fraction of all unordered pairs).
-<code>reference</code>, bound <code>settings</code>, <code>input_identity</code>, <code>schema_version</code>,
-<code>provenance</code> and <code>warnings</code> complete the object. Select table columns by
-name rather than relying on their positions.</p>
-<p><code>reason</code> explains an unavailable action; <code>feasibility_reason</code> explains an
-evaluated action outside the declared family. They are separate fields.
-Duplicate method labels receive collision-free suffixes shared by all
-result components. Use the returned IDs instead of predicting a suffix.
-Older saved comparisons without feasibility metadata remain displayable,
-with the absence of these records indicated. Checking constraints requires
-recreating the comparison; displays do not calculate missing metadata.</p>
-    </div>
+    <p>A <code>postrank_comparison</code> object containing:</p><ul><li><p><code>reference</code>: <code>"joint"</code>;</p></li>
+<li><p><code>table</code>: one row per method with <code>method</code>, <code>risk</code> (primary loss), <code>N</code>,
+<code>disclosure_rate</code>, <code>G</code>, <code>status</code>, <code>optimality_scope</code>, <code>reason</code>,
+<code>risk_lower_bound</code>, <code>risk_absolute_gap</code>, <code>E_over_N_&lt;k&gt;</code>, <code>E_over_M_&lt;k&gt;</code>,
+<code>family_feasible</code> and <code>feasibility_reason</code>;</p></li>
+<li><p><code>relations</code>: one row per non-reference method with <code>n_same</code>,
+<code>n_new_disclosed</code>, <code>n_new_withheld</code>, <code>n_reversed</code> (summing to <code>M</code>) and
+<code>agreement</code> (<code>n_same / M</code>);</p></li>
+<li><p><code>grades</code> (<code>n x methods</code> integer matrix) and <code>relation_codes</code>
+(<code>n x n x methods</code> array);</p></li>
+<li><p><code>settings</code>, <code>input_identity</code>, <code>schema_version</code>, <code>provenance</code> and
+<code>warnings</code>.</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The common grade of <code>x</code> is labelled <code>"joint"</code>. Built-in
-baselines use the same coefficients and policy: expected rank +
-optimal cuts and posterior-mean composite + optimal cuts (<code>scales = 1</code>,
-<code>centers = 0</code>), plus any baselines, fits or named grade vectors supplied
-through <code>...</code>. Every action is evaluated under the reference settings, and
-relation changes are read from the reference to the compared action.</p>
-<p>Each row retains its status and scope: the joint row records solver status,
-bounds and gap; an optimal-cuts baseline has <code>status = "optimal"</code> with its restricted
-optimality scope; quantile and supplied-action rows have status <code>"evaluated"</code>. Baseline
-rows have no full-family bound (<code>NA</code>). A supplied fit without a validated
-grade stays as a status row with <code>NA</code> action metrics and reason
-<code>"no_validated_incumbent"</code>; an impossible requested baseline is
-<code>"not_comparable"</code> with its error code as reason. A supplied fit or baseline
-must match the reference policy and input identity. A named grade vector
-carries no such policy record and is explicitly evaluated under the
-reference loss, even if it was originally chosen for another objective.</p>
-<p>A supplied grade may be evaluated even when it is outside the reference
-action family. <code>table$family_feasible</code> records grade-cap, exact-grade and
-error-budget feasibility, with codes in <code>feasibility_reason</code>; no-action
-rows have <code>NA</code>. All rows use the reference fit's recorded feasibility
-tolerance for the raw budget residual <code>E_k - q_k * N</code>. This tolerance is
-stored as <code>provenance$family_feasibility_tolerance</code> (the usual validator
-default is used only if the reference receipt lacks it). Grade counts are
-checked exactly. This is a numerical check, not a certificate. Outside-family
-actions retain their risk and relations, and are marked in print and figures;
-they do not support claims about minima over the same feasible family.</p>
-<p>Composite scores need posterior means: an explicit <code>means</code> matrix, the input
-of a <code>postrank_analysis</code>, or the stored means of typed coefficients. A fit
-built from empirical pairwise coefficients alone has no means; requesting
-the composite baseline then raises <code>missing_posterior_means</code>.</p>
+    <p>Built-in <code>"expected_rank"</code> and <code>"composite"</code> (<code>scales = 1</code>, <code>centers = 0</code>)
+baselines call <code><a href="postrank_cuts.html">postrank_cuts()</a></code> with <code>rule = "optimal"</code>; if <code>x</code> uses
+settings that <code><a href="postrank_cuts.html">postrank_cuts()</a></code> does not optimize (such as <code>q</code> or
+<code>"minimax"</code>), the built-in row is recorded with <code>status = "not_comparable"</code>
+and <code>reason</code> giving the error code rather than stopping.</p>
+<p>Supplied grade vectors are evaluated under <code>x</code>'s loss even if they violate
+<code>G_max</code>, <code>exact_G</code> or <code>q</code> (checked within <code>family_feasibility_tolerance</code>).
+<code>table$family_feasible</code> (<code>TRUE</code>/<code>FALSE</code>/<code>NA</code>) and <code>feasibility_reason</code> flag
+rows outside <code>x</code>'s constraint family, whereas <code>reason</code> explains rows with no
+grading (<code>NA</code> loss). Duplicate method labels receive unique <code>_2</code>, <code>_3</code>, ...
+suffixes across all components.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="postrank_cuts.html">postrank_cuts()</a></code>, <code><a href="postrank_sensitivity.html">postrank_sensitivity()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="postrank_cuts.html">postrank_cuts()</a></code>, <code><a href="postrank_plot_compare.html">postrank_plot_compare()</a></code>,
+<code><a href="postrank_sensitivity.html">postrank_sensitivity()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"highs"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank.html">postrank</a></span><span class="op">(</span><span class="va">postrank_toy</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">.6</span>, need_B <span class="op">=</span> <span class="fl">.4</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.25</span>,</span></span>
-<span class="r-in"><span>    G_max <span class="op">=</span> <span class="fl">3L</span>, backend <span class="op">=</span> <span class="st">"highs"</span>, fragility <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">cmp</span> <span class="op">&lt;-</span> <span class="fu">postrank_compare</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">cmp</span><span class="op">$</span><span class="va">table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"method"</span>, <span class="st">"risk"</span>, <span class="st">"disclosure_rate"</span>, <span class="st">"G"</span>, <span class="st">"status"</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">toy</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"toy_analysis"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">cmp</span> <span class="op">&lt;-</span> <span class="fu">postrank_compare</span><span class="op">(</span><span class="va">toy</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">cmp</span><span class="op">$</span><span class="va">table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"method"</span>, <span class="st">"risk"</span>, <span class="st">"disclosure_rate"</span>, <span class="st">"G"</span>, <span class="st">"status"</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          method   risk disclosure_rate G  status</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1         joint 0.2125       0.6666667 2 optimal</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 expected_rank 0.2125       0.6666667 2 optimal</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3     composite 0.2125       0.6666667 2 optimal</span>
+<span class="r-in"><span><span class="va">cmp</span><span class="op">$</span><span class="va">relations</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          method n_same n_new_disclosed n_new_withheld n_reversed agreement</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 expected_rank      3               0              0          0         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     composite      3               0              0          0         1</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -1,4 +1,4 @@
-# Builder of the sealed example assets. Inert when sourced:
+# Builder of the stored example assets. Inert when sourced:
 # it runs only in an explicit maintainer process with POSTRANK_BUILD_CACHED_ASSETS=true, from
 # the package source root, after the package is installed or loaded with pkgload:
 #   POSTRANK_BUILD_CACHED_ASSETS=true Rscript inst/scripts/build-cached-assets.R
@@ -103,9 +103,9 @@ if (identical(Sys.getenv("POSTRANK_BUILD_CACHED_ASSETS"), "true") && sys.nframe(
       spec$data, length(ks), length(ks), spec$data, spec$tau, spec$G, level)
     add(key, value, NULL, 1L, call)
   }
-  # No machine path enters a shipped object (T-doc-05). The frozen engine records the solver
-  # wrapper's library directory as backend$wrapper_path; it is replaced by <R_LIBS>/<package>
-  # and the replacement count is recorded. Any other absolute path stops the build.
+  # No machine path enters a shipped object. The solver wrapper's library directory
+  # in backend$wrapper_path is replaced by <R_LIBS>/<package> and the replacement
+  # count is recorded; any other absolute path stops the build.
   redact <- function(value) {
     n <- 0L
     walk <- function(v) {

@@ -6,35 +6,44 @@
 postrank_palette(n, which = c("grade", "relation", "change", "sequential"))
 }
 \arguments{
-\item{n}{Number of grades, from 1 to 64, for \code{which = "grade"}.
-Ignored for other palettes and may be omitted for them.}
+\item{n}{Integer number of grades from \code{1} to \code{64} when \code{which = "grade"}.
+Ignored (and may be omitted) for the other palettes.}
 
-\item{which}{\code{"grade"}, \code{"relation"}, \code{"change"} or \code{"sequential"}.}
+\item{which}{Palette to return: \code{"grade"} (the default), \code{"relation"},
+\code{"change"}, or \code{"sequential"}.}
 }
 \value{
-A character vector of R color specifications. Grade colors are
-named \code{"1"} through \code{"n"}; relation and change colors are named by state.
-The seven-stop sequential vector is unnamed. Some state colors use R
-gray names rather than hexadecimal notation.
+A character vector of R color specifications (hexadecimal strings and,
+for neutral states, R gray names):
+\itemize{
+\item \code{"grade"}: named \code{"1"} through \code{as.character(n)}.
+\item \code{"relation"}: named \code{"above"}, \code{"withheld"}, and \code{"below"}.
+\item \code{"change"}: named \code{"unchanged"}, \code{"newly disclosed"},
+\code{"newly withheld"}, and \code{"reversed"}.
+\item \code{"sequential"}: unnamed seven-stop light-to-dark blue ramp.
+}
 }
 \description{
-The palettes define the colors used for grades, relations, relation changes
-and probabilities. Grade colors progress from dark for the highest-priority
-grade 1 to lighter colors for larger grade numbers.
+\code{postrank_palette()} returns the color vectors used in \code{postrank} figures for
+grades, pair relations, relation changes, and directional-error
+probabilities. Grade colors run from dark blue (\code{"#153653"}) for the
+highest-priority grade \code{1} to lighter blue-teal (\code{"#4F879E"}) for larger
+grade numbers.
 }
 \details{
-The grade palette interpolates sRGB channels from \verb{#153653} to \verb{#4F879E}.
-Across its supported sizes, luminance increases with grade number and
-colors retain at least 3:1 contrast against white. For a single grade,
-the sole color is \verb{#153653}.
+For \code{which = "grade"}, sRGB channels are linearly interpolated from
+\code{"#153653"} to \code{"#4F879E"} (\code{"#153653"} when \code{n = 1}), giving strictly
+increasing luminance with grade number and at least 3:1 contrast against
+white across \verb{1..64}. Values of \code{n} outside \verb{1..64} stop with an error;
+\code{\link[=postrank_plot_report_card]{postrank_plot_report_card()}} switches to neutral dark gray above 64 grades.
 
-The relation palette names \code{above}, \code{withheld} and \code{below}, with gray for
-withholding. The change palette names \code{unchanged}, \verb{newly disclosed},
-\verb{newly withheld} and \code{reversed}; unchanged is light gray, newly withheld
-is medium gray. Unchanged pairs may be ordered or withheld. The colored
-states use selected Okabe-Ito colors. \code{"sequential"} provides a light-to-dark
-Blues ramp used for probabilities. A grade palette supports at most 64
-grades; the report-card view uses neutral ink and labels beyond that limit.
+In \code{"relation"}, \code{"above"} (\code{"#0072B2"}) and \code{"below"} (\code{"#E69F00"}) use
+Okabe-Ito colors and \code{"withheld"} uses \code{"grey80"}. In \code{"change"},
+\code{"unchanged"} (\code{"grey92"}, covering pairs ordered the same way or withheld in
+both gradings) is light gray, \code{"newly withheld"} (\code{"#999999"}) is medium
+gray, \code{"newly disclosed"} is \code{"#0072B2"}, and \code{"reversed"} is \code{"#D55E00"}.
+\code{"sequential"} runs from \code{"#EFF3FF"} to \code{"#084594"} for probability heat
+maps.
 }
 \examples{
 postrank_palette(1)
@@ -43,6 +52,7 @@ postrank_palette(which = "relation")
 postrank_palette(which = "change")
 }
 \seealso{
-\code{\link[=scale_colour_grade]{scale_colour_grade()}}, \code{\link[=theme_postrank]{theme_postrank()}}, \code{\link[=postrank_plot_relations]{postrank_plot_relations()}}
+\code{\link[=scale_colour_grade]{scale_colour_grade()}}, \code{\link[=theme_postrank]{theme_postrank()}},
+\code{\link[=postrank_plot_relations]{postrank_plot_relations()}}
 }
 \concept{visualization}

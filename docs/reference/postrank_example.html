@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Stored Example Results — postrank_example • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Stored Example Results — postrank_example"><meta name="description" content="postrank_example() reads results stored with the package. Call it without arguments to list the
+examples or give a name to load one. Reading an example needs no solver."><meta property="og:description" content="postrank_example() reads results stored with the package. Call it without arguments to list the
+examples or give a name to load one. Reading an example needs no solver."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">postrank</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/joonho112/postrank" aria-label="GitHub"><span class="fa fa-github"></span></a></li>
+      </ul></div>
+
+
+  </div>
+</nav><div class="container template-reference-topic">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Stored Example Results</h1>
+
+      <div class="d-none name"><code>postrank_example.Rd</code></div>
+    </div>
+
+    <div class="ref-description section level2">
+    <p><code>postrank_example()</code> reads results stored with the package. Call it without arguments to list the
+examples or give a name to load one. Reading an example needs no solver.</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postrank_example</span><span class="op">(</span>name <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
+<dd><p>Name of a stored result, as listed by <code>postrank_example()</code>. If <code>NULL</code> (the default),
+the list is returned instead.</p></dd>
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>With <code>name = NULL</code>, a data frame with one row per stored result and the columns</p><ul><li><p><code>name</code> and <code>description</code>;</p></li>
+<li><p><code>class</code>: the class of the stored object;</p></li>
+<li><p><code>call</code>: an example call describing the calculation;</p></li>
+<li><p><code>computed_with</code>: the postrank and solver versions that were used;</p></li>
+<li><p><code>solves</code>: how many optimization problems were solved (0 for comparisons of stored results);</p></li>
+<li><p><code>created</code>: when it was computed (UTC).</p></li>
+</ul><p>Otherwise the stored object, for example a <code>postrank_analysis</code>, with its grades and numerical
+results. Local solver installation paths were replaced with portable labels when saving.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The grading analyses used postrank 1.1.0 and HiGHS. The two comparison examples
+summarize stored analyses. Some example calls are abbreviated or refer to another stored
+result, such as <code>tutorial_two</code>. In the calls for <code>toy_minimax</code> and <code>toy_frontier</code>,
+<code>w</code> stands for <code>c(need_A = 0.6, need_B = 0.4)</code>.</p>
+<p>Before a result is returned, postrank checks that the stored file is unchanged (its size and
+SHA-256 checksum) and that this version of postrank can read it. Reading a result never runs a
+solver and never changes the stored files.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="get_grades.html">get_grades()</a></code>, <code><a href="get_risk.html">get_risk()</a></code>, <code><a href="postrank.html">postrank()</a></code></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ex</span> <span class="op">&lt;-</span> <span class="fu">postrank_example</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ex</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"description"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                      name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1           analysis_30x3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     analysis_30x3_tau35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          case_alabama67</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4             case_cde_12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5       case_krw_signed97</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6        commonality_30x3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  commonality_30x3_tau35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8         comparison_30x3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9   comparison_30x3_tau35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10          frontier_30x3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 gaussian_analysis_30x3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12           toy_analysis</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13        toy_commonality</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14           toy_crossfit</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15           toy_frontier</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16            toy_minimax</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17   tutorial_commonality</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18      tutorial_frontier</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19           tutorial_one</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20   tutorial_sensitivity</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21           tutorial_two</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                   description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  30 example sites, three criteria, from posterior draws (pr_example_draws).</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                                              analysis_30x3 with tau = 0.35.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                  Alabama county case study (pr_case_alabama), two criteria.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                  California school case study (pr_case_cde), one criterion.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                             97-firm case study (pr_case_krw), two criteria.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                               Cost of one common grading for analysis_30x3.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7                         Cost of one common grading for analysis_30x3_tau35.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                                postrank_compare() result for analysis_30x3.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9                          postrank_compare() result for analysis_30x3_tau35.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10                             analysis_30x3 graded at tau from 0.10 to 0.45.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11        The 30-site example from Gaussian posteriors (pr_example_gaussian).</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12                 Three-entity toy example with two criteria (postrank_toy).</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13                               Cost of one common grading for toy_analysis.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14                                            Cross-fitting for toy_analysis.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15                             The toy example graded at three values of tau.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16        The toy example solved with the minimax objective (a postrank_fit).</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17             Cost of one common grading for the two scores of tutorial_two.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18                                 tutorial_two graded at five values of tau.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19                  Six tutorial sites graded on one score (pr_tutorial$one).</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20                       tutorial_two under a grid of tau, G_max and weights.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21                 Six tutorial sites graded on two scores (pr_tutorial$two).</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu">postrank_example</span><span class="op">(</span><span class="st">"tutorial_one"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A B C D E F </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1 2 2 3 3 </span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
+
+
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by JoonHo Lee.</p>
+</div>
+
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+</div>
+
+    </footer></div>
+
+
+
+
+
+  </body></html>
+

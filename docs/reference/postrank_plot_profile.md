@@ -1,9 +1,11 @@
 # Plot Criterion-Wise Error Rates or Risk
 
-The figure displays criterion-specific expected directional-error rates
-or risks for the stored grading. Each criterion is represented by one
-point. Point area indicates a positive criterion weight; zero-weight
-criteria are retained as small hollow points.
+`postrank_plot_profile()` plots the posterior expected directional-error
+rate or criterion risk for each criterion in a stored grading, with one
+row per criterion. In plot text and tables, `disclosed` means pairs
+placed in different grades (ordered), `withheld` means pairs placed in
+the same grade (left unordered), and `risk` means posterior expected
+loss.
 
 ## Usage
 
@@ -25,44 +27,55 @@ postrank_plot_profile(
 
 - show:
 
-  `"E_over_N"` for expected errors per disclosed pair; `"E_over_M"` for
-  expected errors per all unordered pairs; or `"risk"` for criterion
-  risk, including the cost of withholding.
+  Metric drawn on the horizontal axis: `"E_over_N"` (the default) for
+  expected wrong-direction errors per disclosed pair (`E_k / N`),
+  `"E_over_M"` for expected wrong-direction errors per unordered pair
+  (`E_k / M`), or `"risk"` for criterion risk `R_k` (including the
+  withholding cost `tau` on withheld pairs).
 
 - budgets:
 
-  Logical; show available error-budget ticks for `show = "E_over_N"`.
+  Logical scalar (`TRUE` by default). When `TRUE` and
+  `show = "E_over_N"`, draws a vertical tick at each declared error
+  budget `q_k` and connects it to that criterion's point.
 
 - ...:
 
-  Unused.
+  Unused; unnamed extra arguments are ignored. Pass `criterion_labels`
+  by name.
 
 - criterion_labels:
 
-  Optional partial named character vector mapping raw criterion IDs to
-  display names. Text is wrapped; IDs and numerical plot data remain
-  unchanged. Supply this argument by name.
+  Optional named character vector mapping raw criterion IDs to display
+  labels. Unmapped IDs keep their raw IDs, and labels are wrapped to 22
+  characters per line; underlying IDs and numeric values in `$data` are
+  unchanged.
 
 ## Value
 
-A `ggplot` object. Without a validated incumbent, it is a status panel.
-When `N = 0`, the `E_over_N` view explains that the ratio is undefined
-and omits the corresponding point.
+A `ggplot` object whose `$data` table matches
+[`get_profile()`](https://joonho112.github.io/postrank/reference/get_profile.md)
+with an added `value` column for the selected `show` metric. If `x` has
+no checked grading, returns an empty status `ggplot` stating why. When
+`show = "E_over_N"` and `N = 0` (every pair is withheld), returns a
+blank `[0, 1]` panel stating that `E/N` is undefined rather than
+plotting zero.
 
 ## Details
 
-`E_k` is the stored expected number of wrong-direction comparisons on
-criterion `k`, `N` counts disclosed pairs, and `M = choose(n, 2)` counts
-all unordered pairs. These are posterior expectations for the selected
-action, not observed error counts. Withholding is not a claim of
-equality.
+`E_k` is the posterior expected number of wrong-direction comparisons on
+criterion `k`, `N` is the number of disclosed pairs, and
+`M = choose(n, 2)` is the number of unordered entity pairs. Points for
+positive-weight criteria scale in area with `weight` (the size legend is
+omitted when there is only one criterion); zero-weight criteria with
+finite values appear as small hollow circles.
 
-For `E_over_N`, a declared budget `q_k` appears as a tick connected to
-its criterion's point. For `risk`, a dashed line marks `tau`, the
-ordinary all-withheld risk. In minimax mode, orange rings identify
-criteria attaining the largest criterion risk. All axes begin at zero.
-The figure reads the stored evaluation without selecting a new grade or
-recomputing its risk.
+When `show = "risk"`, a vertical dashed line marks `tau`, the risk of
+placing all entities in a single shared grade. When the problem uses
+`objective = "minimax"`, orange rings mark criteria attaining the
+maximum criterion risk (`is_minimax_max`). Horizontal axes always start
+at zero. The function reads stored evaluation summaries without solving
+or recomputing risks.
 
 ## See also
 
@@ -73,13 +86,14 @@ recomputing its risk.
 ## Examples
 
 ``` r
-# Read prepared tutorial results; no model fitting or optimization.
-source(system.file("scripts", "_vignette-setup.R", package = "postrank"),
-  local = TRUE)
-one <- load_or_compute("tutorial_one")
+one <- postrank_example("tutorial_one")
 postrank_plot_profile(one)
 
-two <- load_or_compute("tutorial_two")
-postrank_plot_profile(two, show = "E_over_M",
-  criterion_labels = c(score_A = "Score A", score_B = "Score B"))
+
+two <- postrank_example("tutorial_two")
+postrank_plot_profile(
+  two,
+  show = "E_over_M",
+  criterion_labels = c(score_A = "Score A", score_B = "Score B")
+)
 ```

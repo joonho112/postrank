@@ -13,7 +13,7 @@ navbar:
     right: [search, github]
   components:
     intro:
-      text: Introduction
+      text: Get started
       href: articles/a1-getting-started.html
     vignettes:
       text: Vignettes
@@ -26,9 +26,15 @@ navbar:
       href: https://github.com/joonho112/postrank
       aria-label: GitHub
 
+redirects:
+- ["articles/quickstart.html", "articles/a1-getting-started.html"]
+- ["articles/inputs-and-producers.html", "articles/a5-your-posterior-results.html"]
+- ["articles/baselines-and-the-cost-of-a-common-grade.html", "articles/m2-several-criteria.html"]
+- ["articles/migration-from-0-9.html", "news/index.html#documentation-and-compatibility-1-3-0"]
+
 articles:
 - title: Start here
-  desc: Follow a small analysis from supplied posterior information to grades, exported results and figures.
+  desc: Walk through a complete analysis from posterior inputs to integer grades, exported tables, HTML reports, and sensitivity plots.
   navbar: ~
   contents:
   - a1-getting-started
@@ -36,14 +42,14 @@ articles:
   - a6-reading-exporting-results
   - a7-figures-sensitivity
 - title: Applied examples
-  desc: Explore one-criterion and common-grading analyses in three case studies.
+  desc: Follow one-criterion and multi-criterion grading analyses across California schools, large U.S. employers, and Alabama counties.
   navbar: ~
   contents:
   - a2-cde-accountability
   - a3-krw-race-gender
   - a4-alabama-opportunity
 - title: Methods
-  desc: Understand the loss, competing criteria, posterior requirements, withholding, computation and numerical uncertainty.
+  desc: Connect posterior comparison probabilities, integer grades, multiple criteria, exact ties, solver bounds, and Monte Carlo or IID diagnostics.
   navbar: ~
   contents:
   - m1-ranking-and-loss
@@ -53,82 +59,80 @@ articles:
   - m5-computing-grades
   - m6-uncertainty-diagnostics
 - title: Multidomain profiles
-  desc: Assign each unit a separate grade in each domain. Extend the common-grade workflow with joint protection and crossed priorities.
+  desc: Assign each entity a separate grade in each domain and evaluate joint cross-domain error-exceedance protection.
   navbar: ~
   contents:
   - mdomain-quickstart
   - mdomain-decisions
-- title: Additional examples
-  desc: Work through the retained examples, producer declarations and comparisons with simpler grading rules.
-  navbar: ~
-  contents:
-  - quickstart
-  - inputs-and-producers
-  - baselines-and-the-cost-of-a-common-grade
 - title: Reference aids
-  desc: Browse the common-grade figure gallery or update scripts written for the earlier interface.
+  desc: Browse all seven common-grade figure functions and their display options side by side.
   navbar: ~
   contents:
   - figure-gallery
-  - migration-from-0-9
 
 reference:
-- title: Multidomain profiles
-  desc: Separate domain grades, additive risk and direct joint protection within a declared candidate bank; exact finite-law evaluation, conditional iid assessment, MCMC diagnostics and stored report views.
-  contents:
-  - has_concept("multidomain")
-- title: Tie-aware mode (opt-in)
-  desc: Separate equality-neutral input, coefficients and guarded weighted at-most-G label-MIP. Legacy reports and guarantees are unsupported here.
-  contents:
-  - has_concept("tie-aware")
-- title: Input
-  desc: Posterior draws, their required declarations and the strict constructors for one or several criteria.
-  contents:
-  - has_concept("input")
-- title: Coefficients
-  desc: Prepared directional-error probabilities, typed posterior laws and their input-specific capabilities.
-  contents:
-  - has_concept("coefficients")
-- title: Settings and control
-  desc: The declared policy (weights, tau, grade cap) and the computation controls.
-  contents:
-  - has_concept("settings")
-- title: Decision
-  desc: The one-call analysis, the decision problem, the solver and fixed-grade evaluation.
+- title: Grading and stored examples
+  desc: Run a common-grade analysis in one call, load precomputed example results without a solver, or build, solve, and evaluate a grading problem step by step.
   contents:
   - has_concept("decision")
-- title: Baselines and comparison
-  desc: Score orders with optimal or quantile cuts, compared with the joint rule on one posterior and loss.
+  - postrank_example
+- title: Posterior draw inputs
+  desc: Describe posterior draws in plain arguments or structured blocks, build and validate draw objects, and read or write draw files.
   contents:
-  - has_concept("baselines")
-- title: Criterion summaries and settings grids
-  desc: Criterion-specific losses, tau frontiers and specified settings grids.
+  - has_concept("input")
+- title: Analytic posteriors and comparison probabilities
+  desc: Compute pairwise directional-error probabilities from draws or normal and mixture posteriors, or supply precomputed comparison probabilities.
   contents:
-  - has_concept("grids")
-- title: Diagnostics
-  desc: Descriptive diagnostics for cross-fitting, Monte Carlo fragility and decision traces. These diagnostics do not provide certificates.
+  - has_concept("coefficients")
+- title: Settings and solver control
+  desc: Specify reporting loss settings (`weights`, `tau`, `G_max`, error budgets, minimax) and solver time limits, tolerances, and backend availability.
   contents:
-  - has_concept("diagnostics")
-- title: Reporting and accessors
-  desc: Report cards, the standalone English report, accessors and console formatters.
+  - has_concept("settings")
+- title: Tables, accessors, and HTML reports
+  desc: Extract assigned grades, pair relations, criterion error profiles, report-card tables, and standalone HTML reports from stored results.
   contents:
   - has_concept("reporting")
-- title: Visualization
-  desc: Seven graphical summaries, their underlying tables, and plotting themes and grade palettes.
+- title: Figures and plot helpers
+  desc: Draw the seven common-grade ggplot2 figures, extract their underlying data tables, and apply package themes and grade palettes.
   contents:
   - has_concept("visualization")
-- title: Reference calculations (conditional)
-  desc: Conditional IID reference bounds and protection envelopes; they issue no general guarantee.
+- title: Baseline rules and method comparison
+  desc: Score entities by posterior means, expected ranks, or linear composites, cut fixed orders into grades, and compare rules under one common loss.
+  contents:
+  - has_concept("baselines")
+- title: Sensitivity grids and frontiers
+  desc: Trace grades across tau or error-budget frontiers, run grids of reporting settings, and measure the per-criterion cost of sharing one common grade.
+  contents:
+  - has_concept("grids")
+- title: Monte Carlo diagnostics
+  desc: Summarize Monte Carlo standard errors, resampling fragility, and out-of-fold loss differences without claiming calibration guarantees.
+  contents:
+  - has_concept("diagnostics")
+- title: Conditional IID bounds and envelopes
+  desc: Compute conditional error radii, regret bounds, and protection envelopes that hold only under independent draws with a sample size fixed in advance.
   contents:
   - has_concept("reference")
-- title: Data and examples
-  desc: Synthetic posterior inputs and the three applied case studies.
+- title: Multidomain profile report cards
+  desc: Assign each entity a separate grade per domain, evaluate additive losses and joint cross-domain error caps over a declared candidate set, and plot profile cards.
+  contents:
+  - has_concept("multidomain")
+- title: Posteriors with exact ties
+  desc: Grade entities under posteriors where exact equality between distinct entities has positive probability; see postrank_tie_capabilities() for supported modes.
+  contents:
+  - has_concept("tie-aware")
+- title: Bundled datasets
+  desc: Synthetic teaching posteriors and the California school, employer callback, and Alabama county case-study datasets.
   contents:
   - has_concept("data")
-- title: Package and options
+- title: Package overview and global options
+  desc: Package-level overview and session options (postrank.backend, postrank.verbose, and postrank.lang).
   contents:
   - postrank-package
   - postrank_options
+- title: Console text formatters
+  desc: Class-checked wrappers that return the same console output lines as format(x) with width and styling controls.
+  contents:
+  - has_concept("formatters")
 
 news:
   releases: []

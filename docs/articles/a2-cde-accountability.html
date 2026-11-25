@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Comparing chronic absence across California schools • postrank</title>
+<title>Grading California schools on chronic absence • postrank</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Comparing chronic absence across California schools">
+<meta property="og:title" content="Grading California schools on chronic absence">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,7 +35,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -57,7 +57,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Comparing chronic absence across California schools</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Grading California schools on chronic absence</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/a2-cde-accountability.Rmd" class="external-link"><code>vignettes/a2-cde-accountability.Rmd</code></a></small>
@@ -66,70 +66,79 @@
 
     
     
-<p>School accountability reports often order schools by their observed
-absence rates. Such an ordering requires directional comparisons even
-when nearby rates are difficult to distinguish. We use chronic
-absenteeism to illustrate a one-criterion analysis in which
-<code>postrank</code> assigns schools to ordered grades and withholds
-comparisons within grades.</p>
-<p>The target is the current chronic-absence probability, with lower
-values receiving higher priority. This target concerns neither a
-school’s causal effect on attendance nor the California School
-Dashboard’s combination of current level and change. Both would require
-additional information.</p>
-<p>The posterior input and optimized grading were prepared in advance.
-The article reads these results and evaluates fixed reports, without
-refitting a model or executing an optimizer during rendering. An
-optional call is provided for recomputing the small example.</p>
+<p>School accountability tables often rank schools by their observed
+chronic absence rates, placing every pair of schools in order even when
+small enrollments or nearby rates leave their comparison uncertain. Here
+we use California chronic-absenteeism data to walk through a
+one-criterion grading that places schools in ordered integer grades and
+leaves within-grade pairs unordered.</p>
+<p>The target quantity is each school’s current chronic-absence
+probability <code>p</code>, oriented as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo>=</mo><mi>−</mi><mi>p</mi></mrow><annotation encoding="application/x-tex">\theta = -p</annotation></semantics></math>
+so lower absence receives higher priority (grade 1). This descriptive
+target measures current school absence rates in the source frame; it
+does not estimate a school’s causal effect on attendance or reproduce
+the California School Dashboard’s two-dimensional Status-plus-Change
+color rules.</p>
+<p>All posterior inputs and optimization results below are stored in the
+package and loaded without fitting a model or running a solver during
+rendering.</p>
 <div class="section level2">
-<h2 id="start-with-schools-counts-and-a-posterior">Schools, observations and posterior distribution<a class="anchor" aria-label="anchor" href="#start-with-schools-counts-and-a-posterior"></a>
+<h2 id="start-with-schools-counts-and-a-posterior">Schools, counts, and empirical-Bayes posterior<a class="anchor" aria-label="anchor" href="#start-with-schools-counts-and-a-posterior"></a>
 </h2>
-<p>The source study uses the frozen 2026 Dashboard publication for
-school year 2025-26. Its chronic-absence frame contains 5,834
-elementary-type, non-alternative schools with usable all-students counts
-and current-year denominators of at least 30; charter schools are
-included. This is the study’s eligible frame, rather than every school
-in California. The denominator is the indicator’s eligible
-student-school count, so summing it across schools need not count unique
-students.</p>
-<p>The bundled example contains 12 schools, selected deterministically
-from the cross-classification of 4 observed-rate rank groups and 3
-denominator rank groups, with one school per cell. This selection
-distributes the example across the source frame but does not constitute
-a representative sample for estimating statewide prevalence.</p>
-<p>The source is the <a href="https://www.cde.ca.gov/ta/ac/cm/chronicdatafiles.asp" class="external-link">CDE
-chronic-absenteeism download collection</a>. The compact CDE-derived
-input preserves source attribution and documented transformations. The
-dataset help, <code><a href="../reference/pr_case_cde.html">?pr_case_cde</a></code>, retains the source details and
-links to the <a href="https://www.cde.ca.gov/re/di/cr/index.asp" class="external-link">CDE
-copyright statement</a>. The installed DATA-NOTICE distinguishes
-historical preparation records from the current distribution scope.</p>
+<p>The case study comes from the 2026 California School Dashboard
+chronic-absenteeism release (academic year 2025–26). Its statewide frame
+covers <code>5,834</code> non-alternative (non-DASS) elementary-type
+schools (including eligible charter schools) with usable all-student
+counts and denominators <code>n &gt;= 30</code>. Because the denominator
+is each school’s indicator-eligible student count, summing denominators
+across schools need not equal a count of unique students.</p>
+<p><code>pr_case_cde</code> holds a 12-school teaching subset selected
+deterministically from <code>4</code> observed-rate rank groups crossed
+with <code>3</code> denominator rank groups (one school per cell). That
+selection spans rate and enrollment strata for illustration; it is not a
+representative sample for estimating statewide chronic absence.</p>
+<p>Source data come from the <a href="https://www.cde.ca.gov/ta/ac/cm/chronicdatafiles.asp" class="external-link">CDE
+chronic-absenteeism download collection</a>; source conditions are
+posted at the <a href="https://www.cde.ca.gov/re/di/cr/index.asp" class="external-link">CDE
+copyright statement</a>. Only the 12 selected school IDs and counts and
+author-derived posterior summaries are bundled here; no Creative Commons
+or MIT code license is substituted for the CDE source conditions, and no
+CDE endorsement is implied (see <code><a href="../reference/pr_case_cde.html">?pr_case_cde</a></code> and the
+installed <code>DATA-NOTICE.md</code>).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joonho112/postrank" class="external-link">postrank</a></span><span class="op">)</span></span>
 <span><span class="va">case</span> <span class="op">&lt;-</span> <span class="va">pr_case_cde</span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="va">case</span><span class="op">$</span><span class="va">input</span></span>
 <span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="va">case</span><span class="op">$</span><span class="va">units</span></span>
 <span></span>
-<span><span class="co"># Short display names; the original CDS identifiers stay in the data.</span></span>
 <span><span class="va">school_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"School"</span>, <span class="va">LETTERS</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">schools</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>  <span class="va">schools</span><span class="op">[[</span><span class="st">"entity_id"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">criterion_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="st">"Lower chronic absence (-p)"</span>, <span class="va">input</span><span class="op">[[</span><span class="st">"criterion_ids"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<table style="width:100%;" class="table">
-<caption>Observed counts for the teaching subset. Rates are y/n; CDS
-identifiers retain leading zeros.</caption>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">observed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  School <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">school_labels</span><span class="op">[</span><span class="va">schools</span><span class="op">$</span><span class="va">entity_id</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  `CDS identifier` <span class="op">=</span> <span class="va">schools</span><span class="op">$</span><span class="va">entity_id</span>,</span>
+<span>  `Chronic-absence count` <span class="op">=</span> <span class="va">schools</span><span class="op">$</span><span class="va">chronic_absent_count</span>,</span>
+<span>  `Eligible count` <span class="op">=</span> <span class="va">schools</span><span class="op">$</span><span class="va">eligible_count</span>,</span>
+<span>  `Observed rate (%)` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">100</span> <span class="op">*</span> <span class="va">schools</span><span class="op">$</span><span class="va">observed_rate</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">observed</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
 <colgroup>
-<col width="12%">
-<col width="20%">
-<col width="29%">
-<col width="20%">
+<col width="11%">
 <col width="18%">
+<col width="27%">
+<col width="18%">
+<col width="22%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">School</th>
 <th align="left">CDS identifier</th>
 <th align="right">Chronic-absence count</th>
 <th align="right">Eligible count</th>
-<th align="left">Observed rate</th>
+<th align="right">Observed rate (%)</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -137,166 +146,172 @@ identifiers retain leading zeros.</caption>
 <td align="left">30665976068399</td>
 <td align="right">20</td>
 <td align="right">363</td>
-<td align="left">5.51%</td>
+<td align="right">5.51</td>
 </tr>
 <tr class="even">
 <td align="left">School B</td>
 <td align="left">38684786113997</td>
 <td align="right">26</td>
 <td align="right">409</td>
-<td align="left">6.36%</td>
+<td align="right">6.36</td>
 </tr>
 <tr class="odd">
 <td align="left">School C</td>
 <td align="left">30736506094718</td>
 <td align="right">55</td>
 <td align="right">873</td>
-<td align="left">6.30%</td>
+<td align="right">6.30</td>
 </tr>
 <tr class="even">
 <td align="left">School D</td>
 <td align="left">58727516056840</td>
 <td align="right">49</td>
 <td align="right">390</td>
-<td align="left">12.56%</td>
+<td align="right">12.56</td>
 </tr>
 <tr class="odd">
 <td align="left">School E</td>
 <td align="left">30736436030639</td>
 <td align="right">56</td>
 <td align="right">448</td>
-<td align="left">12.50%</td>
+<td align="right">12.50</td>
 </tr>
 <tr class="even">
 <td align="left">School F</td>
 <td align="left">01750936118038</td>
 <td align="right">112</td>
 <td align="right">909</td>
-<td align="left">12.32%</td>
+<td align="right">12.32</td>
 </tr>
 <tr class="odd">
 <td align="left">School G</td>
 <td align="left">19647330106427</td>
 <td align="right">67</td>
 <td align="right">348</td>
-<td align="left">19.25%</td>
+<td align="right">19.25</td>
 </tr>
 <tr class="even">
 <td align="left">School H</td>
 <td align="left">37684520105882</td>
 <td align="right">105</td>
 <td align="right">552</td>
-<td align="left">19.02%</td>
+<td align="right">19.02</td>
 </tr>
 <tr class="odd">
 <td align="left">School I</td>
 <td align="left">36676866035711</td>
 <td align="right">124</td>
 <td align="right">642</td>
-<td align="left">19.31%</td>
+<td align="right">19.31</td>
 </tr>
 <tr class="even">
 <td align="left">School J</td>
 <td align="left">34674216033732</td>
 <td align="right">99</td>
 <td align="right">340</td>
-<td align="left">29.12%</td>
+<td align="right">29.12</td>
 </tr>
 <tr class="odd">
 <td align="left">School K</td>
 <td align="left">19648816021687</td>
 <td align="right">128</td>
 <td align="right">448</td>
-<td align="left">28.57%</td>
+<td align="right">28.57</td>
 </tr>
 <tr class="even">
 <td align="left">School L</td>
 <td align="left">36677106035901</td>
 <td align="right">164</td>
 <td align="right">569</td>
-<td align="left">28.82%</td>
+<td align="right">28.82</td>
 </tr>
 </tbody>
 </table>
-<p>The observed proportion <code>y/n</code> enters a working model in
-which each school’s count is binomial conditional on its current absence
-probability <code>p</code>. An empirical Bayes distribution
-<code>G</code> was estimated from the full 5,834-school frame. This
-estimated distribution is retained for the selected schools, rather than
-refitted to the small selected sample. Observed proportions and
-posterior means are consequently distinct quantities. The prior fit uses
-regularization <code>lambda =</code> 10, a model-fitting parameter
-distinct from the reporting cost <code>tau</code> below.</p>
-<p>The prior has 161 continuous bins, with uniform density within each
-bin. After observing a school’s counts, its posterior within a bin is a
-<code>Beta(y + 1, n - y + 1)</code> distribution truncated to that bin.
-The school’s posterior combines these components with its posterior bin
-probabilities. Evaluating the bin centers as discrete atoms would change
-this law. The supplied means, intervals and comparisons all use the
-continuous version.</p>
-<p>Posterior uncertainty is conditional on the estimated <code>G</code>:
-school probabilities vary under the working model, while <code>G</code>
-is held fixed. Uncertainty in estimating <code>G</code> is therefore
-omitted. The analysis also remains conditional on the binomial
-assumptions, which may not capture every source of variation in school
-attendance.</p>
+<p>Each school’s count <code>y</code> is modeled as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">B</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo>,</mo><mi>p</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathrm{Binomial}(n, p)</annotation></semantics></math>
+given its latent chronic-absence probability <code>p</code>. A
+piecewise-uniform empirical-Bayes prior <code>G</code> over
+<code>161</code> continuous bins was estimated once on the full
+<code>5,834</code>-school frame (with roughness penalty
+<code>lambda = 10</code>, a prior-fitting parameter distinct from the
+unordered-pair cost <code>tau</code> below) and held fixed for these 12
+schools rather than refitted to the 12-school subset. Given
+<code>G</code> and <code>(y, n)</code>, a school’s posterior within each
+bin is a truncated <code>Beta(y + 1, n - y + 1)</code> density weighted
+by its posterior bin mass. All means, 90% intervals, and pairwise
+probabilities integrate that continuous density; uncertainty in
+estimating <code>G</code> itself is held fixed and not propagated.</p>
 </div>
 <div class="section level2">
-<h2 id="orient-the-criterion-and-choose-the-report">Target direction and reporting loss<a class="anchor" aria-label="anchor" href="#orient-the-criterion-and-choose-the-report"></a>
+<h2 id="orient-the-criterion-and-choose-the-report">Priority direction and reporting loss<a class="anchor" aria-label="anchor" href="#orient-the-criterion-and-choose-the-report"></a>
 </h2>
-<p>Since <code>postrank</code> assigns higher priority to larger
-targets, we define <code>theta = -p</code>. Larger target values then
-correspond to lower chronic-absence probabilities, and grade 1 has
-highest priority. The sign specifies the direction of comparison; the
-underlying probability remains nonnegative. A favorable comparison of
-school <code>i</code> with school <code>j</code> has probability
-<code>Pr(p_i &lt; p_j)</code>, equivalently
-<code>Pr(theta_i &gt; theta_j)</code>.</p>
-<p>The supplied comparison probabilities were calculated by numerical
-integration. They consequently have no associated posterior draw count
-or chain diagnostics. The continuous posterior assigns probability zero
-to exact equality of distinct schools’ targets. A shared grade
-nevertheless withholds a comparison, without making a claim about
-equality of the school probabilities.</p>
-<p>The analysis permits at most 3 grades and assigns loss 0.20 to
-withholding a school pair, relative to loss one for a wrong-direction
-disclosure. All unordered school pairs receive equal weight. The single
-criterion has weight one, which may be omitted from the function
-call.</p>
-<p>The optional call below recomputes the small grading from the
-prepared probabilities using HiGHS. It neither estimates a posterior nor
-executes during document rendering.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<p>Because <code><a href="../reference/postrank.html">postrank()</a></code> gives higher priority to larger
+target values, the target is defined as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo>=</mo><mi>−</mi><mi>p</mi></mrow><annotation encoding="application/x-tex">\theta = -p</annotation></semantics></math>
+so lower chronic-absence probabilities receive grade 1, and placing
+school <code>i</code> above school <code>j</code> reports
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>i</mi></msub><mo>&lt;</mo><msub><mi>p</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">p_i &lt; p_j</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mi>i</mi></msub><mo>&gt;</mo><msub><mi>θ</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">\theta_i &gt; \theta_j</annotation></semantics></math>).
+Under the continuous piecewise-Beta posterior, two schools have zero
+probability of exact equality, and placing them in the same grade leaves
+their comparison unordered without claiming equal absence rates.</p>
+<p>The analysis allows at most <code>G_max = 3</code> grades and prices
+each unordered pair at <code>tau = 0.20</code>, relative to cost
+<code>1</code> for a wrong-direction ordered pair. Over all
+<code>M</code> unordered pairs, a grading that orders <code>N</code>
+pairs with total posterior expected wrong-direction errors
+<code>E</code> has loss <code>R = (E + tau * (M - N)) / M</code>. With
+one criterion, <code>weights</code> defaults to <code>1</code>.</p>
+<p>Recomputing the grading requires a solver (Gurobi is the default and
+needs a license; <code>backend = "highs"</code> uses the open-source
+<code>highs</code> package from <code>install.packages("highs")</code>).
+The solver call is shown below with <code>eval = FALSE</code>, and the
+stored result from an equivalent call is loaded with
+<code><a href="../reference/postrank_example.html">postrank_example()</a></code>:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">analysis</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank.html">postrank</a></span><span class="op">(</span></span>
 <span>  <span class="va">input</span>,</span>
-<span>  tau <span class="op">=</span> <span class="fl">.20</span>, G_max <span class="op">=</span> <span class="fl">3L</span>,</span>
-<span>  level <span class="op">=</span> <span class="fl">.90</span>,</span>
+<span>  tau <span class="op">=</span> <span class="fl">0.20</span>, G_max <span class="op">=</span> <span class="fl">3L</span>,</span>
+<span>  level <span class="op">=</span> <span class="fl">0.90</span>,</span>
 <span>  backend <span class="op">=</span> <span class="st">"highs"</span>,</span>
-<span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">30</span>, threads <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="../reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">30</span>, threads <span class="op">=</span> <span class="fl">1L</span>, seed <span class="op">=</span> <span class="fl">1304L</span><span class="op">)</span>,</span>
 <span>  fragility <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>For any proposed report, let <code>M</code> be all unordered pairs,
-<code>N</code> the disclosed pairs, and <code>E</code> the sum of
-posterior wrong-direction probabilities over those disclosed pairs. Its
-expected loss is</p>
-<p><code>R = [E + tau * (M - N)] / M</code>.</p>
-<p>Thus <code>tau</code> specifies a cost for withholding, rather than
-an error-rate constraint. The grade cap requires a joint choice of
-ordered groups; separate threshold decisions for individual pairs need
-not form an admissible report. The at-most constraint permits fewer
-grades when they minimize loss.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">analysis</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"case_cde_12"</span><span class="op">)</span></span>
+<span><span class="va">analysis</span></span>
+<span><span class="co">#&gt; &lt;postrank_analysis&gt;  12 entities in 3 grades (sizes 3 / 6 / 3)</span></span>
+<span><span class="co">#&gt;   One criterion: negative_chronic_absence.</span></span>
+<span><span class="co">#&gt;   Posterior loss: 0.0638.</span></span>
+<span><span class="co">#&gt;   Disclosed 45 of 66 pairs (68.2%); withheld 21.</span></span>
+<span><span class="co">#&gt;   Expected error among disclosed pairs: negative_chronic_absence 0.000.</span></span>
+<span><span class="co">#&gt;   Solver: Optimal within solver tolerances.</span></span>
+<span><span class="co">#&gt;   Optimization gap: 1.39e-17; requested absolute gap 1e-08.</span></span>
+<span><span class="co">#&gt;   Prepared: report card.</span></span>
+<span><span class="co">#&gt;   Grade 1 has highest priority; a shared grade withholds the comparison.</span></span>
+<span><span class="co">#&gt;   grade 1 (3): 30665976068399, 38684786113997, 30736506094718</span></span>
+<span><span class="co">#&gt;   grade 2 (6): 58727516056840, 30736436030639, 01750936118038, 19647330106427,</span></span>
+<span><span class="co">#&gt;     37684520105882, 36676866035711</span></span>
+<span><span class="co">#&gt;   grade 3 (3): 34674216033732, 19648816021687, 36677106035901</span></span>
+<span><span class="co">#&gt;   i summary(x) explains the loss, settings and bounds; get_grades(x) returns</span></span>
+<span><span class="co">#&gt;     all grades.</span></span></code></pre></div>
+<p>In the console output, “disclosed” means ordered pairs and “withheld”
+means unordered pairs.</p>
 </div>
 <div class="section level2">
-<h2 id="read-the-chosen-grades-and-their-uncertainty">Grades and posterior uncertainty<a class="anchor" aria-label="anchor" href="#read-the-chosen-grades-and-their-uncertainty"></a>
+<h2 id="read-the-chosen-grades-and-their-uncertainty">Grades, report card, and expected error profile<a class="anchor" aria-label="anchor" href="#read-the-chosen-grades-and-their-uncertainty"></a>
 </h2>
-<p>The prepared solution uses 3 grades. A basic result table contains
-the original entity identifiers and their grades:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">grade_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">analysis</span><span class="op">)</span></span></code></pre></div>
+<p>The stored grading uses <code>3</code> grades (<code>3 / 6 / 3</code>
+schools):</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">grades</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">analysis</span><span class="op">)</span></span>
+<span><span class="va">grade_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">grades</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">grades</span><span class="op">)</span><span class="op">[</span><span class="va">grades</span> <span class="op">==</span> <span class="va">g</span><span class="op">]</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Grade <span class="op">=</span> <span class="va">g</span>, Schools <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ids</span><span class="op">)</span>,</span>
+<span>    Members <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">school_labels</span><span class="op">[</span><span class="va">ids</span><span class="op">]</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">grade_groups</span><span class="op">)</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
-<caption>The prepared grading. Smaller grade numbers have higher
-priority; membership within a grade leaves comparisons
-unordered.</caption>
 <colgroup>
 <col width="8%">
 <col width="10%">
@@ -326,262 +341,295 @@ School I</td>
 </tr>
 </tbody>
 </table>
-<p>The report card displays the selected groups and supplied 90%
-marginal posterior intervals. Values closer to zero on the oriented
-target scale indicate lower absence probabilities. Schools are ordered
-within grades by posterior mean on this scale. The intervals refer to
-individual schools and have no simultaneous coverage interpretation for
-the report. Grade selection uses the decision loss rather than interval
-overlap.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<p><code><a href="../reference/postrank_plot_report_card.html">postrank_plot_report_card()</a></code> plots the posterior means
+and 90% equal-tail marginal intervals for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo>=</mo><mi>−</mi><mi>p</mi></mrow><annotation encoding="application/x-tex">\theta = -p</annotation></semantics></math>
+within each assigned grade, ordered by posterior mean:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_report_card.html">postrank_plot_report_card</a></span><span class="op">(</span></span>
 <span>  <span class="va">analysis</span>, order <span class="op">=</span> <span class="st">"mean"</span>, order_by <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">criterion_ids</span>,</span>
 <span>  max_rows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">schools</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  entity_labels <span class="op">=</span> <span class="va">school_labels</span>, criterion_labels <span class="op">=</span> <span class="va">criterion_labels</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<a href="a2-cde-accountability_files/figure-html/card-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Posterior means and 90% equal-tail marginal intervals for theta = -p, conditional on the estimated statewide G. All selected schools are shown; short names refer to the observed-count table." target="_blank" rel="noopener"><img src="a2-cde-accountability_files/figure-html/card-1.png" class="r-plt" alt="Posterior means and 90% equal-tail marginal intervals for theta = -p, conditional on the estimated statewide G. All selected schools are shown; short names refer to the observed-count table." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a2-cde-accountability_files/figure-html/card-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Posterior means and 90% equal-tail marginal intervals for theta = -p, conditional on the estimated statewide G. All selected schools are shown; short names refer to the observed-count table.">Open full-size figure</a></span><p class="caption">
-Posterior means and 90% equal-tail marginal intervals for theta = -p,
-conditional on the estimated statewide G. All selected schools are
-shown; short names refer to the observed-count table.
+<a href="a2-cde-accountability_files/figure-html/a2-card-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Horizontal dot-and-interval report card for 12 schools (School A through School L) on theta = -p across grades 1 (3 schools), 2 (6 schools), and 3 (3 schools)." target="_blank" rel="noopener"><img src="a2-cde-accountability_files/figure-html/a2-card-1.png" class="r-plt" alt="Horizontal dot-and-interval report card for 12 schools (School A through School L) on theta = -p across grades 1 (3 schools), 2 (6 schools), and 3 (3 schools)." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a2-cde-accountability_files/figure-html/a2-card-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Horizontal dot-and-interval report card for 12 schools (School A through School L) on theta = -p across grades 1 (3 schools), 2 (6 schools), and 3 (3 schools).">Open full-size figure</a></span><p class="caption">
+Posterior means and 90% equal-tail marginal intervals for theta = -p
+across the 12 selected California schools, grouped by assigned grade.
 </p>
 </div>
-<p>For the negative target, the supplied mean is <code>-E[p]</code> and
-the interval endpoints are <code>-q.95(p)</code> and
-<code>-q.05(p)</code>, in that order. Requesting
-<code>level = .90</code> uses these retained summaries. A different
-interval level would require additional posterior summaries; it cannot
-be recovered from the stored endpoints alone.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p>Values closer to <code>0</code> correspond to lower chronic-absence
+probabilities. On the negated scale, each school’s mean is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mi>E</mi><mo stretchy="false" form="prefix">[</mo><mi>p</mi><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">-E[p]</annotation></semantics></math>
+and its 90% marginal interval is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><mi>−</mi><msub><mi>q</mi><mn>0.95</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mi>−</mi><msub><mi>q</mi><mn>0.05</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[-q_{0.95}(p), -q_{0.05}(p)]</annotation></semantics></math>
+(taken one school at a time rather than simultaneously across all 12
+schools). Because <code>input</code> stores only those 90% endpoints,
+pass <code>level = 0.90</code>; other interval levels cannot be computed
+from <code>input</code> alone.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">profile</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_profile.html">get_profile</a></span><span class="op">(</span><span class="va">analysis</span><span class="op">)</span></span>
-<span><span class="va">profile</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"E"</span>, <span class="st">"E_over_N"</span>, <span class="st">"E_over_M"</span>, <span class="st">"risk"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<p>Of the 66 possible pairs, the report discloses 45 (68.2%) and
-withholds 21. Its expected wrong-direction count is 0.00911, giving an
-expected error proportion of 0.0203% among disclosed pairs. Dividing by
-all pairs instead gives 0.0138%. These are posterior expectations, not
-observed counts of mistakes in future attendance data.</p>
-<p>The total risk is 0.063774. Withholding accounts for 0.063636,
-whereas disclosed directional errors contribute 0.000138. Most of the
-risk therefore arises from withheld comparisons. The expected error
-proportion among disclosed pairs must be interpreted in relation to the
-extent of withholding.</p>
-<p>The prepared solver status is optimal. Its reported lower bound is
-0.063774 and its numerical risk gap is 1.39e-17. That gap concerns
-optimization of the supplied coefficients. It does not measure posterior
-uncertainty, model accuracy or the error in numerical integration.</p>
+<span><span class="va">profile</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion"</span>, <span class="st">"E"</span>, <span class="st">"E_over_N"</span>, <span class="st">"E_over_M"</span>, <span class="st">"risk"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;                  criterion           E     E_over_N     E_over_M       risk</span></span>
+<span><span class="co">#&gt; 1 negative_chronic_absence 0.009114741 0.0002025498 0.0001381021 0.06377447</span></span>
+<span><span class="fu"><a href="../reference/get_risk.html">get_risk</a></span><span class="op">(</span><span class="va">analysis</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $risk</span></span>
+<span><span class="co">#&gt; [1] 0.06377447</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $lower_bound</span></span>
+<span><span class="co">#&gt; [1] 0.06377447</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $gap</span></span>
+<span><span class="co">#&gt; [1] 1.387779e-17</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $status</span></span>
+<span><span class="co">#&gt; [1] "optimal"</span></span></code></pre></div>
+<p>Out of <code>M = 66</code> unordered school pairs, the grading orders
+<code>N = 45</code> (<code>68.2%</code>) and leaves <code>21</code>
+pairs unordered. Its posterior expected wrong-direction count is
+<code>E = 0.00911</code>, or <code>0.020%</code> (<code>0.000203</code>)
+per ordered pair (<code>0.014%</code> across all <code>66</code> pairs).
+Total loss is <code>0.063774</code>, of which <code>0.063636</code>
+(<code>0.20 * 21 / 66</code>) comes from the <code>21</code> unordered
+pairs and <code>0.000138</code> from expected wrong-direction errors.
+The solver finished with status <code>"optimal"</code>, lower bound
+<code>0.063774</code>, and gap <code>1.39e-17</code> (which measures
+optimization over the supplied probability matrix rather than quadrature
+or model error).</p>
 </div>
 <div class="section level2">
-<h2 id="a-withheld-pair-can-still-have-a-clear-direction">Pairwise support and withheld comparisons<a class="anchor" aria-label="anchor" href="#a-withheld-pair-can-still-have-a-clear-direction"></a>
+<h2 id="a-withheld-pair-can-still-have-a-clear-direction">Pairwise support inside the middle grade<a class="anchor" aria-label="anchor" href="#a-withheld-pair-can-still-have-a-clear-direction"></a>
 </h2>
-<p>The relation map represents the selected report. Gray cells indicate
-withheld comparisons and colored cells indicate the row school’s
-disclosed higher priority. One triangle is displayed so that each
-unordered pair appears once.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p><code><a href="../reference/postrank_plot_relations.html">postrank_plot_relations()</a></code> shows the <code>45</code>
+ordered pairs (colored cells) and <code>21</code> unordered pairs (gray
+cells) in one upper triangle:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_relations.html">postrank_plot_relations</a></span><span class="op">(</span><span class="va">analysis</span>, entity_labels <span class="op">=</span> <span class="va">school_labels</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<a href="a2-cde-accountability_files/figure-html/relations-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Selected pair relations for the same prepared grading. Gray cells withhold comparisons and do not assert equal absence probabilities." target="_blank" rel="noopener"><img src="a2-cde-accountability_files/figure-html/relations-1.png" class="r-plt" alt="Selected pair relations for the same prepared grading. Gray cells withhold comparisons and do not assert equal absence probabilities." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a2-cde-accountability_files/figure-html/relations-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Selected pair relations for the same prepared grading. Gray cells withhold comparisons and do not assert equal absence probabilities.">Open full-size figure</a></span><p class="caption">
-Selected pair relations for the same prepared grading. Gray cells
-withhold comparisons and do not assert equal absence probabilities.
+<a href="a2-cde-accountability_files/figure-html/a2-relations-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Upper-triangular matrix for Schools A through L showing 45 ordered pairs between grades and 21 gray unordered pairs within grades 1, 2, and 3." target="_blank" rel="noopener"><img src="a2-cde-accountability_files/figure-html/a2-relations-1.png" class="r-plt" alt="Upper-triangular matrix for Schools A through L showing 45 ordered pairs between grades and 21 gray unordered pairs within grades 1, 2, and 3." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a2-cde-accountability_files/figure-html/a2-relations-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Upper-triangular matrix for Schools A through L showing 45 ordered pairs between grades and 21 gray unordered pairs within grades 1, 2, and 3.">Open full-size figure</a></span><p class="caption">
+Pairwise ordering decisions across the 12 California schools, with
+ordered pairs in color and unordered within-grade pairs in gray.
 </p>
 </div>
-<p>The middle grade contains 6 schools. Their pairwise posterior
-comparisons illustrate the distinction between withholding and
-similarity. Each cell in the following figure gives the expected error
-if the row school were placed above the column school. Smaller values
-support that direction and values near one support the reverse. The
-probabilities refer to potential comparisons, independently of which
-comparisons the selected grading discloses.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">middle_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="../reference/get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">analysis</span><span class="op">)</span><span class="op">)</span><span class="op">[</span></span>
-<span>  <span class="fu"><a href="../reference/get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">analysis</span><span class="op">)</span> <span class="op">==</span> <span class="va">middle_grade</span></span>
-<span><span class="op">]</span></span>
+<p>Grade 2 holds <code>6</code> schools (<code>Schools D</code> through
+<code>I</code>). Plotting their pairwise directional-error probabilities
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">Pr</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mi>i</mi></msub><mo>≤</mo><msub><mi>θ</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Pr(\theta_i \le \theta_j)</annotation></semantics></math>
+illustrates why leaving a pair unordered is different from finding the
+two schools similar:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">middle_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">grades</span><span class="op">)</span><span class="op">[</span><span class="va">grades</span> <span class="op">==</span> <span class="fl">2L</span><span class="op">]</span></span>
 <span><span class="fu"><a href="../reference/postrank_plot_pairwise.html">postrank_plot_pairwise</a></span><span class="op">(</span></span>
 <span>  <span class="va">analysis</span>, entities <span class="op">=</span> <span class="va">middle_ids</span>, ncol <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  entity_labels <span class="op">=</span> <span class="va">school_labels</span>, criterion_labels <span class="op">=</span> <span class="va">criterion_labels</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<a href="a2-cde-accountability_files/figure-html/middle-pairwise-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Directional-error probabilities for the schools in the middle grade. All remain in that same grade. Light cells can indicate a clear direction that the grade cap leaves undisclosed; the gray diagonal is excluded." target="_blank" rel="noopener"><img src="a2-cde-accountability_files/figure-html/middle-pairwise-1.png" class="r-plt" alt="Directional-error probabilities for the schools in the middle grade. All remain in that same grade. Light cells can indicate a clear direction that the grade cap leaves undisclosed; the gray diagonal is excluded." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a2-cde-accountability_files/figure-html/middle-pairwise-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Directional-error probabilities for the schools in the middle grade. All remain in that same grade. Light cells can indicate a clear direction that the grade cap leaves undisclosed; the gray diagonal is excluded.">Open full-size figure</a></span><p class="caption">
-Directional-error probabilities for the schools in the middle grade. All
-remain in that same grade. Light cells can indicate a clear direction
-that the grade cap leaves undisclosed; the gray diagonal is excluded.
+<a href="a2-cde-accountability_files/figure-html/a2-middle-pairwise-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Six-by-six heatmap of directional-error probabilities for Schools D through I inside grade 2, including near-zero error cells such as School F above School I." target="_blank" rel="noopener"><img src="a2-cde-accountability_files/figure-html/a2-middle-pairwise-1.png" class="r-plt" alt="Six-by-six heatmap of directional-error probabilities for Schools D through I inside grade 2, including near-zero error cells such as School F above School I." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a2-cde-accountability_files/figure-html/a2-middle-pairwise-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Six-by-six heatmap of directional-error probabilities for Schools D through I inside grade 2, including near-zero error cells such as School F above School I.">Open full-size figure</a></span><p class="caption">
+Posterior directional-error probabilities Pr(theta_i &lt;= theta_j)
+among the six schools in grade 2.
 </p>
 </div>
-<p>For example, the posterior probability that School F has lower
-absence than School I is 99.99%, although their comparison is withheld.
-With at most 3 grades, disclosing an individually well-supported
-comparison may require changes to other boundaries. Minimizing the
-combined cost therefore accounts for both posterior uncertainty and the
-permitted resolution of the report.</p>
+<p>Inside grade 2, the posterior probability that <code>School F</code>
+has lower chronic absence than <code>School I</code> is
+<code>99.99%</code> (<code>0.999896</code>), yet their comparison is
+left unordered because <code>G_max = 3</code> allows at most three
+grades across all 12 schools: splitting <code>School F</code> from
+<code>School I</code> would shift grade boundaries for other pairs as
+well.</p>
 </div>
 <div class="section level2">
-<h2 id="compare-reports-under-the-same-choices">Comparison of fixed reports<a class="anchor" aria-label="anchor" href="#compare-reports-under-the-same-choices"></a>
+<h2 id="compare-reports-under-the-same-choices">Evaluating fixed tertile and all-unordered reports<a class="anchor" aria-label="anchor" href="#compare-reports-under-the-same-choices"></a>
 </h2>
-<p>We evaluate simpler reports under the same input and loss:
-observed-rate tertiles, posterior-mean tertiles and a single grade
-withholding every comparison. <code><a href="../reference/postrank_evaluate.html">postrank_evaluate()</a></code>
-calculates the risk of these supplied grade vectors without optimizing
-them.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<p>Using <code><a href="../reference/postrank_evaluate.html">postrank_evaluate()</a></code>, we evaluate three fixed
+alternatives on the same 12 schools, posterior probabilities, and
+<code>tau = 0.20</code> without running a solver: leaving all pairs
+unordered, fixed observed-rate tertiles (<code>4 / 4 / 4</code>), and
+fixed posterior-mean tertiles (<code>4 / 4 / 4</code>):</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fixed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">case</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">actions</span>, <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/postrank_evaluate.html">postrank_evaluate</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">input</span>,</span>
-<span>    weights <span class="op">=</span> <span class="va">analysis</span><span class="op">$</span><span class="va">settings</span><span class="op">$</span><span class="va">weights</span>, tau <span class="op">=</span> <span class="va">analysis</span><span class="op">$</span><span class="va">settings</span><span class="op">$</span><span class="va">tau</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/postrank_evaluate.html">postrank_evaluate</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">input</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>negative_chronic_absence <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">0.20</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">evaluations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>optimized <span class="op">=</span> <span class="va">analysis</span><span class="op">$</span><span class="va">evaluation</span><span class="op">)</span>, <span class="va">fixed</span><span class="op">)</span></span>
+<span><span class="va">method_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  optimized <span class="op">=</span> <span class="st">"Optimized grades (3 / 6 / 3)"</span>,</span>
+<span>  all_withheld <span class="op">=</span> <span class="st">"All pairs unordered (12)"</span>,</span>
+<span>  observed_rate_tertiles <span class="op">=</span> <span class="st">"Observed-rate tertiles (4 / 4 / 4)"</span>,</span>
+<span>  posterior_mean_tertiles <span class="op">=</span> <span class="st">"Posterior-mean tertiles (4 / 4 / 4)"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">evaluations</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">m</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">z</span> <span class="op">&lt;-</span> <span class="va">evaluations</span><span class="op">[[</span><span class="va">m</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    Report <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">method_names</span><span class="op">[</span><span class="va">m</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>    `Ordered pairs` <span class="op">=</span> <span class="va">z</span><span class="op">$</span><span class="va">N</span>,</span>
+<span>    `Expected errors` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">z</span><span class="op">$</span><span class="va">E</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span>,</span>
+<span>    `Errors / N (%)` <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">z</span><span class="op">$</span><span class="va">N</span> <span class="op">==</span> <span class="fl">0L</span><span class="op">)</span> <span class="st">"NA"</span> <span class="kw">else</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">100</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">z</span><span class="op">$</span><span class="va">E_over_N</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    Loss <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">z</span><span class="op">$</span><span class="va">primary_risk</span>, <span class="fl">6</span><span class="op">)</span>,</span>
+<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">comparison</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
-<caption>All reports use the same schools, posterior, withholding cost
-and grade cap. Fixed tertiles are not optimized cuts.</caption>
 <colgroup>
-<col width="27%">
+<col width="40%">
+<col width="15%">
 <col width="17%">
-<col width="17%">
-<col width="27%">
-<col width="9%">
+<col width="16%">
+<col width="10%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">Report</th>
-<th align="right">Disclosed pairs</th>
-<th align="left">Expected errors</th>
-<th align="left">Errors per disclosed pair</th>
-<th align="left">Risk</th>
+<th align="right">Ordered pairs</th>
+<th align="right">Expected errors</th>
+<th align="left">Errors / N (%)</th>
+<th align="right">Loss</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">Prepared optimized grades</td>
+<td align="left">Optimized grades (3 / 6 / 3)</td>
 <td align="right">45</td>
-<td align="left">0.00911</td>
-<td align="left">0.020%</td>
-<td align="left">0.063774</td>
+<td align="right">0.0091</td>
+<td align="left">0.02</td>
+<td align="right">0.063774</td>
 </tr>
 <tr class="even">
-<td align="left">All comparisons withheld</td>
+<td align="left">All pairs unordered (12)</td>
 <td align="right">0</td>
-<td align="left">0.00000</td>
-<td align="left">Undefined</td>
-<td align="left">0.200000</td>
+<td align="right">0.0000</td>
+<td align="left">NA</td>
+<td align="right">0.200000</td>
 </tr>
 <tr class="odd">
-<td align="left">Observed-rate tertiles</td>
+<td align="left">Observed-rate tertiles (4 / 4 / 4)</td>
 <td align="right">48</td>
-<td align="left">1.82884</td>
-<td align="left">3.810%</td>
-<td align="left">0.082255</td>
+<td align="right">1.8288</td>
+<td align="left">3.81</td>
+<td align="right">0.082255</td>
 </tr>
 <tr class="even">
-<td align="left">Posterior-mean tertiles</td>
+<td align="left">Posterior-mean tertiles (4 / 4 / 4)</td>
 <td align="right">48</td>
-<td align="left">1.82884</td>
-<td align="left">3.810%</td>
-<td align="left">0.082255</td>
+<td align="right">1.8288</td>
+<td align="left">3.81</td>
+<td align="right">0.082255</td>
 </tr>
 </tbody>
 </table>
-<p>The two tertile rules give identical grades in this subset and
-disclose 3 more pairs than the optimized report. Their expected error
-count increases to 1.829, resulting in higher risk at the stated
-withholding cost. This comparison is specific to the selected schools
-and settings and does not establish superiority over score-based
-procedures in general.</p>
-<p>Withholding every comparison gives risk 0.20 and undefined
-<code>E/N</code>, since the number of disclosed pairs is zero. A value
-of zero for <code>E/N</code> would incorrectly suggest evidence of
-accuracy. <a href="a7-figures-sensitivity.html">Figures and sensitivity
-analysis</a> considers changes to the grade cap and withholding
-cost.</p>
+<p>In this 12-school subset, observed-rate tertiles and posterior-mean
+tertiles assign the same grades, ordering <code>48</code> pairs
+(<code>3</code> more than the optimized grading) with
+<code>E = 1.8288</code> expected wrong-direction errors
+(<code>3.810%</code> per ordered pair) and loss <code>0.082255</code>
+versus <code>0.063774</code>. Leaving all pairs unordered gives loss
+<code>tau = 0.200000</code> and <code>Errors / N = NA</code> because
+<code>N = 0</code>. This comparison applies to these 12 schools and
+settings and does not claim that one procedure dominates score-cut rules
+in general.</p>
 </div>
 <div class="section level2">
-<h2 id="relate-the-example-to-the-statewide-study">Relation to the statewide analysis<a class="anchor" aria-label="anchor" href="#relate-the-example-to-the-statewide-study"></a>
+<h2 id="relate-the-example-to-the-statewide-study">Relation to the 5,834-school statewide analysis<a class="anchor" aria-label="anchor" href="#relate-the-example-to-the-statewide-study"></a>
 </h2>
-<p>The statewide reference concerns 5,834 schools and 17,014,861 pairs.
-It was computed separately in the source study. Its main procedure
-orders schools by posterior mean and optimizes contiguous cuts in that
-fixed order. The small native optimization above does not reproduce or
-establish an unrestricted statewide optimum.</p>
-<table style="width:100%;" class="table">
-<caption>Archived statewide references at the same withholding cost and
-grade cap. Each named order uses its own optimal contiguous cuts; these
-are different decision problems from the small teaching
-subset.</caption>
+<p><code>case$reference$statewide$metrics</code> stores summary rows
+from the separate statewide analysis of all <code>5,834</code> eligible
+schools (<code>17,014,861</code> pairs) at <code>tau = 0.20</code> and
+<code>G_max = 3</code>. Those statewide baselines sort schools by a
+chosen score and optimize contiguous grade cutpoints along that fixed
+order (rather than solving an unrestricted 5,834-school integer
+program):</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">state</span> <span class="op">&lt;-</span> <span class="va">case</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">statewide</span><span class="op">$</span><span class="va">metrics</span></span>
+<span><span class="va">keep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"posterior_mean"</span>, <span class="st">"raw_rate"</span>, <span class="st">"expected_rank"</span>, <span class="st">"all_tie"</span><span class="op">)</span></span>
+<span><span class="va">state_show</span> <span class="op">&lt;-</span> <span class="va">state</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">keep</span>, <span class="va">state</span><span class="op">$</span><span class="va">method</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  Method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Posterior-mean cuts"</span>, <span class="st">"Observed-rate cuts"</span>,</span>
+<span>    <span class="st">"Expected-rank cuts"</span>, <span class="st">"All pairs unordered"</span><span class="op">)</span>,</span>
+<span>  `Ordered pairs` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">state_show</span><span class="op">$</span><span class="va">N</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span>,</span>
+<span>  `Ordered (%)` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">100</span> <span class="op">*</span> <span class="va">state_show</span><span class="op">$</span><span class="va">N_over_M</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  `Errors / N (%)` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">state_show</span><span class="op">$</span><span class="va">N</span> <span class="op">==</span> <span class="fl">0L</span>, <span class="st">"NA"</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">100</span> <span class="op">*</span> <span class="va">state_show</span><span class="op">$</span><span class="va">E_over_N</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  Loss <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">state_show</span><span class="op">$</span><span class="va">risk</span>, <span class="fl">6</span><span class="op">)</span>,</span>
+<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
 <colgroup>
-<col width="26%">
-<col width="16%">
+<col width="28%">
 <col width="20%">
-<col width="27%">
-<col width="9%">
+<col width="17%">
+<col width="21%">
+<col width="12%">
 </colgroup>
 <thead><tr class="header">
-<th align="left">Report</th>
-<th align="left">Disclosed pairs</th>
-<th align="left">Disclosed fraction</th>
-<th align="left">Errors per disclosed pair</th>
-<th align="left">Risk</th>
+<th align="left">Method</th>
+<th align="left">Ordered pairs</th>
+<th align="right">Ordered (%)</th>
+<th align="left">Errors / N (%)</th>
+<th align="right">Loss</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">Posterior-mean order</td>
+<td align="left">Posterior-mean cuts</td>
 <td align="left">11,343,829</td>
-<td align="left">66.7%</td>
-<td align="left">1.32%</td>
-<td align="left">0.075487</td>
+<td align="right">66.7</td>
+<td align="left">1.32</td>
+<td align="right">0.075487</td>
 </tr>
 <tr class="even">
-<td align="left">Observed-rate order</td>
+<td align="left">Observed-rate cuts</td>
 <td align="left">11,337,601</td>
-<td align="left">66.6%</td>
-<td align="left">1.33%</td>
-<td align="left">0.075563</td>
+<td align="right">66.6</td>
+<td align="left">1.33</td>
+<td align="right">0.075563</td>
 </tr>
 <tr class="odd">
-<td align="left">Expected-rank order</td>
+<td align="left">Expected-rank cuts</td>
 <td align="left">11,342,876</td>
-<td align="left">66.7%</td>
-<td align="left">1.32%</td>
-<td align="left">0.075479</td>
+<td align="right">66.7</td>
+<td align="left">1.32</td>
+<td align="right">0.075479</td>
 </tr>
 <tr class="even">
-<td align="left">All comparisons withheld</td>
+<td align="left">All pairs unordered</td>
 <td align="left">0</td>
-<td align="left">0.0%</td>
-<td align="left">Undefined</td>
-<td align="left">0.200000</td>
+<td align="right">0.0</td>
+<td align="left">NA</td>
+<td align="right">0.200000</td>
 </tr>
 </tbody>
 </table>
-<p>The posterior-mean reference discloses 66.7% of pairs with expected
-errors in 1.32% of those disclosed comparisons. Its risk is 0.075487. An
-independent-pair relaxation gives lower bound 0.067091, leaving a gap of
-0.008396. This compares a restricted report with a relaxation; it is not
-a claim that the unrestricted statewide problem was solved. The
-expected-rank order has a slightly smaller stored risk here,
-demonstrating that posterior-mean ordering need not yield the lowest
-risk.</p>
-<p>Numerical integration and model assumptions remain separate from
-either optimization result. The primary input uses 16 nodes per prior
-bin, with stored refinements at 32 and 64. The largest successive-order
-difference is 2.22e-15. The source also retains small corrections of
-out-of-range machine-roundoff values, separately from the public
-constructor’s reverse-complement symmetrization. Its primary maximum
-change is 7.77e-16. These small changes are useful numerical checks;
-neither they nor the solver gap certify the integration error or the
-scientific model.</p>
-<p>An analogous one-criterion analysis of suspension would require its
-own counts, posterior and lower-rate target. Combining absence and
-suspension would additionally require a specification of their relative
-importance. The preparation of other single- or multi-criterion inputs
-is described in <a href="a5-your-posterior-results.html">analysis of
-supplied posterior results</a>, and result tables and files in <a href="a6-reading-exporting-results.html">reading and exporting
-results</a>.</p>
-<p>The underlying case study is JoonHo Lee’s October 2026 manuscript,
-<em>How Much Can School Accountability Indicators Distinguish?
-Uncertainty-Aware Reporting of Chronic Absenteeism and Suspension in
-California</em>. The compact dataset records the frozen source files,
-model conditioning, numerical methods and archived result qualifications
-in <code>pr_case_cde$provenance</code> and
+<p>With optimal contiguous cuts of the posterior-mean ordering, the
+statewide report orders <code>66.7%</code> of pairs with
+<code>1.32%</code> expected errors per ordered pair and loss
+<code>0.075487</code> (versus <code>0.075479</code> for expected-rank
+cuts, illustrating that posterior-mean ordering need not minimize loss
+even on one criterion). An independent-pair relaxation gives lower bound
+<code>0.067091</code> (relaxation gap <code>0.008396</code>), which
+compares fixed-order cuts against a pair-by-pair relaxation rather than
+solving the unrestricted statewide problem.</p>
+<p>Finally, <code>case$reference$quadrature$checks</code> records
+numerical quadrature checks on the 12-school input across
+<code>16</code>, <code>32</code>, and <code>64</code> Gauss-Legendre
+nodes per prior bin: the largest successive-order probability difference
+is <code>2.22e-15</code>, and symmetric complement adjustment at
+<code>16</code> nodes changed entries by at most <code>7.77e-16</code>.
+Those checks confirm quadrature stability; they do not verify the
+binomial empirical-Bayes model or bound integration error outside the
+tested orders.</p>
+<p>This teaching dataset accompanies JoonHo Lee (2026), <em>How Much Can
+School Accountability Indicators Distinguish? Uncertainty-Aware
+Reporting of Chronic Absenteeism and Suspension in California</em>; full
+preparation records live in <code>pr_case_cde$provenance</code> and
 <code>pr_case_cde$reference</code>.</p>
-<p><a href="m1-ranking-and-loss.html">Posterior ranking, grades, and
-loss</a> develops the decision problem underlying this one-criterion
-report. <a href="m3-posterior-inputs.html">Posterior inputs and pairwise
-probabilities</a> describes the information retained by the integrated
-probabilities and the scope of their numerical checks.</p>
+</div>
+<div class="section level2">
+<h2 id="where-next">Where next<a class="anchor" aria-label="anchor" href="#where-next"></a>
+</h2>
+<ul>
+<li>To prepare probability or draw inputs for another indicator, read <a href="a5-your-posterior-results.html">Preparing your posterior draws and
+comparison probabilities</a>.</li>
+<li>To export grade tables and reports, read <a href="a6-reading-exporting-results.html">Reading and exporting grading
+results</a>, and to vary <code>tau</code> or <code>G_max</code>, read <a href="a7-figures-sensitivity.html">Figures and sensitivity to reporting
+settings</a>.</li>
+<li>For the underlying theory, see <a href="m1-ranking-and-loss.html">Posterior ranking, integer grades, and
+reporting loss</a> and <a href="m3-posterior-inputs.html">Posterior
+representations and pairwise comparison probabilities</a>.</li>
+</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

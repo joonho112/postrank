@@ -75,7 +75,7 @@
   }
   out
 }
-# Typed coefficient diagnostics have their own schema, not the draw-diagnostic seal.
+# Typed coefficient diagnostics carry their own schema rather than draw-diagnostic hashes.
 # Validate the prepared record and its fit association without recomputing risks or traces.
 .pr_report_check_coefficient_diagnostics <- function(d, fit) {
   bad <- function(ok, message) .pr_assert(isTRUE(ok), message, "invalid_diagnostics")
@@ -150,7 +150,7 @@
   }))
 }
 
-# The English report: eleven sections 0-10 with stable HTML ids plus a footer (Chapter 13).
+# Standalone English HTML report: eleven sections 0-10 with stable HTML IDs plus a footer.
 .pr_report_strings_version <- "postrank-report-en-4"
 .pr_report_sections <- c(header="Posterior grade report",frame="Units and outcomes",declarations="About the posterior",
   grades="Grades and comparisons",decision="Posterior loss and computation",profiles="Error by criterion",protection="Error limits",
@@ -283,76 +283,61 @@
 
 #' Create a Standalone Report from Stored Results
 #'
-#' The report combines stored grades, criterion losses, solver qualifications
-#' and available posterior summaries or diagnostics. A self-contained English
-#' HTML file can be written for offline use. Supplying `analysis` with its
-#' `fit` includes the prepared report card and other stored components. Report
-#' construction does not optimize or evaluate new grades, calculate pairwise
-#' probabilities or prepare missing summaries.
+#' `postrank_report()` assembles stored grades, per-criterion losses, solver
+#' bounds and available posterior intervals or diagnostics into a
+#' `postrank_report` object, and optionally writes a self-contained English HTML
+#' file. It reads stored results without running a solver or recomputing
+#' probabilities or diagnostics.
 #'
-#' @param fit A `postrank_fit`, such as `analysis$fit`.
+#' @param fit A `postrank_fit` object, such as `analysis$fit`.
 #' @param diagnostics Optional matching `postrank_diagnostics` or
-#'   `postrank_coefficient_diagnostics`. Omit to use matching diagnostics
-#'   already stored in `analysis`. Source, grade and settings are checked;
-#'   diagnostics are not recomputed.
-#' @param output_file Optional path for a new HTML file. An existing file is
-#'   refused. `NULL` returns the report object without writing HTML.
-#' @param lang Report language. Only `"en"` is supported; another language
-#'   raises `unsupported_language`.
-#' @param figures Logical; embed eligible report-card and criterion-profile
-#'   figures as PNGs. `FALSE` records `figures_disabled`.
-#' @param analysis Optional `postrank_analysis` with the same fit identities.
-#'   Supplies its prepared report card, declarations, extras and timings.
-#' @return A `postrank_report` list containing the stored grades, criterion
-#'   profile, disclosure, objective, status, numerical validation information
-#'   and source records, plus `figures`, `declarations`, `sections` and
-#'   `strings_version`. `output_file` records the written path, or `NULL`.
-#'   `diagnostics` retains the supplied object. Its `diagnostic_table` is
-#'   trace-oriented for draws; for coefficient inputs it has columns
-#'   `quantity`, `metric`, `value`, `available`, `NA_reason`, `method`,
-#'   `raw_value`, `result_kind`, `warnings` and `error`. Unavailable metrics
-#'   retain their reasons rather than becoming zero.
-#' @details Grade 1 has highest priority; shared grades withhold directions.
-#'   A valid all-withheld report has N=0 and undefined conditional error
-#'   ratios, not an error-free ranking. With no validated grade, the report
-#'   instead shows the solver status, available bounds and reasons for
-#'   unavailable grade-dependent content. An optimization gap concerns the
-#'   supplied numerical problem, separately from posterior or model uncertainty.
+#'   `postrank_coefficient_diagnostics` object. If `NULL` and `analysis` is
+#'   supplied, `analysis$diagnostics` is used when present. Input, grade and
+#'   settings identities are checked against `fit`.
+#' @param output_file Optional path for a new HTML file. Existing files are
+#'   refused (`report_exists`). If `NULL` (the default), the report object is
+#'   returned without writing a file.
+#' @param lang Report language. Only `"en"` (English) is supported; any other
+#'   value stops with `unsupported_language` (see [postrank_options]).
+#' @param figures Logical scalar (default `TRUE`); whether to embed the
+#'   report-card and criterion-profile plots as base64 PNG images. `FALSE`
+#'   records `reason = "figures_disabled"`.
+#' @param analysis Optional `postrank_analysis` object whose `fit` matches
+#'   `fit`, supplying its prepared report card, declaration summary, extras
+#'   status and timings.
+#' @returns A `postrank_report` list containing the stored grades,
+#'   `criterion_profile`, `disclosure`, `objective`, `status`, `report_card`,
+#'   `diagnostics` and `diagnostic_table`, `figures`, `declarations`,
+#'   `sections`, `strings_version`, and `output_file` (the normalized path when
+#'   written, or `NULL`).
+#' @details
+#' The HTML document is self-contained (inline CSS and base64-encoded PNG
+#' figures, no external network links) with eleven sections: `header`, `frame`,
+#' `declarations`, `grades`, `decision`, `profiles`, `protection`, `posterior`,
+#' `mc`, `stability` and `provenance`, plus a footer. Tables include every
+#' stored row with horizontal scrolling; embedded figures use the default
+#' display limits of [postrank_plot_report_card()] and
+#' [postrank_plot_profile()]. If PNG rendering fails, the report remains valid
+#' and `figures` records the reason.
 #'
-#' Marginal posterior intervals retain their source and level and describe
-#' target uncertainty rather than Monte Carlo error. Stored diagnostics retain
-#' their producer's methods, warnings and unavailable values. Required inputs,
-#' including `chain_history` for eligible [postrank_coefficient_diagnose()]
-#' calculations, must be supplied when diagnostics are prepared; report
-#' construction cannot recover missing draws or history. Numerical checks of an
-#' empirical error budget alone do not establish a guarantee for the true
-#' posterior.
-#'
-#'   The HTML has eleven sections: `header`, `frame`, `declarations`, `grades`,
-#'   `decision`, `profiles`, `protection`, `posterior`, `mc`, `stability` and
-#'   `provenance`, followed by a footer. Tables include all stored rows; wide
-#'   tables scroll horizontally. Included figures use their default display
-#'   limits, so a report-card figure may show a stated subset while the table
-#'   remains complete. Use the plotting functions separately for custom
-#'   entity selection or labels; this function has no paging argument.
-#'
-#'   Figures are embedded in the HTML, with no separate image or network
-#'   dependency. Each attempt records `id`, `available`, `reason`,
-#'   `png_base64`, `caption` and `alt` in `figures`. A missing PNG device or
-#'   failed figure leaves an explanatory record and a usable report.
-#' @seealso [postrank()], [postrank_plot_report_card()], [postrank_plot_profile()],
+#' Grade 1 is the highest priority, and shared grades leave pairs unordered. A
+#' valid one-grade report leaving all pairs unordered shows `N = 0` and
+#' `E_k / N = NA` (loss `tau`); when `fit` has no checked grading, the report
+#' shows the solver status, any lower bound and why grade tables are
+#' unavailable. Solver bounds and gaps describe the optimization problem only,
+#' and marginal posterior intervals describe target uncertainty rather than
+#' Monte Carlo error.
+#' @seealso [postrank()], [postrank_report_card()],
+#'   [postrank_plot_report_card()], [postrank_plot_profile()],
 #'   `vignette("a6-reading-exporting-results", package = "postrank")`
 #' @concept reporting
 #' @examples
-#' if (requireNamespace("highs", quietly = TRUE)) {
-#'   one <- postrank(pr_tutorial$one, tau = .2, G_max = 3L, backend = "highs",
-#'     control = postrank_control(time_limit = 10), fragility = FALSE)
-#'   html <- tempfile(fileext = ".html")
-#'   report <- postrank_report(one$fit, analysis = one, output_file = html)
-#'   report
-#'   vapply(report$figures, `[[`, logical(1), "available")
-#'   unlink(html)
-#' }
+#' one <- postrank_example("tutorial_one")
+#' html <- tempfile(fileext = ".html")
+#' report <- postrank_report(one$fit, analysis = one, output_file = html)
+#' report$sections
+#' file.exists(html)
+#' unlink(html)
 #' @export
 postrank_report <- function(fit,diagnostics=NULL,output_file=NULL,lang="en",figures=TRUE,analysis=NULL) {
   .pr_assert(inherits(fit,"postrank_fit"),"expected postrank_fit","invalid_fit")

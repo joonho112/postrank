@@ -5,7 +5,7 @@ p2_enumerate_columns <- function(n, equality_classes = NULL, grade_cap = n) {
   n <- as.integer(n)
   units <- paste0("unit-", seq_len(n))
   classes <- if (is.null(equality_classes)) seq_len(n) else equality_classes
-  # This standalone helper is positional. The full oracle checks actual ID mapping.
+  # This standalone helper is positional; the full reference search checks ID mapping.
   a <- p2_validate_action(matrix(1L, n, 1L), units, "domain",
     equality_classes = list(domain = unname(classes)), grade_caps = unname(grade_cap))
   cl <- unname(a$equality_classes[[1L]])

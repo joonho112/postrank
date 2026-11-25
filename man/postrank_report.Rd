@@ -13,87 +13,71 @@ postrank_report(
 )
 }
 \arguments{
-\item{fit}{A \code{postrank_fit}, such as \code{analysis$fit}.}
+\item{fit}{A \code{postrank_fit} object, such as \code{analysis$fit}.}
 
 \item{diagnostics}{Optional matching \code{postrank_diagnostics} or
-\code{postrank_coefficient_diagnostics}. Omit to use matching diagnostics
-already stored in \code{analysis}. Source, grade and settings are checked;
-diagnostics are not recomputed.}
+\code{postrank_coefficient_diagnostics} object. If \code{NULL} and \code{analysis} is
+supplied, \code{analysis$diagnostics} is used when present. Input, grade and
+settings identities are checked against \code{fit}.}
 
-\item{output_file}{Optional path for a new HTML file. An existing file is
-refused. \code{NULL} returns the report object without writing HTML.}
+\item{output_file}{Optional path for a new HTML file. Existing files are
+refused (\code{report_exists}). If \code{NULL} (the default), the report object is
+returned without writing a file.}
 
-\item{lang}{Report language. Only \code{"en"} is supported; another language
-raises \code{unsupported_language}.}
+\item{lang}{Report language. Only \code{"en"} (English) is supported; any other
+value stops with \code{unsupported_language} (see \link{postrank_options}).}
 
-\item{figures}{Logical; embed eligible report-card and criterion-profile
-figures as PNGs. \code{FALSE} records \code{figures_disabled}.}
+\item{figures}{Logical scalar (default \code{TRUE}); whether to embed the
+report-card and criterion-profile plots as base64 PNG images. \code{FALSE}
+records \code{reason = "figures_disabled"}.}
 
-\item{analysis}{Optional \code{postrank_analysis} with the same fit identities.
-Supplies its prepared report card, declarations, extras and timings.}
+\item{analysis}{Optional \code{postrank_analysis} object whose \code{fit} matches
+\code{fit}, supplying its prepared report card, declaration summary, extras
+status and timings.}
 }
 \value{
-A \code{postrank_report} list containing the stored grades, criterion
-profile, disclosure, objective, status, numerical validation information
-and source records, plus \code{figures}, \code{declarations}, \code{sections} and
-\code{strings_version}. \code{output_file} records the written path, or \code{NULL}.
-\code{diagnostics} retains the supplied object. Its \code{diagnostic_table} is
-trace-oriented for draws; for coefficient inputs it has columns
-\code{quantity}, \code{metric}, \code{value}, \code{available}, \code{NA_reason}, \code{method},
-\code{raw_value}, \code{result_kind}, \code{warnings} and \code{error}. Unavailable metrics
-retain their reasons rather than becoming zero.
+A \code{postrank_report} list containing the stored grades,
+\code{criterion_profile}, \code{disclosure}, \code{objective}, \code{status}, \code{report_card},
+\code{diagnostics} and \code{diagnostic_table}, \code{figures}, \code{declarations},
+\code{sections}, \code{strings_version}, and \code{output_file} (the normalized path when
+written, or \code{NULL}).
 }
 \description{
-The report combines stored grades, criterion losses, solver qualifications
-and available posterior summaries or diagnostics. A self-contained English
-HTML file can be written for offline use. Supplying \code{analysis} with its
-\code{fit} includes the prepared report card and other stored components. Report
-construction does not optimize or evaluate new grades, calculate pairwise
-probabilities or prepare missing summaries.
+\code{postrank_report()} assembles stored grades, per-criterion losses, solver
+bounds and available posterior intervals or diagnostics into a
+\code{postrank_report} object, and optionally writes a self-contained English HTML
+file. It reads stored results without running a solver or recomputing
+probabilities or diagnostics.
 }
 \details{
-Grade 1 has highest priority; shared grades withhold directions.
-A valid all-withheld report has N=0 and undefined conditional error
-ratios, not an error-free ranking. With no validated grade, the report
-instead shows the solver status, available bounds and reasons for
-unavailable grade-dependent content. An optimization gap concerns the
-supplied numerical problem, separately from posterior or model uncertainty.
+The HTML document is self-contained (inline CSS and base64-encoded PNG
+figures, no external network links) with eleven sections: \code{header}, \code{frame},
+\code{declarations}, \code{grades}, \code{decision}, \code{profiles}, \code{protection}, \code{posterior},
+\code{mc}, \code{stability} and \code{provenance}, plus a footer. Tables include every
+stored row with horizontal scrolling; embedded figures use the default
+display limits of \code{\link[=postrank_plot_report_card]{postrank_plot_report_card()}} and
+\code{\link[=postrank_plot_profile]{postrank_plot_profile()}}. If PNG rendering fails, the report remains valid
+and \code{figures} records the reason.
 
-Marginal posterior intervals retain their source and level and describe
-target uncertainty rather than Monte Carlo error. Stored diagnostics retain
-their producer's methods, warnings and unavailable values. Required inputs,
-including \code{chain_history} for eligible \code{\link[=postrank_coefficient_diagnose]{postrank_coefficient_diagnose()}}
-calculations, must be supplied when diagnostics are prepared; report
-construction cannot recover missing draws or history. Numerical checks of an
-empirical error budget alone do not establish a guarantee for the true
-posterior.
-
-The HTML has eleven sections: \code{header}, \code{frame}, \code{declarations}, \code{grades},
-\code{decision}, \code{profiles}, \code{protection}, \code{posterior}, \code{mc}, \code{stability} and
-\code{provenance}, followed by a footer. Tables include all stored rows; wide
-tables scroll horizontally. Included figures use their default display
-limits, so a report-card figure may show a stated subset while the table
-remains complete. Use the plotting functions separately for custom
-entity selection or labels; this function has no paging argument.
-
-Figures are embedded in the HTML, with no separate image or network
-dependency. Each attempt records \code{id}, \code{available}, \code{reason},
-\code{png_base64}, \code{caption} and \code{alt} in \code{figures}. A missing PNG device or
-failed figure leaves an explanatory record and a usable report.
+Grade 1 is the highest priority, and shared grades leave pairs unordered. A
+valid one-grade report leaving all pairs unordered shows \code{N = 0} and
+\code{E_k / N = NA} (loss \code{tau}); when \code{fit} has no checked grading, the report
+shows the solver status, any lower bound and why grade tables are
+unavailable. Solver bounds and gaps describe the optimization problem only,
+and marginal posterior intervals describe target uncertainty rather than
+Monte Carlo error.
 }
 \examples{
-if (requireNamespace("highs", quietly = TRUE)) {
-  one <- postrank(pr_tutorial$one, tau = .2, G_max = 3L, backend = "highs",
-    control = postrank_control(time_limit = 10), fragility = FALSE)
-  html <- tempfile(fileext = ".html")
-  report <- postrank_report(one$fit, analysis = one, output_file = html)
-  report
-  vapply(report$figures, `[[`, logical(1), "available")
-  unlink(html)
-}
+one <- postrank_example("tutorial_one")
+html <- tempfile(fileext = ".html")
+report <- postrank_report(one$fit, analysis = one, output_file = html)
+report$sections
+file.exists(html)
+unlink(html)
 }
 \seealso{
-\code{\link[=postrank]{postrank()}}, \code{\link[=postrank_plot_report_card]{postrank_plot_report_card()}}, \code{\link[=postrank_plot_profile]{postrank_plot_profile()}},
+\code{\link[=postrank]{postrank()}}, \code{\link[=postrank_report_card]{postrank_report_card()}},
+\code{\link[=postrank_plot_report_card]{postrank_plot_report_card()}}, \code{\link[=postrank_plot_profile]{postrank_plot_profile()}},
 \code{vignette("a6-reading-exporting-results", package = "postrank")}
 }
 \concept{reporting}

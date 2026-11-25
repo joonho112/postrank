@@ -1,71 +1,69 @@
-#' Import Explicitly Mapped Posterior Draws
+#' Import Mapped Posterior Draws
 #'
-#' This adapter maps a `posterior::draws_array` to the declared entities and
-#' criteria, retaining its source history. Each imported target value is
-#' compared with the corresponding source cell. Variable names are matched
-#' through an explicit mapping; entity and criterion labels are not inferred
-#' from those names.
+#' `as_postrank_posterior()` imports a `posterior::draws_array` into a
+#' `postrank_draws` object using supplied variable and draw-position mappings,
+#' and checks that every imported cell equals its source cell in `x`. Entity
+#' and criterion labels come from `variable_map` and `metadata`, never from
+#' parsing variable names.
 #'
-#' @param x A `posterior::draws_array` with iteration, chain and variable axes.
-#'   The optional `posterior` package is required.
-#' @param variable_map List of records containing `entity_id`, `criterion_id`,
-#'   `source_target_variable_id` and `derivation_note`. Map each entity/criterion
-#'   target once to a distinct source variable. Unused source variables are allowed.
-#' @param metadata Complete canonical `applied-0.1` metadata for joint
-#'   equal-weight draws, including the tensor shape and ordered IDs, target
-#'   definitions, source records and sampling history. Tensor values may be
-#'   omitted; if present, they must equal the mapped source values exactly.
-#' @param source_coordinates One record per declared draw slot, containing
-#'   `slot_id`, `iteration_index` and `chain_index`. Indices are positions in
-#'   `x`, not original iteration numbers or chain IDs. Every source
-#'   iteration-by-chain position must be used exactly once.
-#' @return A validated `postrank_draws` object with
+#' @param x A `posterior::draws_array` with named `iteration`, `chain` and
+#'   `variable` axes (requires the optional `posterior` package).
+#' @param variable_map List of `n * K` named lists, each with `entity_id`,
+#'   `criterion_id`, `source_target_variable_id` and `derivation_note`. Every
+#'   entity-by-criterion pair must map once to a distinct variable in `x`;
+#'   extra variables in `x` may remain unused.
+#' @param metadata Complete `applied-0.1` list for joint equal-weight draws
+#'   (`joint_draws`), including `tensor$shape`, ordered `entity_ids` and
+#'   `criterion_ids`, target descriptions, source records and sampling history.
+#'   `tensor$values` may be omitted; if present, it must match the mapped
+#'   values from `x`.
+#' @param source_coordinates List of `S` named lists, one per declared draw
+#'   slot, each with `slot_id`, `iteration_index` and `chain_index`. Indices
+#'   are integer positions along the `iteration` and `chain` axes of `x` (not
+#'   original MCMC iteration numbers), and must cover every iteration-by-chain
+#'   position of `x` once.
+#' @returns A validated `postrank_draws` object with
 #'   `validation$source_values_checked = TRUE` and a `validation$source_audit`
-#'   describing the mappings and comparisons performed.
+#'   list recording the checked cell count, variable and chain mappings, and
+#'   `source_object_sha256`.
 #' @details
-#' Source values must already be the higher-priority targets. No negation or
-#' other numerical transformation is performed. The target array has shape
-#' `S x n x K`, where `S` is the number of source iteration-by-chain positions;
-#' `K = 1` retains its third axis.
+#' Values in `x` must already be oriented so that larger values mean higher
+#' priority; this function performs no negation or rescaling. The imported
+#' array has dimensions `S x n x K`, keeping the third dimension when `K = 1`.
 #'
-#' Original MCMC chain IDs and iteration numbers come from `metadata`, not
-#' from the source axis labels. Each source chain must map to one distinct
-#' declared chain, with original iterations increasing in source iteration
-#' order. Preserve actual warmup, discarding and thinning history. For IID
-#' input the source chain axis is only a container grouping and makes no
-#' MCMC claim. [postrank_draws()] also accepts `posterior` data-frame and
-#' matrix formats through `posterior::as_draws_array()`; a conversion cannot
-#' recover a chain history that the export lost.
+#' When `metadata` specifies `regime = "mcmc"`, original chain IDs and
+#' iteration numbers come from `metadata$joint_draws$draw_index` and
+#' `chain_history`. Each chain of `x` must map to a distinct declared chain
+#' with strictly increasing original iteration numbers. When `regime = "iid"`,
+#' the `chain` axis of `x` is treated only as a storage index.
+#' [postrank_draws()] also accepts `draws_df` and `draws_matrix` objects by
+#' converting them with `posterior::as_draws_array()` first.
 #'
-#' The audit's `source_object_sha256` identifies serialized `unclass(x)`.
-#' The separately retained origin `source_hash` may identify an external
-#' file; this adapter does not verify that file's bytes. Source-value equality
-#' verifies the conversion, not scientific jointness, identification or
-#' convergence. Canonical declaration checks apply without the additional
-#' placeholder-text checks of [postrank_declarations()].
+#' `source_audit$source_object_sha256` hashes `unclass(x)` in R memory; it does
+#' not check external files named in `origin`. Cell-by-cell equality confirms
+#' the import mapping, not scientific identification, jointness or MCMC
+#' convergence. Required strings are checked for non-empty text without the
+#' placeholder-word list of [postrank_declarations()].
 #' @seealso [postrank_draws()], [postrank_draws_from_array()],
 #'   [validate_postrank_draws()]
 #' @concept input
-#' @examples
-#' if (requireNamespace("posterior", quietly = TRUE)) {
-#'   # Re-express the unchanged bundled two-criterion IID sample.
-#'   # Its original declarations apply because no values or law are replaced.
-#'   metadata <- unclass(postrank_toy)
-#'   metadata$schema_version <- metadata$input_schema_version
-#'   metadata$input_schema_version <- metadata$validation <- NULL
-#'   a <- metadata$joint_draws$tensor$values
-#'   map <- metadata$joint_draws$variable_map
-#'   variable_ids <- vapply(map, `[[`, character(1), "source_target_variable_id")
-#'   source_array <- array(as.numeric(a), c(dim(a)[1], 1, length(map)),
-#'     dimnames = list(iteration = as.character(seq_len(dim(a)[1])),
-#'       chain = "1", variable = variable_ids))
-#'   source_draws <- posterior::as_draws_array(source_array)
-#'   coordinates <- lapply(seq_len(dim(a)[1]), function(s)
-#'     list(slot_id = dimnames(a)$draw[s], iteration_index = s, chain_index = 1L))
-#'   imported <- as_postrank_posterior(source_draws, map, metadata, coordinates)
-#'   imported$validation$source_values_checked
-#'   identical(imported$joint_draws$tensor$values, a)
-#' }
+#' @examplesIf requireNamespace("posterior", quietly = TRUE)
+#' # Map the bundled two-criterion IID sample through posterior::draws_array:
+#' meta <- unclass(postrank_toy)
+#' meta$schema_version <- meta$input_schema_version
+#' meta$input_schema_version <- meta$validation <- NULL
+#' a <- meta$joint_draws$tensor$values
+#' map <- meta$joint_draws$variable_map
+#' var_ids <- vapply(map, `[[`, character(1), "source_target_variable_id")
+#' src_arr <- array(as.numeric(a), c(dim(a)[1], 1, length(map)),
+#'   dimnames = list(iteration = as.character(seq_len(dim(a)[1])),
+#'     chain = "1", variable = var_ids))
+#' src <- posterior::as_draws_array(src_arr)
+#' coords <- lapply(seq_len(dim(a)[1]), function(s)
+#'   list(slot_id = dimnames(a)$draw[s], iteration_index = s, chain_index = 1L))
+#' imported <- as_postrank_posterior(src, map, meta, coords)
+#' imported$validation$source_values_checked
+#' identical(imported$joint_draws$tensor$values, a)
 #' @export
 as_postrank_posterior <- function(x, variable_map, metadata, source_coordinates) {
   .pr_assert(requireNamespace("posterior", quietly = TRUE),

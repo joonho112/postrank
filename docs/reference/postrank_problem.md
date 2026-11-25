@@ -1,11 +1,10 @@
 # Build a Problem for Choosing Common Grades
 
-The constructor defines the posterior loss and admissible grade reports
-for
-[`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md).
-Smaller grades indicate higher priority and shared grades withhold
-comparisons. Construction of the optimization problem does not run a
-solver or estimate the posterior.
+`postrank_problem()` builds the optimization problem for
+[`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md)
+from pairwise comparison probabilities and loss settings, without
+calling a solver or fitting a model. Grade 1 is the highest priority,
+and entities in the same grade are left unordered.
 
 ## Usage
 
@@ -28,91 +27,95 @@ postrank_problem(
 
 - pairwise:
 
-  A validated `postrank_pairwise`, `postrank_coefficients`, or
+  Pairwise directional-error probabilities: a `postrank_pairwise` object
+  from
+  [`postrank_pairwise()`](https://joonho112.github.io/postrank/reference/postrank_pairwise.md),
+  a `postrank_coefficients` object
+  ([`postrank_gaussian_coefficients()`](https://joonho112.github.io/postrank/reference/postrank_gaussian_coefficients.md),
+  [`postrank_mixture_coefficients()`](https://joonho112.github.io/postrank/reference/postrank_mixture_coefficients.md)),
+  or a
   [`postrank_probabilities()`](https://joonho112.github.io/postrank/reference/postrank_probabilities.md)
-  object. Problem construction from Gaussian/ mixture coefficients or
-  supplied probabilities currently supports weighted at-most-G problems
-  only, without q, exact-G or minimax modes.
+  object. Normal/mixture posteriors and supplied probabilities support
+  only the weighted objective without `q`, `exact_G` or
+  `minimax_criteria`.
 
 - weights:
 
-  Nonnegative finite criterion-named weights summing to one. Include
-  every criterion exactly once, including weight 1 for a single
-  criterion, unless using `settings`. No automatic normalization is
-  performed.
+  Nonnegative finite weights summing to one within `1e-12`, uniquely
+  named by criterion (covering every criterion once, including weight
+  `1` for one criterion). Omit when passing `settings`; never rescaled
+  automatically.
 
 - tau:
 
-  Cost of withholding a comparison, `0 < tau <= 0.5`.
+  Cost of leaving a pair unordered (`0 < tau <= 0.5`). Omit when passing
+  `settings`.
 
 - G_max:
 
-  Positive integer upper bound on occupied grades, no larger than the
-  number of entities. Fewer grades are permitted unless `exact_G` is
-  set.
+  Largest number of occupied grades, a positive integer at most the
+  number of entities when passed directly. Fewer grades are allowed
+  unless `exact_G` is given. Omit when passing `settings`.
 
 - objective:
 
-  `"weighted"` or `"minimax"`: minimize the weighted average or largest
-  selected criterion's expected risk.
+  `"weighted"` (the default) minimizes the weighted sum of criterion
+  losses; `"minimax"` minimizes the largest loss among the selected
+  criteria.
 
 - q:
 
-  Optional uniquely criterion-named error budgets in `[0, 1]`. Each
-  requires `E_k <= q_k * N`, including a protected criterion with zero
-  objective weight. At N=0 this count constraint holds but `E_k/N` is
-  undefined.
+  Optional vector of per-criterion expected-error budgets in `[0, 1]`,
+  uniquely named by known criteria. Each requires `E_k <= q_k * N` (even
+  if criterion `k` has weight 0 in `weights`); at `N = 0` this holds
+  (`0 <= 0`) while `E_k / N` is `NA`.
 
 - exact_G:
 
-  Optional exact number of nonempty grades, at most `G_max`.
+  Optional positive integer requiring an exact number of occupied
+  grades, at most `G_max` and never reduced automatically.
 
 - minimax_criteria:
 
-  Optional nonempty set of criterion IDs for minimax; `NULL` includes
-  all criteria. Only allowed for the minimax objective.
+  Optional character vector of criterion IDs included in the minimax
+  objective (`NULL` includes all criteria). Allowed only when
+  `objective = "minimax"`.
 
 - minimax_refine:
 
-  `"weighted"` (default) or `"none"`. For minimax, weighted refinement
-  minimizes the original weighted risk within the primary cap. If any
-  weight is zero, a further stage minimizes uniform criterion risk while
-  also retaining a cap on that original weighted risk. Weights are never
-  perturbed. See
-  [`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md)
-  for the qualifications of the recorded refinement conclusions. Ignored
-  for weighted problems.
+  How to refine a minimax solution when `objective = "minimax"`:
+  `"weighted"` (the default) or `"none"`; see
+  [`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md).
+  Ignored when `objective = "weighted"`.
 
 - settings:
 
   Optional
   [`postrank_settings()`](https://joonho112.github.io/postrank/reference/postrank_settings.md)
-  instead of separate policy arguments; explicitly supplying both is a
-  `settings_conflict` error. Unlike the separate `G_max` argument, this
-  route caps an oversized grade limit at the number of entities. An
-  exact count is never relaxed.
+  object used instead of `weights`, `tau`, `G_max`, `objective`, `q`,
+  `exact_G`, `minimax_criteria` and `minimax_refine`. Supplying both
+  stops with `settings_conflict`. Unlike a direct `G_max` argument,
+  `settings` reduces an oversized `G_max` to the number of entities.
 
 ## Value
 
-A `postrank_problem` list containing `pairwise`, `settings`, the sparse
-`model`, variable `index`, `pair_map`, total pair count `M`, and
-`objective_units` for converting raw objectives to risk. Input/problem
-identities and builder/schema versions support subsequent validation.
-Minimax problems also contain `minimax_diagnostics$degenerate_criteria`:
-selected criteria whose directional errors are all at least tau. Their
-risk cannot be below tau, so the minimax value is at least tau and
-equals tau when all withholding is allowed.
+A `postrank_problem` object, a list containing `pairwise`, `settings`,
+the sparse linear/integer `model`, variable `index`, `pair_map`,
+unordered pair count `M`, `objective_units` (scale and offset converting
+raw objective values to normalized loss), `input_identity`,
+`problem_identity`, `schema_version` and `builder_version`. When
+`objective = "minimax"`, `minimax_diagnostics$degenerate_criteria` lists
+any selected criteria whose directional-error probabilities are all at
+least `tau` (whose criterion loss cannot fall below `tau`).
 
 ## Details
 
-Expected risk is conditional on the supplied posterior and chosen
-targets. Error budgets limit posterior expected wrong fractions when
-N\>0; they do not ensure that every realized report has that error rate.
-Minimax uses the maximum of expected criterion risks, not the
-expectation of their statewise maximum. Use
-[`postrank_evaluate()`](https://joonho112.github.io/postrank/reference/postrank_evaluate.md)
-to score a supplied action without solving; evaluation alone does not
-check this action family.
+Losses and `q` error budgets are posterior expectations conditional on
+the supplied probabilities; `q` constrains expected wrong-order counts
+rather than realized error rates. The minimax objective minimizes
+`max_k E[loss_k]`, not `E[max_k loss_k]`. To compute the loss of an
+existing grading without building an optimization model, use
+[`postrank_evaluate()`](https://joonho112.github.io/postrank/reference/postrank_evaluate.md).
 
 ## See also
 
@@ -124,7 +127,7 @@ check this action family.
 
 ``` r
 one <- postrank_problem(pr_tutorial$one, weights = c(score_A = 1),
-  tau = .2, G_max = 3L)
+  tau = 0.2, G_max = 3L)
 one$objective_units
 #> $raw
 #> [1] "weighted_Z"
@@ -135,9 +138,10 @@ one$objective_units
 #> $offset
 #> [1] 0.2
 #> 
+
 pw <- postrank_pairwise(postrank_toy)
-protected <- postrank_problem(pw, weights = c(need_A = .6, need_B = .4),
-  tau = .25, G_max = 3L, q = c(need_B = .3), exact_G = 2L)
+protected <- postrank_problem(pw, weights = c(need_A = 0.6, need_B = 0.4),
+  tau = 0.25, G_max = 3L, q = c(need_B = 0.3), exact_G = 2L)
 protected$settings[c("G_max", "exact_G", "q")]
 #> $G_max
 #> [1] 3

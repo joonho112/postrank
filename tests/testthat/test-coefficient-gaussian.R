@@ -1,6 +1,6 @@
-# Self-contained since 0.9.0: the independent main-study Gaussian math is the
-# packaged oracle copy in pr_cf_oracle (helper-coefficient-oracles.R); the API
-# under test is the package namespace itself.
+# Conditional Gaussian coefficient checks against independent normal-CDF formulas
+# in pr_cf_oracle (helper-coefficient-oracles.R).
+#
 cg_main <- pr_cf_fixture_root()
 cg_math <- pr_cf_oracle
 cg_provenance <- function() list(producer_id = "fixed-gaussian-adapter-fixture", producer_version = "1",

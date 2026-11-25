@@ -17,14 +17,16 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Plot Grading Rules Evaluated Under the Same Loss — postrank_plot_compare">
-<meta name="description" content="Stored reports are compared by risk, disclosure and grade count, or by
-changes in pairwise relations relative to the reference report. Risk values
-use the comparison object's common posterior and loss settings. The plotting
-function neither evaluates nor optimizes additional actions.">
-<meta property="og:description" content="Stored reports are compared by risk, disclosure and grade count, or by
-changes in pairwise relations relative to the reference report. Risk values
-use the comparison object's common posterior and loss settings. The plotting
-function neither evaluates nor optimizes additional actions.">
+<meta name="description" content="postrank_plot_compare() plots stored grading rules from
+postrank_compare() side by side on risk, disclosure rate (N / M), and
+grade count (G), or by pairwise relation changes relative to the reference
+rule. All risk values come from x's shared posterior and loss settings
+without solving or evaluating new gradings.">
+<meta property="og:description" content="postrank_plot_compare() plots stored grading rules from
+postrank_compare() side by side on risk, disclosure rate (N / M), and
+grade count (G), or by pairwise relation changes relative to the reference
+rule. All risk values come from x's shared posterior and loss settings
+without solving or evaluating new gradings.">
 <meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
 </head>
 <body>
@@ -35,7 +37,7 @@ function neither evaluates nor optimizes additional actions.">
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +46,7 @@ function neither evaluates nor optimizes additional actions.">
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -68,10 +70,11 @@ function neither evaluates nor optimizes additional actions.">
     </div>
 
     <div class="ref-description section level2">
-    <p>Stored reports are compared by risk, disclosure and grade count, or by
-changes in pairwise relations relative to the reference report. Risk values
-use the comparison object's common posterior and loss settings. The plotting
-function neither evaluates nor optimizes additional actions.</p>
+    <p><code>postrank_plot_compare()</code> plots stored grading rules from
+<code><a href="postrank_compare.html">postrank_compare()</a></code> side by side on risk, disclosure rate (<code>N / M</code>), and
+grade count (<code>G</code>), or by pairwise relation changes relative to the reference
+rule. All risk values come from <code>x</code>'s shared posterior and loss settings
+without solving or evaluating new gradings.</p>
     </div>
 
     <div class="section level2">
@@ -93,66 +96,70 @@ function neither evaluates nor optimizes additional actions.</p>
 
 <dt id="arg-view">view<a class="anchor" aria-label="anchor" href="#arg-view"></a>
 </dt>
-<dd><p><code>"summary"</code> for risk, disclosure and grade-count panels;
-<code>"relations"</code> for pair-relation change counts.</p></dd>
+<dd><p><code>"summary"</code> (the default) for risk, disclosure, and grade-count
+panels, or <code>"relations"</code> for stacked counts of pairwise relation changes
+from <code>x$reference</code> to each other rule.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a>
 </dt>
-<dd><p>Unused.</p></dd>
+<dd><p>Unused; unnamed extra arguments are ignored. Pass <code>ncol</code> by name.</p></dd>
 
 
 <dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a>
 </dt>
-<dd><p>Optional positive integer number of facet columns in the
-summary view. Supply by name. <code>NULL</code> uses three columns; <code>ncol = 1</code>
-with a taller output suits a narrow page. Ignored in the relations view.</p></dd>
+<dd><p>Positive integer number of facet columns in <code>view = "summary"</code>,
+or <code>NULL</code> (the default, which uses 3 columns). Use <code>ncol = 1</code> for narrow
+pages. Ignored when <code>view = "relations"</code>.</p></dd>
 
 </dl>
 </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
 </h2>
-    <p>A <code>ggplot</code> object. Unavailable actions keep their method labels,
-statuses and reasons, with unavailable points and relation counts omitted. The
-relations view returns a status panel if no comparison has grades.</p>
+    <p>A <code>ggplot</code> object. Rules without a finite risk (<code>!is.finite(risk)</code>)
+keep their y-axis labels, statuses, and reasons in the subtitle while their
+points and bars are omitted. When <code>view = "relations"</code> and no compared rule
+has grades, returns an empty status <code>ggplot</code> stating why.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
 </h2>
-    <p>The summary view plots risk, <code>N/M</code> (disclosed pairs over all unordered
-pairs), and the number of grades. The reference action's point is filled;
-other actions are hollow. A tick marks an available stored risk lower bound.
-Method labels give status, optimization scope and any absolute risk gap.
-An optimal fixed-order baseline is optimal within its contiguous partitions,
-not over every possible grading; baselines have no full-family lower bound.</p>
-<p>The relations view counts unchanged, newly disclosed, newly withheld and
-reversed pairs from the reference to each alternative. Every bar covers all
-<code>M = choose(n, 2)</code> pairs, including those withheld by both actions.</p>
-<p>Supplied actions outside the declared grade or budget constraints are
-marked <code>outside family</code>. Their fixed-action risks can be evaluated under
-the common loss, but do not compare minima over the same feasible family.
-The absence of feasibility records in older comparison objects is indicated
-in the plot. These checks require reconstruction of the comparison; they
-are not performed during plotting.</p>
+    <p>In <code>view = "summary"</code>, the reference rule (<code>x$reference</code>) is drawn as a
+filled circle and other rules as hollow circles; a vertical tick marks any
+stored <code>risk_lower_bound</code>. Y-axis labels show the rule name, solver status
+(<code>"optimal (numerical)"</code> for full-family optimal solves), optimization scope
+(<code>"full family"</code>, <code>"fixed score order"</code>, or <code>"supplied action"</code>), and any
+absolute solver risk gap. A score-order baseline searches only contiguous
+cuts of its fixed score order rather than all gradings, so it has no
+full-family lower bound.</p>
+<p>In <code>view = "relations"</code>, each bar covers all <code>M = choose(n, 2)</code> unordered
+pairs across <code>"unchanged"</code>, <code>"newly disclosed"</code>, <code>"newly withheld"</code>, and
+<code>"reversed"</code> relative to <code>x$reference</code>; <code>"unchanged"</code> includes pairs left
+unordered by both rules.</p>
+<p>Rules recorded with <code>family_feasible == FALSE</code> (for example, exceeding
+<code>G_max</code> or violating an error budget <code>q_k</code>) are tagged <code>"[outside family]"</code>
+on the y-axis and listed in the subtitle: their fixed-action risks are
+evaluated under the same loss, but they are outside the constrained feasible
+set. If <code>family_feasible</code> is absent from an older comparison object, the
+subtitle notes that constraint checks require rebuilding <code>x</code> with
+<code><a href="postrank_compare.html">postrank_compare()</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
 </h2>
-    <div class="dont-index"><p><code><a href="postrank_compare.html">postrank_compare()</a></code>, <code><a href="postrank_plot_relations.html">postrank_plot_relations()</a></code>, <code><a href="postrank_plot_data.html">postrank_plot_data()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="postrank_compare.html">postrank_compare()</a></code>, <code><a href="postrank_plot_relations.html">postrank_plot_relations()</a></code>,
+<code><a href="postrank_plot_data.html">postrank_plot_data()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
 </h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Read a prepared three-criterion method comparison; no new solve or evaluation.</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"scripts"</span>, <span class="st">"_vignette-setup.R"</span>, package <span class="op">=</span> <span class="st">"postrank"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"comparison_30x3_tau35"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"comparison_30x3_tau35"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">postrank_plot_compare</span><span class="op">(</span><span class="va">comparison</span>, ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-plt img"><a href="postrank_plot_compare-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Risk, disclosure and grade-count panels comparing stored grading rules under the same 30-site posterior and loss." target="_blank" rel="noopener"><img src="postrank_plot_compare-1.png" alt="Risk, disclosure and grade-count panels comparing stored grading rules under the same 30-site posterior and loss." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="postrank_plot_compare-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Risk, disclosure and grade-count panels comparing stored grading rules under the same 30-site posterior and loss.">Open full-size figure</a></span></span>
+<span class="r-plt img"><a href="postrank_plot_compare-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Risk, ordered-pair share, and grade-count panels comparing candidate grading rules under the same 30-site posterior and loss." target="_blank" rel="noopener"><img src="postrank_plot_compare-1.png" alt="Risk, ordered-pair share, and grade-count panels comparing candidate grading rules under the same 30-site posterior and loss." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="postrank_plot_compare-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Risk, ordered-pair share, and grade-count panels comparing candidate grading rules under the same 30-site posterior and loss.">Open full-size figure</a></span></span>
 <span class="r-in"><span><span class="fu">postrank_plot_compare</span><span class="op">(</span><span class="va">comparison</span>, view <span class="op">=</span> <span class="st">"relations"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><a href="postrank_plot_compare-2.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Counts of unchanged, newly disclosed, newly withheld and reversed pairs relative to the reference grading rule." target="_blank" rel="noopener"><img src="postrank_plot_compare-2.png" alt="Counts of unchanged, newly disclosed, newly withheld and reversed pairs relative to the reference grading rule." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="postrank_plot_compare-2.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Counts of unchanged, newly disclosed, newly withheld and reversed pairs relative to the reference grading rule.">Open full-size figure</a></span></span>
+<span class="r-plt img"><a href="postrank_plot_compare-2.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Counts of unchanged, newly ordered, newly unordered, and reversed pairs relative to the reference grading rule." target="_blank" rel="noopener"><img src="postrank_plot_compare-2.png" alt="Counts of unchanged, newly ordered, newly unordered, and reversed pairs relative to the reference grading rule." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="postrank_plot_compare-2.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Counts of unchanged, newly ordered, newly unordered, and reversed pairs relative to the reference grading rule.">Open full-size figure</a></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -17,12 +17,14 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Use the postrank Figure Theme — theme_postrank">
-<meta name="description" content="The theme specifies the typography and white background used in postrank
-figures. It extends ggplot2::theme_minimal() with a light horizontal grid,
-axis lines, a left-aligned bold title and a bottom legend.">
-<meta property="og:description" content="The theme specifies the typography and white background used in postrank
-figures. It extends ggplot2::theme_minimal() with a light horizontal grid,
-axis lines, a left-aligned bold title and a bottom legend.">
+<meta name="description" content="theme_postrank() returns the ggplot2 theme used across postrank
+figures, extending ggplot2::theme_minimal() with white backgrounds, a light
+horizontal grid, axis lines and ticks, left-aligned bold titles, and a bottom
+legend.">
+<meta property="og:description" content="theme_postrank() returns the ggplot2 theme used across postrank
+figures, extending ggplot2::theme_minimal() with white backgrounds, a light
+horizontal grid, axis lines and ticks, left-aligned bold titles, and a bottom
+legend.">
 <meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
 </head>
 <body>
@@ -33,7 +35,7 @@ axis lines, a left-aligned bold title and a bottom legend.">
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,7 +44,7 @@ axis lines, a left-aligned bold title and a bottom legend.">
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -66,9 +68,10 @@ axis lines, a left-aligned bold title and a bottom legend.">
     </div>
 
     <div class="ref-description section level2">
-    <p>The theme specifies the typography and white background used in postrank
-figures. It extends <code><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">ggplot2::theme_minimal()</a></code> with a light horizontal grid,
-axis lines, a left-aligned bold title and a bottom legend.</p>
+    <p><code>theme_postrank()</code> returns the <code>ggplot2</code> theme used across <code>postrank</code>
+figures, extending <code><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">ggplot2::theme_minimal()</a></code> with white backgrounds, a light
+horizontal grid, axis lines and ticks, left-aligned bold titles, and a bottom
+legend.</p>
     </div>
 
     <div class="section level2">
@@ -85,28 +88,29 @@ axis lines, a left-aligned bold title and a bottom legend.</p>
 <dl>
 <dt id="arg-base-size">base_size<a class="anchor" aria-label="anchor" href="#arg-base-size"></a>
 </dt>
-<dd><p>Base font size in points; default 11.</p></dd>
+<dd><p>Base font size in points (<code>11</code> by default).</p></dd>
 
 
 <dt id="arg-base-family">base_family<a class="anchor" aria-label="anchor" href="#arg-base-family"></a>
 </dt>
-<dd><p>Font family passed to ggplot2; the default <code>""</code> uses
-the graphics device's default family.</p></dd>
+<dd><p>Font family passed to <code>ggplot2</code> (<code>""</code> by default, using
+the graphics device's default family).</p></dd>
 
 </dl>
 </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
 </h2>
-    <p>A ggplot2 <code>theme</code> that can be added to a plot.</p>
+    <p>A <code>ggplot2</code> <code>theme</code> object that can be added to a plot with <code>+</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
 </h2>
-    <p>White plot and panel backgrounds preserve the contrast of the grade
-palette. The theme affects presentation only: grades, entity order and
-plotted values are retained. Additional ggplot2 theme settings can be
-applied subsequently to modify individual figures.</p>
+    <p>White plot and panel backgrounds (<code>"#FFFFFF"</code>) keep at least 3:1 contrast
+with the grade color ramp from <code><a href="postrank_palette.html">postrank_palette()</a></code>. The theme changes
+visual styling only and leaves grades, entity order, and plotted data
+untouched; add further <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme()</a></code> calls afterward to customize
+individual elements.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
@@ -117,10 +121,9 @@ applied subsequently to modify individual figures.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
 </h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># A prepared one-criterion probability matrix, with larger text.</span></span></span>
-<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_plot_pairwise.html">postrank_plot_pairwise</a></span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_plot_pairwise.html">postrank_plot_pairwise</a></span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">p</span> <span class="op">+</span> <span class="fu">theme_postrank</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></span>
-<span class="r-plt img"><a href="theme_postrank-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: The one-criterion directional-error matrix displayed with the postrank theme at a larger text size." target="_blank" rel="noopener"><img src="theme_postrank-1.png" alt="The one-criterion directional-error matrix displayed with the postrank theme at a larger text size." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="theme_postrank-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: The one-criterion directional-error matrix displayed with the postrank theme at a larger text size.">Open full-size figure</a></span></span>
+<span class="r-plt img"><a href="theme_postrank-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: One-criterion directional-error probability matrix styled with theme_postrank() at a larger base font size." target="_blank" rel="noopener"><img src="theme_postrank-1.png" alt="One-criterion directional-error probability matrix styled with theme_postrank() at a larger base font size." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="theme_postrank-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: One-criterion directional-error probability matrix styled with theme_postrank() at a larger base font size.">Open full-size figure</a></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -1,4 +1,4 @@
-# Local P2 reference input validation; no production export or sampling certificate.
+# Multidomain input and rational-number validation; does not verify model specification.
 p2_input_error <- function(message) stop(message, call. = FALSE)
 p2_nonempty_string <- function(x) is.character(x) && is.null(dim(x)) && length(x) == 1L &&
   !is.na(x) && nzchar(trimws(x))

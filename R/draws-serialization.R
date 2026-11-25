@@ -1,5 +1,5 @@
 # Strict JSON grammar and duplicate decoded keys are checked before jsonlite can
-# collapse information. Nodes retain object/array shape for BOOK type checking.
+# collapse information. Nodes retain object/array shape for schema type checking.
 .pr_json_scan <- function(text) {
   if (!is.character(text) || length(text) != 1L || is.na(text))
     .pr_abort("expected one JSON string", "invalid_json")
@@ -144,8 +144,8 @@
   jsonlite::fromJSON(path,simplifyVector=FALSE)
 }
 
-# This enforces the JSON object/array/scalar binding subset of the frozen BOOK
-# schema, not general Draft 2020-12 validation. Full schema QA is development-only.
+# Enforces the JSON object/array/scalar binding subset of the applied-0.1 input
+# schema rather than general JSON Schema Draft 2020-12 validation.
 .pr_json_shape_guard <- function(node, rule, schema, path="$") {
   if (!is.null(rule[["$ref"]])) {
     key <- sub("^#/[\u0024]defs/", "", rule[["$ref"]])
@@ -268,27 +268,30 @@
 
 #' Read Posterior Draws or an Exact Finite Law from JSON
 #'
-#' The reader imports a saved posterior input, including its target
-#' definitions, ordered IDs and original sampling history. Files in this format
-#' are produced by [write_postrank_draws()].
+#' `read_postrank_draws()` reads a saved posterior input from a JSON file in
+#' `postrank`'s `applied-0.1` JSON schema, restoring its values, entity and
+#' criterion order, target descriptions and sampling history. Files in this
+#' format are written by [write_postrank_draws()].
 #'
 #' @param path Path to an existing `applied-0.1` JSON file.
-#' @return A validated `postrank_draws` object from [as_postrank_draws()].
-#'   Invalid JSON or unsupported input raises a structured error.
+#' @returns A validated `postrank_draws` object from [as_postrank_draws()].
+#'   Malformed JSON, schema mismatches or invalid input values stop the call
+#'   with a structured error.
 #' @details
-#' The reader supports joint equal-weight draws, criterion-wise blocks and
-#' complete exact finite laws. It preserves the singleton criterion dimension
-#' for `K = 1` and does not orient, reorder or round supplied targets.
-#' Duplicate decoded JSON keys, invalid JSON numbers and malformed supported
-#' array shapes are rejected. Exact-law integer tokens are checked before
-#' conversion so that unsafe values cannot pass by floating-point rounding.
+#' Joint equal-weight draws (`joint_draws`), separate criterion-wise matrices
+#' (`criterion_blocks`) and exact finite posterior laws (`finite_law`) are
+#' supported. Singleton criterion dimensions (`K = 1`) are kept, and target
+#' values are never negated, reordered or rounded on import. Before decoding,
+#' the reader rejects duplicate JSON object keys, nonfinite or underflowing
+#' numbers, and `finite_law` integer tokens outside the exact 53-bit integer
+#' range (`<= 9007199254740991`), then checks the JSON structure against the
+#' installed `draws-schema.json` specification and runs
+#' [as_postrank_draws()].
 #'
-#' Supported JSON shape checks and R semantic checks are performed; this is
-#' not a general JSON Schema validation. Required declarations are preserved
-#' without the high-level array route's additional placeholder-text check.
-#' Reading a file does not verify its scientific provenance, jointness or
-#' convergence. Use [read_postrank_tie_draws()] for equality-neutral inputs;
-#' this reader does not convert between the two input domains.
+#' Required descriptions are checked for presence and non-empty text without
+#' the placeholder-word list of [postrank_declarations()]. Reading a file does
+#' not verify scientific identification, jointness or MCMC convergence. For
+#' exact-tie inputs, use [read_postrank_tie_draws()].
 #' @seealso [write_postrank_draws()], [as_postrank_draws()],
 #'   [validate_postrank_draws()]
 #' @concept input
@@ -311,27 +314,28 @@ read_postrank_draws <- function(path) {
 
 #' Save a Posterior Input as JSON
 #'
-#' The writer saves posterior values and their scientific descriptions in the
-#' format read by [read_postrank_draws()]. The input is validated before
-#' writing, and its declared entity, criterion and draw order is preserved.
+#' `write_postrank_draws()` validates a `postrank_draws` object (or complete
+#' `applied-0.1` list) and writes its values, target descriptions and sampling
+#' history to a JSON file that [read_postrank_draws()] can restore.
 #'
-#' @param x A `postrank_draws` or complete canonical `applied-0.1` payload.
-#' @param path Destination JSON file. Its parent directory must exist.
-#' @param overwrite Logical; allow replacement of an existing file.
-#'   Defaults to `FALSE`.
-#' @return The destination path, invisibly.
+#' @param x A `postrank_draws` object or a complete `applied-0.1` input list.
+#' @param path Destination JSON file path. Its parent directory must exist.
+#' @param overwrite Logical scalar (default `FALSE`); whether to replace an
+#'   existing file at `path`.
+#' @returns `path`, invisibly.
 #' @details
-#' Joint arrays, criterion-wise blocks and complete exact finite laws are
-#' supported. Values are written with 17 significant digits, retaining
-#' singleton dimensions and source sampling histories. The writer creates a
-#' temporary file in the destination directory and renames it into place.
+#' Joint arrays, criterion-wise blocks and exact finite laws are supported.
+#' Numbers are formatted with 17 significant digits, preserving entity,
+#' criterion and draw order, singleton dimensions (`K = 1`), and MCMC chain
+#' histories. The JSON text is checked against the installed
+#' `draws-schema.json` specification, written to a temporary file in
+#' `dirname(path)` and renamed into place.
 #'
-#' The file contains the canonical input, not a saved validation receipt or
-#' external source-value audit. Reading it performs validation again; a
-#' prior adapter's source-value comparison is not claimed merely because the
-#' file round-trips. Required declaration checks apply without the high-level
-#' array route's extra placeholder check. Use [write_postrank_tie_draws()] for
-#' an equality-neutral input.
+#' The file stores the input fields (`schema_version = "applied-0.1"`), not the
+#' in-memory `validation` record. Reading the file runs
+#' [validate_postrank_draws()] afresh, so a prior [as_postrank_posterior()]
+#' `source_audit` is not carried through JSON. For exact-tie inputs, use
+#' [write_postrank_tie_draws()].
 #' @seealso [read_postrank_draws()], [validate_postrank_draws()],
 #'   [as_postrank_posterior()]
 #' @concept input

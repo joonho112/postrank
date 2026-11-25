@@ -1,7 +1,11 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Evaluate a Fixed Multidomain Report — postrank_mdomain_evaluate • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Evaluate a Fixed Multidomain Report — postrank_mdomain_evaluate"><meta name="description" content="Compute additive expected loss and, when requested, the probability of the
-union of strict scoped FDP exceedances for a supplied report card."><meta property="og:description" content="Compute additive expected loss and, when requested, the probability of the
-union of strict scoped FDP exceedances for a supplied report card."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Evaluate a Fixed Multidomain Grade Profile — postrank_mdomain_evaluate • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Evaluate a Fixed Multidomain Grade Profile — postrank_mdomain_evaluate"><meta name="description" content='postrank_mdomain_evaluate() computes domain-weighted expected loss and,
+when mode = "joint", the probability of the union of strict scoped
+false-discovery-proportion (FDP) exceedances for a fixed multidomain grade
+matrix without searching candidates. Requires optional package gmp.'><meta property="og:description" content='postrank_mdomain_evaluate() computes domain-weighted expected loss and,
+when mode = "joint", the probability of the union of strict scoped
+false-discovery-proportion (FDP) exceedances for a fixed multidomain grade
+matrix without searching candidates. Requires optional package gmp.'><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -9,7 +13,7 @@ union of strict scoped FDP exceedances for a supplied report card."><meta proper
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,7 +21,7 @@ union of strict scoped FDP exceedances for a supplied report card."><meta proper
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -31,14 +35,16 @@ union of strict scoped FDP exceedances for a supplied report card."><meta proper
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Evaluate a Fixed Multidomain Report</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Evaluate a Fixed Multidomain Grade Profile</h1>
 
       <div class="d-none name"><code>postrank_mdomain_evaluate.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>Compute additive expected loss and, when requested, the probability of the
-union of strict scoped FDP exceedances for a supplied report card.</p>
+    <p><code>postrank_mdomain_evaluate()</code> computes domain-weighted expected loss and,
+when <code>mode = "joint"</code>, the probability of the union of strict scoped
+false-discovery-proportion (FDP) exceedances for a fixed multidomain grade
+matrix without searching candidates. Requires optional package <code>gmp</code>.</p>
     </div>
 
     <div class="section level2">
@@ -57,52 +63,102 @@ union of strict scoped FDP exceedances for a supplied report card.</p>
 
 
 <dl><dt id="arg-input">input<a class="anchor" aria-label="anchor" href="#arg-input"></a></dt>
-<dd><p>A <code><a href="postrank_mdomain_input.html">postrank_mdomain_input()</a></code> object.</p></dd>
+<dd><p>A validated <code><a href="postrank_mdomain_input.html">postrank_mdomain_input()</a></code> object.</p></dd>
 
 
 <dt id="arg-grades">grades<a class="anchor" aria-label="anchor" href="#arg-grades"></a></dt>
-<dd><p>A finite numeric unit by domain matrix with both dimensions
-named in the input's original order. Smaller labels mean higher priority.
-Labels are canonicalized to occupied integer grades without changing order
-or ties. A tie withholds a direction; it does not assert latent equality.</p></dd>
+<dd><p>Finite numeric <code>n x D</code> matrix with row and column names in
+<code>input</code>'s exact unit and domain order (<code>1</code> = highest priority within each
+domain). Occupied grade labels on each domain are renumbered to <code>1..K_d</code>
+without changing pairwise orderings or ties; equal grades leave a pair
+unordered without claiming equal targets, and splitting a structural
+equality class stops with an error.</p></dd>
 
 
 <dt id="arg-decision">decision<a class="anchor" aria-label="anchor" href="#arg-decision"></a></dt>
-<dd><p>A <code><a href="postrank_mdomain_decision.html">postrank_mdomain_decision()</a></code> recipe, or <code>NULL</code> for its
-documented defaults. The recipe is revalidated and bound to <code>input</code>.</p></dd>
+<dd><p>A <code><a href="postrank_mdomain_decision.html">postrank_mdomain_decision()</a></code> specification, or <code>NULL</code> (the
+default) to use the default specification from <code><a href="postrank_mdomain_decision.html">postrank_mdomain_decision()</a></code>.</p></dd>
 
 
 <dt id="arg-mode">mode<a class="anchor" aria-label="anchor" href="#arg-mode"></a></dt>
-<dd><p><code>"joint"</code> evaluates expected quantities and the joint union;
-<code>"expected"</code> evaluates expected quantities only. Expected mode leaves joint
-and overall feasibility unknown, including when joint guards are disabled.</p></dd>
+<dd><p><code>"joint"</code> (the default, evaluating both expected quantities and
+the joint union exceedance probability <code>J</code>) or <code>"expected"</code> (evaluating
+expected quantities only, leaving <code>J</code>, <code>joint_feasible</code>, and
+<code>feasible_for_represented_measure</code> as <code>NA</code>, even when joint constraints are
+disabled).</p></dd>
 
 
 <dt id="arg-keep-traces">keep_traces<a class="anchor" aria-label="anchor" href="#arg-keep-traces"></a></dt>
-<dd><p>Retain the evaluated state counts and joint indicators.</p></dd>
+<dd><p>Logical scalar (<code>TRUE</code> by default). When <code>TRUE</code>, retains
+per-state error counts and joint event indicators in <code>evaluation</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>postrank_mdomain_evaluation</code> containing the validated input,
-action, bound decision, engine evaluation, named integer <code>grades</code>, risk,
-domain and scope tables, constraint tables, status and assurance records.
-Exact quantities have companion rational strings. In expected mode <code>J</code>,
-<code>joint_feasible</code>, and <code>feasible_for_represented_measure</code> are <code>NA</code>.</p>
+    <p>A <code>postrank_mdomain_evaluation</code> list containing <code>input</code>, <code>action</code>,
+<code>decision</code> (matched to <code>input</code>), renumbered (<code>1..K_d</code>) <code>n x D</code> integer
+<code>grades</code>, <code>mode</code>, <code>M = n * (n - 1) / 2</code>, <code>risk</code> and <code>risk_exact</code>, <code>J</code> and
+<code>J_exact</code>, <code>domain_table</code>, <code>scope_table</code>, <code>expected_constraints</code>,
+<code>event_table</code> (<code>NULL</code> in <code>"expected"</code> mode), <code>mean_feasible</code>,
+<code>joint_feasible</code>, <code>feasible_for_represented_measure</code>, <code>status</code>, <code>assurance</code>,
+and <code>receipts</code> (validation and hash records, including
+<code>validation_spec_hashes</code> for <code><a href="postrank_mdomain_assess.html">postrank_mdomain_assess()</a></code>).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The loss denominator remains the original number of unordered unit
-pairs. Scoped FDP uses the number of directions disclosed in that scope.
-The strict event is <code>F/N &gt; t</code>, represented by the exact integer cutoff
-<code>floor(t*N) + 1</code>; no disclosure makes the event analytically false.
-Joint evaluation uses only an actual relevant state law. Separate domain
-inputs can evaluate a union with at most one active domain, and any input
-can evaluate an analytically inactive union. No cross-domain coupling is
-inferred from matching state labels. Arithmetic on draws describes their
-empirical measure and does not certify intended posterior feasibility.</p>
+    <p>Expected loss uses the full unordered pair count <code>M = n * (n - 1) / 2</code> as its
+denominator, whereas scoped FDP <code>F / N</code> uses the number <code>N</code> of pairs ordered
+inside that scope on that domain. Each strict exceedance event <code>F / N &gt; t</code> is
+evaluated via the exact <code>gmp</code> integer cutoff <code>F &gt;= floor(t * N) + 1</code>; when
+<code>N = 0</code>, no pairs are ordered in that scope so the event is analytically
+false.</p>
+<p>Separate domain matrix inputs (<code>layout = "criterionwise_arrays"</code>) can run
+<code>mode = "joint"</code> only when at most one domain has an active joint event (or
+the union event is analytically zero); matching row names across separate
+matrices are never paired as coupled joint states. Exact rational (<code>gmp</code>)
+arithmetic over finite draws evaluates their empirical distribution without
+rounding error rather than certifying feasibility under an intended
+continuous posterior.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="postrank_mdomain_grades.html">postrank_mdomain_grades()</a></code>, <code><a href="postrank_mdomain_decision.html">postrank_mdomain_decision()</a></code>,
+<code><a href="postrank_mdomain_solve.html">postrank_mdomain_solve()</a></code>, <code><a href="postrank_mdomain_assess.html">postrank_mdomain_assess()</a></code>,
+<code><a href="postrank_plot_mdomain.html">postrank_plot_mdomain()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">inp</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_mdomain_input.html">postrank_mdomain_input</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">postrank_toy</span>,</span></span>
+<span class="r-in"><span>  provenance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>input_id <span class="op">=</span> <span class="st">"toy"</span>, law_id <span class="op">=</span> <span class="st">"toy-normal"</span>, proper_law <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">G</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fl">1L</span>, <span class="fl">2L</span>, <span class="fl">3L</span>, <span class="fl">1L</span>, <span class="fl">2L</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  nrow <span class="op">=</span> <span class="fl">3L</span>,</span></span>
+<span class="r-in"><span>  ncol <span class="op">=</span> <span class="fl">2L</span>,</span></span>
+<span class="r-in"><span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">inp</span><span class="op">$</span><span class="va">unit_ids</span>, <span class="va">inp</span><span class="op">$</span><span class="va">domain_ids</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ev</span> <span class="op">&lt;-</span> <span class="fu">postrank_mdomain_evaluate</span><span class="op">(</span><span class="va">inp</span>, <span class="va">G</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ev</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Fixed multidomain report evaluation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3 units; 2 domains; mode: joint</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Risk: 19/240; joint probability: 11/32</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Joint guards: evaluated; infeasible_for_represented_measure</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Basis: supplied_empirical_measure; exact_represented_measure_arithmetic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Intended posterior feasibility certificate: none</span>
+<span class="r-in"><span><span class="va">ev</span><span class="op">$</span><span class="va">domain_table</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   domain_id N     EF withheld       loss weighted_loss      eFDP eFDP_zero</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1    need_A 2 0.0625        1 0.05416667    0.02708333 0.0312500 0.0312500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    need_B 3 0.3125        0 0.10416667    0.05208333 0.1041667 0.1041667</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   EF_exact loss_exact weighted_loss_exact eFDP_exact eFDP_zero_exact</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     1/16     13/240              13/480       1/32            1/32</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     5/16       5/48                5/96       5/48            5/48</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                               arithmetic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 exact_empirical_iid_equal_weight_draws</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 exact_empirical_iid_equal_weight_draws</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

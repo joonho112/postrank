@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Reading and exporting results • postrank</title>
+<title>Reading and exporting grading results • postrank</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Reading and exporting results">
+<meta property="og:title" content="Reading and exporting grading results">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,7 +35,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -57,7 +57,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Reading and exporting results</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Reading and exporting grading results</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/a6-reading-exporting-results.Rmd" class="external-link"><code>vignettes/a6-reading-exporting-results.Rmd</code></a></small>
@@ -66,27 +66,24 @@
 
     
     
-<p>An analysis result records grade membership, disclosed and withheld
-pairs, expected loss and the numerical evidence for optimality. These
-components have distinct interpretations and should remain associated
-when results are exported. We describe the console summaries and result
-tables, followed by formats for retaining an analysis or producing a
-readable report.</p>
-<p>The examples use the six fictional sites in <a href="a1-getting-started.html">Analysis with one or several
-criteria</a>. Their normal score distributions are specified, with
-larger scores receiving higher priority. The first analysis uses one
-criterion and the second adds a criterion for the same sites. The
-prepared results below require neither optimization nor model fitting
-during rendering.</p>
+<p>A <code><a href="../reference/postrank.html">postrank()</a></code> result stores the assigned integer grades,
+the ordered and unordered pair counts, the posterior expected loss, and
+the solver’s status, lower bound, and gap. When you export a table or
+report, keep those policy settings and solver records alongside the
+grades so a reader knows what loss was minimized and whether the solver
+finished within tolerance.</p>
+<p>Below we load the two stored tutorial results introduced in <a href="a1-getting-started.html">Getting started: grading with one or two
+criteria</a> using <code><a href="../reference/postrank_example.html">postrank_example()</a></code>. Reading stored
+results runs no solver and fits no model; the same accessors and export
+functions work on any <code>postrank_analysis</code> returned by
+<code><a href="../reference/postrank.html">postrank()</a></code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joonho112/postrank" class="external-link">postrank</a></span><span class="op">)</span></span>
-<span><span class="va">sites</span> <span class="op">&lt;-</span> <span class="va">pr_tutorial</span></span></code></pre></div>
-<p>The objects <code>one</code> and <code>two</code> are prepared
-analyses corresponding to the calls in the introductory analysis. The
-same inspection and export functions apply to other analyses returned by
-<code><a href="../reference/postrank.html">postrank()</a></code>.</p>
+<span><span class="va">sites</span> <span class="op">&lt;-</span> <span class="va">pr_tutorial</span></span>
+<span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_one"</span><span class="op">)</span></span>
+<span><span class="va">two</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_two"</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
-<h2 id="read-the-result-before-taking-a-column">Console output and interpretation<a class="anchor" aria-label="anchor" href="#read-the-result-before-taking-a-column"></a>
+<h2 id="read-the-result-before-taking-a-column">Console output and <code>summary()</code><a class="anchor" aria-label="anchor" href="#read-the-result-before-taking-a-column"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span>
@@ -105,12 +102,14 @@ same inspection and export functions apply to other analyses returned by
 <span><span class="co">#&gt;   !  1 warning recorded: Reported lower bound exceeded the validated action ris...</span></span>
 <span><span class="co">#&gt;   i summary(x) explains the loss, settings and bounds; get_grades(x) returns</span></span>
 <span><span class="co">#&gt;     all grades.</span></span></code></pre></div>
-<p>The initial display gives the numbers of entities and grades,
-disclosed and withheld pair counts, and computation status. Grade 1 has
-highest priority; a shared grade withholds a comparison without
-declaring score equality. Since the reported loss depends on the
-weights, withholding cost and permitted grades, these settings are part
-of the interpretation of any exported risk.</p>
+<p>Printing <code>one</code> shows the entity and grade counts
+(<code>6 entities in 3 grades</code>), the posterior loss
+(<code>0.0417</code>), the ordered (“disclosed”, <code>12</code>) and
+unordered (“withheld”, <code>3</code>) pair counts, the solver status
+and gap, and any warnings. Grade 1 is the highest priority, and sharing
+a grade leaves that pair unordered without claiming that the two sites
+have equal scores; see <a href="a1-getting-started.html">Getting
+started: grading with one or two criteria</a>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;postrank_analysis_summary&gt;</span></span>
@@ -156,26 +155,87 @@ of the interpretation of any exported risk.</p>
 <span><span class="co">#&gt;     certificate.</span></span>
 <span><span class="co">#&gt;   i summary(x, details = TRUE) adds source records and identities; structured</span></span>
 <span><span class="co">#&gt;     fields remain available.</span></span></code></pre></div>
-<p>The summary adds settings, criterion-specific results, bounds and
-recorded warnings. Monte Carlo fragility is unsupported here because the
-input specifies an analytic normal law rather than target draws. An
-unsupported diagnostic differs from one that was available but not
-requested. Neither state implies a zero value, and the summary does not
-calculate missing results.</p>
-<p>The first prepared solve includes a small floating-point correction
-to its lower bound. The summary retains the warning despite a zero
-reported gap after correction. Further source records and identifiers
-are available by requesting detailed output:</p>
+<p><code>summary(one)</code> adds the policy settings
+(<code>weights</code>, <code>G_max</code>, and <code>tau</code>), a
+per-criterion table, the availability of optional summaries, and the
+full text of recorded warnings. Under <code>Optional results:</code>,
+<code>"unsupported for this input"</code> (here for Monte Carlo
+fragility, which was requested by default yet requires posterior draws
+rather than an analytic normal distribution) is distinct from
+<code>"not requested"</code> (meaning <code>FALSE</code> was passed
+before checking input support: <code>crossfit = TRUE</code> also
+requires joint draws, whereas <code>diagnostics = TRUE</code> on a
+normal input evaluates conditional-normal summaries under the
+<code>"Monte Carlo diagnostics"</code> label). Neither label means a
+value of zero, and <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> never runs new
+calculations.</p>
+<p>On joint IID or MCMC draw inputs, <code><a href="../reference/postrank.html">postrank()</a></code> computes
+pairwise Monte Carlo fragility by default while leaving cross-fitting
+and full trace diagnostics off unless requested. We can inspect
+<code>extras</code> and <code>fragility$summary</code> on the stored
+30-site, three-criterion draw analysis
+(<code>analysis_30x3_tau35</code>):</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">detailed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">one</span>, details <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Printing <code>detailed</code> displays the additional records
-identifying the input and computation. Numerical extraction uses the
-accessors below rather than parsing the console representation.</p>
+<code class="sourceCode R"><span><span class="va">a35</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"analysis_30x3_tau35"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">a35</span><span class="op">[[</span><span class="st">"extras"</span><span class="op">]</span><span class="op">]</span>, <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>requested <span class="op">=</span> <span class="va">e</span><span class="op">[[</span><span class="st">"requested"</span><span class="op">]</span><span class="op">]</span>, available <span class="op">=</span> <span class="va">e</span><span class="op">[[</span><span class="st">"available"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    reason <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">e</span><span class="op">[[</span><span class="st">"reason"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="st">""</span> <span class="kw">else</span> <span class="va">e</span><span class="op">[[</span><span class="st">"reason"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;             requested available        reason</span></span>
+<span><span class="co">#&gt; report_card      TRUE      TRUE              </span></span>
+<span><span class="co">#&gt; fragility        TRUE      TRUE              </span></span>
+<span><span class="co">#&gt; crossfit        FALSE     FALSE not_requested</span></span>
+<span><span class="co">#&gt; diagnostics     FALSE     FALSE not_requested</span></span>
+<span><span class="va">a35</span><span class="op">[[</span><span class="st">"fragility"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"summary"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pairs"</span>, <span class="st">"traced"</span>, <span class="st">"fragile"</span>,</span>
+<span>  <span class="st">"fragile_disclosed"</span>, <span class="st">"fragile_tied"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $pairs</span></span>
+<span><span class="co">#&gt; [1] 435</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $traced</span></span>
+<span><span class="co">#&gt; [1] 43</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $fragile</span></span>
+<span><span class="co">#&gt; [1] 20</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $fragile_disclosed</span></span>
+<span><span class="co">#&gt; [1] 14</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $fragile_tied</span></span>
+<span><span class="co">#&gt; [1] 6</span></span></code></pre></div>
+<p>A pair is flagged as fragile when its estimated weighted error in the
+likelier direction is within <code>z = 2</code> Monte Carlo standard
+errors of <code>tau</code>; these pairwise flags are descriptive
+summaries of simulation noise and need not change the jointly chosen
+grades (when <code>diagnostics = TRUE</code> or
+<code>crossfit = TRUE</code>, inspect <code>x$diagnostics</code> and
+<code>x$crossfit</code>; see <a href="m6-uncertainty-diagnostics.html">Monte Carlo diagnostics,
+cross-fitting, and IID bounds</a>).</p>
+<p>To add input and problem identity hashes, package and solver
+versions, and source descriptions to the console summary, set
+<code>details = TRUE</code>. To capture the formatted console lines as a
+character vector (matching the exported
+<code>format_postrank_*_cli()</code> wrappers), call
+<code><a href="https://rdrr.io/r/base/format.html" class="external-link">format()</a></code>:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">detailed</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">one</span>, details <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">one</span>, width <span class="op">=</span> <span class="fl">72</span>, tier <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "&lt;postrank_analysis&gt;  6 entities in 3 grades (sizes 2 / 2 / 2)"</span></span>
+<span><span class="co">#&gt; [2] "  One criterion: score_A."                                    </span></span>
+<span><span class="co">#&gt; [3] "  Posterior loss: 0.0417."                                    </span></span>
+<span><span class="co">#&gt; [4] "  Disclosed 12 of 15 pairs (80.0%); withheld 3."</span></span></code></pre></div>
+<p>Printing <code>detailed</code> displays those extra provenance lines
+(including the note
+<code>"Bounds are solver values; the gap is not regret"</code>, where
+regret means excess loss relative to the best grading under the true
+posterior), and <code>cat(..., sep = "\n")</code> writes captured
+<code><a href="https://rdrr.io/r/base/format.html" class="external-link">format()</a></code> lines to a log or file. In scripts, extract
+numbers with the accessors below rather than parsing printed console
+text.</p>
 </div>
 <div class="section level2">
-<h2 id="take-a-stable-grade-table">Grade and report-card tables<a class="anchor" aria-label="anchor" href="#take-a-stable-grade-table"></a>
+<h2 id="take-a-stable-grade-table">Grade tables and report-card tables<a class="anchor" aria-label="anchor" href="#take-a-stable-grade-table"></a>
 </h2>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grade_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span>
 <span><span class="va">grade_table</span></span>
 <span><span class="co">#&gt;   entity_id grade</span></span>
@@ -185,24 +245,31 @@ accessors below rather than parsing the console representation.</p>
 <span><span class="co">#&gt; 4         D     2</span></span>
 <span><span class="co">#&gt; 5         E     3</span></span>
 <span><span class="co">#&gt; 6         F     3</span></span></code></pre></div>
-<p>The default table has two columns: character <code>entity_id</code>
-and integer <code>grade</code>. Rows follow the original input order. A
-fit, its enclosing analysis, and a score-cut baseline use this same
-basic form. Optional report cards do not change the default columns.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p>By default, <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code> returns a two-column data
+frame with character <code>entity_id</code> and integer
+<code>grade</code> in the original input entity order. Calling
+<code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code> on a <code>postrank_analysis</code>, its
+<code>postrank_fit</code>, or a <code>postrank_baseline</code> always
+returns these same two columns, whether or not a report card was
+prepared:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">grade_table</span><span class="op">$</span><span class="va">entity_id</span>, <span class="va">sites</span><span class="op">$</span><span class="va">one</span><span class="op">$</span><span class="va">entity_ids</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">grade_table</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">one</span><span class="op">$</span><span class="va">fit</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
-<p>The <code>entity_id</code> column provides the key for joining
-results to other tables. Row numbers and potentially changing display
-names do not serve this role. A separately sorted copy may be used for
-presentation while the original table retains its correspondence with
-input order.</p>
-<p>The report-card table is requested explicitly:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<p>Join results back to your own entity metadata by
+<code>entity_id</code> rather than by row position or formatted display
+labels.</p>
+<p>To extract the marginal posterior summaries alongside the grades,
+request <code>what = "report_card"</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">card</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">one</span>, what <span class="op">=</span> <span class="st">"report_card"</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">card</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"entity_id"</span>, <span class="st">"grade"</span>, <span class="st">"mean_score_A"</span>,</span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">card</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] "entity_id"             "grade"                 "sort_rank"            </span></span>
+<span><span class="co">#&gt;  [4] "n_above"               "n_below"               "n_withheld"           </span></span>
+<span><span class="co">#&gt;  [7] "mean_score_A"          "lower_score_A"         "upper_score_A"        </span></span>
+<span><span class="co">#&gt; [10] "expected_rank_score_A"</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">card</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"entity_id"</span>, <span class="st">"grade"</span>, <span class="st">"mean_score_A"</span>,</span>
 <span>  <span class="st">"lower_score_A"</span>, <span class="st">"upper_score_A"</span><span class="op">)</span><span class="op">]</span>, digits <span class="op">=</span> <span class="fl">3</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Entity"</span>, <span class="st">"Grade"</span>, <span class="st">"Mean"</span>, <span class="st">"Interval lower"</span>, <span class="st">"Interval upper"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -258,15 +325,31 @@ input order.</p>
 </tr>
 </tbody>
 </table>
-<p>The table contains prepared score means and 90% equal-tail marginal
-intervals under the specified normal law. These describe score
-uncertainty rather than uncertainty in grade labels. Expected ranks and
-disclosed and withheld comparison counts are also included. Selection by
-column name avoids dependence on column positions.</p>
-<p>Report-card rows are ordered by grade and their recorded secondary
-order. That can differ from input order, as the two-criterion example
-shows:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<p>Along with <code>entity_id</code> and <code>grade</code>,
+<code>card</code> includes <code>sort_rank</code>, pair counts for each
+entity (<code>n_above</code>, <code>n_below</code>, and
+<code>n_withheld</code>), and per-criterion columns
+<code>mean_&lt;criterion&gt;</code>,
+<code>lower_&lt;criterion&gt;</code>,
+<code>upper_&lt;criterion&gt;</code>, and
+<code>expected_rank_&lt;criterion&gt;</code> (here 90% equal-tail
+marginal score intervals). If a criterion was negated at input
+construction (<code>orientation = "lower"</code>), these columns remain
+on that negated scale, so negating back to raw units swaps
+<code>lower_&lt;criterion&gt;</code> and
+<code>upper_&lt;criterion&gt;</code>. Select columns by name rather than
+column index. When a marginal posterior is skewed, its posterior mean
+can sit outside its equal-tail interval, and report-card tables and
+plots show the stored values unchanged; likewise, inputs that carry
+precomputed intervals only at one level (such as 90% in
+<code>pr_case_cde</code> and <code>pr_case_krw</code>, or 95% in
+<code>pr_case_alabama</code>) cannot recompute other interval
+levels.</p>
+<p>Rows of <code>as.data.frame(x, what = "report_card")</code> are
+ordered by <code>grade</code> and then by the report card’s secondary
+sort rule (<code>sort_rank</code>), which can differ from the original
+input order:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  input_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">two</span><span class="op">)</span><span class="op">$</span><span class="va">entity_id</span>,</span>
 <span>  report_card_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">two</span>, what <span class="op">=</span> <span class="st">"report_card"</span><span class="op">)</span><span class="op">$</span><span class="va">entity_id</span></span>
@@ -276,21 +359,17 @@ shows:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $report_card_order</span></span>
 <span><span class="co">#&gt; [1] "A" "C" "B" "D" "E" "F"</span></span></code></pre></div>
-<p>If a report card was not prepared, <code>what = "report_card"</code>
-reports the reason for its absence, while the ordinary grade table may
-remain available. Pairwise probabilities can suffice for grading without
-identifying marginal intervals. Supplied intervals retain their original
-level, such as the 95% intervals in the <a href="a4-alabama-opportunity.html">Alabama case</a>. Table conversion
-neither creates missing summaries nor changes an interval’s level.</p>
-<p>For code written before version 1.0, the explicit
-<code>what = "report_card"</code> replaces the former behavior in which
-an analysis could return its full card by default. The default table
-therefore retains the two-column structure described above.</p>
+<p>If a report card could not be built (for example, when an input
+supplies pairwise comparison probabilities without marginal intervals),
+calling <code>as.data.frame(x, what = "report_card")</code> stops with
+an error explaining why it is unavailable, while
+<code>as.data.frame(x)</code> still returns the two-column grade
+table.</p>
 </div>
 <div class="section level2">
-<h2 id="extract-grades-pair-relations-and-loss">Grades, pair relations and loss<a class="anchor" aria-label="anchor" href="#extract-grades-pair-relations-and-loss"></a>
+<h2 id="extract-grades-pair-relations-and-loss">Extracting grades, pair relations, profiles, and loss<a class="anchor" aria-label="anchor" href="#extract-grades-pair-relations-and-loss"></a>
 </h2>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grades</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span>
 <span><span class="va">grades</span></span>
 <span><span class="co">#&gt; A B C D E F </span></span>
@@ -302,15 +381,18 @@ therefore retains the two-column structure described above.</p>
 <span><span class="co">#&gt;        A  0  0 1</span></span>
 <span><span class="co">#&gt;        B  0  0 1</span></span>
 <span><span class="co">#&gt;        C -1 -1 0</span></span></code></pre></div>
-<p>The grade vector is named by entity ID. In the relation matrix,
-<code>[i, j]</code> is 1 if row entity <code>i</code> is disclosed above
-column entity <code>j</code>, −1 for the reverse direction and 0 for
-withholding. The diagonal is zero. Thus A versus B is withheld and A is
-disclosed above C. Matrix entries represent reporting decisions rather
-than posterior probabilities.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<p><code><a href="../reference/get_grades.html">get_grades()</a></code> returns an integer vector named by
+<code>entity_id</code>. <code><a href="../reference/get_relations.html">get_relations()</a></code> returns an
+<code>n x n</code> integer matrix in which entry <code>[i, j]</code> is
+<code>1</code> when row entity <code>i</code> is placed in a
+higher-priority grade than column entity <code>j</code>, <code>-1</code>
+for the opposite order, and <code>0</code> when the pair shares a grade
+(or on the diagonal). Thus <code>[ "A", "B" ]</code> is <code>0</code>
+(left unordered) and <code>[ "A", "C" ]</code> is <code>1</code>
+(<code>A</code> ordered above <code>C</code>).</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">profile</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_profile.html">get_profile</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">profile</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion"</span>, <span class="st">"weight"</span>, <span class="st">"E"</span>, <span class="st">"E_over_M"</span>,</span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">profile</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion"</span>, <span class="st">"weight"</span>, <span class="st">"E"</span>, <span class="st">"E_over_M"</span>,</span>
 <span>  <span class="st">"E_over_N"</span>, <span class="st">"risk"</span><span class="op">)</span><span class="op">]</span>, digits <span class="op">=</span> <span class="fl">5</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
@@ -330,7 +412,7 @@ than posterior probabilities.</p>
 <td align="right">0.04165</td>
 </tr></tbody>
 </table>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">risk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_risk.html">get_risk</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span>
 <span><span class="va">risk</span></span>
 <span><span class="co">#&gt; $risk</span></span>
@@ -344,33 +426,32 @@ than posterior probabilities.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $status</span></span>
 <span><span class="co">#&gt; [1] "optimal"</span></span></code></pre></div>
-<p><code>E</code> is the posterior expected number of wrong-direction
-comparisons among the disclosed pairs. <code>E_over_N</code> divides by
-the number of disclosed pairs; <code>E_over_M</code> divides by all
-possible pairs. The criterion’s <code>risk</code> also includes the cost
-of withholding. For this one-criterion example, the criterion loss and
-the overall loss are the same:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<p>In <code><a href="../reference/get_profile.html">get_profile()</a></code>, <code>E</code> is the posterior
+expected number of wrong-direction ordered pairs on that criterion,
+<code>E_over_N</code> divides <code>E</code> by the number of ordered
+pairs <code>N</code>, <code>E_over_M</code> divides <code>E</code> by
+all <code>M</code> pairs, and <code>risk</code> adds the unordered-pair
+cost <code>tau * (M - N) / M</code>:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">N</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">relations</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/lower.tri.html" class="external-link">upper.tri</a></span><span class="op">(</span><span class="va">relations</span><span class="op">)</span><span class="op">]</span> <span class="op">!=</span> <span class="fl">0L</span><span class="op">)</span></span>
 <span><span class="va">M</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">choose</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">grades</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">loss_from_parts</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">profile</span><span class="op">$</span><span class="va">E</span> <span class="op">+</span> <span class="va">one</span><span class="op">$</span><span class="va">settings</span><span class="op">$</span><span class="va">tau</span> <span class="op">*</span> <span class="op">(</span><span class="va">M</span> <span class="op">-</span> <span class="va">N</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="va">M</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>from_parts <span class="op">=</span> <span class="va">loss_from_parts</span>, stored <span class="op">=</span> <span class="va">risk</span><span class="op">$</span><span class="va">risk</span><span class="op">)</span></span>
+<span><span class="va">tau</span> <span class="op">&lt;-</span> <span class="fl">0.2</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>from_parts <span class="op">=</span> <span class="op">(</span><span class="va">profile</span><span class="op">$</span><span class="va">E</span> <span class="op">+</span> <span class="va">tau</span> <span class="op">*</span> <span class="op">(</span><span class="va">M</span> <span class="op">-</span> <span class="va">N</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="va">M</span>, stored <span class="op">=</span> <span class="va">risk</span><span class="op">$</span><span class="va">risk</span><span class="op">)</span></span>
 <span><span class="co">#&gt; from_parts     stored </span></span>
 <span><span class="co">#&gt; 0.04165164 0.04165164</span></span></code></pre></div>
-<p>For several criteria, <code>get_profile(two)</code> returns one row
-per criterion; equal weights can yield different error rates.
-<code><a href="../reference/get_risk.html">get_risk()</a></code> returns a list containing <code>risk</code>,
-<code>lower_bound</code>, <code>gap</code> and <code>status</code>. The
-risk is the primary objective of the specified problem: a weighted
-average of criterion losses in these examples, or a worst-criterion
-objective in minimax analyses. Comparison of reported losses therefore
-requires their objective definitions.</p>
-<p>For the same one-criterion input, the following calculation evaluates
-the fixed action withholding every pair, without a new optimization:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<p>With multiple criteria, <code>get_profile(two)</code> has one row per
+criterion, while <code>get_risk(two)</code> returns a named list
+(<code>risk</code>, <code>lower_bound</code>, <code>gap</code>, and
+<code>status</code>) for the overall objective (weighted average of
+criterion losses by default, or worst-criterion loss when
+<code>objective = "minimax"</code>).</p>
+<p>You can also evaluate any fixed integer grade vector on the same
+input without running a solver via <code><a href="../reference/postrank_evaluate.html">postrank_evaluate()</a></code>.
+Placing every site in grade 1 leaves all pairs unordered:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">withheld</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_evaluate.html">postrank_evaluate</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1L</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">grades</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">grades</span><span class="op">)</span><span class="op">)</span>, <span class="va">sites</span><span class="op">$</span><span class="va">one</span>,</span>
-<span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, tau <span class="op">=</span> <span class="va">one</span><span class="op">$</span><span class="va">settings</span><span class="op">$</span><span class="va">tau</span></span>
+<span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">0.2</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">withheld</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"N"</span>, <span class="st">"E_over_N"</span>, <span class="st">"primary_risk"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt; $N</span></span>
@@ -382,99 +463,110 @@ the fixed action withholding every pair, without a new optimization:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $primary_risk</span></span>
 <span><span class="co">#&gt; [1] 0.2</span></span></code></pre></div>
-<p>Since no comparisons are disclosed, <code>E_over_N</code> is
-<code>NA</code> and the loss equals the withholding cost. This is a
-valid grading with an undefined error proportion, distinct from a
-computation that returned no valid grade vector.</p>
+<p>Because <code>N</code> is <code>0</code>, <code>E_over_N</code> is
+<code>NA</code> (not <code>0</code>) and <code>primary_risk</code>
+equals <code>tau</code> (<code>0.2</code>). That all-unordered report is
+a valid one-grade action, which is distinct from a failed or timed-out
+solver run that returned no checked grading.</p>
 </div>
 <div class="section level2">
-<h2 id="keep-computation-status-with-the-numbers">Computation status and numerical results<a class="anchor" aria-label="anchor" href="#keep-computation-status-with-the-numbers"></a>
+<h2 id="keep-computation-status-with-the-numbers">Solver status, bounds, and missing-grade states<a class="anchor" aria-label="anchor" href="#keep-computation-status-with-the-numbers"></a>
 </h2>
-<p>The prepared examples have <code>optimal</code> status. In other
-analyses, computation may terminate before establishing optimality.
-Whether validated grades exist must also be considered when interpreting
-status. The table describes possible states; it does not report
-additional solver executions.</p>
+<p>Both stored tutorial results have status <code>"optimal"</code>. On
+larger problems or tight time limits, a solver run can stop before
+proving optimality or before finding any checked grading. Always read
+the status alongside whether a checked grading is present
+(<code>!is.null(get_grades(x))</code>):</p>
 <table class="table">
 <colgroup>
 <col width="50%">
 <col width="50%">
 </colgroup>
 <thead><tr class="header">
-<th>Recorded state</th>
-<th>Interpretation</th>
+<th align="left">Solver status and grading state</th>
+<th align="left">How to read it</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td>
-<code>optimal</code>, with validated grades</td>
-<td>Optimal within the recorded solver tolerances. The bound, gap and
-any numerical warnings provide the accompanying numerical evidence.</td>
+<td align="left">
+<code>"optimal"</code>, with a checked grading</td>
+<td align="left">Optimal within the requested solver tolerances; check
+<code>lower_bound</code>, <code>gap</code>, and <code>warnings</code>
+for the numerical details.</td>
 </tr>
 <tr class="even">
-<td>
-<code>feasible_not_certified</code>, with validated grades</td>
-<td>A usable grading was found, but the available bound or gap does not
-establish the requested optimality.</td>
+<td align="left">
+<code>"feasible_not_certified"</code>, with a checked
+grading</td>
+<td align="left">A valid grading was found and checked, while the lower
+bound or gap did not reach the requested optimality tolerance.</td>
 </tr>
 <tr class="odd">
-<td>
-<code>time_limit</code>, with validated grades</td>
-<td>The time limit was reached; the stored grading can be read and
-evaluated, with its remaining gap or missing bound disclosed.</td>
+<td align="left">
+<code>"time_limit"</code>, with a checked grading</td>
+<td align="left">Search stopped at the time limit; the stored best
+grading can be used and reported together with its remaining
+<code>gap</code> (or <code>NA</code> if no bound was obtained).</td>
 </tr>
 <tr class="even">
-<td>
-<code>time_limit</code>, without validated grades</td>
-<td>There is no grading to interpret. The termination status and any
-usable lower bound can still be reported.</td>
+<td align="left">
+<code>"time_limit"</code>, without a checked
+grading</td>
+<td align="left">Search stopped before any candidate grading passed
+validation; there are no grades to use, though <code>status</code> and
+any <code>lower_bound</code> remain recorded.</td>
 </tr>
 <tr class="odd">
-<td><code>infeasible</code></td>
-<td>The solver reports that the requested constraints cannot be
-satisfied. This is not a one-grade, all-withheld result.</td>
+<td align="left"><code>"infeasible"</code></td>
+<td align="left">The requested constraints (for example, tight criterion
+error budgets <code>q</code> or <code>exact_G</code>) cannot be
+satisfied simultaneously; this is not an all-unordered grading.</td>
 </tr>
 </tbody>
 </table>
-<p>Results with <code>numerical_error</code>, <code>unknown</code> or an
-unexpected <code>unbounded</code> status require examination of recorded
-warnings and validation details before an action is used. Normalized
-status records the package’s interpretation separately from the backend
-message. A gap quantifies optimization uncertainty conditional on the
-supplied probabilities, rather than posterior uncertainty about a
-population quantity.</p>
-<p>In the absence of validated grades, <code><a href="../reference/get_grades.html">get_grades()</a></code> and
-<code><a href="../reference/get_relations.html">get_relations()</a></code> return <code>NULL</code>. The basic table
-and criterion profile have zero rows with their usual columns.
-<code><a href="../reference/get_risk.html">get_risk()</a></code> retains status and any usable lower bound,
-whereas action risk and gap are <code>NA</code>. An empty result thus
-requires interpretation of the recorded status; assigning all entities
-to grade 1 would introduce an action that the computation did not
-return.</p>
+<p>Statuses <code>"numerical_error"</code>, <code>"unknown"</code>, or
+<code>"unbounded"</code> indicate solver trouble; inspect the recorded
+<code>warnings</code> before using any output. As explained in <a href="m5-computing-grades.html">Computing grades, choosing settings, and
+reading solver bounds</a>, the optimization <code>gap</code> measures
+how close the returned grading’s loss is to the solver’s lower bound for
+the supplied comparison probabilities, not posterior uncertainty in the
+entity scores.</p>
+<p>When a run finishes without a checked grading,
+<code><a href="../reference/get_grades.html">get_grades()</a></code> and <code><a href="../reference/get_relations.html">get_relations()</a></code> return
+<code>NULL</code>, <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code> and
+<code><a href="../reference/get_profile.html">get_profile()</a></code> return zero-row data frames with their normal
+column names and types, and <code><a href="../reference/get_risk.html">get_risk()</a></code> keeps
+<code>status</code> and any <code>lower_bound</code> while setting
+<code>risk</code> and <code>gap</code> to <code>NA</code>. Never
+substitute <code>rep(1L, n)</code> for <code>NULL</code> grades:
+<code>NULL</code> means no checked grading was returned.</p>
 </div>
 <div class="section level2">
-<h2 id="save-a-table-and-preserve-an-analysis">Tabular export and object storage<a class="anchor" aria-label="anchor" href="#save-a-table-and-preserve-an-analysis"></a>
+<h2 id="save-a-table-and-preserve-an-analysis">Saving CSV tables and RDS objects<a class="anchor" aria-label="anchor" href="#save-a-table-and-preserve-an-analysis"></a>
 </h2>
-<p>CSV stores tabular output, whereas RDS retains the complete R object,
-including settings, summaries and computation records. The examples use
-a new temporary directory to avoid overwriting existing files:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<p>Use CSV when exporting flat tables to other software, and RDS when
+saving the complete <code>postrank_analysis</code> object in R with its
+settings, report card, solver bounds, and warnings intact. Here we write
+both to a fresh temporary folder:</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">export_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="st">"postrank-exports-"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">export_dir</span><span class="op">)</span></span>
 <span><span class="va">csv_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">export_dir</span>, <span class="st">"grades.csv"</span><span class="op">)</span></span>
 <span><span class="va">rds_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">export_dir</span>, <span class="st">"analysis.rds"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">grade_table</span>, <span class="va">csv_file</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">csv_again</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">csv_file</span>,</span>
 <span>  colClasses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>entity_id <span class="op">=</span> <span class="st">"character"</span>, grade <span class="op">=</span> <span class="st">"integer"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">csv_again</span>, <span class="va">grade_table</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
-<p>A character ID column preserves leading zeros in identifiers such as
-<code>"01001"</code>, and <code>row.names = FALSE</code> omits an
-additional row-index column. Interval definitions, settings and solver
-status must be exported separately when CSV is used for a report
-table.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<p>Specify
+<code>colClasses = c(entity_id = "character", grade = "integer")</code>
+when reading CSV files back into R so leading zeros in IDs such as
+<code>"01001"</code> are preserved, and <code>row.names = FALSE</code>
+when writing so no extra row-number column is added. Because a CSV table
+drops policy settings, interval levels, and solver status, record those
+alongside any exported table.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">one</span>, <span class="va">rds_file</span><span class="op">)</span></span>
 <span><span class="va">restored</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">rds_file</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="../reference/get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">restored</span><span class="op">)</span>, <span class="va">grades</span><span class="op">)</span></span>
@@ -483,18 +575,25 @@ table.</p>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">restored</span>, what <span class="op">=</span> <span class="st">"report_card"</span><span class="op">)</span>, <span class="va">card</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
-<p>Reading the RDS restores the prepared object without rerunning the
-optimizer. Reproducibility additionally requires the package version and
-source input. RDS is an R object format whose compatibility with every
-future software version cannot be assumed.</p>
+<p><code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS()</a></code> restores the full analysis object without
+calling a solver. Keep the <code>postrank</code> version and source
+input alongside archived <code>.rds</code> files for long-term
+reproducibility.</p>
 </div>
 <div class="section level2">
-<h2 id="write-a-standalone-html-report">Standalone HTML reports<a class="anchor" aria-label="anchor" href="#write-a-standalone-html-report"></a>
+<h2 id="write-a-standalone-html-report">Writing a standalone HTML report<a class="anchor" aria-label="anchor" href="#write-a-standalone-html-report"></a>
 </h2>
-<p>Supplying a fit together with its matching analysis includes the
-prepared posterior report card alongside grades, loss, status and
-available diagnostics:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<p><code><a href="../reference/postrank_report.html">postrank_report()</a></code> writes a self-contained English HTML
+report from stored results without running a solver. Note that its first
+argument must be the <code>postrank_fit</code> object
+(<code>one$fit</code>, not <code>one</code> directly), while passing
+<code>analysis = one</code> supplies the report card and any stored
+optional summaries (matching diagnostics stored on <code>analysis</code>
+or passed via <code>diagnostics =</code>, including
+<code><a href="../reference/postrank_coefficient_diagnose.html">postrank_coefficient_diagnose()</a></code> summaries and their
+<code>NA_reason</code> fields, are included when present; missing
+summaries stay marked unavailable and are never recomputed):</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">html_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">export_dir</span>, <span class="st">"grades-report.html"</span><span class="op">)</span></span>
 <span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_report.html">postrank_report</a></span><span class="op">(</span><span class="va">one</span><span class="op">$</span><span class="va">fit</span>, analysis <span class="op">=</span> <span class="va">one</span>,</span>
 <span>  output_file <span class="op">=</span> <span class="va">html_file</span>, lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
@@ -507,24 +606,33 @@ available diagnostics:</p>
 <span><span class="co">#&gt;   i  Use output_file in postrank_report() to save the English HTML report.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">output_file</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "grades-report.html"</span></span></code></pre></div>
-<p>The English HTML report embeds its figures for offline reading and
-uses stored results throughout. Missing intervals or diagnostics retain
-their recorded reasons for unavailability. An existing destination is
-refused, so each saved version requires a new filename. Setting
-<code>figures = FALSE</code> produces text and tables without embedded
-figures.</p>
-<p>The temporary directory persists for the current R session.
-Longer-term storage requires a new destination within the project. RDS
-retains the analysis for subsequent R use, HTML provides a readable
-report and CSV provides selected tables for other software.</p>
-<p>Figure dimensions, labels and entity selection are described in <a href="a7-figures-sensitivity.html">Figures and sensitivity analysis</a>.
-Input assumptions are discussed in <a href="a5-your-posterior-results.html">Analysis of supplied posterior
-results</a>.</p>
-<p><a href="m5-computing-grades.html">Computing grades and choosing
-settings</a> develops the meaning of solver bounds and admissible
-reports. <a href="m6-uncertainty-diagnostics.html">Monte Carlo
-uncertainty and diagnostics</a> covers the distinct numerical
-uncertainty in the posterior inputs.</p>
+<p>Line 1 of <code>print(report)</code>
+(<code>Report saved as grades-report.html</code>) confirms that the file
+was written to <code>output_file</code> (the generic footer line
+mentioning <code>output_file</code> is always printed by
+<code>postrank_report</code>’s console formatter). Figures are embedded
+directly in the HTML file for offline viewing; set
+<code>figures = FALSE</code> for a smaller text-and-table report.
+<code><a href="../reference/postrank_report.html">postrank_report()</a></code> refuses to overwrite an existing
+<code>output_file</code>, so choose a new file path for each saved
+report version, and write to a project directory rather than
+<code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile()</a></code> when keeping reports across R sessions.</p>
+</div>
+<div class="section level2">
+<h2 id="where-next">Where next<a class="anchor" aria-label="anchor" href="#where-next"></a>
+</h2>
+<ul>
+<li>To customize the seven plot types and explore changes to
+<code>tau</code>, <code>G_max</code>, and <code>weights</code>, read <a href="a7-figures-sensitivity.html">Figures and sensitivity to reporting
+settings</a>.</li>
+<li>To build inputs from your own posterior draws or probability tables,
+read <a href="a5-your-posterior-results.html">Preparing your posterior
+draws and comparison probabilities</a>.</li>
+<li>For details on solver bounds, gaps, and Monte Carlo diagnostics, see
+<a href="m5-computing-grades.html">Computing grades, choosing settings,
+and reading solver bounds</a> and <a href="m6-uncertainty-diagnostics.html">Monte Carlo diagnostics,
+cross-fitting, and IID bounds</a>.</li>
+</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

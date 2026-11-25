@@ -1,4 +1,4 @@
-# External review PKG-01/02/03/04/08/09/17: scientific-input and row-linkage
+# Input validation, row-alignment, quantile-cut, and mixture-interval
 # invariants, with independent arithmetic/CDF checks rather than snapshots.
 math_review_weights <- c(need_A = .6, need_B = .4)
 math_review_fit <- function(settings) {

@@ -36,57 +36,77 @@
   invisible(TRUE)
 }
 
-#' Construct Inner and Outer Problems for Criterion Protections
+#' Build Inner and Outer Problems for Error Budgets
 #'
-#' Two empirical problems are constructed from a weighted problem with
-#' criterion-specific error budgets. Simultaneous coefficient-error radii are
-#' used to tighten the budgets for the inner problem and relax them for the
-#' outer problem. The construction itself requires no optimization.
+#' `postrank_protection_envelopes()` builds two empirical grading problems from
+#' a weighted problem that carries criterion error budgets `q_k`. Here a
+#' *protection envelope* is the pair of tightened (`inner`, using
+#' `q_k - epsilon_k`) and relaxed (`outer`, using `q_k + epsilon_k`) problems
+#' formed with simultaneous IID probability radii `epsilon_k` from
+#' [postrank_iid_bounds()] so that, on the simultaneous `1 - alpha` event, their
+#' feasible sets bracket the unknown true budget-constrained set. Building the
+#' envelopes runs no solver.
 #'
-#' @param problem A public weighted [postrank_problem()] with nonempty `q`
-#'   budgets. Begin with the original public problem, not a previously created
-#'   envelope. Minimax is unsupported.
-#' @param bounds A [postrank_iid_bounds()] object from exactly the same posterior
-#'   input, retaining every declared criterion, including zero-weight criteria.
-#' @return A `postrank_protection_envelopes` object containing the original
-#'   `public_problem`, `bounds`, `public_q`, internal `inner_problem` and
-#'   `outer_problem`, and their signed `thresholds`. The original problem and
-#'   public budgets are preserved. No statistical or numerical certificate is
-#'   issued.
-#' @details The empirical rows are
-#'   \eqn{\widehat E_k\leq(q_k-\varepsilon_k)N} for the inner problem and
-#'   \eqn{\widehat E_k\leq(q_k+\varepsilon_k)N} for the outer problem.
-#'   Here `N` counts disclosed pairs, not all possible pairs; `E` is the sum
-#'   of directional-error probabilities on that criterion. Thresholds are
-#'   deliberately not clipped to the public `q` range.
+#' @param problem Original public weighted `postrank_problem` from
+#'   [postrank_problem()] with non-empty `q` budgets (`objective = "weighted"`
+#'   and no existing `protection_envelope`). `objective = "minimax"` is not
+#'   supported.
+#' @param bounds A `postrank_iid_bounds` object from [postrank_iid_bounds()]
+#'   built on the exact same posterior input, retaining every declared criterion
+#'   in `problem` (including zero-weight criteria) in the same order.
+#' @return A `postrank_protection_envelopes` list containing `public_problem`,
+#'   `public_q`, `bounds`, `inner_problem`, `outer_problem`, signed
+#'   `thresholds = list(inner = ..., outer = ...)`, `envelope_identity`, and
+#'   status fields (`status = "diagnostic_only"`, `bound_computed = FALSE`, and
+#'   `guarantee_issued = FALSE`). This object does not issue a statistical or
+#'   numerical certificate.
+#' @details
+#' For each protected criterion `k`, the empirical linear inequality is
+#' \eqn{\widehat E_k \le (q_k - \varepsilon_k) N} in `inner_problem` and
+#' \eqn{\widehat E_k \le (q_k + \varepsilon_k) N} in `outer_problem`, where `N`
+#' is the number of disclosed (ordered) pairs and \eqn{\widehat E_k} is the
+#' empirical sum of wrong-direction probabilities on criterion `k`. The signed
+#' thresholds `q_k - epsilon_k` and `q_k + epsilon_k` are internal linear
+#' constraint coefficients and are not clipped to `(0, 1)` (nor accepted by the
+#' public `q` argument of [postrank_settings()]).
 #'
-#'   On the simultaneous coefficient event, the inner feasible family lies
-#'   inside the true protected family, which lies inside the outer family,
-#'   subject also to valid numerical feasibility checks. A negative inner
-#'   threshold excludes positive disclosure on that protected criterion. An
-#'   all-withheld action has `N = 0` and satisfies these rows when the action
-#'   family permits it; exact-G with more than one nonempty grade excludes it.
-#'   Thus an infeasible inner problem does not establish infeasibility of the
-#'   original protected problem. A zero criterion-loss weight does not remove
-#'   an explicit protection or its need for a coefficient radius.
+#' On the simultaneous `1 - alpha` coefficient event (and subject to valid
+#' numerical feasibility checks), every grading feasible for `inner_problem`
+#' satisfies the true posterior `q` budgets, and every grading satisfying the
+#' true posterior `q` budgets is feasible for `outer_problem`. When
+#' `q_k - epsilon_k < 0`, no grading with `N > 0` can satisfy that inner row,
+#' whereas the single-grade all-withheld grading has `N = 0` and remains
+#' feasible whenever `G = 1` is allowed (`exact_G >= 2` excludes `G = 1`).
+#' Therefore an infeasible `inner_problem` does not prove that the true
+#' budget-constrained problem is infeasible. Setting a criterion's objective
+#' `weight` to `0` keeps any explicit `q_k` budget and its `epsilon_k` radius
+#' active.
 #'
-#'   The models retain the original objective and grade-count family. Their
-#'   signed thresholds are internal linear inequalities, not new accepted
-#'   values for the public `q` argument. [postrank_protection_analysis()] can
-#'   solve the two problems and combine an inner action with a whole-outer
-#'   lower bound. Construction alone does not establish that an action satisfies
-#'   the error budgets under the supplied posterior law.
-#' @seealso [postrank_iid_bounds()], [postrank_protection_analysis()]
+#' Pass the returned object to [postrank_protection_analysis()] to solve both
+#' problems and compare an inner grading against an outer whole-problem lower
+#' bound.
+#' @seealso [postrank_iid_bounds()], [postrank_protection_analysis()],
+#'   [postrank_guarantee_capabilities()]
 #' @examples
-#' bounds <- postrank_iid_bounds(postrank_toy, alpha = .05,
-#'   alpha_by_criterion = c(need_A = .025, need_B = .025),
-#'   design = list(sample_sizes_fixed_before_sampling = TRUE,
-#'     alpha_fixed_before_sampling = TRUE, adaptive_stopping = FALSE,
+#' bounds <- postrank_iid_bounds(
+#'   postrank_toy,
+#'   alpha = 0.05,
+#'   alpha_by_criterion = c(need_A = 0.025, need_B = 0.025),
+#'   design = list(
+#'     sample_sizes_fixed_before_sampling = TRUE,
+#'     alpha_fixed_before_sampling = TRUE,
+#'     adaptive_stopping = FALSE,
 #'     planned_sample_sizes = c(need_A = 32L, need_B = 32L),
-#'     declaration_note = "Prespecified in the bundled synthetic Normal generator"))
-#' problem <- postrank_problem(postrank_pairwise(postrank_toy),
-#'   weights = c(need_A = .6, need_B = .4), tau = .25, G_max = 3L,
-#'   q = c(need_A = .2))
+#'     declaration_note = "Prespecified in the bundled synthetic Normal generator"
+#'   )
+#' )
+#' problem <- postrank_problem(
+#'   postrank_pairwise(postrank_toy),
+#'   weights = c(need_A = 0.6, need_B = 0.4),
+#'   tau = 0.25,
+#'   G_max = 3L,
+#'   q = c(need_A = 0.2)
+#' )
 #' envelopes <- postrank_protection_envelopes(problem, bounds)
 #' envelopes$thresholds
 #' identical(envelopes$public_problem, problem)
@@ -192,7 +212,7 @@ postrank_protection_envelopes <- function(problem,bounds) {
   computed <- is.finite(value)&&!length(reasons)
   if(!computed)value <- NA_real_
   status <- if(computed)"diagnostic_only" else "not_established"
-  # Fits are exposed once; attempt receipts retain outcome and option metadata.
+  # Store fits once at top level; attempt records keep outcome and option metadata.
   attempts$inner$fit <- NULL;attempts$outer$fit <- NULL
   out <- c(list(schema_version="0.1.0",envelope_identity=envelopes$envelope_identity,
     input_identity=envelopes$input_identity,public_problem_identity=envelopes$public_problem_identity,
@@ -214,75 +234,122 @@ postrank_protection_envelopes <- function(problem,bounds) {
   out
 }
 
-#' Solve Protection Envelopes and Compare Their Risk Bounds
+#' Solve Protection Envelopes and Bound Regret
 #'
-#' The inner and outer problems from [postrank_protection_envelopes()] are
-#' solved to obtain a conditional regret reference for the inner report under
-#' the true criterion protections. The two optimizations are performed
-#' sequentially. Both attempt records are retained even when the first
-#' optimization fails or is infeasible.
+#' `postrank_protection_analysis()` solves the tightened (`inner`) and relaxed
+#' (`outer`) problems in a protection envelope from
+#' [postrank_protection_envelopes()] (a pair of empirical problems that shift
+#' criterion error budgets `q_k` by `-epsilon_k` and `+epsilon_k`) to compute
+#' an analytic upper bound on weighted-risk regret relative to the true
+#' budget-constrained family. The two solves run sequentially, and both attempt
+#' records are kept even if the inner solve fails or is infeasible.
 #'
-#' @param envelopes An object from [postrank_protection_envelopes()].
-#' @param backend Explicit `"highs"` or `"gurobi"`, or `NULL` to use the
-#'   `postrank.backend` option and then Gurobi. There is no backend fallback.
-#'   An unavailable selected backend raises an error before the attempts.
-#' @param control A [postrank_control()] object or named control list passed
-#'   to each of the two solves. A time limit applies separately to each solve.
-#' @return A `postrank_protection_analysis` object with `inner_fit`, `outer_fit`,
-#'   two `attempts`, thresholds, and any unavailable `reasons`. When usable, it
-#'   contains `inner_risk_upper`, `outer_whole_problem_risk_lower`, `delta_w`,
-#'   and `computed_value`; otherwise that value is `NA` and the status is
-#'   `"not_established"`. Computed values have `"diagnostic_only"` status,
-#'   not numerical or finite-sample certification.
-#' @details Let \eqn{U_{\rm inner}} be the risk of a validated inner candidate,
-#'   \eqn{L_{\rm outer}} a lower bound for the whole outer problem, and
-#'   \eqn{\delta_w=\sum_k w_k\varepsilon_k}. The returned reference is
-#'   \eqn{U_{\rm inner}-L_{\rm outer}+2\delta_w}. Under the simultaneous
-#'   coefficient event and valid numerical feasibility and bounds, this bounds
-#'   the inner report's supplied-law regret relative to the true protected
-#'   family.
+#' @param envelopes A `postrank_protection_envelopes` object from
+#'   [postrank_protection_envelopes()].
+#' @param backend Solver to use, `"gurobi"` or `"highs"`. If `NULL` (the
+#'   default), `getOption("postrank.backend")` is used, or `"gurobi"` (which
+#'   requires a license) when unset; install the `highs` package and pass
+#'   `backend = "highs"` to use HiGHS. If the chosen solver package is not
+#'   installed or cannot be loaded, `postrank_protection_analysis()` stops with
+#'   an error before attempting either solve. `postrank` never switches solvers
+#'   automatically. Uncaught runtime errors escaping [postrank_solve()] (for
+#'   example under `strategy = "label_mip"` or LP setup) leave `inner_fit` or
+#'   `outer_fit` as `NULL`, populate that solve's `attempts$*$error`, and record
+#'   `"inner_solve_error"` or `"outer_solve_error"` in `reasons`; under the
+#'   default `strategy = "staged"`, runtime errors caught during LP cut rounds
+#'   or Stage-C MIP return a `postrank_fit` with warnings and record
+#'   `"outer_whole_problem_lower_unavailable"` in `reasons`.
+#' @param control A [postrank_control()] object or named control list passed to
+#'   each of the two [postrank_solve()] calls (`time_limit` applies separately
+#'   to the inner solve and the outer solve).
+#' @return A `postrank_protection_analysis` list containing `inner_fit` and
+#'   `outer_fit` (`NULL` when an uncaught solve error occurred), per-solve
+#'   metadata in `attempts` (`inner` and `outer`), `backend`, `control`,
+#'   `solve_count`, `public_q`, `thresholds`, `inner_risk_upper`,
+#'   `outer_whole_problem_risk_lower`,
+#'   `empirical_inner_upper_minus_outer_lower`, `delta_w`, `computed_value`,
+#'   `formula`, `status`, `reasons`, `interpretation`, `assumptions`, identity
+#'   hashes (`analysis_identity`, `envelope_identity`, `input_identity`,
+#'   `public_problem_identity`, `coefficient_bound_identity`), `schema_version`,
+#'   and status flags. When usable bounds are available, `status` and
+#'   `guarantee_status` are `"diagnostic_only"` and `bound_computed` is `TRUE`
+#'   (`guarantee_issued`, `numerically_verified`, `numerical_certification`, and
+#'   `finite_sample_certificate` remain `FALSE`); otherwise `computed_value` is
+#'   `NA_real_`, `status` and `guarantee_status` are `"not_established"`, and
+#'   `reasons` lists every missing or failed check.
+#' @details
+#' Let \eqn{U_{\mathrm{inner}}} be the evaluated empirical risk of the verified
+#' inner grading (`analysis$inner_fit$grade`, or
+#' `get_grades(analysis$inner_fit)`), \eqn{L_{\mathrm{outer}}} be a
+#' whole-problem empirical risk lower bound from `outer_problem`, and
+#' \eqn{\delta_w = \sum_k w_k \varepsilon_k}. When both endpoints are valid and
+#' \eqn{U_{\mathrm{inner}} \ge L_{\mathrm{outer}}}, `computed_value` is
+#' \deqn{(U_{\mathrm{inner}} - L_{\mathrm{outer}}) + 2 \delta_w.}
+#' On the simultaneous `1 - alpha` IID coefficient event of `envelopes$bounds`
+#' (assuming valid numerical feasibility of the inner grading), the inner
+#' grading `analysis$inner_fit$grade` satisfies the true posterior `q` budgets.
+#' Under the same event and a valid solver-reported whole-outer lower bound, its
+#' true posterior weighted risk exceeds the minimum true posterior weighted risk
+#' over the true `q`-protected family by at most `computed_value`.
 #'
-#'   The calculation needs a validated inner candidate and a usable whole-outer
-#'   lower bound without numerical issues. Neither the inner lower bound nor
-#'   an outer incumbent may replace that lower bound. Missing incumbents,
-#'   unusable bounds, solve errors, and an inverted cross-problem gap retain
-#'   explicit reasons. A status label such as `"optimal"` is not sufficient.
-#'   An infeasible inner envelope alone does not prove that the original
-#'   protected family is empty.
+#' Computing `computed_value` requires a checked inner grading without numerical
+#' issues and a usable whole-problem outer lower bound (`outer_fit$status$normalized`
+#' in `"optimal"`, `"feasible_not_certified"`, or `"time_limit"`, a recognized
+#' whole-problem `outer_fit$objective$bound_source`, and no numerical issues; a
+#' solver `"optimal"` status label alone is insufficient). Neither the inner
+#' problem's lower bound nor an outer grading's risk is ever substituted for
+#' \eqn{L_{\mathrm{outer}}}; if \eqn{U_{\mathrm{inner}} < L_{\mathrm{outer}}},
+#' `computed_value` is `NA_real_` with reason
+#' `"outer_lower_above_inner_upper"`. An infeasible inner problem records
+#' `"inner_infeasible"` and does not prove that the true protected family is
+#' empty.
 #'
-#'   The IID assumptions and signed-threshold construction are described in
-#'   [postrank_iid_bounds()] and [postrank_protection_envelopes()]. The package
-#'   supplies no verified outward coefficient/arithmetic enclosure or rigorous
-#'   backend-bound certifier. This result is not a posterior probability of
-#'   feasibility or evidence of calibration on new data.
-#' @seealso [postrank_regret_bound()], [postrank_guarantee_capabilities()]
+#' See [postrank_iid_bounds()] and [postrank_protection_envelopes()] for the
+#' fixed-sample IID design requirements and signed (unclipped)
+#' `q_k -/+ epsilon_k` threshold construction. Because feasibility tolerances
+#' and solver bounds use ordinary floating-point arithmetic without interval
+#' arithmetic to bound floating-point rounding, this function does not provide a
+#' formal numerical certificate, a posterior probability of constraint
+#' satisfaction, or calibration on new data.
+#' @seealso [postrank_protection_envelopes()], [postrank_iid_bounds()],
+#'   [postrank_regret_bound()], [postrank_guarantee_capabilities()]
 #' @examples
-#' bounds <- postrank_iid_bounds(postrank_toy, alpha = .05,
-#'   alpha_by_criterion = c(need_A = .025, need_B = .025),
-#'   design = list(sample_sizes_fixed_before_sampling = TRUE,
-#'     alpha_fixed_before_sampling = TRUE, adaptive_stopping = FALSE,
+#' bounds <- postrank_iid_bounds(
+#'   postrank_toy,
+#'   alpha = 0.05,
+#'   alpha_by_criterion = c(need_A = 0.025, need_B = 0.025),
+#'   design = list(
+#'     sample_sizes_fixed_before_sampling = TRUE,
+#'     alpha_fixed_before_sampling = TRUE,
+#'     adaptive_stopping = FALSE,
 #'     planned_sample_sizes = c(need_A = 32L, need_B = 32L),
-#'     declaration_note = "Prespecified in the bundled synthetic Normal generator"))
-#' problem <- postrank_problem(postrank_pairwise(postrank_toy),
-#'   weights = c(need_A = .6, need_B = .4), tau = .25, G_max = 3L,
-#'   q = c(need_A = .2))
+#'     declaration_note = "Prespecified in the bundled synthetic Normal generator"
+#'   )
+#' )
+#' problem <- postrank_problem(
+#'   postrank_pairwise(postrank_toy),
+#'   weights = c(need_A = 0.6, need_B = 0.4),
+#'   tau = 0.25,
+#'   G_max = 3L,
+#'   q = c(need_A = 0.2)
+#' )
 #' envelopes <- postrank_protection_envelopes(problem, bounds)
-#' \dontrun{
-#' # Optional: two small native solves, each with its own 10-second limit.
-#' analysis <- postrank_protection_analysis(envelopes, backend = "highs",
-#'   control = postrank_control(time_limit = 10, threads = 1))
+#' @examplesIf requireNamespace("highs", quietly = TRUE)
+#' analysis <- postrank_protection_analysis(
+#'   envelopes,
+#'   backend = "highs",
+#'   control = postrank_control(time_limit = 10, threads = 1)
+#' )
 #' analysis[c("status", "computed_value", "reasons", "guarantee_issued")]
-#' }
 #' @concept reference
 #' @export
 postrank_protection_analysis <- function(envelopes, backend = NULL, control = list()) {
-  # 0.9.0 adapter: NULL resolves by option then Gurobi (previously an explicit
-  # backend was required); the converter's strategy is forwarded to both solves.
+  # Resolve backend (explicit -> option -> Gurobi) and forward strategy to both solves.
   resolved <- .pr_resolve_backend(backend)
   cc <- .pr_core_control(control, NULL)
   core_strategy <- cc$strategy
-  # Phase 2 review H1: the frozen runner files solver errors as attempt records, so an
-  # unavailable resolved backend is checked first and raised (no quiet result, no fallback).
+  # Check availability upfront because the envelope runner catches solver errors
+  # into attempt records, whereas an unavailable backend must stop immediately.
   .pr_with_backend(resolved, .pr_backend_require(resolved$name))
   .pr_with_backend(resolved, .pr_run_protection_analysis(envelopes, resolved$name, cc$core,
     solver = function(problem, backend, control) postrank_solve(problem, backend, control, core_strategy)))

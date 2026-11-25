@@ -17,16 +17,14 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Disclosure and Error Frontier Over Tau or One Budget — postrank_frontier">
-<meta name="description" content="A grading problem is solved at each withholding-cost or error-budget
-setting. The resulting disclosure, criterion error ratios, risks and grade
-relations are compared. A working optimizer backend is required. Since a
-change in tau changes the loss function, raw risks at different tau values
-cannot be used to rank decisions under a common loss.">
-<meta property="og:description" content="A grading problem is solved at each withholding-cost or error-budget
-setting. The resulting disclosure, criterion error ratios, risks and grade
-relations are compared. A working optimizer backend is required. Since a
-change in tau changes the loss function, raw risks at different tau values
-cannot be used to rank decisions under a common loss.">
+<meta name="description" content="postrank_frontier() solves a grading problem across a grid of unordered-pair
+costs tau (and/or a grid of error budgets q_grid on one criterion
+q_criterion), summarizing how the fraction of ordered pairs N / M and
+expected wrong-order rates E_k / N vary across settings.">
+<meta property="og:description" content="postrank_frontier() solves a grading problem across a grid of unordered-pair
+costs tau (and/or a grid of error budgets q_grid on one criterion
+q_criterion), summarizing how the fraction of ordered pairs N / M and
+expected wrong-order rates E_k / N vary across settings.">
 <meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
 </head>
 <body>
@@ -37,7 +35,7 @@ cannot be used to rank decisions under a common loss.">
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +44,7 @@ cannot be used to rank decisions under a common loss.">
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -70,11 +68,10 @@ cannot be used to rank decisions under a common loss.">
     </div>
 
     <div class="ref-description section level2">
-    <p>A grading problem is solved at each withholding-cost or error-budget
-setting. The resulting disclosure, criterion error ratios, risks and grade
-relations are compared. A working optimizer backend is required. Since a
-change in tau changes the loss function, raw risks at different tau values
-cannot be used to rank decisions under a common loss.</p>
+    <p><code>postrank_frontier()</code> solves a grading problem across a grid of unordered-pair
+costs <code>tau</code> (and/or a grid of error budgets <code>q_grid</code> on one criterion
+<code>q_criterion</code>), summarizing how the fraction of ordered pairs <code>N / M</code> and
+expected wrong-order rates <code>E_k / N</code> vary across settings.</p>
     </div>
 
     <div class="section level2">
@@ -107,83 +104,94 @@ cannot be used to rank decisions under a common loss.</p>
 <dl>
 <dt id="arg-pairwise">pairwise<a class="anchor" aria-label="anchor" href="#arg-pairwise"></a>
 </dt>
-<dd><p>A directional-error source accepted by
-<code><a href="postrank_problem.html">postrank_problem()</a></code>, or a <code>postrank_fit</code> /
-<code>postrank_analysis</code> whose pairwise object and policy are reused (then
-only <code>tau</code> or <code>q_criterion</code>/<code>q_grid</code> may be supplied).</p></dd>
+<dd><p>Pairwise directional-error source accepted by
+<code><a href="postrank_problem.html">postrank_problem()</a></code>, or a <code>postrank_fit</code> / <code>postrank_analysis</code> whose
+pairwise probabilities and base policy are reused (when reusing a fit or
+analysis, supply only <code>tau</code> and/or <code>q_criterion</code> + <code>q_grid</code>).</p></dd>
 
 
-<dt id="arg-weights-g-max-objective-q-exact-g-minimax-criteria">weights, G_max, objective, q, exact_G, minimax_criteria<a class="anchor" aria-label="anchor" href="#arg-weights-g-max-objective-q-exact-g-minimax-criteria"></a>
+<dt id="arg-weights-g-max-objective-q-exact-g-minimax-criteria-minimax-refine">weights, G_max, objective, q, exact_G, minimax_criteria, minimax_refine<a class="anchor" aria-label="anchor" href="#arg-weights-g-max-objective-q-exact-g-minimax-criteria-minimax-refine"></a>
 </dt>
-<dd><p>As in
-<code><a href="postrank_problem.html">postrank_problem</a></code>.</p></dd>
+<dd><p>Policy arguments passed to <code><a href="postrank_problem.html">postrank_problem()</a></code> when neither <code>settings</code> nor
+a fit/analysis is supplied.</p></dd>
 
 
 <dt id="arg-tau">tau<a class="anchor" aria-label="anchor" href="#arg-tau"></a>
 </dt>
-<dd><p>A vector of abstention costs.</p></dd>
+<dd><p>Numeric vector of unordered-pair costs in <code>(0, 0.5]</code>. May be
+omitted only when <code>q_criterion</code> and <code>q_grid</code> are supplied together with
+<code>settings</code> or a fit/analysis (whose <code>tau</code> is then held fixed).</p></dd>
 
 
 <dt id="arg-q-criterion-q-grid">q_criterion, q_grid<a class="anchor" aria-label="anchor" href="#arg-q-criterion-q-grid"></a>
 </dt>
-<dd><p>Optional criterion ID and vector of q values; each
-grid value replaces that criterion's q.</p></dd>
+<dd><p>Optional criterion ID and numeric vector of
+expected-error budgets in <code>[0, 1]</code> (supply both together or omit both).
+When both <code>tau</code> and <code>q_grid</code> have multiple values, all combinations are
+solved.</p></dd>
 
 
 <dt id="arg-backend-control-strategy">backend, control, strategy<a class="anchor" aria-label="anchor" href="#arg-backend-control-strategy"></a>
 </dt>
-<dd><p>Resolved as in <code><a href="postrank_solve.html">postrank_solve</a></code>
-(<code>backend = NULL</code>: option, then Gurobi; no fallback).</p></dd>
-
-
-<dt id="arg-minimax-refine">minimax_refine<a class="anchor" aria-label="anchor" href="#arg-minimax-refine"></a>
-</dt>
-<dd><p>Passed to <code><a href="postrank_problem.html">postrank_problem</a></code> for minimax.</p></dd>
+<dd><p>Solver, controls and search strategy,
+resolved as in <code><a href="postrank_solve.html">postrank_solve()</a></code>.</p></dd>
 
 
 <dt id="arg-settings">settings<a class="anchor" aria-label="anchor" href="#arg-settings"></a>
 </dt>
-<dd><p>Optional <code><a href="postrank_settings.html">postrank_settings</a></code> supplying the policy;
-<code>tau</code> (the grid axis) may accompany it, other loose policy arguments
-may not (<code>settings_conflict</code>). For a q-grid with <code>tau</code> omitted,
-the base tau comes from <code>settings</code> or the reused fit.</p></dd>
+<dd><p>Optional <code><a href="postrank_settings.html">postrank_settings()</a></code> object supplying the base
+policy (<code>tau</code> and/or <code>q_criterion</code> + <code>q_grid</code> may accompany it, whereas
+separate policy arguments stop with <code>settings_conflict</code>).</p></dd>
 
 </dl>
 </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
 </h2>
-    <p>A <code>postrank_frontier</code> list whose <code>table</code> has one row per
-setting: tau, q value, status, grade count, disclosures N, disclosure rate
-N/M, criterion error ratios E_k/N, criterion risks, primary and weighted
-risk, the absolute gap and the grade's relation identity.</p>
+    <p>A <code>postrank_frontier</code> list whose <code>table</code> has one row per solved
+setting with columns <code>tau</code>, <code>q_value</code>, <code>status</code>, <code>G</code>, <code>N</code>,
+<code>disclosure_rate</code> (<code>N / M</code>), <code>primary_risk</code>, <code>weighted_risk</code>,
+<code>risk_absolute_gap</code>, <code>relation_identity</code>, <code>E_over_N_&lt;k&gt;</code> and <code>risk_&lt;k&gt;</code>,
+alongside <code>weights</code>, <code>G_max</code>, <code>objective</code>, <code>q</code>, <code>exact_G</code>, <code>q_criterion</code>,
+<code>backend</code>, <code>strategy</code>, <code>interpretation</code>, <code>input_identity</code> and
+<code>schema_version</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
 </h2>
-    <p><span>Holding the input and feasible family fixed, exact optima have
-nondecreasing disclosure counts as tau increases. If both actions have
-valid absolute risk gaps at most <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϵ</mi><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math>, then for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>τ</mi><mn>2</mn></msub><mo>&gt;</mo><msub><mi>τ</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">\tau_2 &gt; \tau_1</annotation></semantics></math> the weaker bound is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>N</mi><mn>2</mn></msub><mo>−</mo><msub><mi>N</mi><mn>1</mn></msub><mo>≥</mo><mi>−</mi><mn>2</mn><mi>ϵ</mi><mi>M</mi><mi>/</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>τ</mi><mn>2</mn></msub><mo>−</mo><msub><mi>τ</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">N_2-N_1\ge-2\epsilon M/(\tau_2-\tau_1)</annotation></semantics></math>. Assessment requires both the stored
-</span><code>risk_absolute_gap</code> and status; a status label alone does not
-establish that bound. Changing q or the grade family at the same time
-removes the fixed-family comparison. Missing action metrics remain <code>NA</code>.
-The input-specific restrictions of <code><a href="postrank_problem.html">postrank_problem()</a></code> apply to each
-new problem; this function does not extend those capabilities.</p>
+    <p>Solving requires an optimization solver: install the free <code>highs</code> package
+(<code>install.packages("highs")</code>) and use <code>backend = "highs"</code> or
+<code>options(postrank.backend = "highs")</code>, or provide a licensed Gurobi
+installation (the default). <code>postrank</code> never switches solvers on its own.</p>
+<p>Because changing <code>tau</code> changes the loss definition itself, compare frontier
+rows by their ordered pair counts <code>N</code>, error rates <code>E_k / N</code> and grade
+relations rather than ranking rows by <code>primary_risk</code>. Holding the input and
+constraint family fixed, exact optima have nondecreasing <code>N</code> as <code>tau</code>
+increases; if two rows at <code>tau_2 &gt; tau_1</code> both have valid <code>risk_absolute_gap</code><span>
+at most <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϵ</mi><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math>, then <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>N</mi><mn>2</mn></msub><mo>−</mo><msub><mi>N</mi><mn>1</mn></msub><mo>≥</mo><mi>−</mi><mn>2</mn><mi>ϵ</mi><mi>M</mi><mi>/</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>τ</mi><mn>2</mn></msub><mo>−</mo><msub><mi>τ</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">N_2 - N_1 \ge -2 \epsilon M / (\tau_2 - \tau_1)</annotation></semantics></math>.
+Rows without a checked grading record </span><code>NA</code> action metrics.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
+</h2>
+    <div class="dont-index"><p><code><a href="postrank_plot_frontier.html">postrank_plot_frontier()</a></code>, <code><a href="postrank_sensitivity.html">postrank_sensitivity()</a></code>,
+<code><a href="postrank_commonality_cost.html">postrank_commonality_cost()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
 </h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="read_postrank_draws.html">read_postrank_draws</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"synthetic-iid.json"</span>,</span></span>
-<span class="r-in"><span>  package <span class="op">=</span> <span class="st">"postrank"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pairwise</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_pairwise.html">postrank_pairwise</a></span><span class="op">(</span><span class="va">draws</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">.6</span>, need_B <span class="op">=</span> <span class="fl">.4</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"highs"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="fu">postrank_frontier</span><span class="op">(</span><span class="va">pairwise</span>, <span class="va">weights</span>, tau <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.1</span>, <span class="fl">.25</span>, <span class="fl">.4</span><span class="op">)</span>, G_max <span class="op">=</span> <span class="fl">3L</span>,</span></span>
-<span class="r-in"><span>    backend <span class="op">=</span> <span class="st">"highs"</span>, control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Inspect a stored frontier without running a solver:</span></span></span>
+<span class="r-in"><span><span class="va">fr</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"toy_frontier"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fr</span><span class="op">$</span><span class="va">table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tau"</span>, <span class="st">"G"</span>, <span class="st">"N"</span>, <span class="st">"disclosure_rate"</span>, <span class="st">"primary_risk"</span>, <span class="st">"status"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    tau G N disclosure_rate primary_risk  status</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.15 1 0       0.0000000       0.1500 optimal</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.25 2 2       0.6666667       0.2125 optimal</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.40 2 2       0.6666667       0.2625 optimal</span>
+<span class="r-in"><span><span class="co"># Solve a three-point tau frontier with the optional highs package:</span></span></span>
+<span class="r-in"><span><span class="va">pw</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_pairwise.html">postrank_pairwise</a></span><span class="op">(</span><span class="va">postrank_toy</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">postrank_frontier</span><span class="op">(</span><span class="va">pw</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">0.6</span>, need_B <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.25</span>, <span class="fl">0.4</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  G_max <span class="op">=</span> <span class="fl">3L</span>, backend <span class="op">=</span> <span class="st">"highs"</span>, control <span class="op">=</span> <span class="fu"><a href="postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;postrank_frontier&gt;  3 choices of withholding cost</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Tau  Loss   Disclosed Grades Gap</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    0.1  0.1000 0.0%      1      1.39e-17</span>

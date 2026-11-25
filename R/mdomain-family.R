@@ -111,34 +111,62 @@
   p2_hash(content)
 }
 
-#' Build a Bounded Multidomain Candidate Family
+#' Build a Candidate Family of Multidomain Grade Profiles
 #'
-#' Construct explicit domain banks and their Cartesian product description.
-#' A tied grade withholds direction. All-withheld columns are always included.
+#' `postrank_mdomain_family()` builds a bank of candidate grade vectors for each
+#' domain and defines their Cartesian product as the candidate set for
+#' [postrank_mdomain_solve()]. Every domain bank automatically includes the
+#' single-grade all-withheld column (`1` for all units), and equal grades within
+#' a domain leave a pair unordered. Requires optional package `gmp`.
 #'
 #' @param input A validated [postrank_mdomain_input()] object.
-#' @param columns A list named in input domain order, each entry a list of
-#'   numeric grade vectors named in exact input unit order. Labels are
-#'   canonicalized and duplicate columns removed, preserving ties and direction.
-#' @param order A list named in input domain order of explicit unit-ID
-#'   permutations, or the explicit choice `"posterior_mean"`. The latter orders
-#'   the current supplied states by decreasing weighted mean and uses unit IDs
-#'   to break ties; it is recorded as sample-adaptive. `NULL` generates no
-#'   ordered partitions beyond all-withheld.
-#' @param cuts A list named in input domain order of permitted cut positions
-#'   between consecutive units. Cuts require an order; no cuts are guessed.
-#' @param max_grades A positive integer or domain-ordered vector of grade caps.
-#'   `NULL` permits up to the input unit count.
-#' @param max_actions Maximum exact product size, checked before banks are
-#'   materialized. Each domain also has a hard cap of 1,000 raw supplied columns
-#'   and 1,000 deduplicated bank entries. Exceeding a cap errors without truncation.
-#' @details Structural equality guards also apply to zero-weight domains.
-#'   Generated cuts that split an equality class are excluded; supplied columns
-#'   that split a class are rejected. Construction and evaluation refer to the
-#'   same input. External-column adaptation is not scientifically verified,
-#'   and construction receipts do not provide numerical assurance.
-#' @return A `postrank_mdomain_family` wrapping an immutable native candidate
-#'   family, source hashes, construction provenance, and exact size receipts.
+#' @param columns Optional named list in exact domain order, where each domain
+#'   entry is a list of numeric grade vectors named in exact unit order. Grade
+#'   labels are canonicalized to `1..G` and duplicate columns are removed; a
+#'   supplied column that splits a structural equality class or exceeds
+#'   `max_grades` stops with an error.
+#' @param order `"posterior_mean"` (ranks units on each domain by decreasing
+#'   exact state-weighted mean, breaking ties by UTF-8 unit ID and recording
+#'   `sample_adaptive = TRUE`), a domain-ordered named list of unit-ID
+#'   permutations, or `NULL` (the default, which adds no ordered-partition
+#'   columns beyond all-withheld and `columns`).
+#' @param cuts Optional domain-ordered named list of distinct integer cut
+#'   positions in `1..(n - 1)` between consecutive units along `order`. Requires
+#'   non-`NULL` `order`; no cut positions are guessed when `cuts` is `NULL`.
+#' @param max_grades Positive integer scalar or domain-ordered integer vector
+#'   capping the number of occupied grades per domain (`NULL` allows up to `n`
+#'   grades).
+#' @param max_actions Positive integer cap (`100000L` by default) on the exact
+#'   Cartesian product size across domains, checked in `gmp` integer arithmetic
+#'   before any bank is materialized. Each domain also enforces a hard limit of
+#'   `1,000` raw supplied `columns` and `1,000` deduplicated bank entries;
+#'   exceeding any cap stops with an error without truncating the family.
+#' @return A `postrank_mdomain_family` list wrapping the domain banks,
+#'   `input_id`, `source_input_hash`, `family_hash`, `provenance`, and exact
+#'   candidate-count records in `receipts` (including `receipts$preflight` and
+#'   `product_size_exact`).
+#' @details
+#' Structural equality classes (`input$equality_classes`) apply on every domain,
+#' including zero-weight domains: cut positions that would split an equality
+#' class are skipped automatically (`blocked_cuts`), whereas externally supplied
+#' `columns` that split a class are rejected. When `order = "posterior_mean"`,
+#' the candidate family depends on the same supplied states later used by
+#' [postrank_mdomain_solve()], which is recorded in `provenance` without
+#' claiming out-of-sample validation or numerical guarantees.
+#' @seealso [postrank_mdomain_input()], [postrank_mdomain_solve()],
+#'   [postrank_mdomain_decision()]
+#' @examplesIf requireNamespace("gmp", quietly = TRUE)
+#' inp <- postrank_mdomain_input(
+#'   postrank_toy,
+#'   provenance = list(input_id = "toy", law_id = "toy-normal", proper_law = TRUE)
+#' )
+#' fam <- postrank_mdomain_family(
+#'   inp,
+#'   order = "posterior_mean",
+#'   cuts = list(need_A = 1:2, need_B = 1:2),
+#'   max_grades = 3L
+#' )
+#' fam$receipts$product_size_exact
 #' @concept multidomain
 #' @export
 postrank_mdomain_family <- function(input, columns=NULL, order=NULL, cuts=NULL,

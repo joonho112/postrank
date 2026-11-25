@@ -1,4 +1,4 @@
-# T-ref-02: every active export resolves to a topic whose title is Title Case and at most 60
+# Every exported symbol resolves to one Rd topic with a Title Case title of at
 # characters; the three grade scales share one topic, the 24 formatters another, and the
 # generated re-exports topic keeps its own title.
 test_that("export topics have Title Case titles of at most 60 characters", {

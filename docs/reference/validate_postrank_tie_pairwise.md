@@ -1,9 +1,9 @@
-# Check Equality-Neutral Comparison Coefficients
+# Validate Tie-Aware Pairwise Probabilities
 
-The strict-error, equality and distinctness arrays from
-[`postrank_tie_pairwise()`](https://joonho112.github.io/postrank/reference/postrank_tie_pairwise.md)
-are checked against their retained input and equality records. Invalid
-or altered content is detected without modifying the object.
+`validate_postrank_tie_pairwise()` checks the strict directional-error
+(`b`), equality (`t`), and distinctness (`d`) probability arrays of a
+`postrank_tie_pairwise` object against its stored `postrank_tie_draws`
+source and content hash.
 
 ## Usage
 
@@ -15,30 +15,26 @@ validate_postrank_tie_pairwise(x)
 
 - x:
 
-  An object from
+  A `postrank_tie_pairwise` object from
   [`postrank_tie_pairwise()`](https://joonho112.github.io/postrank/reference/postrank_tie_pairwise.md).
 
 ## Value
 
-Invisible `TRUE` on success. Invalid probabilities, axes, source
-records, or changed content raise an error. The function does not repair
-or replace an object.
+`TRUE` invisibly when `x` passes all checks; invalid or modified objects
+stop with a structured error.
 
 ## Details
 
-Checks include matching entity and criterion axes, unused `NA`
-diagonals, probability ranges, symmetric equality and distinctness, and
-the identities `b[i,j,k] + b[j,i,k] = d[i,j,k]` and
-`d[i,j,k] + t[i,j,k] = 1` off the diagonal, to tolerance `1e-12`. It
-also checks consistency with the stored input, sample-size meaning,
-equality declarations, and content identity.
-
-Validation does not independently recalculate every probability from the
-source states, verify a scientific structural-equality claim, or provide
-a numerical accuracy certificate. To change the source, construct a new
-tie-aware input and run
-[`postrank_tie_pairwise()`](https://joonho112.github.io/postrank/reference/postrank_tie_pairwise.md)
-again.
+Verifies `x$source` via
+[`validate_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/validate_postrank_tie_draws.md),
+matching entity and criterion axes, `NA` diagonals (rejecting `NaN`),
+`[0, 1]` off-diagonal bounds, symmetry of `t` and `d`, and the
+identities `b[i, j, k] + b[j, i, k] = d[i, j, k]` and
+`d[i, j, k] + t[i, j, k] = 1` off the diagonal within tolerance `1e-12`,
+along with `sample_sizes`, `sampling_regimes`, `method`, `exact`, and
+`pairwise_identity`. Validation does not recompute probabilities from
+raw states, verify scientific equality, or issue a numerical
+certificate.
 
 ## See also
 
@@ -48,9 +44,7 @@ again.
 ## Examples
 
 ``` r
-if (requireNamespace("gmp", quietly = TRUE)) {
-  path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
-  pw <- postrank_tie_pairwise(read_postrank_tie_draws(path))
-  validate_postrank_tie_pairwise(pw)
-}
+path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
+pw <- postrank_tie_pairwise(read_postrank_tie_draws(path))
+validate_postrank_tie_pairwise(pw)
 ```

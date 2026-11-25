@@ -1,4 +1,4 @@
-# 014 repair (TH-4 short term): tie rejection explains count, location and remedy.
+# Standard tie-free input error messages report tie count, location, and remedy.
 testthat::test_that("joint tie rejection reports the number of tied slices, the first location and a remedy", {
   x <- pr_test_payload(S = 4L, n = 3L, K = 2L)
   v <- x$joint_draws$tensor$values

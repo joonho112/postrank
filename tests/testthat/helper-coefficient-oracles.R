@@ -1,9 +1,9 @@
-# Independent main-study coefficient oracles for the typed-coefficient tests.
-# The verbatim copies live in tests/fixtures/coefficient-oracles/ (provenance and
+# Independent reference calculations for the typed-coefficient tests.
+# Copies live in tests/fixtures/coefficient-oracles/ (provenance and
 # SHA-256 in its README.md). They are loaded only into this private environment,
-# whose parent is baseenv(), so no package function is visible to the oracles and
-# the package never sees them. Replaces the former MAIN_STUDY_ROOT /
-# POSTRANK_CANDIDATE_ROOT lookups of the 0.0.1.9003 tests.
+# whose parent is baseenv(), so no package function is visible to the helpers and
+# the package namespace never sees them.
+#
 pr_cf_fixture_root <- function() {
   candidates <- c(testthat::test_path("..", ".."), testthat::test_path(".."))
   found <- candidates[file.exists(file.path(candidates, "tests", "fixtures", "gaussian-fixed.json"))]

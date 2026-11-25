@@ -1,10 +1,12 @@
 # Keep Grade Colors Consistent Across Views
 
-Discrete color and fill scales represent grade membership. The number of
-grades in the full report is supplied so that subsets retain the
-original grade colors and legend. `scale_color_grade()` is the spelling
-alias of `scale_colour_grade()`; `scale_fill_grade()` uses the same
-palette for fill.
+`scale_colour_grade()`, `scale_color_grade()`, and `scale_fill_grade()`
+construct discrete `ggplot2` color and fill scales for grade membership
+using
+[`postrank_palette()`](https://joonho112.github.io/postrank/reference/postrank_palette.md).
+Passing the full report's grade count `n_grades` keeps grade colors and
+legend entries identical when plotting a subset of entities that omits
+one or more grades.
 
 ## Usage
 
@@ -20,31 +22,28 @@ scale_fill_grade(n_grades = NULL, ...)
 
 - n_grades:
 
-  Number of grades in the full object, from 1 to 64. With `NULL`, colors
-  follow the discrete levels present in the data; specify the full count
-  when a displayed subset omits grades.
+  Integer number of grades in the full grading (`1` to `64`), or `NULL`
+  (the default) to size the palette from the discrete levels present in
+  the plotted data.
 
 - ...:
 
   Additional arguments passed to
   [`ggplot2::discrete_scale()`](https://ggplot2.tidyverse.org/reference/discrete_scale.html).
-  The helper already sets `aesthetics`, `palette`, `drop` and `name`,
-  and sets `limits` when `n_grades` is supplied; do not pass those
-  arguments again.
+  Do not pass `aesthetics`, `palette`, `drop`, `name`, or (when
+  `n_grades` is supplied) `limits`, which are set by the scale helper.
 
 ## Value
 
-A ggplot2 discrete color or fill scale.
+A `ggplot2` discrete color or fill scale.
 
 ## Details
 
-Map grades as discrete labels, for example `factor(grade)`. With an
-explicit full count, limits are `as.character(seq_len(n_grades))` and
-`drop = FALSE`. Absent grades remain on the scale. The same full count
-must be used across views; inferring a count from a displayed subset can
-assign different colors. Grade 1 has highest priority. Equal colors
-indicate shared grade membership, which withholds comparisons rather
-than asserting target equality.
+Map grades as discrete values such as `factor(grade)`. When `n_grades`
+is supplied, the scale fixes `limits = as.character(seq_len(n_grades))`
+and `drop = FALSE` so missing grades retain their slot on the color
+ramp. Grade `1` has highest priority; shared color indicates shared
+grade membership (withheld ordering, not equal targets).
 
 ## See also
 
@@ -54,9 +53,9 @@ than asserting target equality.
 ## Examples
 
 ``` r
-# Grade 2 is absent from the display, but keeps its place in the full scale.
 d <- data.frame(entity = c("A", "C"), value = c(2, 1), grade = factor(c(1, 3)))
 ggplot2::ggplot(d, ggplot2::aes(value, entity, colour = grade)) +
-  ggplot2::geom_point(size = 3) + scale_colour_grade(n_grades = 3) +
+  ggplot2::geom_point(size = 3) +
+  scale_colour_grade(n_grades = 3) +
   theme_postrank()
 ```

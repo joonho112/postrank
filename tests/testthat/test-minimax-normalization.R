@@ -1,6 +1,6 @@
 testthat::test_that("minimax upper bound is the validated action risk; the epigraph value is kept separately",{
-  # 014 repair policy (TH-3): the reported risk upper bound is max_k R_k of the
-  # released grade, not a possibly slack epigraph value t.
+  # Reported minimax risk upper bound is max_k R_k of the validated integer
+  # grade rather than a potentially slack epigraph variable t.
   problem<-postrank_problem(postrank_pairwise(pr_test_payload()),c(need1=1,need2=0),.25,3,objective="minimax")
   primal<-numeric(length(problem$model$objective));primal[problem$index$labels]<-1;primal[problem$index$t]<-.35
   raw<-list(primal=primal,raw_status="TIME_LIMIT",raw_message="mock limit",status_normalized="time_limit",

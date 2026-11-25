@@ -1,4 +1,4 @@
-# T-base-02 / T-api-07 / T-base-03: the cut DP equals brute-force enumeration of every
+# Fixed-order cut dynamic programming matches brute-force enumeration of all
 # contiguous partition of the declared order, and the full family is never worse.
 co_random_e <- function(n, K, seed) {
   set.seed(seed); ids <- sprintf("e%d", seq_len(n)); e <- array(NA_real_, c(n, n, K), dimnames = list(ids, ids, paste0("k", seq_len(K))))

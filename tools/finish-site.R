@@ -14,8 +14,8 @@ finish_local_site <- function(site = 'docs', alt_file = 'pkgdown/reference-image
     if (exists(tex, cache, inherits = FALSE)) return(get(tex, cache, inherits = FALSE))
     inp <- tempfile(fileext = '.md'); out <- tempfile(fileext = '.html')
     on.exit(unlink(c(inp, out)), add = TRUE)
-    # Pandoc's math reader needs the modern equivalent of legacy TeX's
-    # grouped Roman-font declaration; this changes typography syntax only.
+    # Pandoc's math reader expects \mathrm{...} in place of plain TeX's
+    # grouped {\rm ...} Roman-font syntax; this changes typography syntax only.
     canonical <- gsub(r"(\{\\rm\s+([^{}]+)\})", "{\\\\mathrm{\\1}}", tex, perl = TRUE)
     writeLines(enc2utf8(canonical), inp, useBytes = TRUE)
     rmarkdown::pandoc_convert(inp, from = 'markdown+tex_math_single_backslash', to = 'html',
@@ -129,22 +129,36 @@ localize_alias_redirects <- function(site = 'docs', canonical_url = yaml::read_y
     for (node in refresh) {
       content <- xml2::xml_attr(node, 'content')
       target <- sub('^[^;]*;[[:space:]]*URL=', '', content, ignore.case = TRUE)
-      if (!startsWith(target, canonical_url)) next
-      dest <- substring(target, nchar(canonical_url) + 1L)
-      path <- strsplit(dest, '[?#]', perl = TRUE)[[1L]][1L]
+      page <- substring(file, nchar(site) + 2L)
+      absolute <- xml2::url_absolute(target, paste0(canonical_url, page))
+      if (!startsWith(absolute, canonical_url)) next
+      dest <- substring(absolute, nchar(canonical_url) + 1L)
+      path <- sub('[?#].*$', '', dest)
       suffix <- substring(dest, nchar(path) + 1L)
       actual <- normalizePath(file.path(site, utils::URLdecode(path)), mustWork = TRUE)
       stopifnot(startsWith(actual, paste0(site, '/')))
       relative <- paste0(as.character(fs::path_rel(actual, start = dirname(file))), suffix)
-      xml2::xml_set_attr(node, 'content', paste0('0;URL=', relative))
-      for (a in xml2::xml_find_all(doc, './/a')) if (identical(xml2::xml_attr(a, 'href'), target)) xml2::xml_set_attr(a, 'href', relative)
-      body <- xml2::xml_find_first(doc, './/body')
-      if (inherits(body, 'xml_missing')) body <- xml2::xml_add_child(xml2::xml_find_first(doc, './/html'), 'body')
-      if (!length(xml2::xml_find_all(body, './/a'))) {
-        p <- xml2::xml_add_child(body, 'p')
-        a <- xml2::xml_add_child(p, 'a', href = relative)
-        xml2::xml_set_text(a, 'Continue to the reference topic.')
+      destination <- xml2::read_html(actual, encoding = 'UTF-8')
+      heading <- xml2::xml_find_first(destination, './/h1|.//title[not(//h1)]')
+      if (grepl('#', suffix, fixed = TRUE)) {
+        ids <- xml2::xml_find_all(destination, './/*[@id]')
+        match <- ids[xml2::xml_attr(ids, 'id') == utils::URLdecode(sub('^[^#]*#', '', suffix))]
+        if (!length(match)) stop('Missing redirect destination: ', relative)
+        heading <- match[[1L]]
       }
+      label <- trimws(xml2::xml_text(heading))
+      if (is.na(label) || !nzchar(label)) stop('Missing redirect title: ', relative)
+      body <- xml2::xml_find_first(doc, './/body')
+      if (inherits(body, 'xml_missing')) body <- xml2::xml_add_child(xml2::xml_root(doc), 'body')
+      anchors <- xml2::xml_find_all(body, './/a[@href]')
+      links <- anchors[xml2::url_absolute(xml2::xml_attr(anchors, 'href'), paste0(canonical_url, page)) == absolute]
+      refresh_value <- paste0('0;URL=', relative)
+      if (identical(content, refresh_value) && length(links) &&
+          all(xml2::xml_attr(links, 'href') == relative) && all(xml2::xml_text(links) == label)) next
+      xml2::xml_set_attr(node, 'content', refresh_value)
+      if (!length(links)) links <- xml2::xml_add_child(xml2::xml_add_child(body, 'p'), 'a')
+      xml2::xml_set_attr(links, 'href', relative)
+      xml2::xml_set_text(links, label)
       xml2::write_html(doc, file, encoding = 'UTF-8')
       changed[[substring(file, nchar(site) + 2L)]] <- relative
     }
@@ -208,8 +222,8 @@ exclude_local_maintenance_pages <- function(site = "docs") {
 }
 
 
-# Proposal for the source-controlled tools/finish-site.R maintainer finalizer.
-# This edits generated pkgdown.js only. Canonical SEO markup is unchanged.
+# Rewrite search result targets in generated pkgdown.js so local previews stay local.
+# Canonical SEO markup in HTML pages is unchanged.
 localize_search_navigation <- function(site = 'docs', canonical_url = yaml::read_yaml('_pkgdown.yml')$url) {
   stopifnot(is.character(canonical_url), length(canonical_url)==1L, !is.na(canonical_url))
   if (!endsWith(canonical_url,'/')) canonical_url <- paste0(canonical_url,'/')
@@ -242,7 +256,7 @@ finish_vignette_guide <- function(site = "docs", config = "_pkgdown.yml",
   groups <- yaml::read_yaml(config)$articles
   guide <- yaml::read_yaml(guide_file)
   ids <- unlist(lapply(groups, function(g) unlist(g$contents)), use.names = FALSE)
-  stopifnot(length(ids) == 20L, !anyDuplicated(ids),
+  stopifnot(length(ids) >= 1L, !anyDuplicated(ids),
     setequal(ids, names(guide$descriptions)))
   file <- file.path(site, "articles", "index.html")
   doc <- xml2::read_html(file, encoding = "UTF-8")
@@ -251,7 +265,7 @@ finish_vignette_guide <- function(site = "docs", config = "_pkgdown.yml",
   links <- xml2::xml_find_all(main, ".//dt/a")
   names <- sub("\\.html$", "", xml2::xml_attr(links, "href"))
   titles <- stats::setNames(xml2::xml_text(links), names)
-  stopifnot(length(links) == 20L, setequal(names, ids))
+  stopifnot(length(links) == length(ids), setequal(names, ids))
   xml2::xml_remove(xml2::xml_children(main))
   add <- function(parent, tag, text = NULL, ...) {
     node <- xml2::xml_add_child(parent, tag, ...)

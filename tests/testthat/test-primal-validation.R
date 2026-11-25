@@ -44,8 +44,8 @@ test_that("grade risk is independently compared with model objective", {
 })
 
 test_that("bounds, rows and integer residuals are checked on the rounded action", {
-  # 014 repair policy (CP-4): validity is judged on the rounded integer solution;
-  # raw-primal residuals are diagnostics and warnings, not separate failures.
+  # Solution validity is evaluated on the rounded integer grades; raw primal
+  # residuals are recorded as diagnostics and warnings unless excessive.
   fixture <- pr_primal_fixture();p <- fixture$problem;z <- fixture$solution
   outside <- z;outside[p$index$pairs[1]] <- 2
   result <- validate_postrank_solution(p,outside)

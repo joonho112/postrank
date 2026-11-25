@@ -1,17 +1,18 @@
 #' Renumber Grades While Preserving Comparisons
 #'
-#' Occupied grade labels are replaced by consecutive integers starting at 1.
-#' Smaller grades indicate higher priority and equal grades withhold a
-#' comparison. The relabelling preserves all disclosed directions and withheld
-#' comparisons.
+#' `canonical_postrank_grade()` renumbers occupied grades to `1, 2, ..., G`
+#' without changing which entity pairs are ordered or left unordered. Grade 1
+#' is the highest priority, and entities sharing a grade are left unordered
+#' without claiming they are equal.
 #'
-#' @param grade Numeric vector of positive integers, with names in exactly
-#'   the order of `entity_ids`. Gaps between occupied labels are allowed.
-#' @param entity_ids Character vector of distinct entity IDs, in input order.
-#' @return A named integer vector in the same entity order, using grades
-#'   `1, ..., G`, where G is the number of distinct supplied labels.
-#' @details This function does not sort entities, evaluate posterior risk or
-#'   optimize grades. A shared grade does not assert equality of latent targets.
+#' @param grade Positive integer vector named in the exact order of
+#'   `entity_ids`. Gaps between occupied grade numbers are allowed.
+#' @param entity_ids Character vector of at least two distinct entity IDs, in
+#'   input order.
+#' @returns An integer vector named in the order of `entity_ids`, taking values
+#'   `1, ..., G` where `G` is the number of distinct labels in `grade`.
+#' @details This function only relabels existing grade numbers; it does not
+#'   reorder entities, compute posterior loss or choose grades.
 #' @seealso [postrank_evaluate()], [get_grades()]
 #' @examples
 #' canonical_postrank_grade(c(A = 10, B = 10, C = 30), c("A", "B", "C"))

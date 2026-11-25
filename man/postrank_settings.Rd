@@ -16,70 +16,94 @@ postrank_settings(
 )
 }
 \arguments{
-\item{weights}{Nonnegative finite criterion weights summing to one within
-\code{1e-12}; no automatic normalization is performed. Names identify criteria.
-Unnamed weights are matched in criterion order when used with an input.
-This constructor always requires weights, including weight 1 for one criterion.}
+\item{weights}{Criterion weights: nonnegative finite numbers summing to one
+within \code{1e-12}. They are never rescaled automatically. Always required by
+\code{postrank_settings()}, including weight \code{1} for a single criterion. Names
+identify criteria; unnamed weights are matched in criterion order when
+combined with an input.}
 
-\item{tau}{Cost of a withheld comparison, \verb{0 < tau <= 0.5}.}
+\item{tau}{Cost of leaving a pair unordered, relative to a cost of 1 for a
+wrong-order pair. Must satisfy \verb{0 < tau <= 0.5}.}
 
-\item{G_max}{Positive integer upper bound on occupied grades. Fewer grades
-are allowed unless \code{exact_G} is supplied.}
+\item{G_max}{Largest number of occupied grades, a positive integer. Fewer
+grades are allowed unless \code{exact_G} is given.}
 
-\item{q}{\code{NULL} or a uniquely criterion-named vector of budgets in \verb{[0, 1]}.
-Each included criterion requires \code{E_k <= q_k * N}, including criteria with
-zero objective weight. At N=0 the count constraint holds, while \code{E_k/N}
-is undefined. These are expected-error budgets, not simultaneous guarantees.}
+\item{q}{\code{NULL} (the default) or a vector of per-criterion expected-error
+budgets in \verb{[0, 1]}, uniquely named by criterion. Each named criterion \code{k}
+requires \code{E_k <= q_k * N}, where \code{E_k} is the expected number of
+wrong-order ordered pairs on criterion \code{k} and \code{N} is the number of
+ordered pairs (including criteria with weight 0 in \code{weights}). When
+\code{N = 0}, the count constraint \code{0 <= 0} holds while \code{E_k / N} is \code{NA}.
+These constrain posterior expected error counts, not simultaneous error
+rates.}
 
-\item{exact_G}{\code{NULL} or the required number of nonempty grades, at most
-\code{G_max}. This requirement is never relaxed to fit the input.}
+\item{exact_G}{\code{NULL} (the default) or a positive integer giving the exact
+number of occupied grades required, at most \code{G_max}. Unlike \code{G_max}, this
+value is never reduced automatically to fit the number of entities.}
 
-\item{objective}{\code{"weighted"} (default) minimizes the weighted average of
-criterion risks; \code{"minimax"} minimizes the largest selected criterion risk.}
+\item{objective}{\code{"weighted"} (the default) minimizes the weighted sum of
+criterion losses; \code{"minimax"} minimizes the largest loss among the
+selected criteria.}
 
-\item{minimax_criteria}{\code{NULL} (all criteria) or criterion IDs included in
-the minimax objective. Only allowed with \code{objective = "minimax"}.}
+\item{minimax_criteria}{\code{NULL} (the default, all criteria) or a character
+vector of criterion IDs included in the minimax objective. Allowed only
+when \code{objective = "minimax"}.}
 
-\item{minimax_refine}{\code{"weighted"} (default) refines a minimax solution using
-the original weighted risk; \code{"none"} keeps the first-stage action.
-See \code{\link[=postrank_solve]{postrank_solve()}} for additional zero-weight refinement and its
-numerical qualifications. Ignored for weighted problems.}
+\item{minimax_refine}{How a minimax solution is refined when
+\code{objective = "minimax"}: \code{"weighted"} (the default) minimizes the weighted
+loss while keeping the first-stage minimax value, and \code{"none"} keeps the
+first-stage grading. Ignored when \code{objective = "weighted"}. See
+\code{\link[=postrank_solve]{postrank_solve()}} for additional refinement on zero-weight criteria.}
 
-\item{label}{Optional short display label for grids and figures.}
+\item{label}{Optional non-empty string used to label this setting in grids
+and figures. Defaults to \code{"tau=<tau>, G_max=<G_max>"}. Does not change the
+decision problem.}
 }
 \value{
-A \code{postrank_settings} named list with the policy arguments,
-\code{label}, \code{weight_sum_tolerance}, \code{schema_version}, \code{provenance} and \code{warnings}.
+A \code{postrank_settings} object, a named list containing:
+\itemize{
+\item \code{weights}, \code{tau}, \code{G_max}, \code{q}, \code{exact_G}, \code{objective},
+\code{minimax_criteria}, \code{minimax_refine} and \code{label}: the validated
+settings;
+\item \code{weight_sum_tolerance}: \code{1e-12};
+\item \code{schema_version}: \code{"1"}, the version of this object's layout;
+\item \code{provenance}: package and R versions, creation time, and function name;
+\item \code{warnings}: character vector of notes added when the settings are bound
+to an input.
+}
 }
 \description{
-The settings specify criterion weights, the withholding cost, the maximum
-number of grades and optional error budgets or an exact grade count for
-\code{\link[=postrank]{postrank()}} or \code{\link[=postrank_problem]{postrank_problem()}}. They define the decision problem
-without fitting a posterior or selecting grades. Computation limits are
-specified separately by \code{\link[=postrank_control]{postrank_control()}}.
+\code{postrank_settings()} defines the loss function and allowed grade reports
+for \code{\link[=postrank]{postrank()}} and \code{\link[=postrank_problem]{postrank_problem()}}: criterion weights, the cost \code{tau}
+of leaving a pair unordered, the maximum number of grades \code{G_max}, and
+optional per-criterion error budgets \code{q} or an exact grade count \code{exact_G}.
+Computation limits are set separately by \code{\link[=postrank_control]{postrank_control()}}.
 }
 \details{
-When settings are used with an input, named weights must cover its
-criteria and \code{q} must name known criteria. \code{G_max} is capped at the number
-of entities, with the requested and resolved caps recorded in the bound
-copy's provenance. \code{exact_G} cannot exceed the entity count.
+When settings are combined with an input in \code{\link[=postrank]{postrank()}} or
+\code{\link[=postrank_problem]{postrank_problem()}}, named weights must cover all criteria, \code{q} must name
+known criteria, and \code{exact_G} cannot exceed the number of entities. If
+\code{G_max} exceeds the number of entities, the bound copy reduces \code{G_max} to
+that number, records \code{requested_G_max} and \code{resolved_G_max} in
+\code{provenance}, and appends a note to \code{warnings}.
 
-Ordinary draw and exact finite-law pairwise inputs support validated
-combinations of weighted/minimax objectives, error budgets and exact
-grade counts. Problems built by \code{\link[=postrank_problem]{postrank_problem()}} or \code{\link[=postrank]{postrank()}} from
-Gaussian/mixture coefficients or supplied probabilities currently support
-weighted at-most-G settings only. Constructing settings
-alone does not establish that a particular input supports them.
-Display labels and provenance do not alter the decision problem.
+Posterior draws and exact finite-law inputs support weighted and minimax
+objectives, \code{q} and \code{exact_G}. Normal or mixture posteriors
+(\code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}}, \code{\link[=postrank_mixture_coefficients]{postrank_mixture_coefficients()}})
+and supplied probabilities (\code{\link[=postrank_probabilities]{postrank_probabilities()}}) support only the
+weighted objective without \code{q}, \code{exact_G} or \code{minimax_criteria}. Creating
+a \code{postrank_settings} object checks the arguments on their own; whether an
+input supports them is checked when building or solving the problem.
 }
 \examples{
-one <- postrank_settings(weights = c(score_A = 1), tau = .2, G_max = 3L)
+one <- postrank_settings(weights = c(score_A = 1), tau = 0.2, G_max = 3L)
 one$tau
-protected <- postrank_settings(weights = c(need_A = .6, need_B = .4),
-  tau = .25, G_max = 3L, q = c(need_B = .3))
+
+protected <- postrank_settings(weights = c(need_A = 0.6, need_B = 0.4),
+  tau = 0.25, G_max = 3L, q = c(need_B = 0.3))
 protected$q
 }
 \seealso{
-\code{\link[=postrank_control]{postrank_control()}}, \code{\link[=postrank_problem]{postrank_problem()}}, \code{\link[=postrank]{postrank()}}
+\code{\link[=postrank]{postrank()}}, \code{\link[=postrank_problem]{postrank_problem()}}, \code{\link[=postrank_control]{postrank_control()}}
 }
 \concept{settings}

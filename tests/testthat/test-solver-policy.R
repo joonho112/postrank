@@ -1,5 +1,5 @@
-# 014 repair (CP-4): half of the validator's tolerances is passed to both
-# backends (headroom so a solver-feasible incumbent passes the validator).
+# Solver tolerance scaling: half of the solution validator's tolerances is passed
+# to both backends (headroom so a solver-feasible grading passes the validator).
 testthat::test_that("validator tolerances are passed to Gurobi and HiGHS within admissible ranges", {
   problem <- list(objective_units = list(scale = 1 / 3))
   control <- .pr_control(list(tolerances = list(feasibility = 1e-7, integrality = 1e-6)))

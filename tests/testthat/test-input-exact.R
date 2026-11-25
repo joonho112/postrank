@@ -57,7 +57,7 @@ testthat::test_that("all six unchanged book laws admit an explicit posterior-onl
     x$finite_law <- list(denominator = case$denominator, value_representation = "safe_integer", states = states,
       law_definition = paste("Explicit book finite law", case$id), not_empirical_posterior_relabeling = TRUE)
     # Synthetic test declarations are transparent; original decision settings
-    # remain in the book fixture and do not become posterior-input fields.
+    # remain in the test fixture and do not enter posterior-input fields.
     testthat::expect_true(validate_postrank_draws(x)$valid, info = case$id)
   }
 })

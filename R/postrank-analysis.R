@@ -1,6 +1,6 @@
-# The one-call path (Chapter 11) and its composite result postrank_analysis
-# (Chapter 10). Legacy objects are nested unchanged; every added declaration summary,
-# display cache, capability record and note lives in analysis$metadata.
+# One-call grading workflow and its composite result class postrank_analysis.
+# Underlying input, pairwise, problem, and fit objects remain unchanged;
+# declaration summaries, display caches, capabilities, and notes live in analysis$metadata.
 
 .pr_analysis_fields <- c("input", "pairwise", "settings", "control", "problem", "fit", "evaluation", "report_card",
   "fragility", "crossfit", "diagnostics", "backend", "metadata", "extras", "timings", "schema_version",
@@ -8,7 +8,7 @@
 .pr_extra_names <- c("report_card", "fragility", "crossfit", "diagnostics")
 .pr_extra_fields <- c("requested", "supported", "available", "reason", "condition")
 
-# Input kind and the capability table of Chapter 11.
+# Input kind and supported extras per representation.
 .pr_input_kind <- function(x) {
   if (inherits(x, "postrank_probabilities")) return("precomputed_probabilities")
   if (inherits(x, "postrank_coefficients")) return(x$input_kind)
@@ -59,85 +59,168 @@
   list(requested = isTRUE(requested), supported = isTRUE(supported), available = isTRUE(available),
     reason = reason, condition = condition)
 
-#' Choose Posterior Grades and Prepare Their Summaries
+#' Assign Grades to Entities Under Posterior Uncertainty
 #'
-#' Entities are assigned to ordered groups by balancing expected
-#' wrong-direction loss against the cost of withholding comparisons under a
-#' supplied posterior. Grade 1 has highest priority. A shared grade withholds
-#' the comparison between the corresponding entities without asserting equality
-#' of their latent targets.
+#' `postrank()` gives each entity (for example a school, an employer or an
+#' area) an integer grade, using posterior information that you supply: draws,
+#' normal (Gaussian) or mixture posteriors, or comparison probabilities. Grade
+#' 1 is the highest priority; larger values of each criterion's target (the
+#' entity quantity estimated on that criterion) mean higher priority, as set
+#' when the input was built. Entities in different grades are reported in that
+#' order. Entities in the same grade are left unordered: the report does not
+#' say which one is higher, and it does not say that they are equal.
 #'
-#' The function prepares pairwise probabilities, constructs and solves the main
-#' problem, and returns the resulting grades, loss and supported summaries. A
-#' posterior representation is supplied externally; the function does not fit a
-#' statistical model. An omitted weight is set to one for a single criterion,
-#' whereas weights must be specified for several criteria. `G_max` bounds the
-#' number of grades from above and does not require that the bound be attained.
+#' By default, the grades are chosen to minimize the posterior expected loss,
+#' averaged over all pairs of entities: a pair reported in the wrong order
+#' costs 1 and a pair left unordered costs `tau`. With several criteria, one
+#' common grading is chosen and the criterion losses are combined with
+#' `weights`. `postrank()` computes the pairwise probabilities, solves the
+#' optimization problem and returns the grades, the loss and optional
+#' summaries. It does not fit a model, so the results are only as good as the
+#' posterior you supply.
 #'
-#' @param x A validated `postrank_draws`, Gaussian/mixture
-#'   `postrank_coefficients`, or [postrank_probabilities()] object.
-#' @param weights,tau,G_max Decision choices when `settings` is not given.
-#'   Weights are nonnegative and sum to one, without automatic normalization;
-#'   names identify criteria, or unnamed values follow criterion order.
-#'   This one-call function supplies weight 1 when it is omitted for one
-#'   criterion. The withholding cost satisfies `0 < tau <= 0.5`.
-#'   An oversized `G_max` is capped at the number of entities.
-#' @param ... Optional `q`, `exact_G`, `objective`, `minimax_criteria` and
-#'   `minimax_refine`, as described in [postrank_settings()]. These modes are
-#'   input-dependent: Gaussian/mixture coefficients and supplied probabilities
-#'   support only weighted at-most-G problems through this function.
-#' @param settings A [postrank_settings()] object instead of separate decision
-#'   arguments. Explicitly supplying both is a `settings_conflict` error.
-#' @param backend `NULL`, `"gurobi"` or `"highs"`. An explicit choice takes precedence;
-#'   otherwise `getOption("postrank.backend")` is used, then Gurobi if unset.
-#'   Choose HiGHS explicitly for that backend. There is no automatic fallback
-#'   after an unavailable, failed or timed-out backend.
-#' @param control A [postrank_control()] object or a named control list.
-#' @param report_card,fragility,crossfit,diagnostics Logical requests for
-#'   additional summaries. Report cards and Monte Carlo fragility are requested
-#'   by default; cross-fitting and diagnostics are off by default. See Details
-#'   for the input requirements and extra computation.
-#' @param level Central posterior interval level for a report card, in `(0, 1)`.
-#'   Supplied marginal intervals have a fixed level; request that same level.
-#' @return A `postrank_analysis` list with `input`, `pairwise`, `settings`,
-#'   `control`, `problem` and the main `fit`. `evaluation` is the fixed-action
-#'   evaluation of its validated grade. `report_card`, `fragility`, `crossfit`
-#'   and `diagnostics` contain prepared summaries or `NULL`.
+#' postrank needs an optimization solver. HiGHS is free: install the `highs`
+#' package and use `backend = "highs"` or `options(postrank.backend = "highs")`.
+#' The default, Gurobi, is commercial software that needs a license.
 #'
-#'   Each entry of `extras` records `requested`, `supported`, `available`,
-#'   `reason` and `condition`, which describe the availability of that component. `backend`,
-#'   `timings`, `provenance` and `warnings` describe the run. `metadata` contains
-#'   declaration/capability summaries and prepared display data; `schema_version`
-#'   identifies the analysis structure. Common results are extracted through
-#'   [get_grades()], [get_risk()], [get_profile()] and [postrank_tables].
-#' @details A time limit can leave a validated grade, or no grade at all.
-#'   Without a validated candidate, the fit's status, any usable lower bound
-#'   and warnings are retained, while evaluation and grade-dependent extras
-#'   are `NULL` with reason `"no_validated_incumbent"`. A valid report that
-#'   withholds every comparison is different: it has one grade and risk tau.
-#'   Read the fit's bounds and gap as well as its status; see [postrank_solve()].
+#' @param x Posterior information for the entities, one of:
+#'   * a `postrank_draws` object (see [postrank_draws()] and
+#'     [as_postrank_draws()]);
+#'   * a normal posterior given by means and covariances
+#'     ([postrank_gaussian_coefficients()]) or an average of normal
+#'     posteriors over shared states such as hyperparameter draws
+#'     ([postrank_mixture_coefficients()]);
+#'   * a [postrank_probabilities()] object holding comparison probabilities
+#'     computed elsewhere.
+#' @param weights Criterion weights: nonnegative numbers that sum to one. They
+#'   are not rescaled for you. Name them by criterion (named weights must name
+#'   every criterion once, including any with weight 0), or give them in
+#'   criterion order. With one criterion, `postrank()` sets the weight to 1 if
+#'   you leave it out; with several criteria it is required.
+#' @param tau Cost of leaving a pair unordered, relative to a cost of 1 for a
+#'   pair reported in the wrong order. Must satisfy `0 < tau <= 0.5`.
+#' @param G_max Largest number of grades. Fewer grades are allowed unless
+#'   `exact_G` is given. A value larger than the number of entities is reduced
+#'   to that number, and a note is added to the result's warnings.
+#' @param ... Further settings passed to [postrank_settings()]: `q`
+#'   (per-criterion upper limits in `[0, 1]` on the expected wrong-order
+#'   proportion of ordered pairs, `E_k <= q_k * N`), `exact_G` (an exact number
+#'   of occupied grades), `objective` (`"minimax"` minimizes the largest
+#'   criterion loss instead of the weighted one), `minimax_criteria` (subset of
+#'   criteria included in the minimax objective) and `minimax_refine` (whether
+#'   to refine a minimax solution on weighted loss). With normal or mixture
+#'   posteriors or supplied probabilities, only the weighted objective without
+#'   `q`, `exact_G` or `minimax_criteria` is available; other values are an
+#'   error.
+#' @param settings A [postrank_settings()] object, used instead of `weights`,
+#'   `tau`, `G_max` and `...`. Giving both, even at their default values, is an
+#'   error (`settings_conflict`).
+#' @param backend Solver to use, `"gurobi"` or `"highs"`. If `NULL` (the
+#'   default), `getOption("postrank.backend")` is used, or `"gurobi"` if that
+#'   option is not set. If the chosen solver is not installed or cannot be
+#'   loaded, the call stops with an error. The fit records the overall solver
+#'   outcome in `fit$status` and stage-specific errors in `fit$engine$stages`
+#'   (see Details). `postrank` never switches to the other solver.
+#' @param control Solver controls from [postrank_control()], such as the time
+#'   limit, number of threads and seed, or a named list of them.
+#' @param report_card,fragility,crossfit,diagnostics Whether to request extra
+#'   summaries. The report card and fragility are requested by default;
+#'   cross-fitting and diagnostics are not. Each one is computed only when the
+#'   input supports it; Details lists what each needs.
+#'   * Report card: the posterior means and intervals shown with the grades.
+#'   * Fragility: pairs whose wrong-order probability in the likelier direction
+#'     is within Monte Carlo noise of `tau`. On MCMC draws, only borderline
+#'     pairs within `0.1` (`screen_margin`) of `tau` are traced, and an
+#'     informational `"MCMC screen"` note is added to `warnings`.
+#'   * Cross-fitting: grades chosen on one half of the draws and evaluated on
+#'     the other half (the model is not refitted).
+#'   * Diagnostics: for IID or MCMC draws, Monte Carlo standard errors (with
+#'     R-hat and effective sample size for MCMC draws, from the `posterior`
+#'     package); for exact finite posteriors and other inputs, see Details.
+#' @param level Level of the central posterior intervals in the report card,
+#'   between 0 and 1. If the input comes with its own intervals, use their
+#'   level (for 95% intervals, `level = 0.95`) or set `report_card = FALSE`.
+#' @returns A `postrank_analysis` object, a list with these components:
+#'   * `input`, `pairwise`, `settings`, `control` and `problem`: the checked
+#'     input, its pairwise probabilities, and the settings, solver controls and
+#'     optimization problem that were used.
+#'   * `fit`: the solver result (see [postrank_solve()]).
+#'   * `evaluation`: loss and error summaries of the chosen grades, or `NULL`
+#'     when no grading passed postrank's checks.
+#'   * `report_card`, `fragility`, `crossfit` and `diagnostics`: the extra
+#'     summaries, each `NULL` when it was not computed.
+#'   * `extras`: for each extra summary, whether it was `requested`,
+#'     `supported` and `available`, with a `reason` and any error `condition`.
+#'   * `backend`, `timings` and `warnings`: the solver used, the seconds spent
+#'     in each stage, and any warnings.
+#'   * `provenance`: how and when the result was made (postrank and R versions,
+#'     time, solver and how it was chosen).
+#'   * `metadata`: a summary of the input's declarations, which extra summaries
+#'     the input supports, and stored display data.
+#'   * `schema_version`: the version of this object's layout.
 #'
-#' A report card requires marginal posterior intervals, so supplied
-#' probabilities without these summaries permit optimization but cannot produce
-#' a report card. Monte Carlo fragility and cross-fitting require joint
-#' equal-weight IID or MCMC draws; cross-fitting entails two additional
-#' optimizations. For typed coefficients, diagnostics concern conditional
-#' expected risk through [postrank_coefficient_diagnose()]. Target draws and
-#' simulation diagnostics are unavailable from probability-only inputs.
+#'   Use [get_grades()], [get_risk()], [get_profile()], and [as.data.frame()]
+#'   (see [postrank_tables]) to extract the usual results, and `plot()` or
+#'   [postrank_plot_report_card()] to plot the report card.
+#' @details
+#' **Words in the printed output.** The printed result and [get_risk()] use the
+#' package's internal terms: "disclosed" pairs are the ordered pairs,
+#' "withheld" pairs are the unordered ones, and "risk" is the loss described
+#' above.
 #'
-#'   If an extra fails unexpectedly, a valid main fit is retained, the extra
-#'   records `reason = "extra_error"` and its condition, and a warning is added.
-#'   Core input, backend and solve failures still stop the call. Requested
-#'   intervals must be compatible with the source before analysis proceeds.
-#' @seealso [postrank_settings()], [postrank_control()], [postrank_solve()],
-#'   [postrank_report_card()], [get_risk()]
+#' **Solver results.** postrank recomputes the loss of the solver's grading
+#' and checks it before reporting it. The solver also reports a lower bound
+#' (a loss that no grading can beat) and the gap between the returned loss and
+#' that bound; a gap of 0 means that, up to numerical tolerance, no better
+#' grading exists for these probabilities. The status, bound and gap describe
+#' the optimization only, not the uncertainty in the posterior or the adequacy
+#' of the model; see [get_risk()] and [postrank_solve()].
+#'
+#' **Time limits.** When the solver stops at its time limit, the result may hold
+#' a checked grading, or none. Without one, the result keeps the solver status,
+#' any lower bound and the warnings; `evaluation` and the requested extra
+#' summaries are `NULL`, with reason `"no_validated_incumbent"` (no checked
+#' grading). This differs from a valid grading that leaves every pair
+#' unordered, which has one grade and loss `tau`.
+#'
+#' **What each extra summary needs.** A report card needs marginal posterior
+#' intervals: supplied probabilities without interval summaries can be graded
+#' but give no report card. Monte Carlo fragility and cross-fitting need joint
+#' equal-weight IID or MCMC draws, in which every draw holds a value for every
+#' entity and criterion; cross-fitting solves two more optimization problems.
+#' For IID or MCMC draws, `diagnostics` reports Monte Carlo standard errors
+#' (exact finite posteriors have no Monte Carlo error); for normal or mixture
+#' posteriors it evaluates the expected loss given those posteriors (for
+#' hyperparameter-MCMC MCSEs on mixture posteriors, call
+#' [postrank_coefficient_diagnose()] directly with `chain_history`). Supplied
+#' probabilities have no draws, so fragility, cross-fitting and diagnostics are
+#' not available for them.
+#'
+#' **Errors.** Invalid input, invalid settings, an unavailable solver, and
+#' uncaught solver execution errors (such as a missing Gurobi license under
+#' `strategy = "label_mip"` or LP setup) stop the call. Solver termination
+#' outcomes, including infeasibility, numerical trouble and time limits, appear
+#' in `fit$status`. Without a checked grading, `evaluation` is `NULL`. For a
+#' caught error in staged search, check `fit$engine$stages$lp$status` and its
+#' `trace` for LP rounds, or `fit$engine$stages$mip$error` and `fit$warnings`
+#' for the final MIP. If an extra
+#' summary fails unexpectedly, the main grading is kept, the extra records
+#' `reason = "extra_error"` and its condition, and an R warning is signaled and
+#' appended to `warnings`. When the input supplies its own intervals, a report
+#' card at another `level` is an error, raised before any solving.
+#' @seealso [postrank_example()], [postrank_settings()], [postrank_control()],
+#'   [postrank_solve()], [postrank_report_card()], [get_risk()]
 #' @examples
-#' if (requireNamespace("highs", quietly = TRUE)) {
-#'   one <- postrank(pr_tutorial$one, tau = .2, G_max = 3L, backend = "highs",
-#'     control = postrank_control(time_limit = 10), fragility = FALSE)
-#'   get_grades(one)
-#'   get_risk(one)
-#' }
+#' # Read a stored result without running a solver:
+#' stored <- postrank_example("tutorial_one")
+#' get_grades(stored)
+#' get_risk(stored)
+#' @examplesIf requireNamespace("highs", quietly = TRUE)
+#' # Solve directly with the optional highs package:
+#' one <- postrank(pr_tutorial$one, tau = 0.2, G_max = 3, backend = "highs",
+#'   control = postrank_control(time_limit = 10), fragility = FALSE)
+#' get_grades(one)
+#' get_risk(one)
 #' @concept decision
 #' @export
 postrank <- function(x, weights = NULL, tau = 0.25, G_max = 4L, ..., settings = NULL, backend = NULL,
@@ -151,7 +234,6 @@ postrank <- function(x, weights = NULL, tau = 0.25, G_max = 4L, ..., settings = 
   for (f in c("report_card", "fragility", "crossfit", "diagnostics"))
     .pr_assert(is.logical(get(f)) && length(get(f)) == 1L && !is.na(get(f)), paste(f, "must be TRUE or FALSE"), "invalid_request", paste0("$.", f))
   level <- .pr_level(level)
-  # Input.
   if (inherits(x, "postrank_probabilities")) {
     validate_postrank_probabilities(x)
     if (report_card && isTRUE(x$capabilities$posterior_intervals))
@@ -161,7 +243,6 @@ postrank <- function(x, weights = NULL, tau = 0.25, G_max = 4L, ..., settings = 
       "invalid_input", "$")
     x <- as_postrank_draws(x)
   }
-  # Policy.
   if (is.null(settings)) {
     if (is.null(weights) && length(x$criterion_ids) == 1L)
       weights <- stats::setNames(1, x$criterion_ids)

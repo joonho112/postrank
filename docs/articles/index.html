@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -60,71 +60,59 @@
     
     
     
-    
   <div class="page-header"><h1>Vignettes</h1></div>
-<p class="vignette-intro">Choose a practical guide, explore a case study, or follow the methods in order.</p>
+<p class="vignette-intro">Choose a practical guide, explore a case study, or read the methods articles in order.</p>
 <div class="vignette-start">
 <p class="vignette-start-label">First visit?</p>
-<a href="a1-getting-started.html" class="vignette-start-link">Analysis with one or several criteria</a><p class="mb-0">Begin with a small analysis that assigns one grade per unit, shared across the criteria. Then learn how to read results and make figures.</p>
+<a href="a1-getting-started.html" class="vignette-start-link">Getting started: grading with one or two criteria</a><p class="mb-0">Begin with a six-site analysis that grades entities on one criterion and then on two criteria together, followed by guides on preparing inputs, exporting results, and making figures.</p>
 </div>
-<nav class="vignette-categories" aria-label="Vignette categories"><a href="#start-here">Start here</a><a href="#applied-examples">Applied examples</a><a href="#methods">Methods</a><a href="#multidomain-profiles">Multidomain profiles</a><a href="#additional-examples">Additional examples</a><a href="#reference-aids">Reference aids</a></nav><section class="vignette-section" id="start-here"><h2 id="start-here-heading">Start here</h2>
-<p class="vignette-section-description">Follow a small analysis from supplied posterior information to grades, exported results and figures.</p>
+<nav class="vignette-categories" aria-label="Vignette categories"><a href="#start-here">Start here</a><a href="#applied-examples">Applied examples</a><a href="#methods">Methods</a><a href="#multidomain-profiles">Multidomain profiles</a><a href="#reference-aids">Reference aids</a></nav><section class="vignette-section" id="start-here"><h2 id="start-here-heading">Start here</h2>
+<p class="vignette-section-description">Walk through a complete analysis from posterior inputs to integer grades, exported tables, HTML reports, and sensitivity plots.</p>
 <dl class="vignette-list">
-<dt><a href="a1-getting-started.html">Analysis with one or several criteria</a></dt>
-<dd>Run a complete analysis with one criterion, then with several criteria supporting a common grade.</dd>
-<dt><a href="a5-your-posterior-results.html">Analysis of supplied posterior results</a></dt>
-<dd>Prepare your own posterior results and the scientific declarations needed for analysis.</dd>
-<dt><a href="a6-reading-exporting-results.html">Reading and exporting results</a></dt>
-<dd>Read grades, losses and status records, and export the results you need.</dd>
-<dt><a href="a7-figures-sensitivity.html">Figures and sensitivity analysis</a></dt>
-<dd>Make the common-grade figures and examine changes in analysis settings.</dd>
+<dt><a href="a1-getting-started.html">Getting started: grading with one or two criteria</a></dt>
+<dd>Run a complete grading analysis on one criterion and extend it to two criteria.</dd>
+<dt><a href="a5-your-posterior-results.html">Preparing your posterior draws and comparison probabilities</a></dt>
+<dd>Prepare posterior draws, normal or mixture moments, JSON files, and comparison probabilities.</dd>
+<dt><a href="a6-reading-exporting-results.html">Reading and exporting grading results</a></dt>
+<dd>Inspect grades, pair counts, losses, and solver status, and export CSV, RDS, and HTML reports.</dd>
+<dt><a href="a7-figures-sensitivity.html">Figures and sensitivity to reporting settings</a></dt>
+<dd>Make the seven common-grade plots and examine sensitivity to tau, G_max, and weights.</dd>
 </dl></section><section class="vignette-section" id="applied-examples"><h2 id="applied-examples-heading">Applied examples</h2>
-<p class="vignette-section-description">Explore one-criterion and common-grading analyses in three case studies.</p>
+<p class="vignette-section-description">Follow one-criterion and multi-criterion grading analyses across California schools, large U.S. employers, and Alabama counties.</p>
 <dl class="vignette-list">
-<dt><a href="a2-cde-accountability.html">Comparing chronic absence across California schools</a></dt>
-<dd>Compare chronic absence across selected California schools.</dd>
-<dt><a href="a3-krw-race-gender.html">Race and gender at large employers</a></dt>
-<dd>Examine race and gender contact gaps at large employers.</dd>
-<dt><a href="a4-alabama-opportunity.html">Economic opportunity in Alabama: income and incarceration</a></dt>
-<dd>Study historical income and incarceration outcomes across Alabama counties.</dd>
+<dt><a href="a2-cde-accountability.html">Grading California schools on chronic absence</a></dt>
+<dd>Grade California schools on chronic absence rates.</dd>
+<dt><a href="a3-krw-race-gender.html">Grading large employers on race and gender contact gaps</a></dt>
+<dd>Grade large employers on race and gender callback gaps.</dd>
+<dt><a href="a4-alabama-opportunity.html">Grading Alabama counties on income and incarceration</a></dt>
+<dd>Grade Alabama counties on upward income mobility and adult incarceration.</dd>
 </dl></section><section class="vignette-section" id="methods"><h2 id="methods-heading">Methods</h2>
-<p class="vignette-section-description">Understand the loss, competing criteria, posterior requirements, withholding, computation and numerical uncertainty.</p>
+<p class="vignette-section-description">Connect posterior comparison probabilities, integer grades, multiple criteria, exact ties, solver bounds, and Monte Carlo or IID diagnostics.</p>
 <dl class="vignette-list">
-<dt><a href="m1-ranking-and-loss.html">Posterior ranking, grades, and loss</a></dt>
-<dd>Connect posterior comparisons, integer grades and the cost of withholding a direction.</dd>
-<dt><a href="m2-several-criteria.html">Several criteria and competing goals</a></dt>
-<dd>Understand weights, competing goals and the consequences of a common grading.</dd>
-<dt><a href="m3-posterior-inputs.html">Posterior inputs and pairwise probabilities</a></dt>
+<dt><a href="m1-ranking-and-loss.html">Posterior ranking, integer grades, and reporting loss</a></dt>
+<dd>Connect posterior comparison probabilities, integer grades, and reporting loss.</dd>
+<dt><a href="m2-several-criteria.html">Combining several criteria in one common grading</a></dt>
+<dd>Combine multiple criteria in one common grading and compare against fixed-order baselines.</dd>
+<dt><a href="m3-posterior-inputs.html">Posterior representations and pairwise comparison probabilities</a></dt>
 <dd>Match posterior representations and pairwise probabilities to the calculations they support.</dd>
-<dt><a href="m4-ties-and-withholding.html">True ties and withheld comparisons</a></dt>
-<dd>Distinguish true target ties from comparisons left undisclosed.</dd>
-<dt><a href="m5-computing-grades.html">Computing grades and choosing settings</a></dt>
-<dd>Choose settings and interpret computation status, bounds and gaps.</dd>
-<dt><a href="m6-uncertainty-diagnostics.html">Monte Carlo uncertainty and diagnostics</a></dt>
-<dd>Read Monte Carlo diagnostics and their numerical limits.</dd>
+<dt><a href="m4-ties-and-withholding.html">Exact ties in the posterior versus withheld comparisons</a></dt>
+<dd>Distinguish exact ties in the posterior from pairs left unordered by a shared grade.</dd>
+<dt><a href="m5-computing-grades.html">Computing grades, choosing settings, and reading solver bounds</a></dt>
+<dd>Choose problem settings and read solver statuses, lower bounds, and optimality gaps.</dd>
+<dt><a href="m6-uncertainty-diagnostics.html">Monte Carlo diagnostics, cross-fitting, and IID bounds</a></dt>
+<dd>Read Monte Carlo standard errors, MCMC diagnostics, cross-fitting, and IID bounds.</dd>
 </dl></section><section class="vignette-section" id="multidomain-profiles"><h2 id="multidomain-profiles-heading">Multidomain profiles</h2>
-<p class="vignette-section-description">Assign each unit a separate grade in each domain. Extend the common-grade workflow with joint protection and crossed priorities.</p>
+<p class="vignette-section-description">Assign each entity a separate grade in each domain and evaluate joint cross-domain error-exceedance protection.</p>
 <dl class="vignette-list">
-<dt><a href="mdomain-quickstart.html">A first multidomain report card</a></dt>
-<dd>Build, evaluate, select and plot a report with a grade in each domain.</dd>
-<dt><a href="mdomain-decisions.html">When domains can be graded separately</a></dt>
-<dd>See when domain choices separate and when joint posterior protection changes the chosen profile.</dd>
-</dl></section><section class="vignette-section" id="additional-examples"><h2 id="additional-examples-heading">Additional examples</h2>
-<p class="vignette-section-description">Work through the retained examples, producer declarations and comparisons with simpler grading rules.</p>
-<dl class="vignette-list">
-<dt><a href="quickstart.html">Common grading from posterior draws</a></dt>
-<dd>Follow the retained posterior-draw example through a common grading.</dd>
-<dt><a href="inputs-and-producers.html">Strict inputs, declarations and external producers</a></dt>
-<dd>Work with strict input declarations and externally produced posterior information.</dd>
-<dt><a href="baselines-and-the-cost-of-a-common-grade.html">Baselines and criterion burden</a></dt>
-<dd>Compare common grades with simpler score orders and criterion-specific burdens.</dd>
+<dt><a href="mdomain-quickstart.html">Grading entities across multiple domains</a></dt>
+<dd>Build, evaluate, search, and plot a report card with a separate grade in each domain.</dd>
+<dt><a href="mdomain-decisions.html">Separate domain rules versus joint multidomain protection</a></dt>
+<dd>Compare separate domain rules against joint cross-domain error protection.</dd>
 </dl></section><section class="vignette-section" id="reference-aids"><h2 id="reference-aids-heading">Reference aids</h2>
-<p class="vignette-section-description">Browse the common-grade figure gallery or update scripts written for the earlier interface.</p>
+<p class="vignette-section-description">Browse all seven common-grade figure functions and their display options side by side.</p>
 <dl class="vignette-list">
-<dt><a href="figure-gallery.html">A gallery of the seven result figures</a></dt>
-<dd>Browse the seven common-grade plots and their display options.</dd>
-<dt><a href="migration-from-0-9.html">Moving from the earlier 0.9 interface</a></dt>
-<dd>Adapt scripts written for the earlier 0.9 interface.</dd>
+<dt><a href="figure-gallery.html">Gallery of the seven common-grade figures</a></dt>
+<dd>Browse all seven common-grade plot functions and their display options.</dd>
 </dl></section></main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>

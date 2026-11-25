@@ -17,18 +17,16 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Prepare an Entity Report Card with Posterior Intervals — postrank_report_card">
-<meta name="description" content="A validated grading is combined with marginal posterior summaries in an
-entity-level report card. The table contains every entity, its grade, counts
-of comparisons reported above or below it or withheld, and each criterion's
-posterior mean, interval and expected rank. The table is used for detailed
-reporting and plotting; postrank_tables supplies the basic two-column
-grade table.">
-<meta property="og:description" content="A validated grading is combined with marginal posterior summaries in an
-entity-level report card. The table contains every entity, its grade, counts
-of comparisons reported above or below it or withheld, and each criterion's
-posterior mean, interval and expected rank. The table is used for detailed
-reporting and plotting; postrank_tables supplies the basic two-column
-grade table.">
+<meta name="description" content="postrank_report_card() combines a checked grading with marginal posterior
+means, central intervals and expected ranks in an entity-level table. Each
+row gives an entity's grade, how many other entities are reported above it,
+below it or in the same grade, and per-criterion posterior summaries. For a
+basic two-column grade table, use postrank_tables.">
+<meta property="og:description" content="postrank_report_card() combines a checked grading with marginal posterior
+means, central intervals and expected ranks in an entity-level table. Each
+row gives an entity's grade, how many other entities are reported above it,
+below it or in the same grade, and per-criterion posterior summaries. For a
+basic two-column grade table, use postrank_tables.">
 <meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
 </head>
 <body>
@@ -39,7 +37,7 @@ grade table.">
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,7 +46,7 @@ grade table.">
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -72,12 +70,11 @@ grade table.">
     </div>
 
     <div class="ref-description section level2">
-    <p>A validated grading is combined with marginal posterior summaries in an
-entity-level report card. The table contains every entity, its grade, counts
-of comparisons reported above or below it or withheld, and each criterion's
-posterior mean, interval and expected rank. The table is used for detailed
-reporting and plotting; <a href="postrank_tables.html">postrank_tables</a> supplies the basic two-column
-grade table.</p>
+    <p><code>postrank_report_card()</code> combines a checked grading with marginal posterior
+means, central intervals and expected ranks in an entity-level table. Each
+row gives an entity's grade, how many other entities are reported above it,
+below it or in the same grade, and per-criterion posterior summaries. For a
+basic two-column grade table, use <a href="postrank_tables.html">postrank_tables</a>.</p>
     </div>
 
     <div class="section level2">
@@ -100,89 +97,99 @@ grade table.</p>
 <dl>
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a>
 </dt>
-<dd><p>A <code>postrank_fit</code> or <code>postrank_analysis</code> with a validated grade.</p></dd>
+<dd><p>A <code>postrank_fit</code> or <code>postrank_analysis</code> object with a checked
+grading (<code>incumbent_validated = TRUE</code>; otherwise stops with
+<code>no_validated_incumbent</code>).</p></dd>
 
 
 <dt id="arg-draws">draws<a class="anchor" aria-label="anchor" href="#arg-draws"></a>
 </dt>
-<dd><p>Optional source input: <code>postrank_draws</code>,
-<code>postrank_coefficients</code>, or <code>postrank_probabilities</code> with supplied marginal
-intervals. It must have the same input identity as the fit.</p></dd>
+<dd><p>Optional posterior input matching <code>x</code>'s <code>input_identity</code>: a
+<code>postrank_draws</code>, <code>postrank_coefficients</code>, or <code><a href="postrank_probabilities.html">postrank_probabilities()</a></code>
+object with marginal interval summaries. Required when <code>x</code> is a
+<code>postrank_fit</code> built from a <code>postrank_pairwise</code> object that does not store
+the original draws.</p></dd>
 
 
 <dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a>
 </dt>
-<dd><p>Central posterior interval level in <code>(0, 1)</code>; default <code>0.90</code>.
-For supplied marginal summaries, it must exactly match their stored level.</p></dd>
+<dd><p>Central posterior interval level in <code>(0, 1)</code> (default <code>0.90</code>).
+For a <code><a href="postrank_probabilities.html">postrank_probabilities()</a></code> input with supplied intervals, <code>level</code>
+must equal the stored <code>summaries$level</code>.</p></dd>
 
 
 <dt id="arg-order">order<a class="anchor" aria-label="anchor" href="#arg-order"></a>
 </dt>
-<dd><p>Secondary sort key within each grade: <code>"expected_rank"</code>
-(weighted expected rank, default), <code>"mean"</code> (one criterion's posterior
-mean, larger first) or <code>"label"</code> (entity ID).</p></dd>
+<dd><p>Secondary sort order within each grade: <code>"expected_rank"</code>
+(weighted expected rank, the default), <code>"mean"</code> (descending posterior mean
+on one criterion) or <code>"label"</code> (entity ID).</p></dd>
 
 
 <dt id="arg-order-by">order_by<a class="anchor" aria-label="anchor" href="#arg-order-by"></a>
 </dt>
-<dd><p>Criterion used with <code>order = "mean"</code>. Required with several
-criteria, optional with one. Leave <code>NULL</code> for other ordering rules.</p></dd>
+<dd><p>Criterion ID used when <code>order = "mean"</code> (required when
+several criteria are present, optional with one; must be <code>NULL</code> for other
+<code>order</code> values).</p></dd>
 
 </dl>
 </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
 </h2>
-    <p>A <code>postrank_report_card</code> with the full table in <code>data</code>. Its other
-fields record <code>level</code>, <code>interval_source</code>, <code>secondary_order</code>, <code>settings</code>,
-<code>grade_identity</code>, <code>input_identity</code>, <code>schema_version</code>, <code>provenance</code> and
-<code>warnings</code>. A selected mean-ordering criterion is recorded in
-<code>provenance$ordering_criterion</code>.</p>
+    <p>A <code>postrank_report_card</code> object with the full data frame in <code>data</code>,
+plus <code>level</code>, <code>interval_source</code>, <code>secondary_order</code>, <code>settings</code>,
+<code>grade_identity</code>, <code>input_identity</code>, <code>schema_version</code>, <code>provenance</code>
+(recording <code>ordering_criterion</code> when <code>order = "mean"</code>) and <code>warnings</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
 </h2>
-    <p>The table is ordered first by grade, then the secondary key, with
-entity ID breaking remaining ties. Grade 1 has highest priority. Shared
-grades withhold comparisons and do not establish latent equality.
-<code>n_above</code> counts other entities this entity is reported above; <code>n_below</code>
-counts those it is reported below. Together with <code>n_withheld</code>, they sum
-to n-1 for each row. Columns <code>mean_</code>, <code>lower_</code>, <code>upper_</code> and
-<code>expected_rank_</code><span> are suffixed with the criterion ID. Expected rank is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>+</mo><msub><mo>∑</mo><mrow><mi>j</mi><mo>≠</mo><mi>i</mi></mrow></msub><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">1 + \sum_{j \ne i} e_{ij,k}</annotation></semantics></math>. Weighted ranks can set the row order;
-means in different units are never added for this purpose.</span></p>
-<p>The source comes from <code>draws</code>, then the analysis input, then a typed
-coefficient or supplied-probability object stored in the fit. A bare
-pairwise object contains no marginal posterior law, so supply its
-original input through <code>draws</code>. Matching cached summaries are reused;
-otherwise this function computes summaries from the source. It does not
-solve for new grades. Figures and table conversion subsequently read the
-prepared card without recomputing these summaries.</p>
-<p>Intervals describe the supplied marginal posterior, not Monte Carlo
-error or the probability that a grade is correct. A mean can lie outside
-an equal-tail interval. Supplied probability matrices require genuine
-same-target marginal intervals at their recorded level: a posterior law
-or chain history is not inferred from the matrices. Without a validated
-grade, the function stops with <code>no_validated_incumbent</code>.</p>
-<p>The card always contains all entities. Row limits and display labels in
-<code><a href="postrank_plot_report_card.html">postrank_plot_report_card()</a></code> affect only the figure.</p>
+    <p>Rows are sorted first by <code>grade</code> (grade 1 is highest priority; shared grades
+leave pairs unordered), then by <code>order</code>, with <code>entity_id</code> breaking remaining
+ties. In <code>data</code>, <code>n_above</code> counts entities graded below this entity
+(<code>grade[i] &lt; grade[j]</code>), <code>n_below</code> counts entities graded above it, and
+<code>n_withheld</code> counts other entities sharing its grade; for every row,
+<code>n_above + n_below + n_withheld == n - 1</code>. Per-criterion columns are named
+<code>mean_&lt;k&gt;</code>, <code>lower_&lt;k&gt;</code>, <code>upper_&lt;k&gt;</code> and <code>expected_rank_&lt;k&gt;</code><span>, where expected
+rank is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>+</mo><msub><mo>∑</mo><mrow><mi>j</mi><mo>≠</mo><mi>i</mi></mrow></msub><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">1 + \sum_{j \ne i} e_{ij,k}</annotation></semantics></math>. When </span><code>order = "expected_rank"</code>,
+rows within a grade are ordered by weighted expected rank rather than adding
+means across criteria in different units.</p>
+<p>Cached summaries on a <code>postrank_analysis</code> at the requested <code>level</code> are
+reused; otherwise summaries are computed from the posterior source without
+re-solving for grades. Intervals summarize marginal target uncertainty (a
+posterior mean can lie outside an equal-tail interval), not Monte Carlo
+error or the probability that a grade assignment is right. <code>data</code> always
+retains all <code>n</code> entities; row caps in <code><a href="postrank_plot_report_card.html">postrank_plot_report_card()</a></code> affect
+only the plot.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
 </h2>
-    <div class="dont-index"><p><code><a href="postrank.html">postrank()</a></code>, <code><a href="postrank_posterior_means.html">postrank_posterior_means()</a></code>, <a href="postrank_tables.html">postrank_tables</a></p></div>
+    <div class="dont-index"><p><code><a href="postrank.html">postrank()</a></code>, <a href="postrank_tables.html">postrank_tables</a>, <code><a href="postrank_plot_report_card.html">postrank_plot_report_card()</a></code>,
+<code><a href="postrank_posterior_means.html">postrank_posterior_means()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
 </h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"highs"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">one</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank.html">postrank</a></span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span>, tau <span class="op">=</span> <span class="fl">.2</span>, G_max <span class="op">=</span> <span class="fl">3L</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span></span>
-<span class="r-in"><span>    control <span class="op">=</span> <span class="fu"><a href="postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>, fragility <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">card</span> <span class="op">&lt;-</span> <span class="fu">postrank_report_card</span><span class="op">(</span><span class="va">one</span>, level <span class="op">=</span> <span class="fl">.8</span>, order <span class="op">=</span> <span class="st">"mean"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">card</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">card</span><span class="op">$</span><span class="va">interval_source</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_one"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">card</span> <span class="op">&lt;-</span> <span class="fu">postrank_report_card</span><span class="op">(</span><span class="va">one</span>, level <span class="op">=</span> <span class="fl">0.80</span>, order <span class="op">=</span> <span class="st">"mean"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">card</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   entity_id grade sort_rank n_above n_below n_withheld mean_score_A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         A     1         1       4       0          1         1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         B     1         2       4       0          1         0.95</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         C     2         3       2       2          1         0.25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         D     2         4       2       2          1         0.15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         E     3         5       0       4          1        -0.50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         F     3         6       0       4          1        -0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   lower_score_A upper_score_A expected_rank_score_A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   0.943689687     1.4563103              1.188874</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   0.693689687     1.2063103              1.820624</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  -0.006310313     0.5063103              3.358889</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  -0.106310313     0.4063103              3.646891</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  -0.756310313    -0.2436897              5.129639</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  -1.056310313    -0.5436897              5.855084</span>
+<span class="r-in"><span><span class="va">card</span><span class="op">$</span><span class="va">interval_source</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "gaussian_analytic"</span>
 </code></pre></div>
     </div>

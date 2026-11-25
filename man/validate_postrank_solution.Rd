@@ -6,61 +6,65 @@
 validate_postrank_solution(problem, solution, tolerances = list())
 }
 \arguments{
-\item{problem}{A validated \code{postrank_problem}.}
+\item{problem}{A validated \code{postrank_problem} object from
+\code{\link[=postrank_problem]{postrank_problem()}}.}
 
-\item{solution}{Numeric primal vector in the problem's model-column order,
-such as \code{fit$raw_solution}, or \code{NULL} when no candidate was returned.
-A named grade vector alone is not a primal vector; use \code{\link[=postrank_evaluate]{postrank_evaluate()}}
-to score grades without validating the optimization variables.}
+\item{solution}{Numeric primal vector in the column order of
+\code{problem$model} (such as \code{fit$raw_solution}), or \code{NULL} when no candidate
+was returned. To evaluate a named grade vector directly without primal
+model variables, use \code{\link[=postrank_evaluate]{postrank_evaluate()}}.}
 
-\item{tolerances}{Named list of nonnegative finite \code{feasibility},
-\code{integrality} and \code{objective} tolerances. Defaults are \code{1e-7}, \code{1e-6}
-and \code{1e-7}, respectively.}
+\item{tolerances}{Named list of nonnegative finite tolerances overriding
+the defaults \code{feasibility = 1e-7}, \code{integrality = 1e-6} and
+\code{objective = 1e-7}.}
 }
 \value{
-A \code{postrank_solution_validation} list with \code{valid}, \code{issues},
-\code{warnings}, raw/rounded residuals, \code{integrality_residual}, \code{rounded_solution},
-raw labels/pair variables, and \code{tolerances}. For a valid candidate,
-\code{grade}, \code{evaluation} and \code{recomputed_raw_objective} describe the checked
-action. \code{epigraph_shortfall} and \code{epigraph_repaired} record any permitted
-minimax adjustment. \code{validity_basis} is \code{"rounded_integer_solution"}.
-Invalid or absent candidates have \code{grade} and \code{evaluation} set to \code{NULL};
-malformed problems or tolerance settings raise input errors.
+A \code{postrank_solution_validation} list containing:
+\itemize{
+\item \code{valid}: \code{TRUE} when the rounded integer solution passes all variable,
+constraint, grade-relation and objective checks;
+\item \code{issues} and \code{warnings}: list of failure records and character vector of
+raw-primal residual notes;
+\item \code{grade}, \code{evaluation} and \code{recomputed_raw_objective}: the checked grade
+vector and its \code{\link[=postrank_evaluate]{postrank_evaluate()}} summary (\code{NULL} / \code{NA} when \code{valid}
+is \code{FALSE});
+\item \code{raw_residuals}, \code{rounded_residuals}, \code{integrality_residual},
+\code{rounded_solution}, \code{raw_labels}, \code{raw_pairs}, \code{epigraph_shortfall},
+\code{epigraph_repaired}, \code{validity_basis} (\code{"rounded_integer_solution"})
+and \code{tolerances}.
+}
 }
 \description{
-A numerical solver candidate is checked for feasible grades under the
-specified problem, and its pairwise relations and posterior risk are
-recomputed. The check is performed within \code{\link[=postrank_solve]{postrank_solve()}} and can also be
-applied directly to a returned raw solution. Feasibility of a candidate does
-not establish optimality.
+\code{validate_postrank_solution()} checks whether a raw primal vector returned
+by an optimization solver defines a feasible grading for \code{problem}, and
+recomputes its pairwise relations and posterior expected loss.
+\code{\link[=postrank_solve]{postrank_solve()}} runs this check automatically on every candidate.
 }
 \details{
-Integer residuals must be within tolerance before the rounded
-variables are accepted. The rounded solution must satisfy bounds and rows,
-reconstruct the same pair relations as its grades, and meet the grade cap,
-any exact count and error-budget constraints. Raw-primal residuals are
-retained as diagnostics and can produce warnings even if the rounded action
-passes. Thus \code{valid} refers to the checked action within the tolerances.
+Integer and binary variables must lie within \code{tolerances$integrality} of an
+integer before rounding. The rounded solution must satisfy variable bounds
+and linear constraints within \code{tolerances$feasibility}, match the pair
+orderings implied by its grades, satisfy \code{G_max}, any \code{exact_G} and any \code{q}
+error budgets, and match the recomputed objective within
+\code{tolerances$objective}. Raw (unrounded) primal residuals exceeding
+\code{tolerances$feasibility} are recorded in \code{warnings}. For minimax problems,
+an auxiliary \code{t} variable falling below the maximum selected criterion loss
+by at most \code{tolerances$objective} is raised to that value before checking
+rounded constraints.
 
-For minimax, a shortfall of the continuous auxiliary variable within the
-objective tolerance is raised to the action's maximum criterion risk before
-checking the rounded constraints. Larger shortfalls are not repaired.
-This function checks neither a solver lower bound nor optimality, posterior
-calibration or the scientific accuracy of the supplied probabilities.
+Passing \code{validate_postrank_solution()} confirms feasibility of the candidate
+grading, not solver optimality, lower-bound validity or model adequacy.
 }
 \examples{
-problem <- postrank_problem(pr_tutorial$one, weights = c(score_A = 1),
-  tau = .2, G_max = 3L)
-absent <- validate_postrank_solution(problem, NULL)
+one <- postrank_example("tutorial_one")
+checked <- validate_postrank_solution(one$problem, one$fit$raw_solution)
+checked$valid
+
+absent <- validate_postrank_solution(one$problem, NULL)
 absent$valid
-if (requireNamespace("highs", quietly = TRUE)) {
-  fit <- postrank_solve(problem, backend = "highs",
-    control = postrank_control(time_limit = 10))
-  checked <- validate_postrank_solution(problem, fit$raw_solution)
-  checked$valid
-}
+absent$issues[[1]]$code
 }
 \seealso{
-\code{\link[=postrank_solve]{postrank_solve()}}, \code{\link[=postrank_evaluate]{postrank_evaluate()}}
+\code{\link[=postrank_solve]{postrank_solve()}}, \code{\link[=postrank_evaluate]{postrank_evaluate()}}, \code{\link[=postrank_control]{postrank_control()}}
 }
 \concept{decision}

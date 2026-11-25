@@ -1,4 +1,4 @@
-# T-obj-06 / T-base-10 / T-base-11 and the comparison row contract.
+# Multi-rule comparison tables, pairwise relation differences, and feasibility flags.
 cmp_mock <- function(grade = "auto", status = "optimal") function(problem, backend, control, strategy) {
   ids <- problem$pairwise$entity_ids
   g <- if (is.null(grade)) NULL else if (identical(grade, "auto")) stats::setNames(c(1L, rep(2L, length(ids) - 1L)), ids) else grade[ids]

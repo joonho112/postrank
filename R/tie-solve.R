@@ -1,70 +1,116 @@
-#' Choose Grades Under Equality-Neutral Loss
+#' Solve a Grading Problem Under Equality-Neutral Loss
 #'
-#' A prepared tie-aware problem is solved by mixed-integer optimization, and
-#' its candidate is checked independently before grades are returned. The
-#' objective minimizes weighted expected strict errors and distinct-comparison
-#' withholding costs, subject to the grade cap and active-profile equality
-#' guard. A validated candidate may remain available when optimization
-#' terminates early.
+#' `postrank_tie_solve()` solves a tie-aware grading problem from
+#' [postrank_tie_problem()] by mixed-integer programming (`strategy =
+#' "label_mip"`) and independently checks any candidate grading before returning
+#' it. It minimizes posterior expected equality-neutral loss (where true target
+#' equality has zero loss whether the pair is ordered or placed in the same
+#' grade), subject to at most `G_max` occupied grades and the active-profile
+#' equality constraint (requiring entities declared structurally equal on every
+#' positive-weight criterion to share a grade).
 #'
-#' @param problem A validated object from [postrank_tie_problem()].
-#' @param backend `NULL`, `"highs"` or `"gurobi"`. The explicit argument takes
-#'   precedence over `getOption("postrank.backend")`, then the default Gurobi.
-#'   Choose `"highs"` explicitly to use HiGHS. There is no backend fallback.
-#' @param control Named time, thread, seed, gap and tolerance controls, or a
-#'   `postrank_control` with `strategy = "label_mip"`. Nonempty staged-engine
-#'   controls are unsupported in this mode.
-#' @param strategy `"label_mip"` only. When omitted, an explicit strategy in
-#'   `control` is used and checked; otherwise the label model is used.
-#' @return A `postrank_tie_fit` with the problem, settings, backend, raw solver
-#'   result, status, validation, objective records and numerical warnings.
-#'   `incumbent_validated` indicates whether `grade` and `evaluation` are
-#'   available. Only a candidate passing independent rounded-primal,
-#'   active-profile and direct-loss checks receives grades.
+#' @param problem A validated `postrank_tie_problem` object from
+#'   [postrank_tie_problem()].
+#' @param backend Solver to use, `"gurobi"` or `"highs"`. If `NULL` (the
+#'   default), `getOption("postrank.backend")` is used, or `"gurobi"` (which
+#'   requires a license) when unset; install the `highs` package and pass
+#'   `backend = "highs"` to use HiGHS. `postrank` never switches solvers
+#'   automatically. Missing or unloadable solver packages and runtime R errors
+#'   thrown by the solver (such as Gurobi without an active license) stop the
+#'   call with a `postrank_backend_unavailable` error, whereas solver
+#'   termination outcomes (`"optimal"`, `"time_limit"`,
+#'   `"feasible_not_certified"`, `"infeasible"`, `"numerical_error"`, ...) are
+#'   returned in `status$normalized`.
+#' @param control Named list of solver controls (`time_limit`, `threads`,
+#'   `seed`, `relative_gap`, `absolute_risk_gap`, `tolerances`, `output`,
+#'   `strategy`, and `verbose`, although `postrank_tie_solve()` itself prints no
+#'   progress messages when `verbose = TRUE`) or a [postrank_control()] object.
+#'   Because [postrank_control()] defaults to `strategy = "staged"`, pass
+#'   `postrank_control(strategy = "label_mip", ...)` (or pass
+#'   `strategy = "label_mip"` explicitly). Staged `engine` options are not
+#'   supported: in a plain `list`, omit `engine` or pass `engine = list()`; in
+#'   [postrank_control()], leave `engine` at its defaults.
+#' @param strategy Must be `"label_mip"` (`"staged"` search is not supported in
+#'   tie-aware mode). When `strategy` is omitted in the call and
+#'   `control$strategy` is present, `control$strategy` is used and checked.
+#' @return A `postrank_tie_fit` list containing `schema_version`, `loss`,
+#'   `problem_identity`, `input_identity`, `problem`, `settings`, `backend`,
+#'   `engine`, `control`, `capabilities`, `status` (`raw_code`, `raw_message`,
+#'   `normalized`, `termination_reason`), `has_incumbent`,
+#'   `incumbent_validated`, `raw_solution`, `solution_validation`, `grade`,
+#'   `evaluation`, `relations` (`n x n` integer pairwise relation matrix), and
+#'   `solution_identity` (the last four are `NULL` unless `incumbent_validated`
+#'   is `TRUE`), `objective`, `runtime`, `raw_backend_result`,
+#'   `numerical_issues`, and `warnings`. `incumbent_validated` is `TRUE` only
+#'   when the rounded candidate passes integer constraint, active-profile
+#'   equality, and direct [postrank_tie_evaluate()] loss checks, establishing
+#'   feasibility within tolerances (not optimality).
 #'
-#'   The objective record includes validated action risk as an upper bound,
-#'   any usable whole-problem lower bound, the absolute risk gap, and raw
-#'   units/scale/offset. Bounds convert as `R0 + raw_bound/M`, where
-#'   `R0 = tau * T/M` is the all-withheld baseline. Unavailable action or bound
-#'   quantities are `NA`.
-#' @details A shared grade withholds a comparison; it does not assert latent
-#'   equality. A valid single-grade action has risk R0 and undefined
-#'   conditional error ratios. A solve without validated grades instead has
-#'   `grade = NULL`; it is not reported as an all-withheld action.
+#'   In `objective`, `primary_action_risk` and `risk_upper_bound` give the
+#'   verified grading's directly evaluated equality-neutral risk `U` (`NA` when
+#'   `incumbent_validated` is `FALSE`), `risk_lower_bound` gives any usable
+#'   whole-problem lower bound `L = R0 + raw_lower_bound / M` (a loss no
+#'   feasible grading can beat according to the solver, or `NA` when
+#'   unavailable), `risk_absolute_gap` gives `U - L` (`NA` when either bound is
+#'   `NA`), and `offset` gives the all-withheld risk `R0 = tau * T / M`, where
+#'   `M = choose(n, 2)` counts all unordered pairs and `T` is the
+#'   criterion-weighted expected number of distinct-target pairs.
+#' @details
+#' Placing two entities in the same grade leaves them unordered without claiming
+#' equal targets. A valid single-grade (`G = 1`) solution has `grade` equal to
+#' all `1`s, risk `R0`, and `NA` conditional error ratios (`E_over_N`, expected
+#' strict errors per ordered pair, and `E_over_D`, expected strict errors per
+#' ordered distinct pair); by contrast, a run without a verified grading (for
+#' example, a time limit reached before finding any feasible integer solution)
+#' has `incumbent_validated = FALSE` and `grade = NULL`.
 #'
-#'   Inspect `incumbent_validated`, `status`, `objective$risk_lower_bound` and
-#'   `objective$risk_absolute_gap` together. A validated candidate establishes
-#'   feasibility within tolerance, not optimality. A rejected solver bound can
-#'   coexist with a retained grade. A raw optimal status becomes
-#'   `"feasible_not_certified"` when a usable whole-problem lower bound is
-#'   missing or the risk gap exceeds the requested threshold, allowing only
-#'   comparison roundoff. The threshold is the larger of `absolute_risk_gap`
-#'   and `relative_gap * abs(U - R0)`, where `U` is the validated action risk.
-#'   The valid grade, raw status, and any valid loose lower bound are retained.
-#'   Other termination statuses are not promoted. An optimal result remains
-#'   subject to floating-point tolerances, including the existing tolerance-scale
-#'   bound-inversion clamp, and does not constitute a numerical certificate;
-#'   the gap concerns the supplied optimization problem, not posterior or
-#'   Monte Carlo uncertainty. Multiple optima may have different grade counts
-#'   and imply different funding mappings.
+#' Read `incumbent_validated`, `status$normalized`, `objective$risk_lower_bound`,
+#' and `objective$risk_absolute_gap` together:
+#' \itemize{
+#'   \item A raw `"optimal"` status becomes `"feasible_not_certified"` (keeping
+#'     the verified `grade` and any valid loose `risk_lower_bound`) when a
+#'     usable whole-problem lower bound is missing or `risk_absolute_gap`
+#'     exceeds `max(absolute_risk_gap, relative_gap * abs(U - R0))` beyond
+#'     floating-point comparison roundoff.
+#'   \item If a solver's lower bound exceeds `U` by at most the objective
+#'     tolerance (scaled to the raw objective magnitude), it is clamped to `U`
+#'     (`risk_absolute_gap = 0`, `bound_inversion_within_tolerance = TRUE`) with
+#'     a warning. Larger bound inversions, unrounded solver constraint
+#'     violations larger than integer-rounding tolerances can explain, or other
+#'     backend consistency/numerical issues (such as objective mismatch or
+#'     numerical termination) set `status$normalized = "numerical_error"` and
+#'     exclude `risk_lower_bound` while keeping a valid rounded `grade`;
+#'     non-eligible statuses such as `"unknown"` also exclude
+#'     `risk_lower_bound`.
+#'   \item Solver statuses and gaps describe optimization of the supplied
+#'     problem within floating-point tolerances; they do not provide a formal
+#'     numerical certificate or measure posterior or Monte Carlo uncertainty.
+#'     Multiple optimal gradings may exist with different occupied grade counts
+#'     `G` and different downstream policy or funding mappings.
+#' }
 #'
-#'   This route supports weighted at-most-G decisions only. It does not run
-#'   the staged engine, minimax refinement, q protection or exact-G decisions.
-#'   Ordinary baselines, accessors, HTML reports, plots and Monte Carlo
-#'   guarantees do not accept tie-aware objects. Read `fit$grade` and
-#'   `fit$evaluation`, or use the tie-aware print, format and summary methods.
-#'   The optimizer does not verify the scientific declarations in the input.
+#' Tie-aware solving supports weighted at-most-`G_max` problems only (`minimax`,
+#' `q` error budgets, and `exact_G` are not supported) and does not verify
+#' scientific equality or sampling declarations in the input. Tie-aware fits
+#' provide `print()`, `format()`, and `summary()` methods, and expose grades and
+#' losses via `fit$grade`, `fit$evaluation`, and `fit$relations`. Ordinary
+#' zero-equality functions (`get_grades()`, `postrank_compare()`,
+#' `postrank_report()`, `postrank_plot_*()`, Monte Carlo diagnostics, and IID
+#' bounds) do not accept `postrank_tie_*` objects; see
+#' [postrank_tie_capabilities()].
 #' @seealso [postrank_tie_problem()], [postrank_tie_evaluate()],
 #'   [validate_postrank_tie_solution()], [postrank_tie_capabilities()]
-#' @examples
-#' if (requireNamespace("gmp", quietly = TRUE) &&
-#'     requireNamespace("highs", quietly = TRUE)) {
+#' @examplesIf requireNamespace("gmp", quietly = TRUE)
+#' if (requireNamespace("highs", quietly = TRUE)) {
 #'   path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
 #'   pw <- postrank_tie_pairwise(read_postrank_tie_draws(path))
-#'   problem <- postrank_tie_problem(pw, c(S = .6, C = .4), tau = .25, G_max = 3L)
-#'   fit <- postrank_tie_solve(problem, backend = "highs",
-#'     control = postrank_control(strategy = "label_mip", time_limit = 10))
-#'   fit
+#'   problem <- postrank_tie_problem(pw, c(S = 0.6, C = 0.4), tau = 0.25, G_max = 3L)
+#'   fit <- postrank_tie_solve(
+#'     problem,
+#'     backend = "highs",
+#'     control = postrank_control(strategy = "label_mip", time_limit = 10)
+#'   )
+#'   print(fit)
 #'   fit$grade
 #'   fit$objective[c("primary_action_risk", "risk_lower_bound", "risk_absolute_gap")]
 #' }
@@ -95,32 +141,38 @@ postrank_tie_solve <- function(problem, backend = NULL, control = list(), strate
   .pr_fit_annotate(fit, resolved)
 }
 
-#' Check Which Tie-Aware Operations Are Available
+#' List Supported Features in Tie-Aware Mode
 #'
-#' This fixed record describes the input types, decisions and numerical
-#' operations supported by the separate `postrank_tie_*` functions. It does not
-#' inspect installed solvers, check a license or run an optimization.
+#' `postrank_tie_capabilities()` returns a static list showing which inputs,
+#' problem settings, solvers, and downstream summaries are supported in
+#' tie-aware mode (the `postrank_tie_*` workflow for posteriors with positive
+#' equality probability under equality-neutral loss). It does not probe whether
+#' `"gurobi"` or `"highs"` is installed or licensed; use
+#' [postrank_backend_available()] for solver checks.
 #'
-#' @return A named list of capability flags, supported backend names, loss
-#'   and input-domain identifiers, and accepted equality-evidence types.
-#'   A `TRUE` flag describes implemented support, not scientific validation
-#'   or a numerical certificate.
-#' @details Joint draws and complete exact finite laws support weighted
-#'   at-most-G label models with the full active-profile guard, using HiGHS
-#'   or Gurobi. One criterion is allowed, with its named weight equal to 1.
-#'   Criterionwise input blocks, typed coefficients, q budgets, minimax,
-#'   exact-G and staged solving are not supported by this route.
+#' @return A named list containing identifiers (`loss = "tie_aware_v1"`,
+#'   `input_domain = "tie-aware-input-0.1"`, `backends = c("gurobi", "highs")`,
+#'   and `equality_evidence`) and logical support flags:
+#' \itemize{
+#'   \item `TRUE`: `joint_draws`, `exact_finite_laws`, `weighted_at_most_G`,
+#'     `full_active_profile_guard`, and `label_mip`.
+#'   \item `FALSE`: `staged`, `criterionwise_inputs`, `typed_coefficients`, `q`,
+#'     `minimax`, `exact_G`, `legacy_baselines_reports_plots`, `mc_diagnostics`,
+#'     `uniform_iid_bounds`, `regret`, `protection_envelopes`, and
+#'     `numerical_certification`.
+#' }
+#' @details
+#' Tie-aware mode supports joint equal-weight draws and complete exact finite
+#' laws on one or more criteria under weighted at-most-`G_max` problems solved
+#' by `label_mip` with the active-profile equality constraint. Criterion-wise
+#' draw blocks, Gaussian or mixture coefficients, criterion error budgets `q`,
+#' `minimax` objectives, `exact_G` grade counts, and `"staged"` solving are not
+#' implemented for tie-aware inputs.
 #'
-#'   Core tie-aware objects have print, format and summary methods. Ordinary
-#'   baselines, accessors, reports and plots, and Monte Carlo diagnostics,
-#'   uniform IID bounds, regret bounds and protection envelopes do not apply
-#'   to these classes. The record reports these limits explicitly.
-#'
-#'   Equality evidence is either a structural declaration checked against
-#'   retained draws or equality across all positive-mass states of a complete
-#'   finite law. Coincidence in finitely many sampled values alone is not
-#'   proof of almost-sure equality. Using this route does not reinterpret
-#'   ordinary postrank objects or silently replace their weak-error loss.
+#' Tie-aware objects have `print()`, `format()`, and `summary()` methods, while
+#' ordinary zero-equality baselines, table accessors, HTML reports, plots, Monte
+#' Carlo diagnostics, and IID bounds reject `postrank_tie_*` classes rather than
+#' reinterpreting their equality-neutral loss.
 #' @seealso [postrank_tie_problem()], [postrank_tie_solve()],
 #'   [postrank_backend_available()],
 #'   `vignette("m4-ties-and-withholding", package = "postrank")`

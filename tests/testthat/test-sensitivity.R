@@ -1,4 +1,4 @@
-# T-obj-03 (sensitivity part) and T-api-08: settings grids, typed row policies, retention of
+# Settings grids, per-row policy bindings, retention of missing-solution rows,
 # no-incumbent rows, and the gap-qualified F1 monotonicity of disclosure in tau.
 sv_mock <- function(fail_tau = NULL) function(problem, backend, control, strategy) {
   ids <- problem$pairwise$entity_ids
@@ -75,7 +75,7 @@ test_that("tier 2: numerical rows satisfy the gap-aware F1 inequality", {
   # Gap-aware F1: for eps-optimal actions, (tau' - tau)(N - N') <= M (gap + gap'), so disclosure can fall
   # only by the amount the reported gaps allow. Risk is also nondecreasing in tau up to the gaps.
   M <- choose(length(pw$entity_ids), 2)
-  # Slacks are justified only by usable bounds: missing, rejected or clamped-only bounds support no claim (T-mode-11).
+  # Gap slacks require usable whole-problem bounds; missing or rejected bounds are excluded.
   usable <- !is.na(t$bound_source) & t$bound_source != "missing" & !grepl("clamped|rejected", t$bound_source)
   for (i in seq_len(nrow(t) - 1L)) if (usable[i] && usable[i + 1L] &&
       all(is.finite(c(t$N[i], t$N[i + 1L], t$risk_absolute_gap[i], t$risk_absolute_gap[i + 1L])))) {

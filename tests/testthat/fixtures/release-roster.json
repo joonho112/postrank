@@ -45,11 +45,13 @@
       "postrank_crossfit",
       "postrank_cuts",
       "postrank_declarations",
+      "postrank_describe",
       "postrank_diagnose",
       "postrank_draws",
       "postrank_draws_from_array",
       "postrank_evaluate",
       "postrank_expected_rank",
+      "postrank_example",
       "postrank_frontier",
       "postrank_gaussian_coefficients",
       "postrank_guarantee_capabilities",
@@ -1386,6 +1388,10 @@
         }
       ],
       "contract": "Multidomain additive risk A and direct joint protection; complete declared candidate bank only."
+    },
+    "v1_3_additions": {
+      "exports": ["postrank_describe", "postrank_example"],
+      "contract": "Documentation helpers: read stored example results; build postrank_declarations() from plain arguments. No new computation."
     }
   }
 }

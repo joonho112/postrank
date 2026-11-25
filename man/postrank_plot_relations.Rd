@@ -1,7 +1,7 @@
 % Please edit documentation in R/plots-relations.R
 \name{postrank_plot_relations}
 \alias{postrank_plot_relations}
-\title{Plot Disclosed Comparisons or Their Changes}
+\title{Plot Disclosed Pair Relations or Their Changes}
 \usage{
 postrank_plot_relations(
   x,
@@ -13,58 +13,70 @@ postrank_plot_relations(
 }
 \arguments{
 \item{x}{A \code{postrank_fit}, \code{postrank_analysis}, \code{postrank_baseline}, or a
-complete named integer grade vector. Grade 1 has highest priority.}
+named integer/numeric vector of grades (\code{1} = highest priority).}
 
-\item{y}{Optional second fit, analysis, baseline or named grade vector on
-exactly the same entities. Changes run from \code{x} to \code{y}.}
+\item{y}{Optional second \code{postrank_fit}, \code{postrank_analysis},
+\code{postrank_baseline}, or named grade vector grading the exact same set of
+entity IDs as \code{x}. Relation changes are classified from \code{x} to \code{y}.}
 
-\item{labels}{\code{"auto"} shows IDs or display names for at most 15 entities
-when every label has at most 20 characters; otherwise it shows positions
-in grade order. \code{"ids"} always shows the labels. \code{"none"} hides ticks and
-axis labels. Increase the canvas size when explicitly showing many IDs.}
+\item{labels}{Axis label mode: \code{"auto"} (the default) shows entity IDs (or
+\code{entity_labels}) when there are at most 15 entities and every display label
+has at most 20 characters, and otherwise shows integer positions in grade
+order; \code{"ids"} always shows display labels (wrapped at 18 characters on
+axes); \code{"none"} hides ticks and axis labels.}
 
-\item{...}{Unused.}
+\item{...}{Unused; unnamed extra arguments are ignored. Pass \code{entity_labels}
+by name.}
 
-\item{entity_labels}{Optional partial named character vector mapping raw
-entity IDs to display names. Unmapped IDs keep their text. Names are
-wrapped on explicit ID axes and never alter data or ordering. Supply
-this argument by name.}
+\item{entity_labels}{Optional named character vector mapping raw entity IDs
+to display names. Unmapped IDs keep their raw IDs. Labels affect tick text
+only and never alter axis order or \verb{$data}.}
 }
 \value{
-A \code{ggplot} object. If either fitted object lacks a validated grade,
-a status panel explains which result is unavailable.
+A \code{ggplot} object whose \verb{$data} table has one row per unordered pair
+(\code{entity_i}, \code{entity_j}, \code{i_pos}, \code{j_pos}, \code{code}, \code{relation}, plus
+\code{change} when \code{y} is supplied). If \code{x} or \code{y} is a fitted object without a
+checked grading, returns an empty status \code{ggplot} stating which object has
+no grades.
 }
 \description{
-The matrix displays the pairwise directions disclosed or withheld by a
-grading. When a second report is supplied, each relation is classified as
-unchanged, newly disclosed, newly withheld or reversed. The tiles represent
-selected actions. Posterior comparison probabilities are displayed
-separately by \code{\link[=postrank_plot_pairwise]{postrank_plot_pairwise()}}.
+\code{postrank_plot_relations()} draws an upper-triangular matrix showing whether
+each unordered entity pair is ordered (\code{above} or \code{below}) or left in the
+same grade (\code{withheld}), or how those pair relations change from one grading
+\code{x} to a second grading \code{y}. Tiles show chosen grading decisions rather than
+posterior comparison probabilities; use \code{\link[=postrank_plot_pairwise]{postrank_plot_pairwise()}} to view
+directional-error probabilities.
 }
 \details{
-Both axes follow the first object's grade, then raw entity ID. Only the
-upper triangle is drawn, so every unordered pair appears once. In a
-single-report view, gray means that the comparison is withheld. A shared
-grade does not assert latent equality.
+Both axes order entities by \code{x}'s grade (\code{1} first) and then raw entity ID
+(\code{radix} order), with the horizontal axis along the top and the vertical axis
+reversed so every unordered pair appears once in the upper triangle. In a
+single-grading plot, gray tiles mark pairs left in the same grade
+(\code{withheld}), which withholds ordering without asserting equal targets.
 
-In a change map, light gray means unchanged and medium gray means newly
-withheld. Unchanged includes pairs that were disclosed in the same direction
-and pairs withheld by both reports. Agreement uses all \code{M = choose(n, 2)}
-pairs. A relation change is not itself a loss improvement: reports from
-different policies need evaluation under a common loss for a risk comparison.
-The function reads grades and does not solve or calculate new posterior scores.
+When \code{y} is supplied, each pair is classified as \code{"unchanged"},
+\code{"newly disclosed"}, \code{"newly withheld"}, or \code{"reversed"}. \code{"unchanged"}
+(light gray) covers both pairs ordered in the same direction by \code{x} and \code{y}
+and pairs withheld by both; \code{"newly withheld"} is medium gray. The subtitle
+reports category counts and overall agreement (\code{unchanged / M}, over all
+\code{M = choose(n, 2)} unordered pairs). Relation changes describe how two
+gradings differ on pairs, not which grading has lower risk; use
+\code{\link[=postrank_compare]{postrank_compare()}} to evaluate rules under one shared loss.
 }
 \examples{
-# Read prepared tutorial results; no model fitting or optimization.
-source(system.file("scripts", "_vignette-setup.R", package = "postrank"),
-  local = TRUE)
-one <- load_or_compute("tutorial_one")
+one <- postrank_example("tutorial_one")
 postrank_plot_relations(one)
-two <- load_or_compute("tutorial_two")
-postrank_plot_relations(one, two, labels = "ids",
-  entity_labels = c(A = "Site A", F = "Site F"))
+
+two <- postrank_example("tutorial_two")
+postrank_plot_relations(
+  one,
+  two,
+  labels = "ids",
+  entity_labels = c(A = "Site A", F = "Site F")
+)
 }
 \seealso{
-\code{\link[=postrank_plot_compare]{postrank_plot_compare()}}, \code{\link[=get_relations]{get_relations()}}, \code{\link[=postrank_plot_pairwise]{postrank_plot_pairwise()}}
+\code{\link[=postrank_plot_compare]{postrank_plot_compare()}}, \code{\link[=get_relations]{get_relations()}},
+\code{\link[=postrank_plot_pairwise]{postrank_plot_pairwise()}}, \code{\link[=postrank_plot_data]{postrank_plot_data()}}
 }
 \concept{visualization}

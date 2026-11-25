@@ -6,18 +6,42 @@
 postrank_mdomain_grades(x)
 }
 \arguments{
-\item{x}{A \code{postrank_mdomain_evaluation}, or a \code{postrank_mdomain_fit} with a
-stored validated public evaluation. An unsuccessful fit has no card.}
+\item{x}{A \code{postrank_mdomain_evaluation} or \code{postrank_mdomain_fit} (for a
+\code{postrank_mdomain_assessment}, pass \code{x$evaluation}).}
 }
 \value{
-A named integer unit by domain grade matrix in original input order.
+A named \verb{n x D} integer matrix of grades (\code{1} = highest priority
+within each domain) in \code{x}'s original unit and domain order.
 }
 \description{
-Extract Verified Multidomain Grades
+\code{postrank_mdomain_grades()} revalidates a \code{postrank_mdomain_evaluation} or
+\code{postrank_mdomain_fit} and returns its canonical \verb{n x D} integer grade
+matrix. Requires optional package \code{gmp}.
 }
 \details{
-The input and stored result receipt are checked before extraction.
-Altered result objects must be evaluated again. This accessor never solves
-a decision problem or recomputes posterior quantities.
+Revalidates \code{x}'s input and \code{validated_result_hash} before returning
+\code{x$grades}, stopping with an error if \code{x} was modified after evaluation or
+candidate selection. Never searches candidates or recomputes posterior
+quantities.
+}
+\examples{
+\dontshow{if (requireNamespace("gmp", quietly = TRUE)) withAutoprint(\{ # examplesIf}
+inp <- postrank_mdomain_input(
+  postrank_toy,
+  provenance = list(input_id = "toy", law_id = "toy-normal", proper_law = TRUE)
+)
+G <- matrix(
+  c(1L, 1L, 2L, 3L, 1L, 2L),
+  nrow = 3L,
+  ncol = 2L,
+  dimnames = list(inp$unit_ids, inp$domain_ids)
+)
+ev <- postrank_mdomain_evaluate(inp, G)
+postrank_mdomain_grades(ev)
+\dontshow{\}) # examplesIf}
+}
+\seealso{
+\code{\link[=postrank_mdomain_evaluate]{postrank_mdomain_evaluate()}}, \code{\link[=postrank_mdomain_solve]{postrank_mdomain_solve()}},
+\code{\link[=postrank_plot_mdomain]{postrank_plot_mdomain()}}
 }
 \concept{multidomain}

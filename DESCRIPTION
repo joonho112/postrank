@@ -1,31 +1,23 @@
 Package: postrank
 Type: Package
 Title: Posterior Ranking with Integer Grades
-Version: 1.2.0
+Version: 1.3.0
 Authors@R:
     person("JoonHo", "Lee", email = "jlee296@ua.edu",
            role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0009-0006-4019-8703"))
-Description: Assigns integer grades to entities using posterior information
-    for one or several criteria, a specified directional loss and a cost for
-    withheld comparisons. A common grading is obtained when several criteria
-    are considered. Multidomain profiles instead retain a separate grade per
-    domain, using additive losses and direct joint-event protection over a
-    declared finite candidate family. Exact policy arithmetic, fixed-report
-    iid assessment and descriptive MCMC diagnostics are provided for profiles.
-    Inputs include validated equal-weight draws, exact finite laws,
-    conditional Gaussian laws, shared-state Gaussian mixtures and previously
-    calculated tie-free comparison probabilities. Model estimation is conducted separately. Optional modes
-    add error budgets, minimax decisions, exact grade counts and a separate
-    equality-neutral loss where supported. The default solver is 'Gurobi';
-    'HiGHS' is an explicit alternative. Data loading and the display of stored
-    results do not require either backend. Results retain validated grades,
-    numerical solver bounds, criterion profiles and input-aware diagnostics.
-    Seven common-grade 'ggplot2' figures and three profile views, English reports,
-    applied and methodological
-    articles and three case studies are provided
-    for interpretation. The method builds on the integer-grade report card of
-    Kline, Rose and Walters (2024) <doi:10.1257/aer.20230700>.
+Description: Assigns integer grades to entities from posterior draws, analytic
+    normal or mixture distributions, or precomputed pairwise comparison
+    probabilities on one or several criteria. Minimizes posterior expected
+    wrong-direction errors plus a cost per pair left unordered in the same
+    grade, producing one common grading across criteria or separate per-domain
+    grades with joint error-exceedance caps ('gmp'). Model fitting takes place
+    outside the package. Supports per-criterion error budgets, worst-criterion
+    (minimax) loss, exact grade counts, and a separate loss mode for posteriors
+    with exact ties. Uses 'Gurobi' by default or 'HiGHS' when selected, while
+    stored examples, tables, 'ggplot2' figures, HTML reports, and Monte Carlo
+    or IID diagnostics run without a solver. Builds on the report-card
+    framework of Kline, Rose, and Walters (2024) <doi:10.1257/aer.20230700>.
 License: file LICENSE
 Config/postrank/Data-Distribution: public-source-case-studies
 Config/postrank/Data-Notice: extdata/case-studies/DATA-NOTICE.md
@@ -59,8 +51,8 @@ Suggests:
     testthat (>= 3.0.0),
     vdiffr,
     withr
-SystemRequirements: Optional MIP backends: Gurobi (>= 10, licensed) via the
-    'gurobi' package, or explicitly selected HiGHS via the 'highs' package.
+SystemRequirements: Optional MIP solvers: Gurobi (>= 10, licensed) via the
+    'gurobi' package, or HiGHS via the 'highs' package.
 Encoding: UTF-8
 Language: en-US
 LazyData: true

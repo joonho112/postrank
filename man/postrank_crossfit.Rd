@@ -1,7 +1,7 @@
 % Please edit documentation in R/mc-diagnostics.R
 \name{postrank_crossfit}
 \alias{postrank_crossfit}
-\title{Select and Evaluate Reports on Two Draw Folds}
+\title{Select and Evaluate Gradings on Two Draw Folds}
 \usage{
 postrank_crossfit(
   draws,
@@ -13,76 +13,71 @@ postrank_crossfit(
 )
 }
 \arguments{
-\item{draws}{Joint equal-weight ordinary posterior draws, validated or a
-supported canonical payload. Whole states must preserve all entities and
-criteria. Separate criterion blocks, exact finite laws, Gaussian/mixture
-coefficients, supplied probabilities, and equality-neutral inputs are not
-supported by this draw-splitting diagnostic.}
+\item{draws}{Joint equal-weight posterior draws from \code{\link[=postrank_draws]{postrank_draws()}} or
+\code{\link[=as_postrank_draws]{as_postrank_draws()}} (\code{dependence_mode = "joint_model"}), so each draw
+contains a joint state across all entities and criteria. Criterion-wise
+blocks, exact finite laws, Gaussian or mixture coefficients, pre-computed
+probabilities, and tie-mode inputs are not accepted.}
 
-\item{fit}{Optional \code{postrank_fit} or \code{postrank_analysis} on the same input.
-Its problem settings are used, and its grade, when available, is also
-evaluated on both folds. Supply exactly one of \code{fit} or \code{settings}.}
+\item{fit}{Optional \code{postrank_fit} or \code{postrank_analysis} solved on \code{draws}
+(for an original public problem, without protection envelopes or
+second-stage risk caps). Supplies the problem settings and, when a checked
+grading is present, also evaluates that full-draw grading on each fold.
+Supply \code{fit} or \code{settings}, not both.}
 
-\item{settings}{Alternatively, a \code{\link[=postrank_settings]{postrank_settings()}} object or a list with
-\code{weights}, \code{tau}, \code{G_max}, and optional \code{objective}, \code{q}, \code{exact_G},
-\code{minimax_criteria}, and \code{minimax_refine}. The conditional unbiasedness
-interpretation requires loss settings fixed independently of evaluation draws.}
+\item{settings}{A \code{\link[=postrank_settings]{postrank_settings()}} object or named list with \code{weights},
+\code{tau}, \code{G_max}, and optional \code{objective}, \code{q}, \code{exact_G},
+\code{minimax_criteria}, and \code{minimax_refine}. Supply \code{fit} or \code{settings}, not
+both.}
 
-\item{backend, control, strategy}{Backend, numerical controls, and strategy as
-in \code{\link[=postrank_solve]{postrank_solve()}}, applied separately to each fold. \code{backend = NULL}
-uses the \code{postrank.backend} option, then Gurobi; there is no fallback.}
+\item{backend, control, strategy}{Solver choice, \code{\link[=postrank_control]{postrank_control()}} options,
+and search strategy passed to \code{\link[=postrank_solve]{postrank_solve()}} on each fold. \code{backend = NULL} (the default) uses \code{getOption("postrank.backend")} or Gurobi (which
+requires a license); install \code{highs} and pass \code{backend = "highs"} to use
+HiGHS. \code{postrank} never switches solvers automatically.}
 }
 \value{
-A \code{postrank_crossfit} list with split receipts and per-fold status,
-incumbent availability, absolute risk gap, selected grade, in-fold and
-out-of-fold risk, and \code{optimism} (out-of-fold minus in-fold). It also reports
-pair-relation agreement, \code{folds_with_incumbent}, \code{mean_optimism}, and
-\code{mean_abs_optimism}. With \code{q}, out-of-fold protection ratios are descriptive;
-they do not assert that the report remains protected under the target law.
+A \code{postrank_crossfit} list containing \code{split} metadata, per-fold
+records in \code{folds} (\code{draws}, \code{status}, \code{incumbent_validated},
+\code{risk_absolute_gap}, and when a checked grading exists, \code{grade}, \code{G},
+\code{in_fold_risk}, \code{out_of_fold_risk}, \code{optimism = out_of_fold_risk - in_fold_risk}, plus \code{out_of_fold_protection} when \code{q} is set and
+\code{full_grade_risk_on_fold} when \code{fit} has grades), \code{agreement}
+(\code{between_folds}, plus \code{full_vs_A} and \code{full_vs_B} when \code{fit} has grades),
+\code{folds_with_incumbent}, \code{mean_optimism}, \code{mean_abs_optimism}, and
+\code{warnings}.
 }
 \description{
-Posterior draws are divided into two folds. A grading is selected on each
-fold and evaluated on the other, giving a diagnostic of sensitivity to
-finite posterior simulation. The supplied model is retained throughout; it
-is not refitted to held-out observations. The calculation requires two
-optimizations.
+\code{postrank_crossfit()} splits posterior draws into two folds (\code{A} and \code{B}),
+solves the grading problem on each fold, and evaluates each fold's grading on
+the held-out fold. It measures sensitivity of the chosen grading and its risk
+to finite posterior simulation without refitting your statistical model to
+held-out observations. Running \code{postrank_crossfit()} executes two solver
+runs.
 }
 \details{
-IID input uses the first and second halves of stored draws. MCMC
-input with at least two chains uses groups of whole original chains; one
-chain is split into halves. A half split requires at least four draws.
-The input's ordinary zero-equality condition is retained.
+For IID draws (\code{S >= 4}), fold \code{A} is the first \code{floor(S / 2)} draws and fold
+\code{B} is the remainder. For MCMC draws with at least two chains, fold \code{A} holds
+the first \code{ceiling(C / 2)} whole chains and fold \code{B} holds the remaining
+chains; single-chain MCMC (\code{S >= 4}) splits iterations into first and second
+halves with an autocorrelation warning.
 
-For independent IID training and evaluation folds from the same target law,
-out-of-fold linear weighted risk is conditionally unbiased for the selected
-training-fold report's true risk. Its difference from in-fold risk therefore
-concerns that fold report's optimism, not the full-data report's optimism.
-The same linearity applies to each criterion risk. It does not apply to
-minimax risk: a maximum of empirical risks is generally biased upward.
+When \code{A} and \code{B} are independent IID folds from the same posterior and
+\code{objective = "weighted"} with loss settings fixed beforehand, out-of-fold
+weighted risk is conditionally unbiased for that fold grading's true
+posterior risk (computed from roughly \code{S / 2} draws rather than all \code{S}
+draws). When both folds select the exact same grading, their two signed
+\code{optimism} values have opposite signs and cancel in \code{mean_optimism}; check
+\code{mean_abs_optimism} for the noise scale. Under \code{objective = "minimax"} (a
+maximum of empirical criterion risks) or MCMC folds, out-of-fold risk is not
+unbiased. When \code{q} budgets are present, \code{out_of_fold_protection} reports
+held-out \code{E_k / N} descriptively.
 
-No exact unbiasedness is claimed for MCMC folds. Single-chain halves can
-be dependent, and grouping whole chains alone establishes neither
-independence nor target stationarity and does not remove initialization
-bias. Sampling declarations are not independently verified.
-
-Cross-fit values describe simulation sensitivity and do not correct the
-full-data risk. When both folds select the same report, the signed
-differences cancel, although their absolute magnitudes can remain
-informative about simulation sensitivity. A fold without a validated
-incumbent retains its reason for unavailability, and aggregates use only
-available folds. Interpretation therefore depends on the fold count and
-statuses. These diagnostics provide neither a finite-sample bound nor
-evidence of calibration on new observations.
+Cross-fitting is a descriptive summary of Monte Carlo sensitivity and does
+not adjust the full-sample risk or provide a finite-sample guarantee.
 }
 \examples{
-settings <- list(weights = c(need_A = .6, need_B = .4), tau = .25, G_max = 3L)
-\dontrun{
-# Optional: two small native solves; no model is refitted.
-cf <- postrank_crossfit(postrank_toy, settings = settings,
-  backend = "highs", control = postrank_control(time_limit = 10, threads = 1))
+cf <- postrank_example("toy_crossfit")
 cf[c("folds_with_incumbent", "mean_optimism", "mean_abs_optimism")]
-cf$folds
-}
+cf$agreement
 }
 \seealso{
 \code{\link[=postrank_diagnose]{postrank_diagnose()}}, \code{\link[=postrank_mc_fragility]{postrank_mc_fragility()}},

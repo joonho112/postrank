@@ -15,61 +15,69 @@
 
 #' Build a Problem for Choosing Common Grades
 #'
-#' The constructor defines the posterior loss and admissible grade reports for
-#' [postrank_solve()]. Smaller grades indicate higher priority and shared
-#' grades withhold comparisons. Construction of the optimization problem does
-#' not run a solver or estimate the posterior.
+#' `postrank_problem()` builds the optimization problem for [postrank_solve()]
+#' from pairwise comparison probabilities and loss settings, without calling a
+#' solver or fitting a model. Grade 1 is the highest priority, and entities in
+#' the same grade are left unordered.
 #'
-#' @param pairwise A validated `postrank_pairwise`, `postrank_coefficients`,
-#'   or [postrank_probabilities()] object. Problem construction from Gaussian/
-#'   mixture coefficients or supplied probabilities currently supports weighted
-#'   at-most-G problems only, without q, exact-G or minimax modes.
-#' @param weights Nonnegative finite criterion-named weights summing to one.
-#'   Include every criterion exactly once, including weight 1 for a single
-#'   criterion, unless using `settings`. No automatic normalization is performed.
-#' @param tau Cost of withholding a comparison, `0 < tau <= 0.5`.
-#' @param G_max Positive integer upper bound on occupied grades, no larger than
-#'   the number of entities. Fewer grades are permitted unless `exact_G` is set.
-#' @param settings Optional [postrank_settings()] instead of separate policy
-#'   arguments; explicitly supplying both is a `settings_conflict` error.
-#'   Unlike the separate `G_max` argument, this route caps an oversized grade
-#'   limit at the number of entities. An exact count is never relaxed.
-#' @param objective `"weighted"` or `"minimax"`: minimize the weighted average
-#'   or largest selected criterion's expected risk.
-#' @param q Optional uniquely criterion-named error budgets in `[0, 1]`.
-#'   Each requires `E_k <= q_k * N`, including a protected criterion with zero
-#'   objective weight. At N=0 this count constraint holds but `E_k/N` is undefined.
-#' @param exact_G Optional exact number of nonempty grades, at most `G_max`.
-#' @param minimax_criteria Optional nonempty set of criterion IDs for minimax;
-#'   `NULL` includes all criteria. Only allowed for the minimax objective.
-#' @param minimax_refine `"weighted"` (default) or `"none"`. For minimax,
-#'   weighted refinement minimizes the original weighted risk within the
-#'   primary cap. If any weight is zero, a further stage minimizes uniform
-#'   criterion risk while also retaining a cap on that original weighted risk.
-#'   Weights are never perturbed. See [postrank_solve()] for the qualifications
-#'   of the recorded refinement conclusions. Ignored for weighted problems.
-#' @return A `postrank_problem` list containing `pairwise`, `settings`, the
-#'   sparse `model`, variable `index`, `pair_map`, total pair count `M`, and
-#'   `objective_units` for converting raw objectives to risk. Input/problem
-#'   identities and builder/schema versions support subsequent validation.
-#'   Minimax problems also contain `minimax_diagnostics$degenerate_criteria`:
-#'   selected criteria whose directional errors are all at least tau. Their
-#'   risk cannot be below tau, so the minimax value is at least tau and equals
-#'   tau when all withholding is allowed.
-#' @details Expected risk is conditional on the supplied posterior and chosen
-#'   targets. Error budgets limit posterior expected wrong fractions when N>0;
-#'   they do not ensure that every realized report has that error rate.
-#'   Minimax uses the maximum of expected criterion risks, not the expectation
-#'   of their statewise maximum. Use [postrank_evaluate()] to score a supplied
-#'   action without solving; evaluation alone does not check this action family.
+#' @param pairwise Pairwise directional-error probabilities: a
+#'   `postrank_pairwise` object from [postrank_pairwise()], a
+#'   `postrank_coefficients` object ([postrank_gaussian_coefficients()],
+#'   [postrank_mixture_coefficients()]), or a [postrank_probabilities()]
+#'   object. Normal/mixture posteriors and supplied probabilities support only
+#'   the weighted objective without `q`, `exact_G` or `minimax_criteria`.
+#' @param weights Nonnegative finite weights summing to one within `1e-12`,
+#'   uniquely named by criterion (covering every criterion once, including
+#'   weight `1` for one criterion). Omit when passing `settings`; never
+#'   rescaled automatically.
+#' @param tau Cost of leaving a pair unordered (`0 < tau <= 0.5`). Omit when
+#'   passing `settings`.
+#' @param G_max Largest number of occupied grades, a positive integer at most
+#'   the number of entities when passed directly. Fewer grades are allowed
+#'   unless `exact_G` is given. Omit when passing `settings`.
+#' @param objective `"weighted"` (the default) minimizes the weighted sum of
+#'   criterion losses; `"minimax"` minimizes the largest loss among the
+#'   selected criteria.
+#' @param q Optional vector of per-criterion expected-error budgets in `[0, 1]`,
+#'   uniquely named by known criteria. Each requires `E_k <= q_k * N` (even if
+#'   criterion `k` has weight 0 in `weights`); at `N = 0` this holds (`0 <= 0`)
+#'   while `E_k / N` is `NA`.
+#' @param exact_G Optional positive integer requiring an exact number of
+#'   occupied grades, at most `G_max` and never reduced automatically.
+#' @param minimax_criteria Optional character vector of criterion IDs included
+#'   in the minimax objective (`NULL` includes all criteria). Allowed only when
+#'   `objective = "minimax"`.
+#' @param minimax_refine How to refine a minimax solution when
+#'   `objective = "minimax"`: `"weighted"` (the default) or `"none"`; see
+#'   [postrank_solve()]. Ignored when `objective = "weighted"`.
+#' @param settings Optional [postrank_settings()] object used instead of
+#'   `weights`, `tau`, `G_max`, `objective`, `q`, `exact_G`, `minimax_criteria`
+#'   and `minimax_refine`. Supplying both stops with `settings_conflict`.
+#'   Unlike a direct `G_max` argument, `settings` reduces an oversized `G_max`
+#'   to the number of entities.
+#' @returns A `postrank_problem` object, a list containing `pairwise`,
+#'   `settings`, the sparse linear/integer `model`, variable `index`,
+#'   `pair_map`, unordered pair count `M`, `objective_units` (scale and offset
+#'   converting raw objective values to normalized loss), `input_identity`,
+#'   `problem_identity`, `schema_version` and `builder_version`. When
+#'   `objective = "minimax"`, `minimax_diagnostics$degenerate_criteria` lists
+#'   any selected criteria whose directional-error probabilities are all at
+#'   least `tau` (whose criterion loss cannot fall below `tau`).
+#' @details
+#' Losses and `q` error budgets are posterior expectations conditional on the
+#' supplied probabilities; `q` constrains expected wrong-order counts rather
+#' than realized error rates. The minimax objective minimizes
+#' `max_k E[loss_k]`, not `E[max_k loss_k]`. To compute the loss of an existing
+#' grading without building an optimization model, use [postrank_evaluate()].
 #' @seealso [postrank_settings()], [postrank_solve()], [postrank_evaluate()]
 #' @examples
 #' one <- postrank_problem(pr_tutorial$one, weights = c(score_A = 1),
-#'   tau = .2, G_max = 3L)
+#'   tau = 0.2, G_max = 3L)
 #' one$objective_units
+#'
 #' pw <- postrank_pairwise(postrank_toy)
-#' protected <- postrank_problem(pw, weights = c(need_A = .6, need_B = .4),
-#'   tau = .25, G_max = 3L, q = c(need_B = .3), exact_G = 2L)
+#' protected <- postrank_problem(pw, weights = c(need_A = 0.6, need_B = 0.4),
+#'   tau = 0.25, G_max = 3L, q = c(need_B = 0.3), exact_G = 2L)
 #' protected$settings[c("G_max", "exact_G", "q")]
 #' @concept decision
 #' @export
@@ -85,7 +93,6 @@ postrank_problem <- function(pairwise, weights = NULL, tau = NULL, G_max = NULL,
     p$minimax_refine)
 }
 
-# Unchanged 0.0.1.9003 (C3) body, moved behind the public adapter (freeze manifest: moved_from postrank_problem).
 .pr_problem_core <- function(pairwise,weights,tau,G_max,objective=c("weighted","minimax"),q=NULL,exact_G=NULL,minimax_criteria=NULL,
                              minimax_refine=c("weighted","none")) {
   .pr_validate_pairwise(pairwise);loss<-.pr_loss_settings(pairwise,weights,tau)

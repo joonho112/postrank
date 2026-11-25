@@ -1,9 +1,9 @@
-# Packaged-test copy of the posterior-only synthetic-law adapter.
+# Self-contained converter for the six discrete synthetic test laws.
 # Source: checks/exact-fixture-adapter.R (local project, MIT); SHA256 d7800dd77106c76b1b9b58e640c08bdf1e29fa785325e89e6af31fd5c2bcfa64
 # Kept self-contained so package tests do not require excluded repository tools.
-# Explicit development-only posterior adapter for the unchanged six book laws.
-# It neither imports the oracle implementations nor evaluates risk. Decision
-# settings remain outside the posterior payload. Metadata describes the actual
+# Builds posterior draw inputs from the six synthetic test laws without
+# importing reference evaluators or computing risk. Decision
+# settings remain separate from the posterior input. Metadata describes the
 # synthetic fixture artifact and never impersonates an empirical fitted model.
 pr_fixture_payload <- function(case, fixture_path = NULL) {
   if (is.null(fixture_path)) {

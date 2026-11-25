@@ -37,36 +37,69 @@
   }, "mdomain_result_invalid", "x")
 }
 
-#' Evaluate a Fixed Multidomain Report
+#' Evaluate a Fixed Multidomain Grade Profile
 #'
-#' Compute additive expected loss and, when requested, the probability of the
-#' union of strict scoped FDP exceedances for a supplied report card.
+#' `postrank_mdomain_evaluate()` computes domain-weighted expected loss and,
+#' when `mode = "joint"`, the probability of the union of strict scoped
+#' false-discovery-proportion (FDP) exceedances for a fixed multidomain grade
+#' matrix without searching candidates. Requires optional package `gmp`.
 #'
-#' @param input A [postrank_mdomain_input()] object.
-#' @param grades A finite numeric unit by domain matrix with both dimensions
-#'   named in the input's original order. Smaller labels mean higher priority.
-#'   Labels are canonicalized to occupied integer grades without changing order
-#'   or ties. A tie withholds a direction; it does not assert latent equality.
-#' @param decision A [postrank_mdomain_decision()] recipe, or `NULL` for its
-#'   documented defaults. The recipe is revalidated and bound to `input`.
-#' @param mode `"joint"` evaluates expected quantities and the joint union;
-#'   `"expected"` evaluates expected quantities only. Expected mode leaves joint
-#'   and overall feasibility unknown, including when joint guards are disabled.
-#' @param keep_traces Retain the evaluated state counts and joint indicators.
-#' @return A `postrank_mdomain_evaluation` containing the validated input,
-#'   action, bound decision, engine evaluation, named integer `grades`, risk,
-#'   domain and scope tables, constraint tables, status and assurance records.
-#'   Exact quantities have companion rational strings. In expected mode `J`,
-#'   `joint_feasible`, and `feasible_for_represented_measure` are `NA`.
-#' @details The loss denominator remains the original number of unordered unit
-#'   pairs. Scoped FDP uses the number of directions disclosed in that scope.
-#'   The strict event is `F/N > t`, represented by the exact integer cutoff
-#'   `floor(t*N) + 1`; no disclosure makes the event analytically false.
-#'   Joint evaluation uses only an actual relevant state law. Separate domain
-#'   inputs can evaluate a union with at most one active domain, and any input
-#'   can evaluate an analytically inactive union. No cross-domain coupling is
-#'   inferred from matching state labels. Arithmetic on draws describes their
-#'   empirical measure and does not certify intended posterior feasibility.
+#' @param input A validated [postrank_mdomain_input()] object.
+#' @param grades Finite numeric `n x D` matrix with row and column names in
+#'   `input`'s exact unit and domain order (`1` = highest priority within each
+#'   domain). Occupied grade labels on each domain are renumbered to `1..K_d`
+#'   without changing pairwise orderings or ties; equal grades leave a pair
+#'   unordered without claiming equal targets, and splitting a structural
+#'   equality class stops with an error.
+#' @param decision A [postrank_mdomain_decision()] specification, or `NULL` (the
+#'   default) to use the default specification from [postrank_mdomain_decision()].
+#' @param mode `"joint"` (the default, evaluating both expected quantities and
+#'   the joint union exceedance probability `J`) or `"expected"` (evaluating
+#'   expected quantities only, leaving `J`, `joint_feasible`, and
+#'   `feasible_for_represented_measure` as `NA`, even when joint constraints are
+#'   disabled).
+#' @param keep_traces Logical scalar (`TRUE` by default). When `TRUE`, retains
+#'   per-state error counts and joint event indicators in `evaluation`.
+#' @return A `postrank_mdomain_evaluation` list containing `input`, `action`,
+#'   `decision` (matched to `input`), renumbered (`1..K_d`) `n x D` integer
+#'   `grades`, `mode`, `M = n * (n - 1) / 2`, `risk` and `risk_exact`, `J` and
+#'   `J_exact`, `domain_table`, `scope_table`, `expected_constraints`,
+#'   `event_table` (`NULL` in `"expected"` mode), `mean_feasible`,
+#'   `joint_feasible`, `feasible_for_represented_measure`, `status`, `assurance`,
+#'   and `receipts` (validation and hash records, including
+#'   `validation_spec_hashes` for [postrank_mdomain_assess()]).
+#' @details
+#' Expected loss uses the full unordered pair count `M = n * (n - 1) / 2` as its
+#' denominator, whereas scoped FDP `F / N` uses the number `N` of pairs ordered
+#' inside that scope on that domain. Each strict exceedance event `F / N > t` is
+#' evaluated via the exact `gmp` integer cutoff `F >= floor(t * N) + 1`; when
+#' `N = 0`, no pairs are ordered in that scope so the event is analytically
+#' false.
+#'
+#' Separate domain matrix inputs (`layout = "criterionwise_arrays"`) can run
+#' `mode = "joint"` only when at most one domain has an active joint event (or
+#' the union event is analytically zero); matching row names across separate
+#' matrices are never paired as coupled joint states. Exact rational (`gmp`)
+#' arithmetic over finite draws evaluates their empirical distribution without
+#' rounding error rather than certifying feasibility under an intended
+#' continuous posterior.
+#' @seealso [postrank_mdomain_grades()], [postrank_mdomain_decision()],
+#'   [postrank_mdomain_solve()], [postrank_mdomain_assess()],
+#'   [postrank_plot_mdomain()]
+#' @examplesIf requireNamespace("gmp", quietly = TRUE)
+#' inp <- postrank_mdomain_input(
+#'   postrank_toy,
+#'   provenance = list(input_id = "toy", law_id = "toy-normal", proper_law = TRUE)
+#' )
+#' G <- matrix(
+#'   c(1L, 1L, 2L, 3L, 1L, 2L),
+#'   nrow = 3L,
+#'   ncol = 2L,
+#'   dimnames = list(inp$unit_ids, inp$domain_ids)
+#' )
+#' ev <- postrank_mdomain_evaluate(inp, G)
+#' ev
+#' ev$domain_table
 #' @concept multidomain
 #' @export
 postrank_mdomain_evaluate <- function(input, grades, decision=NULL,
@@ -139,12 +172,34 @@ postrank_mdomain_evaluate <- function(input, grades, decision=NULL,
 
 #' Extract Verified Multidomain Grades
 #'
-#' @param x A `postrank_mdomain_evaluation`, or a `postrank_mdomain_fit` with a
-#'   stored validated public evaluation. An unsuccessful fit has no card.
-#' @return A named integer unit by domain grade matrix in original input order.
-#' @details The input and stored result receipt are checked before extraction.
-#'   Altered result objects must be evaluated again. This accessor never solves
-#'   a decision problem or recomputes posterior quantities.
+#' `postrank_mdomain_grades()` revalidates a `postrank_mdomain_evaluation` or
+#' `postrank_mdomain_fit` and returns its canonical `n x D` integer grade
+#' matrix. Requires optional package `gmp`.
+#'
+#' @param x A `postrank_mdomain_evaluation` or `postrank_mdomain_fit` (for a
+#'   `postrank_mdomain_assessment`, pass `x$evaluation`).
+#' @return A named `n x D` integer matrix of grades (`1` = highest priority
+#'   within each domain) in `x`'s original unit and domain order.
+#' @details
+#' Revalidates `x`'s input and `validated_result_hash` before returning
+#' `x$grades`, stopping with an error if `x` was modified after evaluation or
+#' candidate selection. Never searches candidates or recomputes posterior
+#' quantities.
+#' @seealso [postrank_mdomain_evaluate()], [postrank_mdomain_solve()],
+#'   [postrank_plot_mdomain()]
+#' @examplesIf requireNamespace("gmp", quietly = TRUE)
+#' inp <- postrank_mdomain_input(
+#'   postrank_toy,
+#'   provenance = list(input_id = "toy", law_id = "toy-normal", proper_law = TRUE)
+#' )
+#' G <- matrix(
+#'   c(1L, 1L, 2L, 3L, 1L, 2L),
+#'   nrow = 3L,
+#'   ncol = 2L,
+#'   dimnames = list(inp$unit_ids, inp$domain_ids)
+#' )
+#' ev <- postrank_mdomain_evaluate(inp, G)
+#' postrank_mdomain_grades(ev)
 #' @concept multidomain
 #' @export
 postrank_mdomain_grades <- function(x) {

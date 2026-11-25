@@ -1,6 +1,5 @@
-# Separate-domain normalization. Preserve the reviewed 0.9 numerical safeguards
-# while substituting tie-aware validation and the stored, pair-specific R0.
-# No legacy normalizer or identity is changed.
+# Tie-aware solver result normalization using tie-aware solution validation
+# and the pair-specific all-withhold baseline R0 (separate from tie-free fits).
 .pr_tie_normalize_solver_result <- function(problem, raw, control) {
   .pr_validate_tie_problem(problem)
   .pr_assert(is.list(raw), "backend result must be a raw result record", "invalid_backend_result")
@@ -63,7 +62,7 @@
     if (is.finite(residual) && residual > tol$feasibility + tol$integrality * max(1, coefficient))
       issue("raw_primal_residual_excessive", "Raw primal residuals exceed what the integrality tolerance can explain; the backend bound is excluded from gap calculations.")
   }
-  # Known source labels only; an unknown label is an adapter contract violation.
+  # Accept only known bound-source labels; exclude unrecognized labels from gap calculations.
   reported_source <- if (is.null(raw$bound_source)) "backend_reported_dual_bound" else raw$bound_source
   if (is.finite(raw_lower) && !(is.character(reported_source) && length(reported_source) == 1L &&
       !is.na(reported_source) && reported_source %in% .pr_reported_bound_sources())) {

@@ -1,4 +1,4 @@
-# 014 repair Phase 2: the staged strategy of postrank_solve().
+# End-to-end tests of the staged solving strategy in postrank_solve().
 pr_iid_payload <- function(seed, S, n, K) {
   set.seed(seed); x <- pr_test_payload(S = S, n = n, K = K)
   x$joint_draws$tensor$values[] <- stats::rnorm(S * n * K)

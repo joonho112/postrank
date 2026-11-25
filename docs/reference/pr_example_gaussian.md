@@ -1,21 +1,18 @@
 # The Three-Criterion Example's Gaussian Law
 
-The frozen law behind
+`pr_example_gaussian` is the synthetic analytic normal posterior
+underlying
+[pr_example_draws](https://joonho112.github.io/postrank/reference/pr_example_draws.md),
+stored as a `postrank_coefficients` object built by
+[`postrank_gaussian_coefficients()`](https://joonho112.github.io/postrank/reference/postrank_gaussian_coefficients.md)
+with `conditional_independence = "entities_given_shared_h"`. Its
+pairwise directional-error probabilities and marginal intervals follow
+analytically from the normal posterior (`provenance` records SHA-256
+hashes of the parameter file, generator script and configuration). The
+4,000 IID draws in
 [pr_example_draws](https://joonho112.github.io/postrank/reference/pr_example_draws.md)
-as a `postrank_coefficients` object built by
-[`postrank_gaussian_coefficients()`](https://joonho112.github.io/postrank/reference/postrank_gaussian_coefficients.md),
-with the explicit declaration `"entities_given_shared_h"` and the six
-strict provenance fields (`input_payload_sha256` hashes the frozen law
-file, `source_sha256` the law generator source and `config_sha256` the
-generation configuration). Analytic directional errors and marginal
-summaries describe this same law. The finite sample in
-[pr_example_draws](https://joonho112.github.io/postrank/reference/pr_example_draws.md)
-approximates it and need not give exactly the same coefficients or
-grades. See
-[pr_tutorial](https://joonho112.github.io/postrank/reference/pr_tutorial.md)
-for a smaller one-criterion example and
-[`postrank_problem()`](https://joonho112.github.io/postrank/reference/postrank_problem.md)
-for native mode restrictions.
+approximate this distribution and need not give identical probabilities
+or grades.
 
 ## Usage
 
@@ -27,12 +24,20 @@ pr_example_gaussian
 
 A `postrank_coefficients` object
 (`source$kind = "gaussian_conditional"`): `means` 30 x 3, `e` 30 x 30 x
-3, `source$covariance` 3 x 3 x 30 (criterion_i, criterion_j, entity),
-plus provenance, capabilities and identities.
+3, `source$covariance` 3 x 3 x 30 (criterion_i x criterion_j x entity),
+plus `provenance`, `capabilities` and identity hashes.
 
 ## Source
 
-`data-raw/make-pr-example-gaussian.R`.
+Built by `data-raw/make-pr-example-gaussian.R` from the same synthetic
+normal posterior as
+[pr_example_draws](https://joonho112.github.io/postrank/reference/pr_example_draws.md).
+
+## See also
+
+[pr_example_draws](https://joonho112.github.io/postrank/reference/pr_example_draws.md),
+[`postrank_gaussian_coefficients()`](https://joonho112.github.io/postrank/reference/postrank_gaussian_coefficients.md),
+[`postrank_example()`](https://joonho112.github.io/postrank/reference/postrank_example.md)
 
 ## Examples
 

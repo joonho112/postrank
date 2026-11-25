@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Criterion-Wise Cost of a Common Grade — postrank_commonality_cost • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Criterion-Wise Cost of a Common Grade — postrank_commonality_cost"><meta name="description" content="The criterion-wise posterior-risk cost of a common grading is assessed by
-solving a separate problem for each criterion. Each optimization assigns all
-weight to that criterion while retaining the common problem's tau and
-grade-count settings. A working optimizer backend is required."><meta property="og:description" content="The criterion-wise posterior-risk cost of a common grading is assessed by
-solving a separate problem for each criterion. Each optimization assigns all
-weight to that criterion while retaining the common problem's tau and
-grade-count settings. A working optimizer backend is required."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Criterion-Wise Cost of a Common Grade — postrank_commonality_cost • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Criterion-Wise Cost of a Common Grade — postrank_commonality_cost"><meta name="description" content="postrank_commonality_cost() measures how much posterior expected loss a
+single common grading adds on each criterion compared with grading that
+criterion on its own under the same tau and grade-count rules. It solves
+one single-criterion optimization problem per criterion, seeding each search
+with the common grading."><meta property="og:description" content="postrank_commonality_cost() measures how much posterior expected loss a
+single common grading adds on each criterion compared with grading that
+criterion on its own under the same tau and grade-count rules. It solves
+one single-criterion optimization problem per criterion, seeding each search
+with the common grading."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -13,7 +15,7 @@ grade-count settings. A working optimizer backend is required."><meta property="
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,7 +23,7 @@ grade-count settings. A working optimizer backend is required."><meta property="
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -41,10 +43,11 @@ grade-count settings. A working optimizer backend is required."><meta property="
     </div>
 
     <div class="ref-description section level2">
-    <p>The criterion-wise posterior-risk cost of a common grading is assessed by
-solving a separate problem for each criterion. Each optimization assigns all
-weight to that criterion while retaining the common problem's tau and
-grade-count settings. A working optimizer backend is required.</p>
+    <p><code>postrank_commonality_cost()</code> measures how much posterior expected loss a
+single common grading adds on each criterion compared with grading that
+criterion on its own under the same <code>tau</code> and grade-count rules. It solves
+one single-criterion optimization problem per criterion, seeding each search
+with the common grading.</p>
     </div>
 
     <div class="section level2">
@@ -63,57 +66,63 @@ grade-count settings. A working optimizer backend is required.</p>
 
 
 <dl><dt id="arg-fit">fit<a class="anchor" aria-label="anchor" href="#arg-fit"></a></dt>
-<dd><p>A <code>postrank_fit</code> or <code>postrank_analysis</code> of the common weighted
-or minimax problem, with a validated grade.</p></dd>
+<dd><p>A <code>postrank_fit</code> or <code>postrank_analysis</code> object of a public
+common-grade problem with a checked grading (<code>incumbent_validated = TRUE</code>).</p></dd>
 
 
 <dt id="arg-backend-control-strategy">backend, control, strategy<a class="anchor" aria-label="anchor" href="#arg-backend-control-strategy"></a></dt>
-<dd><p>Resolved as in <code><a href="postrank_solve.html">postrank_solve</a></code> (<code>backend = NULL</code>:
-option, then Gurobi; <code>strategy = NULL</code>: <code>control$strategy</code>) and used for
-the criterion problems.</p></dd>
+<dd><p>Solver, controls and search strategy used
+for each criterion solve, resolved as in <code><a href="postrank_solve.html">postrank_solve()</a></code>.</p></dd>
 
 
 <dt id="arg-protection">protection<a class="anchor" aria-label="anchor" href="#arg-protection"></a></dt>
-<dd><p><code>"drop"</code> (default) solves each criterion problem
-without the common problem's q rows; <code>"keep"</code> keeps them. Either way
-the common grade is feasible for the criterion problem. These choices
-define different own-criterion comparison families; record which was used.</p></dd>
+<dd><p>How <code>q</code> error budgets from <code>fit</code> are treated in the
+single-criterion problems: <code>"drop"</code> (the default, solving without <code>q</code> rows)
+or <code>"keep"</code> (retaining all <code>q</code> rows). In either case, the common grading
+is feasible for every criterion problem.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>postrank_commonality_cost</code> list whose <code>table</code> has, per
-criterion: the common grade's criterion risk, the criterion's own best
-risk (upper bound U) and lower bound L, the cost interval
-<code>[common - U, common - L]</code> (its width is at most the criterion
-problem's risk gap, less when the lower end is clipped at zero; a
-certified problem's gap is within the absolute or relative gap control),
-the own grade's status, grade count and disclosures, and
-the relation agreement between the own and common grades. The interval
-reflects optimization bounds, not posterior uncertainty about the cost.</p>
+    <p>A <code>postrank_commonality_cost</code> list containing <code>table</code> (one row per
+criterion with <code>criterion_id</code>, <code>common_grade_risk</code>, <code>own_best_risk</code> <code>U</code>,
+<code>own_lower_bound</code> <code>L</code>, <code>cost_lower</code> <code>max(0, common - U)</code>, <code>cost_upper</code>
+<code>common - L</code>, <code>own_status</code>, <code>own_G</code>, <code>own_disclosures</code> and
+<code>relation_agreement</code>), plus <code>settings</code>, <code>protection</code>, <code>backend</code>,
+<code>strategy</code>, <code>interpretation</code>, <code>input_identity</code>, <code>problem_identity</code> and
+<code>schema_version</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The cost is the increase in criterion risk associated with imposing
-a common grade. This is a descriptive comparison under the same posterior
-and has no welfare interpretation. The lower endpoint is clipped at zero
-because the common action belongs to each comparison family. An unfinished
-solve may yield an interval rather than a single cost. With one criterion
-there is no conflict between criteria, although an unfinished common solve
-can still be suboptimal.</p>
+    <p>Solving requires an optimization solver: install the free <code>highs</code> package
+(<code>install.packages("highs")</code>) and use <code>backend = "highs"</code> or
+<code>options(postrank.backend = "highs")</code>, or provide a licensed Gurobi
+installation (the default). <code>postrank</code> never switches solvers on its own.</p>
+<p>For criterion <code>k</code>, the cost of imposing the common grading lies in
+<code>[max(0, common_k - U_k), common_k - L_k]</code>, whose width is at most the
+solver's absolute gap <code>U_k - L_k</code> on criterion <code>k</code>'s own problem. That
+interval reflects optimization bounds on criterion <code>k</code>'s solve, not
+posterior uncertainty about the cost.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="postrank_plot_commonality.html">postrank_plot_commonality()</a></code>, <code><a href="postrank_compare.html">postrank_compare()</a></code>,
+<code><a href="postrank_frontier.html">postrank_frontier()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="read_postrank_draws.html">read_postrank_draws</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"synthetic-iid.json"</span>,</span></span>
-<span class="r-in"><span>  package <span class="op">=</span> <span class="st">"postrank"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pairwise</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_pairwise.html">postrank_pairwise</a></span><span class="op">(</span><span class="va">draws</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">.6</span>, need_B <span class="op">=</span> <span class="fl">.4</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"highs"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">problem</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_problem.html">postrank_problem</a></span><span class="op">(</span><span class="va">pairwise</span>, <span class="va">weights</span>, tau <span class="op">=</span> <span class="fl">.25</span>, G_max <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_solve.html">postrank_solve</a></span><span class="op">(</span><span class="va">problem</span>, backend <span class="op">=</span> <span class="st">"highs"</span>, control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu">postrank_commonality_cost</span><span class="op">(</span><span class="va">fit</span>, backend <span class="op">=</span> <span class="st">"highs"</span>, control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Inspect a stored commonality-cost result without running a solver:</span></span></span>
+<span class="r-in"><span><span class="va">cc</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"toy_commonality"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">cc</span><span class="op">$</span><span class="va">table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion_id"</span>, <span class="st">"common_grade_risk"</span>, <span class="st">"own_best_risk"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"cost_lower"</span>, <span class="st">"cost_upper"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   criterion_id common_grade_risk own_best_risk cost_lower cost_upper</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       need_A         0.1041667     0.1041667  0.0000000  0.0000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       need_B         0.3750000     0.1041667  0.2708333  0.2708333</span>
+<span class="r-in"><span><span class="co"># Solve directly with the optional highs package:</span></span></span>
+<span class="r-in"><span><span class="va">toy</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"toy_analysis"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">postrank_commonality_cost</span><span class="op">(</span><span class="va">toy</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span></span>
+<span class="r-in"><span>  control <span class="op">=</span> <span class="fu"><a href="postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;postrank_commonality_cost&gt;  2 criteria sharing one grade assignment</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Each criterion's separate calculation uses the same withholding cost and</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     grade limit.</span>

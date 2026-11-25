@@ -1,10 +1,11 @@
-# Select and Evaluate Reports on Two Draw Folds
+# Select and Evaluate Gradings on Two Draw Folds
 
-Posterior draws are divided into two folds. A grading is selected on
-each fold and evaluated on the other, giving a diagnostic of sensitivity
-to finite posterior simulation. The supplied model is retained
-throughout; it is not refitted to held-out observations. The calculation
-requires two optimizations.
+`postrank_crossfit()` splits posterior draws into two folds (`A` and
+`B`), solves the grading problem on each fold, and evaluates each fold's
+grading on the held-out fold. It measures sensitivity of the chosen
+grading and its risk to finite posterior simulation without refitting
+your statistical model to held-out observations. Running
+`postrank_crossfit()` executes two solver runs.
 
 ## Usage
 
@@ -23,73 +24,77 @@ postrank_crossfit(
 
 - draws:
 
-  Joint equal-weight ordinary posterior draws, validated or a supported
-  canonical payload. Whole states must preserve all entities and
-  criteria. Separate criterion blocks, exact finite laws,
-  Gaussian/mixture coefficients, supplied probabilities, and
-  equality-neutral inputs are not supported by this draw-splitting
-  diagnostic.
+  Joint equal-weight posterior draws from
+  [`postrank_draws()`](https://joonho112.github.io/postrank/reference/postrank_draws.md)
+  or
+  [`as_postrank_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_draws.md)
+  (`dependence_mode = "joint_model"`), so each draw contains a joint
+  state across all entities and criteria. Criterion-wise blocks, exact
+  finite laws, Gaussian or mixture coefficients, pre-computed
+  probabilities, and tie-mode inputs are not accepted.
 
 - fit:
 
-  Optional `postrank_fit` or `postrank_analysis` on the same input. Its
-  problem settings are used, and its grade, when available, is also
-  evaluated on both folds. Supply exactly one of `fit` or `settings`.
+  Optional `postrank_fit` or `postrank_analysis` solved on `draws` (for
+  an original public problem, without protection envelopes or
+  second-stage risk caps). Supplies the problem settings and, when a
+  checked grading is present, also evaluates that full-draw grading on
+  each fold. Supply `fit` or `settings`, not both.
 
 - settings:
 
-  Alternatively, a
+  A
   [`postrank_settings()`](https://joonho112.github.io/postrank/reference/postrank_settings.md)
-  object or a list with `weights`, `tau`, `G_max`, and optional
+  object or named list with `weights`, `tau`, `G_max`, and optional
   `objective`, `q`, `exact_G`, `minimax_criteria`, and `minimax_refine`.
-  The conditional unbiasedness interpretation requires loss settings
-  fixed independently of evaluation draws.
+  Supply `fit` or `settings`, not both.
 
 - backend, control, strategy:
 
-  Backend, numerical controls, and strategy as in
-  [`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md),
-  applied separately to each fold. `backend = NULL` uses the
-  `postrank.backend` option, then Gurobi; there is no fallback.
+  Solver choice,
+  [`postrank_control()`](https://joonho112.github.io/postrank/reference/postrank_control.md)
+  options, and search strategy passed to
+  [`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md)
+  on each fold. `backend = NULL` (the default) uses
+  `getOption("postrank.backend")` or Gurobi (which requires a license);
+  install `highs` and pass `backend = "highs"` to use HiGHS. `postrank`
+  never switches solvers automatically.
 
 ## Value
 
-A `postrank_crossfit` list with split receipts and per-fold status,
-incumbent availability, absolute risk gap, selected grade, in-fold and
-out-of-fold risk, and `optimism` (out-of-fold minus in-fold). It also
-reports pair-relation agreement, `folds_with_incumbent`,
-`mean_optimism`, and `mean_abs_optimism`. With `q`, out-of-fold
-protection ratios are descriptive; they do not assert that the report
-remains protected under the target law.
+A `postrank_crossfit` list containing `split` metadata, per-fold records
+in `folds` (`draws`, `status`, `incumbent_validated`,
+`risk_absolute_gap`, and when a checked grading exists, `grade`, `G`,
+`in_fold_risk`, `out_of_fold_risk`,
+`optimism = out_of_fold_risk - in_fold_risk`, plus
+`out_of_fold_protection` when `q` is set and `full_grade_risk_on_fold`
+when `fit` has grades), `agreement` (`between_folds`, plus `full_vs_A`
+and `full_vs_B` when `fit` has grades), `folds_with_incumbent`,
+`mean_optimism`, `mean_abs_optimism`, and `warnings`.
 
 ## Details
 
-IID input uses the first and second halves of stored draws. MCMC input
-with at least two chains uses groups of whole original chains; one chain
-is split into halves. A half split requires at least four draws. The
-input's ordinary zero-equality condition is retained.
+For IID draws (`S >= 4`), fold `A` is the first `floor(S / 2)` draws and
+fold `B` is the remainder. For MCMC draws with at least two chains, fold
+`A` holds the first `ceiling(C / 2)` whole chains and fold `B` holds the
+remaining chains; single-chain MCMC (`S >= 4`) splits iterations into
+first and second halves with an autocorrelation warning.
 
-For independent IID training and evaluation folds from the same target
-law, out-of-fold linear weighted risk is conditionally unbiased for the
-selected training-fold report's true risk. Its difference from in-fold
-risk therefore concerns that fold report's optimism, not the full-data
-report's optimism. The same linearity applies to each criterion risk. It
-does not apply to minimax risk: a maximum of empirical risks is
-generally biased upward.
+When `A` and `B` are independent IID folds from the same posterior and
+`objective = "weighted"` with loss settings fixed beforehand,
+out-of-fold weighted risk is conditionally unbiased for that fold
+grading's true posterior risk (computed from roughly `S / 2` draws
+rather than all `S` draws). When both folds select the exact same
+grading, their two signed `optimism` values have opposite signs and
+cancel in `mean_optimism`; check `mean_abs_optimism` for the noise
+scale. Under `objective = "minimax"` (a maximum of empirical criterion
+risks) or MCMC folds, out-of-fold risk is not unbiased. When `q` budgets
+are present, `out_of_fold_protection` reports held-out `E_k / N`
+descriptively.
 
-No exact unbiasedness is claimed for MCMC folds. Single-chain halves can
-be dependent, and grouping whole chains alone establishes neither
-independence nor target stationarity and does not remove initialization
-bias. Sampling declarations are not independently verified.
-
-Cross-fit values describe simulation sensitivity and do not correct the
-full-data risk. When both folds select the same report, the signed
-differences cancel, although their absolute magnitudes can remain
-informative about simulation sensitivity. A fold without a validated
-incumbent retains its reason for unavailability, and aggregates use only
-available folds. Interpretation therefore depends on the fold count and
-statuses. These diagnostics provide neither a finite-sample bound nor
-evidence of calibration on new observations.
+Cross-fitting is a descriptive summary of Monte Carlo sensitivity and
+does not adjust the full-sample risk or provide a finite-sample
+guarantee.
 
 ## See also
 
@@ -100,12 +105,25 @@ evidence of calibration on new observations.
 ## Examples
 
 ``` r
-settings <- list(weights = c(need_A = .6, need_B = .4), tau = .25, G_max = 3L)
-if (FALSE) { # \dontrun{
-# Optional: two small native solves; no model is refitted.
-cf <- postrank_crossfit(postrank_toy, settings = settings,
-  backend = "highs", control = postrank_control(time_limit = 10, threads = 1))
+cf <- postrank_example("toy_crossfit")
 cf[c("folds_with_incumbent", "mean_optimism", "mean_abs_optimism")]
-cf$folds
-} # }
+#> $folds_with_incumbent
+#> [1] 2
+#> 
+#> $mean_optimism
+#> [1] 0
+#> 
+#> $mean_abs_optimism
+#> [1] 0.008333333
+#> 
+cf$agreement
+#> $between_folds
+#> [1] 1
+#> 
+#> $full_vs_A
+#> [1] 1
+#> 
+#> $full_vs_B
+#> [1] 1
+#> 
 ```

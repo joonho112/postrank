@@ -52,7 +52,7 @@ testthat::test_that("missing or rejected bounds and invalid primals never invent
     testthat::expect_true(is.na(result$regret_upper_bound))
     testthat::expect_false(result$finite_sample_certificate)
   }
-  # 014 repair policy (CP-3): a within-tolerance inversion is clamped (gap 0)
+  # A within-tolerance bound inversion is clamped to action risk (gap 0)
   # and remains a usable whole-problem bound, so eta is 0 rather than unavailable.
   clamped <- postrank_regret_bound(pr_regret_test_fit(p, lower = 1e-12), b)
   testthat::expect_true(clamped$bound_computed)

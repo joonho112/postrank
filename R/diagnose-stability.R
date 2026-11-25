@@ -52,7 +52,7 @@
     if (is.null(reference_grade)) reference_grade <- reference_fit$grade
   }
   base_arguments <- .pr_stability_problem_arguments(settings)
-  # Legacy (0.0.1) minimax fits have no minimax_refine setting and were single-stage.
+  # Saved minimax fits without a minimax_refine slot used single-stage optimization.
   legacy <- !is.null(reference_fit) && identical(reference_fit$problem$settings$objective, "minimax") &&
     is.null(reference_fit$problem$settings$minimax_refine)
   if (legacy && is.null(base_arguments$minimax_refine)) base_arguments$minimax_refine <- "none"

@@ -1,4 +1,4 @@
-# T-doc-16: contextual wording checks on the authored prose of the shipped vignettes and the
+# Contextual wording checks on the authored prose of shipped vignettes and
 # README. Prohibited claims are rejected unless the sentence negates them; technical field
 # names and code are not scanned.
 pr_doc_sentences <- function(path) {

@@ -9,12 +9,11 @@ pr_source_path <- function(...) { r <- pr_source_root(); if (is.null(r)) NA_char
 # its code in a fresh environment; solver entry points are mocked by the caller.
 pr_applied_vignette_names <- c("a1-getting-started", "a2-cde-accountability", "a3-krw-race-gender",
   "a4-alabama-opportunity", "a5-your-posterior-results", "a6-reading-exporting-results", "a7-figures-sensitivity")
-pr_legacy_vignette_names <- c("quickstart", "inputs-and-producers", "baselines-and-the-cost-of-a-common-grade")
 pr_method_vignette_names <- c("m1-ranking-and-loss", "m2-several-criteria", "m3-posterior-inputs",
   "m4-ties-and-withholding", "m5-computing-grades", "m6-uncertainty-diagnostics")
-pr_reference_vignette_names <- c("migration-from-0-9", "figure-gallery")
+pr_reference_vignette_names <- c("figure-gallery")
 pr_mdomain_vignette_names <- c("mdomain-quickstart", "mdomain-decisions")
-pr_vignette_names <- c(pr_mdomain_vignette_names, pr_applied_vignette_names, pr_method_vignette_names, pr_reference_vignette_names, pr_legacy_vignette_names)
+pr_vignette_names <- c(pr_mdomain_vignette_names, pr_applied_vignette_names, pr_method_vignette_names, pr_reference_vignette_names)
 pr_vignette_source <- function(name) {
   cands <- c(pr_source_path("vignettes", paste0(name, ".Rmd")), system.file("doc", paste0(name, ".Rmd"), package = "postrank"))
   cands <- cands[!is.na(cands) & nzchar(cands) & file.exists(cands)]
@@ -27,11 +26,44 @@ pr_purl <- function(name) {
   knitr::purl(pr_vignette_source(name), output = out, quiet = TRUE, documentation = 0L)
   out
 }
-pr_run_vignette <- function(name) {
-  code <- pr_purl(name)
+# Knit in a temporary directory so figures and exports stay out of the source tree.
+# Compare each executed public example call with the source knitr shows in its chunk.
+pr_run_vignette <- function(name, path = pr_vignette_source(name)) {
+  txt <- readLines(path, warn = FALSE, encoding = "UTF-8")
+  withr::local_dir(withr::local_tempdir())
   env <- new.env(parent = globalenv())
-  grDevices::pdf(NULL); on.exit(grDevices::dev.off(), add = TRUE)
-  utils::capture.output(sys.source(code, envir = env))
+  reader <- postrank::postrank_example
+  reads <- list()
+  testthat::local_mocked_bindings(postrank_example = function(...) {
+    label <- knitr::opts_current$get("label")
+    reads[[label]] <<- c(reads[[label]], paste(deparse(sys.call(), width.cutoff = 500L), collapse = " "))
+    reader(...)
+  }, .package = "postrank")
+
+  old_hooks <- knitr::knit_hooks$get()
+  old_options <- knitr::opts_chunk$get()
+  on.exit({
+    knitr::knit_hooks$restore(old_hooks)
+    knitr::opts_chunk$restore(old_options)
+  }, add = TRUE)
+  knitr::render_markdown()
+  original_source <- knitr::knit_hooks$get("source")
+  shown <- list()
+  knitr::knit_hooks$set(source = function(x, options) {
+    if (isTRUE(options$include))
+      shown[[options$label]] <<- c(shown[[options$label]], x)
+    original_source(x, options)
+  })
+  knitr::opts_chunk$set(error = FALSE)
+  invisible(knitr::knit(text = txt, quiet = TRUE, envir = env))
+  # Compare parsed source so spacing, line wrapping and the choice of quotes do not matter.
+  for (label in names(reads)) {
+    code <- parse(text = if (is.null(shown[[label]])) character() else shown[[label]], keep.source = FALSE)
+    displayed <- paste(vapply(code, deparse1, "", width.cutoff = 500L), collapse = " ")
+    for (call in unique(reads[[label]])) {
+      if (!grepl(call, displayed, fixed = TRUE)) stop(name, " chunk ", label, " does not show ", call)
+    }
+  }
   env
 }
 # Chunk labels of an R Markdown file, in order.

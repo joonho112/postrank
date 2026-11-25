@@ -1,88 +1,93 @@
 % Please edit documentation in R/tie-evaluate.R
 \name{postrank_tie_evaluate}
 \alias{postrank_tie_evaluate}
-\title{Score Fixed Grades When True Equality Has Zero Loss}
+\title{Evaluate a Fixed Grading Under Equality-Neutral Loss}
 \usage{
 postrank_tie_evaluate(grade, pairwise, weights, tau)
 }
 \arguments{
-\item{grade}{Positive integer numeric vector named in declared entity order.
-Labels are canonicalized without changing pairwise relations.}
+\item{grade}{Positive integer/numeric vector named in the exact order of
+\code{pairwise$entity_ids} (\code{1} = highest priority; occupied labels are
+renumbered to \verb{1..G} by \code{\link[=canonical_postrank_grade]{canonical_postrank_grade()}} without changing
+pairwise relations).}
 
-\item{pairwise}{A validated object from \code{\link[=postrank_tie_pairwise]{postrank_tie_pairwise()}}.}
+\item{pairwise}{A validated \code{postrank_tie_pairwise} object from
+\code{\link[=postrank_tie_pairwise]{postrank_tie_pairwise()}}.}
 
-\item{weights}{Nonnegative finite weights, named for every criterion exactly
-once and summing to one. They are not automatically normalized. For one
-criterion, supply its named weight of 1.}
+\item{weights}{Non-negative finite numeric vector named by every criterion in
+\code{pairwise} and summing to \code{1} (for a single criterion, supply a named
+weight of \code{1}; weights are not normalized automatically).}
 
-\item{tau}{Cost of withholding a distinct comparison, in \verb{(0, 0.5]}.}
+\item{tau}{Cost of withholding a distinct comparison, a finite scalar with
+\verb{0 < tau <= 0.5}.}
 }
 \value{
-A \code{postrank_tie_evaluation} list with the grade, counts, losses,
-settings, input identities and \code{guard_satisfied}/\code{guard_classes}.
-Criterion-specific \code{E} (also \code{Eb}), \code{D_k}, \code{T_k} and \code{H_k} are expected
-wrong, disclosed-distinct, total-distinct and withheld-distinct counts.
-\code{D} and \code{T} are the weighted distinct counts. \code{N} is the raw number of
-disclosed unordered pairs; \code{M} counts all unordered pairs.
-
-\code{disclosure_rate = N/M} and \code{D_over_T} (also
-\code{distinct_disclosure_rate}) use raw pairs and distinct opportunities,
-respectively. \code{D_k_over_T_k}, \code{E_over_D} and \code{E_over_N} keep the
-criterion-specific distinct and raw denominators separate. Ratios with
-zero denominators are \code{NA}.
-
-\code{criterion_risk} and \code{criterion_baseline} contain criterion losses and
-all-withheld baselines. \code{weighted_risk} and \code{primary_risk} are the
-weighted loss. \code{all_withhold_risk} (also \code{R0}) is its all-withheld
-baseline. \code{weighted_raw_objective} (also \code{raw_Z}) is
-\code{sum(weights * E) - tau * D}.
+A \code{postrank_tie_evaluation} list containing canonical \code{grade}, \code{G},
+\code{M = choose(n, 2)}, \code{N}, directed-disclosure matrix \code{x},
+\code{disclosure_rate = N / M}, \code{abstention_rate = (M - N) / M}, criterion
+counts \code{E} (also \code{Eb}, expected strict wrong-direction errors), \code{D_k}
+(expected disclosed-distinct pairs), \code{T_k} (expected total-distinct pairs),
+and \code{H_k} (expected withheld-distinct pairs), weighted distinct counts \code{D}
+and \code{T}, ratios \code{E_over_M}, \code{E_over_N}, \code{E_over_D}, \code{D_k_over_T_k}, and
+\code{D_over_T} (also \code{distinct_disclosure_rate}; ratios with zero denominator
+are \code{NA_real_}), \code{criterion_risk}, \code{criterion_baseline}, \code{weighted_risk}
+and \code{primary_risk}, \code{all_withhold_risk} and \code{R0}, \code{weighted_raw_objective}
+and \code{raw_Z}, \code{guard_satisfied}, \code{guard_classes}, \code{guard}, and \code{settings}.
 }
 \description{
-A proposed grading is evaluated under the equality-neutral loss. A disclosed
-direction incurs an error only when the targets are strictly reversed, and
-withholding costs \code{tau} only when the targets are distinct. True equality
-therefore has zero loss under either action. Shared grades remain decisions
-to withhold comparisons and do not establish target equality. The supplied
-grades are evaluated without selection or optimization.
+\code{postrank_tie_evaluate()} computes posterior expected equality-neutral loss,
+distinct-pair counts, and error ratios for a fixed grading without running a
+solver. Under equality-neutral loss, ordering a pair incurs loss only when
+the targets are strictly reversed (\code{theta_i < theta_j}), and leaving a pair
+in the same grade costs \code{tau} only when the targets are distinct
+(\code{theta_i != theta_j}), so exact equality (\code{theta_i = theta_j}) has zero loss
+under either decision. Placing two entities in the same grade still leaves
+them unordered rather than claiming their targets are equal.
 }
 \details{
-Criterion risk is \code{(E + tau * H_k) / M}. The all-withheld baseline
-is \code{R0 = tau * T / M}, which is generally smaller than \code{tau} when some
-equality mass is present. Risk also equals \code{R0 + raw_Z / M}, but the
-evaluator directly sums the action's losses independently of the solver
-objective. For an all-withheld action, N and every D_k are zero, risk is
-R0, and E/N and E/D_k are undefined. Zero expected strict errors do not
-establish a strictly superior direction when equality is possible.
+Criterion risk is \code{(E + tau * H_k) / M}, and the all-withheld risk is
+\code{R0 = tau * T / M} (smaller than \code{tau} whenever positive equality probability
+is present on an active criterion). Weighted risk equals \code{R0 + raw_Z / M}
+with \code{raw_Z = sum(weights * E) - tau * D}, and is summed directly from
+\code{pairwise$b} and \code{pairwise$d} independently of any sparse MIP model. For an
+all-withheld single-grade grading (\code{G = 1}), \code{N} and every \code{D_k} are \code{0},
+\code{primary_risk} equals \code{R0}, and \code{E_over_N} and \code{E_over_D} are \code{NA_real_}.
 
-Ratios are ratios of posterior expected counts, not expectations of
-realized draw-specific ratios. They describe the supplied law and loss,
-not external prediction accuracy or policy benefit. Ordinary
-\code{\link[=postrank_evaluate]{postrank_evaluate()}} retains its separate weak-error loss and does not
-silently change when this function is used.
-
-Entities equal with probability one on every positive-weight criterion
-form an active-profile class. Tie-aware optimization keeps each such
-class in one grade. This evaluator reports whether a fixed grade obeys
-that rule, but also scores violations for comparison. It does not check
-a \code{G_max} family or establish feasibility or optimality. Use
-\code{\link[=validate_postrank_tie_solution]{validate_postrank_tie_solution()}} to check a problem's numerical solution.
+Reported ratios (\code{E_over_N}, \code{E_over_D}, \code{D_over_T}) are ratios of posterior
+expected counts under the supplied posterior rather than expectations of
+per-draw ratios. \code{guard_satisfied} records whether \code{grade} keeps each
+active-profile equality class (\code{guard$groups}) in one grade; unlike
+\code{\link[=postrank_tie_problem]{postrank_tie_problem()}}, \code{postrank_tie_evaluate()} also evaluates gradings
+that split an equality class for comparison and does not check \code{G_max}
+feasibility (use \code{\link[=validate_postrank_tie_solution]{validate_postrank_tie_solution()}} to check solver
+candidates). Ordinary \code{\link[=postrank_evaluate]{postrank_evaluate()}} retains its zero-equality
+weak-error loss.
 }
 \examples{
-if (requireNamespace("gmp", quietly = TRUE)) {
-  # A complete two-state law, not two Monte Carlo draws.
-  path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
-  pw <- postrank_tie_pairwise(read_postrank_tie_draws(path))
-  weights <- c(S = .6, C = .4)
-  ev <- postrank_tie_evaluate(c(A = 3L, B = 3L, C = 2L, D = 1L),
-    pw, weights, tau = .25)
-  ev[c("primary_risk", "R0", "N", "D", "T", "guard_satisfied")]
-  held <- postrank_tie_evaluate(c(A = 1L, B = 1L, C = 1L, D = 1L),
-    pw, weights, tau = .25)
-  held[c("primary_risk", "E_over_N", "E_over_D")]
-}
+\dontshow{if (requireNamespace("gmp", quietly = TRUE)) withAutoprint(\{ # examplesIf}
+path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
+pw <- postrank_tie_pairwise(read_postrank_tie_draws(path))
+weights <- c(S = 0.6, C = 0.4)
+ev <- postrank_tie_evaluate(
+  c(A = 3L, B = 3L, C = 2L, D = 1L),
+  pw,
+  weights,
+  tau = 0.25
+)
+ev[c("primary_risk", "R0", "N", "D", "T", "guard_satisfied")]
+
+held <- postrank_tie_evaluate(
+  c(A = 1L, B = 1L, C = 1L, D = 1L),
+  pw,
+  weights,
+  tau = 0.25
+)
+held[c("primary_risk", "E_over_N", "E_over_D")]
+\dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link[=postrank_tie_problem]{postrank_tie_problem()}}, \code{\link[=postrank_tie_capabilities]{postrank_tie_capabilities()}},
+\code{\link[=postrank_tie_problem]{postrank_tie_problem()}}, \code{\link[=postrank_tie_solve]{postrank_tie_solve()}},
+\code{\link[=validate_postrank_tie_solution]{validate_postrank_tie_solution()}}, \code{\link[=postrank_tie_capabilities]{postrank_tie_capabilities()}},
 \code{vignette("m4-ties-and-withholding", package = "postrank")}
 }
 \concept{tie-aware}

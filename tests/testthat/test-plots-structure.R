@@ -1,5 +1,5 @@
-# T-fig-01 / T-fig-02 / T-fig-05: the seven shipped verbs on prepared fixtures and degenerate
-# cases; stored values unchanged; no solve or recomputation from a view.
+# Structural checks on the seven common-grade plotting functions across stored
+# fixtures and edge cases (no solver calls or summary recomputation).
 ps_layer_data <- function(p, i) ggplot2::layer_data(p, i)
 
 test_that("seven shipped verbs return ggplots on the sealed fixtures", {

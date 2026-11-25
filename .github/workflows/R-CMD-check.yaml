@@ -1,4 +1,4 @@
-# Ordinary R CMD check on three platforms (Chapter 16). HiGHS is installed explicitly for the
+# R CMD check across Ubuntu, macOS, and Windows. HiGHS is installed explicitly for the
 # live HiGHS tests; postrank.backend is not changed, so the resolver tests still assert the
 # Gurobi default. Gurobi is not available here: an unlicensed CI run is not Gurobi validation.
 name: R-CMD-check

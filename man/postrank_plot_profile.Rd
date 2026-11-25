@@ -14,51 +14,63 @@ postrank_plot_profile(
 \arguments{
 \item{x}{A \code{postrank_fit} or \code{postrank_analysis} with a stored evaluation.}
 
-\item{show}{\code{"E_over_N"} for expected errors per disclosed pair;
-\code{"E_over_M"} for expected errors per all unordered pairs; or \code{"risk"}
-for criterion risk, including the cost of withholding.}
+\item{show}{Metric drawn on the horizontal axis: \code{"E_over_N"} (the default)
+for expected wrong-direction errors per disclosed pair (\code{E_k / N}),
+\code{"E_over_M"} for expected wrong-direction errors per unordered pair
+(\code{E_k / M}), or \code{"risk"} for criterion risk \code{R_k} (including the
+withholding cost \code{tau} on withheld pairs).}
 
-\item{budgets}{Logical; show available error-budget ticks for
-\code{show = "E_over_N"}.}
+\item{budgets}{Logical scalar (\code{TRUE} by default). When \code{TRUE} and
+\code{show = "E_over_N"}, draws a vertical tick at each declared error budget
+\code{q_k} and connects it to that criterion's point.}
 
-\item{...}{Unused.}
+\item{...}{Unused; unnamed extra arguments are ignored. Pass
+\code{criterion_labels} by name.}
 
-\item{criterion_labels}{Optional partial named character vector mapping
-raw criterion IDs to display names. Text is wrapped; IDs and numerical
-plot data remain unchanged. Supply this argument by name.}
+\item{criterion_labels}{Optional named character vector mapping raw criterion
+IDs to display labels. Unmapped IDs keep their raw IDs, and labels are
+wrapped to 22 characters per line; underlying IDs and numeric values in
+\verb{$data} are unchanged.}
 }
 \value{
-A \code{ggplot} object. Without a validated incumbent, it is a status
-panel. When \code{N = 0}, the \code{E_over_N} view explains that the ratio is
-undefined and omits the corresponding point.
+A \code{ggplot} object whose \verb{$data} table matches \code{\link[=get_profile]{get_profile()}} with an
+added \code{value} column for the selected \code{show} metric. If \code{x} has no checked
+grading, returns an empty status \code{ggplot} stating why. When
+\code{show = "E_over_N"} and \code{N = 0} (every pair is withheld), returns a blank
+\verb{[0, 1]} panel stating that \code{E/N} is undefined rather than plotting zero.
 }
 \description{
-The figure displays criterion-specific expected directional-error rates or
-risks for the stored grading. Each criterion is represented by one point.
-Point area indicates a positive criterion weight; zero-weight criteria are
-retained as small hollow points.
+\code{postrank_plot_profile()} plots the posterior expected directional-error rate
+or criterion risk for each criterion in a stored grading, with one row per
+criterion. In plot text and tables, \code{disclosed} means pairs placed in
+different grades (ordered), \code{withheld} means pairs placed in the same grade
+(left unordered), and \code{risk} means posterior expected loss.
 }
 \details{
-\code{E_k} is the stored expected number of wrong-direction comparisons on
-criterion \code{k}, \code{N} counts disclosed pairs, and \code{M = choose(n, 2)} counts
-all unordered pairs. These are posterior expectations for the selected
-action, not observed error counts. Withholding is not a claim of equality.
+\code{E_k} is the posterior expected number of wrong-direction comparisons on
+criterion \code{k}, \code{N} is the number of disclosed pairs, and \code{M = choose(n, 2)}
+is the number of unordered entity pairs. Points for positive-weight criteria
+scale in area with \code{weight} (the size legend is omitted when there is only
+one criterion); zero-weight criteria with finite values appear as small
+hollow circles.
 
-For \code{E_over_N}, a declared budget \code{q_k} appears as a tick connected to its
-criterion's point. For \code{risk}, a dashed line marks \code{tau}, the ordinary
-all-withheld risk. In minimax mode, orange rings identify criteria attaining
-the largest criterion risk. All axes begin at zero. The figure reads the
-stored evaluation without selecting a new grade or recomputing its risk.
+When \code{show = "risk"}, a vertical dashed line marks \code{tau}, the risk of placing
+all entities in a single shared grade. When the problem uses
+\code{objective = "minimax"}, orange rings mark criteria attaining the maximum
+criterion risk (\code{is_minimax_max}). Horizontal axes always start at zero. The
+function reads stored evaluation summaries without solving or recomputing
+risks.
 }
 \examples{
-# Read prepared tutorial results; no model fitting or optimization.
-source(system.file("scripts", "_vignette-setup.R", package = "postrank"),
-  local = TRUE)
-one <- load_or_compute("tutorial_one")
+one <- postrank_example("tutorial_one")
 postrank_plot_profile(one)
-two <- load_or_compute("tutorial_two")
-postrank_plot_profile(two, show = "E_over_M",
-  criterion_labels = c(score_A = "Score A", score_B = "Score B"))
+
+two <- postrank_example("tutorial_two")
+postrank_plot_profile(
+  two,
+  show = "E_over_M",
+  criterion_labels = c(score_A = "Score A", score_B = "Score B")
+)
 }
 \seealso{
 \code{\link[=get_profile]{get_profile()}}, \code{\link[=postrank_plot_data]{postrank_plot_data()}}, \code{\link[=postrank_plot_frontier]{postrank_plot_frontier()}}

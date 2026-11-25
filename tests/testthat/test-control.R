@@ -1,4 +1,4 @@
-# T-obj-04: bare and typed controls map to the identical eight-field core list.
+# Bare control lists and postrank_control() normalize to the same core structure.
 ctl_core_names <- c("time_limit", "threads", "seed", "absolute_risk_gap", "relative_gap", "output", "tolerances", "engine")
 
 test_that("default bare list and default postrank_control give identical core lists", {
@@ -8,7 +8,7 @@ test_that("default bare list and default postrank_control give identical core li
   expect_identical(bare$core, typed$core)
   expect_identical(bare$strategy, "staged"); expect_identical(typed$strategy, "staged")
   expect_false(bare$verbose); expect_false(typed$verbose)
-  # The legacy normalizer agrees on every scalar default (0.0.1.9002 values).
+  # Core control normalization matches postrank_control() on every scalar default.
   legacy <- .pr_control(list())
   for (f in c("time_limit", "threads", "seed", "absolute_risk_gap", "relative_gap", "output", "engine"))
     expect_identical(bare$core[[f]], legacy[[f]], info = f)

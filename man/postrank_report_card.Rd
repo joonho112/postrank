@@ -12,76 +12,69 @@ postrank_report_card(
 )
 }
 \arguments{
-\item{x}{A \code{postrank_fit} or \code{postrank_analysis} with a validated grade.}
+\item{x}{A \code{postrank_fit} or \code{postrank_analysis} object with a checked
+grading (\code{incumbent_validated = TRUE}; otherwise stops with
+\code{no_validated_incumbent}).}
 
-\item{draws}{Optional source input: \code{postrank_draws},
-\code{postrank_coefficients}, or \code{postrank_probabilities} with supplied marginal
-intervals. It must have the same input identity as the fit.}
+\item{draws}{Optional posterior input matching \code{x}'s \code{input_identity}: a
+\code{postrank_draws}, \code{postrank_coefficients}, or \code{\link[=postrank_probabilities]{postrank_probabilities()}}
+object with marginal interval summaries. Required when \code{x} is a
+\code{postrank_fit} built from a \code{postrank_pairwise} object that does not store
+the original draws.}
 
-\item{level}{Central posterior interval level in \verb{(0, 1)}; default \code{0.90}.
-For supplied marginal summaries, it must exactly match their stored level.}
+\item{level}{Central posterior interval level in \verb{(0, 1)} (default \code{0.90}).
+For a \code{\link[=postrank_probabilities]{postrank_probabilities()}} input with supplied intervals, \code{level}
+must equal the stored \code{summaries$level}.}
 
-\item{order}{Secondary sort key within each grade: \code{"expected_rank"}
-(weighted expected rank, default), \code{"mean"} (one criterion's posterior
-mean, larger first) or \code{"label"} (entity ID).}
+\item{order}{Secondary sort order within each grade: \code{"expected_rank"}
+(weighted expected rank, the default), \code{"mean"} (descending posterior mean
+on one criterion) or \code{"label"} (entity ID).}
 
-\item{order_by}{Criterion used with \code{order = "mean"}. Required with several
-criteria, optional with one. Leave \code{NULL} for other ordering rules.}
+\item{order_by}{Criterion ID used when \code{order = "mean"} (required when
+several criteria are present, optional with one; must be \code{NULL} for other
+\code{order} values).}
 }
 \value{
-A \code{postrank_report_card} with the full table in \code{data}. Its other
-fields record \code{level}, \code{interval_source}, \code{secondary_order}, \code{settings},
-\code{grade_identity}, \code{input_identity}, \code{schema_version}, \code{provenance} and
-\code{warnings}. A selected mean-ordering criterion is recorded in
-\code{provenance$ordering_criterion}.
+A \code{postrank_report_card} object with the full data frame in \code{data},
+plus \code{level}, \code{interval_source}, \code{secondary_order}, \code{settings},
+\code{grade_identity}, \code{input_identity}, \code{schema_version}, \code{provenance}
+(recording \code{ordering_criterion} when \code{order = "mean"}) and \code{warnings}.
 }
 \description{
-A validated grading is combined with marginal posterior summaries in an
-entity-level report card. The table contains every entity, its grade, counts
-of comparisons reported above or below it or withheld, and each criterion's
-posterior mean, interval and expected rank. The table is used for detailed
-reporting and plotting; \link{postrank_tables} supplies the basic two-column
-grade table.
+\code{postrank_report_card()} combines a checked grading with marginal posterior
+means, central intervals and expected ranks in an entity-level table. Each
+row gives an entity's grade, how many other entities are reported above it,
+below it or in the same grade, and per-criterion posterior summaries. For a
+basic two-column grade table, use \link{postrank_tables}.
 }
 \details{
-The table is ordered first by grade, then the secondary key, with
-entity ID breaking remaining ties. Grade 1 has highest priority. Shared
-grades withhold comparisons and do not establish latent equality.
-\code{n_above} counts other entities this entity is reported above; \code{n_below}
-counts those it is reported below. Together with \code{n_withheld}, they sum
-to n-1 for each row. Columns \code{mean_}, \code{lower_}, \code{upper_} and
-\code{expected_rank_} are suffixed with the criterion ID. Expected rank is
-\eqn{1 + \sum_{j \ne i} e_{ij,k}}. Weighted ranks can set the row order;
-means in different units are never added for this purpose.
+Rows are sorted first by \code{grade} (grade 1 is highest priority; shared grades
+leave pairs unordered), then by \code{order}, with \code{entity_id} breaking remaining
+ties. In \code{data}, \code{n_above} counts entities graded below this entity
+(\code{grade[i] < grade[j]}), \code{n_below} counts entities graded above it, and
+\code{n_withheld} counts other entities sharing its grade; for every row,
+\code{n_above + n_below + n_withheld == n - 1}. Per-criterion columns are named
+\verb{mean_<k>}, \verb{lower_<k>}, \verb{upper_<k>} and \verb{expected_rank_<k>}, where expected
+rank is \eqn{1 + \sum_{j \ne i} e_{ij,k}}. When \code{order = "expected_rank"},
+rows within a grade are ordered by weighted expected rank rather than adding
+means across criteria in different units.
 
-The source comes from \code{draws}, then the analysis input, then a typed
-coefficient or supplied-probability object stored in the fit. A bare
-pairwise object contains no marginal posterior law, so supply its
-original input through \code{draws}. Matching cached summaries are reused;
-otherwise this function computes summaries from the source. It does not
-solve for new grades. Figures and table conversion subsequently read the
-prepared card without recomputing these summaries.
-
-Intervals describe the supplied marginal posterior, not Monte Carlo
-error or the probability that a grade is correct. A mean can lie outside
-an equal-tail interval. Supplied probability matrices require genuine
-same-target marginal intervals at their recorded level: a posterior law
-or chain history is not inferred from the matrices. Without a validated
-grade, the function stops with \code{no_validated_incumbent}.
-
-The card always contains all entities. Row limits and display labels in
-\code{\link[=postrank_plot_report_card]{postrank_plot_report_card()}} affect only the figure.
+Cached summaries on a \code{postrank_analysis} at the requested \code{level} are
+reused; otherwise summaries are computed from the posterior source without
+re-solving for grades. Intervals summarize marginal target uncertainty (a
+posterior mean can lie outside an equal-tail interval), not Monte Carlo
+error or the probability that a grade assignment is right. \code{data} always
+retains all \code{n} entities; row caps in \code{\link[=postrank_plot_report_card]{postrank_plot_report_card()}} affect
+only the plot.
 }
 \examples{
-if (requireNamespace("highs", quietly = TRUE)) {
-  one <- postrank(pr_tutorial$one, tau = .2, G_max = 3L, backend = "highs",
-    control = postrank_control(time_limit = 10), fragility = FALSE)
-  card <- postrank_report_card(one, level = .8, order = "mean")
-  as.data.frame(card)
-  card$interval_source
-}
+one <- postrank_example("tutorial_one")
+card <- postrank_report_card(one, level = 0.80, order = "mean")
+as.data.frame(card)
+card$interval_source
 }
 \seealso{
-\code{\link[=postrank]{postrank()}}, \code{\link[=postrank_posterior_means]{postrank_posterior_means()}}, \link{postrank_tables}
+\code{\link[=postrank]{postrank()}}, \link{postrank_tables}, \code{\link[=postrank_plot_report_card]{postrank_plot_report_card()}},
+\code{\link[=postrank_posterior_means]{postrank_posterior_means()}}
 }
 \concept{reporting}

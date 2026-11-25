@@ -1,5 +1,5 @@
-# T-doc-06 / T-ref-03 (pkgdown index), T-doc-07 (README capture), T-rel-03/04/06/13
-# (metadata, citation, NEWS coverage and version agreement).
+# Package release checks: _pkgdown.yml reference and article coverage, README
+# output blocks, NEWS export coverage, citation entries, and license files.
 pr_inherited_exports <- c("as_postrank_draws", "as_postrank_posterior", "canonical_postrank_grade",
   "postrank_backend_available", "postrank_commonality_cost", "postrank_crossfit", "postrank_diagnose",
   "postrank_draws_from_array", "postrank_evaluate", "postrank_frontier", "postrank_guarantee_capabilities",
@@ -25,7 +25,7 @@ test_that("every export sits in exactly one pkgdown reference group; articles ar
     hits <- sum(vapply(topics, function(t) e %in% aliases[[t]], TRUE))
     expect_identical(hits, 1L, info = e)
   }
-  expect_length(exports, 105L)
+  expect_length(exports, 107L)
   expect_true(all(c("postrank-package.Rd", "postrank_options.Rd") %in% topics))
   data_topics <- names(concepts)[vapply(concepts, function(cc) "data" %in% cc, TRUE)]
   expect_length(data_topics, 8L)
@@ -38,11 +38,11 @@ test_that("every export sits in exactly one pkgdown reference group; articles ar
 test_that("the README's two captured analyses equal their prepared formatters", {
   readme <- pr_source_path("README.md"); skip_if_not(file.exists(readme), "README.md not available")
   r <- readLines(readme, encoding = "UTF-8")
-  i <- grep("^    #> <postrank_analysis>", r)
+  i <- grep("^(    )?#> <postrank_analysis>", r)
   expect_length(i, 2L)
   for (j in seq_along(i)) {
     expected <- format_postrank_analysis_cli(pr_cached(c("tutorial_one", "tutorial_two")[[j]]), width = 80)
-    expect_identical(sub("^    #> ", "", r[i[j]:(i[j] + length(expected) - 1L)]), expected)
+    expect_identical(sub("^(    )?#> ", "", r[i[j]:(i[j] + length(expected) - 1L)]), expected)
   }
   expect_match(paste(r, collapse = " "), "explicitly selected highs backend", fixed = TRUE)
   expect_false(any(grepl("install.packages\\(\"postrank\"\\)|CRAN version", r)))
@@ -53,23 +53,23 @@ test_that("NEWS names every export added since the 24 inherited ones", {
   news <- news[!is.na(news) & nzchar(news) & file.exists(news)][1L]
   skip_if(is.na(news), "NEWS.md not available")
   l <- readLines(news, encoding = "UTF-8")
-  expect_identical(l[1L], "# postrank 1.2.0")
+  expect_identical(l[1L], "# postrank 1.3.0")
   entry <- paste(l[seq_len(grep("^# postrank 0\\.0\\.1\\.9003", l)[1L] - 1L)], collapse = " ")
   added <- setdiff(getNamespaceExports("postrank"), pr_inherited_exports)
-  expect_length(added, 81L)
+  expect_length(added, 83L)
   for (e in added) expect_true(grepl(paste0("`", e, "()`"), entry, fixed = TRUE), info = e)
   expect_false(grepl("`postrank_coefficients()`", entry, fixed = TRUE))   # the deferred user constructor
 })
 
 test_that("version, citation and licence agree on the public release", {
-  expect_identical(as.character(utils::packageVersion("postrank")), "1.2.0")
+  expect_identical(as.character(utils::packageVersion("postrank")), "1.3.0")
   source_citation <- pr_source_path("inst", "CITATION")
   cit <- if (!is.na(source_citation) && file.exists(source_citation))
     utils::readCitationFile(source_citation, meta = utils::packageDescription("postrank")) else
       utils::citation("postrank")
   expect_length(cit, 3L)
   expect_match(gsub("\\s+", " ", paste(format(cit[[1]], style = "text"), collapse = " ")),
-    "R package version 1.2.0", fixed = TRUE)
+    "R package version 1.3.0", fixed = TRUE)
   expect_identical(cit[[1]]$url, "https://github.com/joonho112/postrank")
   expect_match(cit[[1]]$note, "https://joonho112.github.io/postrank/", fixed = TRUE)
   expect_identical(cit[[2]]$doi, "10.5281/zenodo.23790260")

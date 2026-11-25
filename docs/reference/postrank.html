@@ -1,13 +1,19 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Choose Posterior Grades and Prepare Their Summaries — postrank • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Choose Posterior Grades and Prepare Their Summaries — postrank"><meta name="description" content="Entities are assigned to ordered groups by balancing expected
-wrong-direction loss against the cost of withholding comparisons under a
-supplied posterior. Grade 1 has highest priority. A shared grade withholds
-the comparison between the corresponding entities without asserting equality
-of their latent targets."><meta property="og:description" content="Entities are assigned to ordered groups by balancing expected
-wrong-direction loss against the cost of withholding comparisons under a
-supplied posterior. Grade 1 has highest priority. A shared grade withholds
-the comparison between the corresponding entities without asserting equality
-of their latent targets."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Assign Grades to Entities Under Posterior Uncertainty — postrank • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Assign Grades to Entities Under Posterior Uncertainty — postrank"><meta name="description" content="postrank() gives each entity (for example a school, an employer or an
+area) an integer grade, using posterior information that you supply: draws,
+normal (Gaussian) or mixture posteriors, or comparison probabilities. Grade
+1 is the highest priority; larger values of each criterion's target (the
+entity quantity estimated on that criterion) mean higher priority, as set
+when the input was built. Entities in different grades are reported in that
+order. Entities in the same grade are left unordered: the report does not
+say which one is higher, and it does not say that they are equal."><meta property="og:description" content="postrank() gives each entity (for example a school, an employer or an
+area) an integer grade, using posterior information that you supply: draws,
+normal (Gaussian) or mixture posteriors, or comparison probabilities. Grade
+1 is the highest priority; larger values of each criterion's target (the
+entity quantity estimated on that criterion) mean higher priority, as set
+when the input was built. Entities in different grades are reported in that
+order. Entities in the same grade are left unordered: the report does not
+say which one is higher, and it does not say that they are equal."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -15,7 +21,7 @@ of their latent targets."><meta property="og:image" content="https://joonho112.g
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,7 +29,7 @@ of their latent targets."><meta property="og:image" content="https://joonho112.g
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -37,17 +43,20 @@ of their latent targets."><meta property="og:image" content="https://joonho112.g
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Choose Posterior Grades and Prepare Their Summaries</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Assign Grades to Entities Under Posterior Uncertainty</h1>
 
       <div class="d-none name"><code>postrank.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>Entities are assigned to ordered groups by balancing expected
-wrong-direction loss against the cost of withholding comparisons under a
-supplied posterior. Grade 1 has highest priority. A shared grade withholds
-the comparison between the corresponding entities without asserting equality
-of their latent targets.</p>
+    <p><code>postrank()</code> gives each entity (for example a school, an employer or an
+area) an integer grade, using posterior information that you supply: draws,
+normal (Gaussian) or mixture posteriors, or comparison probabilities. Grade
+1 is the highest priority; larger values of each criterion's target (the
+entity quantity estimated on that criterion) mean higher priority, as set
+when the input was built. Entities in different grades are reported in that
+order. Entities in the same grade are left unordered: the report does not
+say which one is higher, and it does not say that they are equal.</p>
     </div>
 
     <div class="section level2">
@@ -74,107 +83,203 @@ of their latent targets.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>A validated <code>postrank_draws</code>, Gaussian/mixture
-<code>postrank_coefficients</code>, or <code><a href="postrank_probabilities.html">postrank_probabilities()</a></code> object.</p></dd>
+<dd><p>Posterior information for the entities, one of:</p><ul><li><p>a <code>postrank_draws</code> object (see <code><a href="postrank_draws.html">postrank_draws()</a></code> and
+<code><a href="as_postrank_draws.html">as_postrank_draws()</a></code>);</p></li>
+<li><p>a normal posterior given by means and covariances
+(<code><a href="postrank_gaussian_coefficients.html">postrank_gaussian_coefficients()</a></code>) or an average of normal
+posteriors over shared states such as hyperparameter draws
+(<code><a href="postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code>);</p></li>
+<li><p>a <code><a href="postrank_probabilities.html">postrank_probabilities()</a></code> object holding comparison probabilities
+computed elsewhere.</p></li>
+</ul></dd>
 
 
-<dt id="arg-weights-tau-g-max">weights, tau, G_max<a class="anchor" aria-label="anchor" href="#arg-weights-tau-g-max"></a></dt>
-<dd><p>Decision choices when <code>settings</code> is not given.
-Weights are nonnegative and sum to one, without automatic normalization;
-names identify criteria, or unnamed values follow criterion order.
-This one-call function supplies weight 1 when it is omitted for one
-criterion. The withholding cost satisfies <code>0 &lt; tau &lt;= 0.5</code>.
-An oversized <code>G_max</code> is capped at the number of entities.</p></dd>
+<dt id="arg-weights">weights<a class="anchor" aria-label="anchor" href="#arg-weights"></a></dt>
+<dd><p>Criterion weights: nonnegative numbers that sum to one. They
+are not rescaled for you. Name them by criterion (named weights must name
+every criterion once, including any with weight 0), or give them in
+criterion order. With one criterion, <code>postrank()</code> sets the weight to 1 if
+you leave it out; with several criteria it is required.</p></dd>
+
+
+<dt id="arg-tau">tau<a class="anchor" aria-label="anchor" href="#arg-tau"></a></dt>
+<dd><p>Cost of leaving a pair unordered, relative to a cost of 1 for a
+pair reported in the wrong order. Must satisfy <code>0 &lt; tau &lt;= 0.5</code>.</p></dd>
+
+
+<dt id="arg-g-max">G_max<a class="anchor" aria-label="anchor" href="#arg-g-max"></a></dt>
+<dd><p>Largest number of grades. Fewer grades are allowed unless
+<code>exact_G</code> is given. A value larger than the number of entities is reduced
+to that number, and a note is added to the result's warnings.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Optional <code>q</code>, <code>exact_G</code>, <code>objective</code>, <code>minimax_criteria</code> and
-<code>minimax_refine</code>, as described in <code><a href="postrank_settings.html">postrank_settings()</a></code>. These modes are
-input-dependent: Gaussian/mixture coefficients and supplied probabilities
-support only weighted at-most-G problems through this function.</p></dd>
+<dd><p>Further settings passed to <code><a href="postrank_settings.html">postrank_settings()</a></code>: <code>q</code>
+(per-criterion upper limits in <code>[0, 1]</code> on the expected wrong-order
+proportion of ordered pairs, <code>E_k &lt;= q_k * N</code>), <code>exact_G</code> (an exact number
+of occupied grades), <code>objective</code> (<code>"minimax"</code> minimizes the largest
+criterion loss instead of the weighted one), <code>minimax_criteria</code> (subset of
+criteria included in the minimax objective) and <code>minimax_refine</code> (whether
+to refine a minimax solution on weighted loss). With normal or mixture
+posteriors or supplied probabilities, only the weighted objective without
+<code>q</code>, <code>exact_G</code> or <code>minimax_criteria</code> is available; other values are an
+error.</p></dd>
 
 
 <dt id="arg-settings">settings<a class="anchor" aria-label="anchor" href="#arg-settings"></a></dt>
-<dd><p>A <code><a href="postrank_settings.html">postrank_settings()</a></code> object instead of separate decision
-arguments. Explicitly supplying both is a <code>settings_conflict</code> error.</p></dd>
+<dd><p>A <code><a href="postrank_settings.html">postrank_settings()</a></code> object, used instead of <code>weights</code>,
+<code>tau</code>, <code>G_max</code> and <code>...</code>. Giving both, even at their default values, is an
+error (<code>settings_conflict</code>).</p></dd>
 
 
 <dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p><code>NULL</code>, <code>"gurobi"</code> or <code>"highs"</code>. An explicit choice takes precedence;
-otherwise <code>getOption("postrank.backend")</code> is used, then Gurobi if unset.
-Choose HiGHS explicitly for that backend. There is no automatic fallback
-after an unavailable, failed or timed-out backend.</p></dd>
+<dd><p>Solver to use, <code>"gurobi"</code> or <code>"highs"</code>. If <code>NULL</code> (the
+default), <code>getOption("postrank.backend")</code> is used, or <code>"gurobi"</code> if that
+option is not set. If the chosen solver is not installed or cannot be
+loaded, the call stops with an error. The fit records the overall solver
+outcome in <code>fit$status</code> and stage-specific errors in <code>fit$engine$stages</code>
+(see Details). <code>postrank</code> never switches to the other solver.</p></dd>
 
 
 <dt id="arg-control">control<a class="anchor" aria-label="anchor" href="#arg-control"></a></dt>
-<dd><p>A <code><a href="postrank_control.html">postrank_control()</a></code> object or a named control list.</p></dd>
+<dd><p>Solver controls from <code><a href="postrank_control.html">postrank_control()</a></code>, such as the time
+limit, number of threads and seed, or a named list of them.</p></dd>
 
 
 <dt id="arg-report-card-fragility-crossfit-diagnostics">report_card, fragility, crossfit, diagnostics<a class="anchor" aria-label="anchor" href="#arg-report-card-fragility-crossfit-diagnostics"></a></dt>
-<dd><p>Logical requests for
-additional summaries. Report cards and Monte Carlo fragility are requested
-by default; cross-fitting and diagnostics are off by default. See Details
-for the input requirements and extra computation.</p></dd>
+<dd><p>Whether to request extra
+summaries. The report card and fragility are requested by default;
+cross-fitting and diagnostics are not. Each one is computed only when the
+input supports it; Details lists what each needs.</p><ul><li><p>Report card: the posterior means and intervals shown with the grades.</p></li>
+<li><p>Fragility: pairs whose wrong-order probability in the likelier direction
+is within Monte Carlo noise of <code>tau</code>. On MCMC draws, only borderline
+pairs within <code>0.1</code> (<code>screen_margin</code>) of <code>tau</code> are traced, and an
+informational <code>"MCMC screen"</code> note is added to <code>warnings</code>.</p></li>
+<li><p>Cross-fitting: grades chosen on one half of the draws and evaluated on
+the other half (the model is not refitted).</p></li>
+<li><p>Diagnostics: for IID or MCMC draws, Monte Carlo standard errors (with
+R-hat and effective sample size for MCMC draws, from the <code>posterior</code>
+package); for exact finite posteriors and other inputs, see Details.</p></li>
+</ul></dd>
 
 
 <dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a></dt>
-<dd><p>Central posterior interval level for a report card, in <code>(0, 1)</code>.
-Supplied marginal intervals have a fixed level; request that same level.</p></dd>
+<dd><p>Level of the central posterior intervals in the report card,
+between 0 and 1. If the input comes with its own intervals, use their
+level (for 95% intervals, <code>level = 0.95</code>) or set <code>report_card = FALSE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>postrank_analysis</code> list with <code>input</code>, <code>pairwise</code>, <code>settings</code>,
-<code>control</code>, <code>problem</code> and the main <code>fit</code>. <code>evaluation</code> is the fixed-action
-evaluation of its validated grade. <code>report_card</code>, <code>fragility</code>, <code>crossfit</code>
-and <code>diagnostics</code> contain prepared summaries or <code>NULL</code>.</p>
-<p>Each entry of <code>extras</code> records <code>requested</code>, <code>supported</code>, <code>available</code>,
-<code>reason</code> and <code>condition</code>, which describe the availability of that component. <code>backend</code>,
-<code>timings</code>, <code>provenance</code> and <code>warnings</code> describe the run. <code>metadata</code> contains
-declaration/capability summaries and prepared display data; <code>schema_version</code>
-identifies the analysis structure. Common results are extracted through
-<code><a href="get_grades.html">get_grades()</a></code>, <code><a href="get_risk.html">get_risk()</a></code>, <code><a href="get_profile.html">get_profile()</a></code> and <a href="postrank_tables.html">postrank_tables</a>.</p>
+    <p>A <code>postrank_analysis</code> object, a list with these components:</p><ul><li><p><code>input</code>, <code>pairwise</code>, <code>settings</code>, <code>control</code> and <code>problem</code>: the checked
+input, its pairwise probabilities, and the settings, solver controls and
+optimization problem that were used.</p></li>
+<li><p><code>fit</code>: the solver result (see <code><a href="postrank_solve.html">postrank_solve()</a></code>).</p></li>
+<li><p><code>evaluation</code>: loss and error summaries of the chosen grades, or <code>NULL</code>
+when no grading passed postrank's checks.</p></li>
+<li><p><code>report_card</code>, <code>fragility</code>, <code>crossfit</code> and <code>diagnostics</code>: the extra
+summaries, each <code>NULL</code> when it was not computed.</p></li>
+<li><p><code>extras</code>: for each extra summary, whether it was <code>requested</code>,
+<code>supported</code> and <code>available</code>, with a <code>reason</code> and any error <code>condition</code>.</p></li>
+<li><p><code>backend</code>, <code>timings</code> and <code>warnings</code>: the solver used, the seconds spent
+in each stage, and any warnings.</p></li>
+<li><p><code>provenance</code>: how and when the result was made (postrank and R versions,
+time, solver and how it was chosen).</p></li>
+<li><p><code>metadata</code>: a summary of the input's declarations, which extra summaries
+the input supports, and stored display data.</p></li>
+<li><p><code>schema_version</code>: the version of this object's layout.</p></li>
+</ul><p>Use <code><a href="get_grades.html">get_grades()</a></code>, <code><a href="get_risk.html">get_risk()</a></code>, <code><a href="get_profile.html">get_profile()</a></code>, and <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code>
+(see <a href="postrank_tables.html">postrank_tables</a>) to extract the usual results, and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> or
+<code><a href="postrank_plot_report_card.html">postrank_plot_report_card()</a></code> to plot the report card.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The function prepares pairwise probabilities, constructs and solves the main
-problem, and returns the resulting grades, loss and supported summaries. A
-posterior representation is supplied externally; the function does not fit a
-statistical model. An omitted weight is set to one for a single criterion,
-whereas weights must be specified for several criteria. <code>G_max</code> bounds the
-number of grades from above and does not require that the bound be attained.</p>
-<p>A time limit can leave a validated grade, or no grade at all.
-Without a validated candidate, the fit's status, any usable lower bound
-and warnings are retained, while evaluation and grade-dependent extras
-are <code>NULL</code> with reason <code>"no_validated_incumbent"</code>. A valid report that
-withholds every comparison is different: it has one grade and risk tau.
-Read the fit's bounds and gap as well as its status; see <code><a href="postrank_solve.html">postrank_solve()</a></code>.</p>
-<p>A report card requires marginal posterior intervals, so supplied
-probabilities without these summaries permit optimization but cannot produce
-a report card. Monte Carlo fragility and cross-fitting require joint
-equal-weight IID or MCMC draws; cross-fitting entails two additional
-optimizations. For typed coefficients, diagnostics concern conditional
-expected risk through <code><a href="postrank_coefficient_diagnose.html">postrank_coefficient_diagnose()</a></code>. Target draws and
-simulation diagnostics are unavailable from probability-only inputs.</p>
-<p>If an extra fails unexpectedly, a valid main fit is retained, the extra
-records <code>reason = "extra_error"</code> and its condition, and a warning is added.
-Core input, backend and solve failures still stop the call. Requested
-intervals must be compatible with the source before analysis proceeds.</p>
+    <p>By default, the grades are chosen to minimize the posterior expected loss,
+averaged over all pairs of entities: a pair reported in the wrong order
+costs 1 and a pair left unordered costs <code>tau</code>. With several criteria, one
+common grading is chosen and the criterion losses are combined with
+<code>weights</code>. <code>postrank()</code> computes the pairwise probabilities, solves the
+optimization problem and returns the grades, the loss and optional
+summaries. It does not fit a model, so the results are only as good as the
+posterior you supply.</p>
+<p>postrank needs an optimization solver. HiGHS is free: install the <code>highs</code>
+package and use <code>backend = "highs"</code> or <code>options(postrank.backend = "highs")</code>.
+The default, Gurobi, is commercial software that needs a license.</p>
+<p><strong>Words in the printed output.</strong> The printed result and <code><a href="get_risk.html">get_risk()</a></code> use the
+package's internal terms: "disclosed" pairs are the ordered pairs,
+"withheld" pairs are the unordered ones, and "risk" is the loss described
+above.</p>
+<p><strong>Solver results.</strong> postrank recomputes the loss of the solver's grading
+and checks it before reporting it. The solver also reports a lower bound
+(a loss that no grading can beat) and the gap between the returned loss and
+that bound; a gap of 0 means that, up to numerical tolerance, no better
+grading exists for these probabilities. The status, bound and gap describe
+the optimization only, not the uncertainty in the posterior or the adequacy
+of the model; see <code><a href="get_risk.html">get_risk()</a></code> and <code><a href="postrank_solve.html">postrank_solve()</a></code>.</p>
+<p><strong>Time limits.</strong> When the solver stops at its time limit, the result may hold
+a checked grading, or none. Without one, the result keeps the solver status,
+any lower bound and the warnings; <code>evaluation</code> and the requested extra
+summaries are <code>NULL</code>, with reason <code>"no_validated_incumbent"</code> (no checked
+grading). This differs from a valid grading that leaves every pair
+unordered, which has one grade and loss <code>tau</code>.</p>
+<p><strong>What each extra summary needs.</strong> A report card needs marginal posterior
+intervals: supplied probabilities without interval summaries can be graded
+but give no report card. Monte Carlo fragility and cross-fitting need joint
+equal-weight IID or MCMC draws, in which every draw holds a value for every
+entity and criterion; cross-fitting solves two more optimization problems.
+For IID or MCMC draws, <code>diagnostics</code> reports Monte Carlo standard errors
+(exact finite posteriors have no Monte Carlo error); for normal or mixture
+posteriors it evaluates the expected loss given those posteriors (for
+hyperparameter-MCMC MCSEs on mixture posteriors, call
+<code><a href="postrank_coefficient_diagnose.html">postrank_coefficient_diagnose()</a></code> directly with <code>chain_history</code>). Supplied
+probabilities have no draws, so fragility, cross-fitting and diagnostics are
+not available for them.</p>
+<p><strong>Errors.</strong> Invalid input, invalid settings, an unavailable solver, and
+uncaught solver execution errors (such as a missing Gurobi license under
+<code>strategy = "label_mip"</code> or LP setup) stop the call. Solver termination
+outcomes, including infeasibility, numerical trouble and time limits, appear
+in <code>fit$status</code>. Without a checked grading, <code>evaluation</code> is <code>NULL</code>. For a
+caught error in staged search, check <code>fit$engine$stages$lp$status</code> and its
+<code>trace</code> for LP rounds, or <code>fit$engine$stages$mip$error</code> and <code>fit$warnings</code>
+for the final MIP. If an extra
+summary fails unexpectedly, the main grading is kept, the extra records
+<code>reason = "extra_error"</code> and its condition, and an R warning is signaled and
+appended to <code>warnings</code>. When the input supplies its own intervals, a report
+card at another <code>level</code> is an error, raised before any solving.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="postrank_settings.html">postrank_settings()</a></code>, <code><a href="postrank_control.html">postrank_control()</a></code>, <code><a href="postrank_solve.html">postrank_solve()</a></code>,
-<code><a href="postrank_report_card.html">postrank_report_card()</a></code>, <code><a href="get_risk.html">get_risk()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="postrank_example.html">postrank_example()</a></code>, <code><a href="postrank_settings.html">postrank_settings()</a></code>, <code><a href="postrank_control.html">postrank_control()</a></code>,
+<code><a href="postrank_solve.html">postrank_solve()</a></code>, <code><a href="postrank_report_card.html">postrank_report_card()</a></code>, <code><a href="get_risk.html">get_risk()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"highs"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">one</span> <span class="op">&lt;-</span> <span class="fu">postrank</span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span>, tau <span class="op">=</span> <span class="fl">.2</span>, G_max <span class="op">=</span> <span class="fl">3L</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span></span>
-<span class="r-in"><span>    control <span class="op">=</span> <span class="fu"><a href="postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>, fragility <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="get_risk.html">get_risk</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Read a stored result without running a solver:</span></span></span>
+<span class="r-in"><span><span class="va">stored</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_one"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">stored</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A B C D E F </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1 2 2 3 3 </span>
+<span class="r-in"><span><span class="fu"><a href="get_risk.html">get_risk</a></span><span class="op">(</span><span class="va">stored</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $risk</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04165164</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $lower_bound</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04165164</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $gap</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $status</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "optimal"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="co"># Solve directly with the optional highs package:</span></span></span>
+<span class="r-in"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu">postrank</span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">one</span>, tau <span class="op">=</span> <span class="fl">0.2</span>, G_max <span class="op">=</span> <span class="fl">3</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span></span>
+<span class="r-in"><span>  control <span class="op">=</span> <span class="fu"><a href="postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>, fragility <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A B C D E F </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1 2 2 3 3 </span>
+<span class="r-in"><span><span class="fu"><a href="get_risk.html">get_risk</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $risk</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04165164</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>

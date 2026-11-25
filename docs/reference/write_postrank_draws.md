@@ -1,10 +1,10 @@
 # Save a Posterior Input as JSON
 
-The writer saves posterior values and their scientific descriptions in
-the format read by
-[`read_postrank_draws()`](https://joonho112.github.io/postrank/reference/read_postrank_draws.md).
-The input is validated before writing, and its declared entity,
-criterion and draw order is preserved.
+`write_postrank_draws()` validates a `postrank_draws` object (or
+complete `applied-0.1` list) and writes its values, target descriptions
+and sampling history to a JSON file that
+[`read_postrank_draws()`](https://joonho112.github.io/postrank/reference/read_postrank_draws.md)
+can restore.
 
 ## Usage
 
@@ -16,34 +16,37 @@ write_postrank_draws(x, path, overwrite = FALSE)
 
 - x:
 
-  A `postrank_draws` or complete canonical `applied-0.1` payload.
+  A `postrank_draws` object or a complete `applied-0.1` input list.
 
 - path:
 
-  Destination JSON file. Its parent directory must exist.
+  Destination JSON file path. Its parent directory must exist.
 
 - overwrite:
 
-  Logical; allow replacement of an existing file. Defaults to `FALSE`.
+  Logical scalar (default `FALSE`); whether to replace an existing file
+  at `path`.
 
 ## Value
 
-The destination path, invisibly.
+`path`, invisibly.
 
 ## Details
 
-Joint arrays, criterion-wise blocks and complete exact finite laws are
-supported. Values are written with 17 significant digits, retaining
-singleton dimensions and source sampling histories. The writer creates a
-temporary file in the destination directory and renames it into place.
+Joint arrays, criterion-wise blocks and exact finite laws are supported.
+Numbers are formatted with 17 significant digits, preserving entity,
+criterion and draw order, singleton dimensions (`K = 1`), and MCMC chain
+histories. The JSON text is checked against the installed
+`draws-schema.json` specification, written to a temporary file in
+`dirname(path)` and renamed into place.
 
-The file contains the canonical input, not a saved validation receipt or
-external source-value audit. Reading it performs validation again; a
-prior adapter's source-value comparison is not claimed merely because
-the file round-trips. Required declaration checks apply without the
-high-level array route's extra placeholder check. Use
-[`write_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/write_postrank_tie_draws.md)
-for an equality-neutral input.
+The file stores the input fields (`schema_version = "applied-0.1"`), not
+the in-memory `validation` record. Reading the file runs
+[`validate_postrank_draws()`](https://joonho112.github.io/postrank/reference/validate_postrank_draws.md)
+afresh, so a prior
+[`as_postrank_posterior()`](https://joonho112.github.io/postrank/reference/as_postrank_posterior.md)
+`source_audit` is not carried through JSON. For exact-tie inputs, use
+[`write_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/write_postrank_tie_draws.md).
 
 ## See also
 

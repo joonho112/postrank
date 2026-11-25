@@ -1,4 +1,4 @@
-# Tier C (T-rel-08, Chapter 15): the default licensed Gurobi backend on the oracle cases.
+# Licensed Gurobi backend checks against brute-force reference cases.
 # Skipped unless POSTRANK_TEST_GUROBI=true; a skip is not default-backend acceptance.
 pr_gurobi_sandwich <- function(fit, optimum, delta = 1e-9) {
   U <- fit$objective$risk_upper_bound; L <- fit$objective$risk_lower_bound

@@ -1,4 +1,5 @@
-# Narrow explicit new-type dispatch; legacy draw/finite-law modes are unchanged.
+# Scope checks for typed normal/mixture and supplied-probability inputs;
+# draw and exact-finite-law paths remain unchanged.
 .pr_cf_problem_scope <- function(pairwise,objective,q=NULL,exact_G=NULL,minimax_criteria=NULL) {
   if (inherits(pairwise, "postrank_probabilities")) {
     validate_postrank_probabilities(pairwise)

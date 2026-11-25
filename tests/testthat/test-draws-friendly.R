@@ -1,4 +1,4 @@
-# T-api-03 / T-api-04: postrank_draws() is bookkeeping over the strict constructors.
+# High-level postrank_draws() and postrank_declarations() dispatch and validation.
 df_values <- function(S = 40L) {
   v <- array(0, c(S, 4L, 2L), dimnames = list(NULL, c("A", "B", "C", "D"), c("need1", "need2")))
   for (s in seq_len(S)) for (k in 1:2) v[s, , k] <- c(4, 3, 2, 1) + sin(s * (1:4) + k) / 3 + s / 1e4
@@ -46,7 +46,7 @@ test_that("friendly and strict array constructors give identical objects (fixed 
   expect_identical(friendly$validation$input_identity, strict$validation$input_identity)
   # A plain list with exactly the eight fields is accepted and normalized.
   expect_identical(postrank_draws(v, regime = "iid", declarations = a), strict)
-  # No receipt or cache fields are added.
+  # No extra wrapper fields are added to the validated draws structure.
   expect_identical(names(friendly), names(strict))
   expect_identical(names(friendly$validation), names(strict$validation))
 })

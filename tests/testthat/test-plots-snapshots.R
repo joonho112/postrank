@@ -1,5 +1,5 @@
-# T-fig-06: shipped figure SVGs and degenerate cases. Snapshot
-# updates are reviewed and enumerated, never accepted wholesale (PR-DEC-15-B).
+# Visual SVG snapshots of the seven common-grade plots and edge cases.
+# Snapshot updates are inspected individually.
 test_that("shipped figure snapshots", {
   skip_if_not_installed("vdiffr")
   skip_on_cran()

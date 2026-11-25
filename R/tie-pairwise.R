@@ -56,65 +56,68 @@
   x <- unclass(x); x$pairwise_identity <- NULL; x
 }
 
-#' Calculate Strict Error and Equality Probabilities
+#' Compute Strict Error and Equality Probabilities
 #'
-#' Comparison probabilities are calculated for an equality-neutral loss under a
-#' target law that permits exact equality. Under this loss, equality
-#' contributes neither a strict-direction error nor a withholding cost. A
-#' shared reported grade continues to denote a withheld direction without
-#' asserting equality of the underlying targets.
+#' `postrank_tie_pairwise()` computes pairwise strict directional-error (`b`),
+#' equality (`t`), and distinctness (`d`) probabilities for tie-aware mode (the
+#' workflow for posteriors in which distinct entities can be equal with positive
+#' probability under equality-neutral loss, where true target equality has zero
+#' loss). Placing two entities in the same grade still leaves them unordered
+#' rather than claiming their targets are equal.
 #'
-#' @param draws A validated [as_postrank_tie_draws()] input or its canonical
-#'   payload, containing complete joint states for one or more criteria and
-#'   explicit equality declarations. Values are compared at their supplied
-#'   precision, without rounding, jitter, or independently rearranging entities.
-#' @param method `"blocks"` (default) or `"reference"` for equal-weight Monte
-#'   Carlo aggregation. The block method limits working indicator storage;
-#'   the reference method handles one ordered pair at a time. Exact finite
-#'   laws instead use their declared masses.
-#' @param block_size Positive integer maximum ordered-pair block size for the
-#'   block algorithm. It does not change which values count as equal.
-#' @return A `postrank_tie_pairwise` object with entity-by-entity-by-criterion
-#'   arrays `b` (strict directional error), `t` (equality), and `d` (distinctness),
-#'   plus the source and equality declarations. All diagonals are `NA` because
-#'   self-comparisons are unused. Sample sizes describe Monte Carlo input only;
-#'   exact finite laws retain rational coefficients and their double projection.
-#' @details For distinct entities, the error for reporting i above j is
-#'   \eqn{b_{ij,k}=P(\theta_{i,k}<\theta_{j,k})}.
-#'   Equality is \eqn{t_{ij,k}=P(\theta_{i,k}=\theta_{j,k})}, and
-#'   distinctness is \eqn{d_{ij,k}=P(\theta_{i,k}\ne\theta_{j,k})}.
-#'   Equality and distinctness are symmetric, while the two strict-direction
-#'   errors sum to distinctness: \eqn{b_{ij,k}+b_{ji,k}=d_{ij,k}}.
-#'   Reverse strict errors sum to one only when equality probability is zero.
-#'   The withholding contribution is `tau * d`, not always `tau`.
+#' @param draws A `postrank_tie_draws` object from [as_postrank_tie_draws()] or
+#'   [read_postrank_tie_draws()], or a plain `"tie-aware-input-0.1"` list.
+#' @param method Aggregation algorithm for `"equal_weight_draws"` inputs:
+#'   `"blocks"` (the default, processing up to `block_size` ordered pairs at a
+#'   time to limit indicator-matrix memory) or `"reference"` (one ordered pair
+#'   at a time). Ignored for `"exact_finite_posterior"` inputs, which sum exact
+#'   state masses (`method = "exact_finite_law"`).
+#' @param block_size Positive integer maximum ordered-pair block size (`128L` by
+#'   default) for `method = "blocks"`; does not change numerical values.
+#' @return A `postrank_tie_pairwise` list containing `n x n x K` arrays `b`
+#'   (strict directional-error probability), `t` (equality probability), and `d`
+#'   (distinctness probability) with `NA` diagonals, together with `entity_ids`,
+#'   `criterion_ids`, `sample_sizes` (`S` for Monte Carlo draws, `NA` for exact
+#'   finite laws), `sampling_regimes`, `equality`, `source`, `exact` (rational
+#'   strings and double-projection differences for exact finite laws; `NULL` for
+#'   Monte Carlo draws), `coefficient_type`, and `pairwise_identity`.
+#' @details
+#' For distinct entities `i != j` on criterion `k`:
+#' \itemize{
+#'   \item `b[i, j, k] = Pr(theta_{i,k} < theta_{j,k})` is the strict
+#'     directional-error probability from placing `i` in a higher-priority grade
+#'     than `j`.
+#'   \item `t[i, j, k] = Pr(theta_{i,k} = theta_{j,k})` is the equality
+#'     probability.
+#'   \item `d[i, j, k] = Pr(theta_{i,k} != theta_{j,k})` is the distinctness
+#'     probability.
+#' }
+#' Off the diagonal, `t` and `d` are symmetric, opposite strict-direction errors
+#' sum to distinctness (`b[i, j, k] + b[j, i, k] = d[i, j, k]`), and
+#' `d[i, j, k] + t[i, j, k] = 1` (so `b[i, j, k] + b[j, i, k] = 1` only when
+#' `t[i, j, k] = 0`). Under equality-neutral loss, leaving `(i, j)` in the same
+#' grade costs `tau * d[i, j, k]` rather than `tau`.
 #'
-#'   For a complete finite law, aggregation uses every positive-mass state and
-#'   optional `gmp` arithmetic. For Monte Carlo input, equality frequencies are
-#'   empirical; repeated coincidences do not establish structural equality.
-#'   Per-criterion structural classes come from supplied declarations for Monte
-#'   Carlo input and from the full positive-mass support for finite laws.
-#'   The problem builder later intersects those classes across active criteria;
-#'   the coefficient calculation has no criterion-loss weights.
-#'
-#'   This function neither converts positive equality into ordinary weak-error
-#'   probabilities nor verifies the scientific equality model. Use
-#'   [postrank_pairwise()] when every distinct pair has zero equality probability
-#'   and the ordinary loss is intended. A finite target law need not have
-#'   continuous marginals to satisfy that zero-equality condition.
+#' Exact finite laws aggregate over all positive-mass states using optional
+#' package `gmp` and record both exact rational strings and their `double`
+#' projections in `b`, `t`, and `d`. Monte Carlo inputs compute empirical draw
+#' frequencies at full supplied precision without rounding or jitter; coincident
+#' Monte Carlo ties are never used to merge structural equality classes.
+#' Criterion equality partitions are intersected across positive-weight criteria
+#' later in [postrank_tie_problem()]. Use [postrank_pairwise()] instead when
+#' every distinct pair has zero equality probability.
 #' @seealso [validate_postrank_tie_pairwise()], [postrank_tie_problem()],
 #'   [postrank_tie_evaluate()], [read_postrank_tie_draws()]
-#' @examples
-#' if (requireNamespace("gmp", quietly = TRUE)) {
-#'   # Bundled complete two-state teaching law, not retained Monte Carlo draws.
-#'   path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
-#'   input <- read_postrank_tie_draws(path)
-#'   pw <- postrank_tie_pairwise(input)
-#'   # A and B are structurally equal on criterion S in this specified law.
-#'   c(strict_error = pw$b["A", "B", "S"], equality = pw$t["A", "B", "S"],
-#'     distinctness = pw$d["A", "B", "S"])
-#'   # The reverse strict errors for C and D sum to their distinctness.
-#'   pw$b["C", "D", "S"] + pw$b["D", "C", "S"]
-#' }
+#' @examplesIf requireNamespace("gmp", quietly = TRUE)
+#' path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
+#' input <- read_postrank_tie_draws(path)
+#' pw <- postrank_tie_pairwise(input)
+#' c(
+#'   strict_error = pw$b["A", "B", "S"],
+#'   equality = pw$t["A", "B", "S"],
+#'   distinctness = pw$d["A", "B", "S"]
+#' )
+#' pw$b["C", "D", "S"] + pw$b["D", "C", "S"]
 #' @concept tie-aware
 #' @export
 postrank_tie_pairwise <- function(draws, method = c("blocks", "reference"), block_size = 128L) {
@@ -156,35 +159,30 @@ postrank_tie_pairwise <- function(draws, method = c("blocks", "reference"), bloc
   validate_postrank_tie_pairwise(out); out
 }
 
-#' Check Equality-Neutral Comparison Coefficients
+#' Validate Tie-Aware Pairwise Probabilities
 #'
-#' The strict-error, equality and distinctness arrays from
-#' [postrank_tie_pairwise()] are checked against their retained input and
-#' equality records. Invalid or altered content is detected without modifying
-#' the object.
+#' `validate_postrank_tie_pairwise()` checks the strict directional-error (`b`),
+#' equality (`t`), and distinctness (`d`) probability arrays of a
+#' `postrank_tie_pairwise` object against its stored `postrank_tie_draws` source
+#' and content hash.
 #'
-#' @param x An object from [postrank_tie_pairwise()].
-#' @return Invisible `TRUE` on success. Invalid probabilities, axes, source
-#'   records, or changed content raise an error. The function does not repair
-#'   or replace an object.
-#' @details Checks include matching entity and criterion axes, unused `NA`
-#'   diagonals, probability ranges, symmetric equality and distinctness, and
-#'   the identities `b[i,j,k] + b[j,i,k] = d[i,j,k]` and
-#'   `d[i,j,k] + t[i,j,k] = 1` off the diagonal, to tolerance `1e-12`.
-#'   It also checks consistency with the stored input, sample-size meaning,
-#'   equality declarations, and content identity.
-#'
-#'   Validation does not independently recalculate every probability from the
-#'   source states, verify a scientific structural-equality claim, or provide
-#'   a numerical accuracy certificate. To change the source, construct a new
-#'   tie-aware input and run [postrank_tie_pairwise()] again.
+#' @param x A `postrank_tie_pairwise` object from [postrank_tie_pairwise()].
+#' @return `TRUE` invisibly when `x` passes all checks; invalid or modified
+#'   objects stop with a structured error.
+#' @details
+#' Verifies `x$source` via [validate_postrank_tie_draws()], matching entity and
+#' criterion axes, `NA` diagonals (rejecting `NaN`), `[0, 1]` off-diagonal
+#' bounds, symmetry of `t` and `d`, and the identities
+#' `b[i, j, k] + b[j, i, k] = d[i, j, k]` and `d[i, j, k] + t[i, j, k] = 1`
+#' off the diagonal within tolerance `1e-12`, along with `sample_sizes`,
+#' `sampling_regimes`, `method`, `exact`, and `pairwise_identity`. Validation
+#' does not recompute probabilities from raw states, verify scientific equality,
+#' or issue a numerical certificate.
 #' @seealso [postrank_tie_pairwise()], [as_postrank_tie_draws()]
-#' @examples
-#' if (requireNamespace("gmp", quietly = TRUE)) {
-#'   path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
-#'   pw <- postrank_tie_pairwise(read_postrank_tie_draws(path))
-#'   validate_postrank_tie_pairwise(pw)
-#' }
+#' @examplesIf requireNamespace("gmp", quietly = TRUE)
+#' path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
+#' pw <- postrank_tie_pairwise(read_postrank_tie_draws(path))
+#' validate_postrank_tie_pairwise(pw)
 #' @concept tie-aware
 #' @export
 validate_postrank_tie_pairwise <- function(x) {

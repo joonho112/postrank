@@ -1,4 +1,4 @@
-# Prepared result fixtures for view tests: the sealed cached assets read through the
+# Prepared result fixtures for view tests: stored example assets read through the
 # installed reader (no solve), plus solver-free mocked degenerate cases.
 pr_cached <- local({
   env <- NULL

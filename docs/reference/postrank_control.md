@@ -1,12 +1,13 @@
 # Choose Computation Limits and Solver Output
 
-The computation controls specify the time budget, stopping gaps and
-search strategy for
+`postrank_control()` sets computation limits, stopping gaps, search
+strategy and progress messages for
+[`postrank()`](https://joonho112.github.io/postrank/reference/postrank.md),
 [`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md)
-and related optimization functions. The loss and admissible grade
-reports are specified separately by
+and related optimization functions. Solving functions also accept these
+options as a named list. The loss and allowed grade reports are set
+separately by
 [`postrank_settings()`](https://joonho112.github.io/postrank/reference/postrank_settings.md).
-Solving functions also accept the control values as a named list.
 
 ## Usage
 
@@ -29,84 +30,102 @@ postrank_control(
 
 - time_limit:
 
-  Positive time budget in seconds.
+  Positive time budget in seconds (default `60`).
 
 - threads:
 
-  Positive integer number of solver threads.
+  Positive integer number of solver threads (default `1L`).
 
 - seed:
 
-  Nonnegative integer solver seed; `NULL` is not accepted.
+  Nonnegative integer solver seed (default `1304L`); `NULL` is not
+  accepted.
 
 - absolute_risk_gap:
 
-  Nonnegative absolute stopping gap in normalized risk units, converted
-  to the solver objective scale where needed.
+  Nonnegative absolute stopping gap in normalized loss (`risk`) units
+  (default `1e-8`), converted internally to the solver's objective scale
+  where needed.
 
 - relative_gap:
 
-  Nonnegative relative stopping gap for the solver objective. For
-  weighted problems this centered objective differs from risk; inspect
-  the returned absolute risk gap when comparing computations.
+  Nonnegative relative stopping gap on the solver's objective scale
+  (default `0`). For weighted problems the solver uses a centered
+  objective that differs from normalized loss, so compare runs using the
+  returned absolute gap.
 
 - strategy:
 
-  `"staged"` (default) or `"label_mip"`; see
+  Search method, `"staged"` (the default) or `"label_mip"`; see
   [`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md).
 
 - engine:
 
-  Named list of staged-search options, such as `mip` and `mip_max_n`;
-  see
+  Named list of options for `"staged"` search: `mip` (`"auto"`,
+  `"always"` or `"never"`), `mip_max_n`, `lp_time_share`,
+  `local_search_passes`, `local_search_starts`, `max_cut_rounds` and
+  `cuts_per_round`. Ignored when `strategy = "label_mip"`; see
   [`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md)
-  for their meanings and defaults.
+  for defaults and meanings.
 
 - verbose:
 
-  `NULL` (default) reads `getOption("postrank.verbose", FALSE)` when
-  solving, not when this control object is created. Explicit `TRUE` or
-  `FALSE` overrides that option. Controls progress messages from
+  Whether to print start and completion messages during
   [`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md)
   and the main solve in
-  [`postrank()`](https://joonho112.github.io/postrank/reference/postrank.md);
-  nested diagnostic and grid solves produce no progress messages. It
-  does not change numerical results.
+  [`postrank()`](https://joonho112.github.io/postrank/reference/postrank.md).
+  If `NULL` (the default), `getOption("postrank.verbose", FALSE)` is
+  read at solve time. `TRUE` or `FALSE` overrides that option. Nested
+  diagnostic and grid solves never print progress messages, and
+  `verbose` does not change numerical results.
 
 - output:
 
-  Logical; request the backend's own solver log, separately from the
-  package progress messages controlled by `verbose`.
+  Logical scalar (default `FALSE`); whether to print the solver's own
+  console log, independent of `verbose`.
 
 - tolerances:
 
-  Named list overriding the solution validator's `feasibility`,
-  `integrality` and `objective` tolerances; see
+  Named list overriding the solution checker's tolerances: `feasibility`
+  (default `1e-7`), `integrality` (default `1e-6`) and `objective`
+  (default `1e-7`); see
   [`validate_postrank_solution()`](https://joonho112.github.io/postrank/reference/validate_postrank_solution.md).
 
 ## Value
 
-A `postrank_control` named list containing the requested controls,
-validated tolerance defaults, `schema_version`, `provenance` and
-`warnings`.
+A `postrank_control` object, a named list containing:
+
+- `time_limit`, `threads`, `seed`, `absolute_risk_gap`, `relative_gap`,
+  `strategy`, `engine`, `verbose` and `output`: the validated controls;
+
+- `tolerances`: named list with `feasibility`, `integrality` and
+  `objective`;
+
+- `schema_version`: `"1"`, the version of this object's layout;
+
+- `provenance`: package and R versions, creation time, and function
+  name;
+
+- `warnings`: character vector.
 
 ## Details
 
-Defaults are a 60-second budget, one thread, seed 1304, absolute risk
-gap `1e-8`, relative gap zero and staged search. Construction,
-validation and refinement can add overhead, so the budget is not a
-strict total wall-clock limit. A small solver gap concerns the supplied
-numerical problem, not posterior uncertainty or model calibration.
+Defaults are a 60-second time budget, 1 thread, seed 1304, absolute loss
+gap `1e-8`, relative gap `0`, and `"staged"` search. Problem
+construction, solution checks and refinement stages can add overhead, so
+`time_limit` is not a strict wall-clock cap on the whole R call. A small
+solver gap describes the optimization for the supplied probabilities,
+not posterior uncertainty or model adequacy.
 
-These controls do not choose display detail or alter the decision
-weights. `engine` accepts `mip`, `mip_max_n`, `lp_time_share`,
-`local_search_passes`, `local_search_starts`, `max_cut_rounds` and
-`cuts_per_round`. Unknown control names are rejected.
+Unknown names in a control list, `engine` or `tolerances` stop the call
+with an error (`invalid_control` or `invalid_tolerances`). Controls do
+not change the decision loss or criterion weights.
 
 ## See also
 
 [`postrank_settings()`](https://joonho112.github.io/postrank/reference/postrank_settings.md),
-[`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md)
+[`postrank_solve()`](https://joonho112.github.io/postrank/reference/postrank_solve.md),
+[postrank_options](https://joonho112.github.io/postrank/reference/postrank_options.md)
 
 ## Examples
 
@@ -114,8 +133,9 @@ weights. `engine` accepts `mip`, `mip_max_n`, `lp_time_share`,
 ctrl <- postrank_control(time_limit = 10, absolute_risk_gap = 1e-6)
 ctrl$time_limit
 #> [1] 10
-ctrl$verbose  # NULL inherits the option at solve time
+ctrl$verbose # NULL reads postrank.verbose when solving
 #> NULL
+
 quiet <- postrank_control(verbose = FALSE)
 quiet$verbose
 #> [1] FALSE

@@ -6,32 +6,37 @@
 postrank_backend_available(backend = c("gurobi", "highs"))
 }
 \arguments{
-\item{backend}{\code{"gurobi"} (default) or \code{"highs"}.}
+\item{backend}{Solver package to inspect, \code{"gurobi"} (the default) or
+\code{"highs"}.}
 }
 \value{
-A \code{postrank_backend_availability} list with \code{installed},
-\code{package_path}, \code{wrapper_version}, \code{available_for_attempt}, \code{runtime_check}
-and \code{license_check}. \code{available_for_attempt = TRUE} means no known obstacle
-was found by this inspection, not that a solve or license check succeeded.
+A \code{postrank_backend_availability} list containing \code{backend},
+\code{installed}, \code{package_path}, \code{wrapper_version}, \code{available_for_attempt},
+\code{runtime_check}, \code{license_check} and \code{interpretation}.
 }
 \description{
-The installed Gurobi or HiGHS package is inspected through its package and
-linkage information. The inspection does not load the solver namespace,
-execute an optimization or check a license.
+\code{postrank_backend_available()} checks whether the \code{gurobi} or \code{highs} R
+package is installed and passes static runtime-linkage checks, without
+loading the solver namespace, running an optimization or querying a license.
 }
 \details{
-The inspection can identify a known macOS mismatch between Gurobi's
-linked R runtime and the running R. Other runtime failures may only become
-apparent when solving. It does not change library paths or select another
-backend. Choose HiGHS explicitly in \code{\link[=postrank]{postrank()}} or \code{\link[=postrank_solve]{postrank_solve()}};
-neither function silently replaces an unavailable backend.
+\code{available_for_attempt = TRUE} means the package directory was found and, on
+macOS for Gurobi, no mismatch between Gurobi's linked R library and the
+running R session was detected. Because no namespace is loaded and no
+license or test solve is run, \code{available_for_attempt = TRUE} does not
+confirm that a solve will succeed or that a Gurobi license is active.
+
+Calling this function does not change library paths or select a solver. To
+use HiGHS in \code{\link[=postrank]{postrank()}} or \code{\link[=postrank_solve]{postrank_solve()}}, pass \code{backend = "highs"} or
+set \code{options(postrank.backend = "highs")}; \code{postrank} never switches solvers
+automatically.
 }
 \examples{
-availability <- postrank_backend_available("highs")
-availability$available_for_attempt
-availability$runtime_check$executed
+avail <- postrank_backend_available("highs")
+avail$available_for_attempt
+avail$runtime_check$executed
 }
 \seealso{
-\code{\link[=postrank_solve]{postrank_solve()}}, \code{\link[=postrank_control]{postrank_control()}}
+\code{\link[=postrank]{postrank()}}, \code{\link[=postrank_solve]{postrank_solve()}}, \link{postrank_options}
 }
 \concept{decision}

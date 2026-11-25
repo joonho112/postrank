@@ -1,5 +1,5 @@
-# T-obj-01 / T-inv-03: sealed fixtures keep their legacy identities; round trips verify;
-# core mutations fail or produce a new identity.
+# Content-hash stability across JSON round trips and sensitivity to value changes.
+#
 gi <- jsonlite::read_json(test_path("fixtures", "golden-identities.json"))
 
 test_that("toy, example and coefficient fixtures reproduce the golden identities", {
@@ -17,7 +17,7 @@ test_that("toy, example and coefficient fixtures reproduce the golden identities
   expect_identical(pr_example_gaussian$coefficient_identity, gi$pr_example_gaussian$coefficient_identity)
   expect_identical(postrank_problem(pr_example_gaussian, c(poverty = .5, frl = .25, snap = .25), .25, 4L)$problem_identity,
     gi$pr_example_gaussian$problem_identity)
-  # The 9002 shipped example keeps its 0.0.1.9002 identities (T-inv-03).
+  # Shipped synthetic-iid.json example retains its recorded content hashes.
   expect_identical(gi$postrank_toy$input_identity, "9e7e1006f4d53c1bf75b4bbeb89fdf72c24afc2b24ecfb6832c86acc66692331")
   expect_identical(gi$postrank_toy$problem_identity, "45c5f990202d9df3b60143a186177338ff1c47bc428db7e07c10e3252af37aba")
 })
@@ -38,7 +38,7 @@ test_that("JSON and RDS round trips verify; core mutations are rejected", {
   rds <- withr::local_tempfile(fileext = ".rds"); saveRDS(pr_example_gaussian, rds)
   expect_true(validate_postrank_coefficients(readRDS(rds)))
   bad <- postrank_toy; bad$joint_draws$tensor$values[1, 1, 1] <- bad$joint_draws$tensor$values[1, 1, 1] + 1
-  # Core content change: either rejected or re-sealed under a newly computed identity.
+  # Modifying core values either fails validation or produces a distinct content hash.
   rebuilt <- tryCatch(as_postrank_draws(bad), error = function(e) NULL)
   if (!is.null(rebuilt)) expect_false(identical(rebuilt$validation$input_identity, postrank_toy$validation$input_identity))
   expect_false(identical(.pr_identity(.pr_payload(bad)), .pr_identity(.pr_payload(postrank_toy))))

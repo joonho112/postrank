@@ -1,4 +1,4 @@
-# T-obj-05: report-card counts, independent summaries and the skewed finite-law
+# Entity report-card pair counts, marginal summaries, and skewed finite-law
 # counterexample (mean outside the central interval); missing sources are refused.
 rc_mock <- function(grade) function(problem, backend, control, strategy) {
   primal <- .pr_engine_primal(problem, grade[problem$pairwise$entity_ids])

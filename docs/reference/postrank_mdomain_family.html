@@ -1,7 +1,13 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Build a Bounded Multidomain Candidate Family — postrank_mdomain_family • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Build a Bounded Multidomain Candidate Family — postrank_mdomain_family"><meta name="description" content="Construct explicit domain banks and their Cartesian product description.
-A tied grade withholds direction. All-withheld columns are always included."><meta property="og:description" content="Construct explicit domain banks and their Cartesian product description.
-A tied grade withholds direction. All-withheld columns are always included."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Build a Candidate Family of Multidomain Grade Profiles — postrank_mdomain_family • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Build a Candidate Family of Multidomain Grade Profiles — postrank_mdomain_family"><meta name="description" content="postrank_mdomain_family() builds a bank of candidate grade vectors for each
+domain and defines their Cartesian product as the candidate set for
+postrank_mdomain_solve(). Every domain bank automatically includes the
+single-grade all-withheld column (1 for all units), and equal grades within
+a domain leave a pair unordered. Requires optional package gmp."><meta property="og:description" content="postrank_mdomain_family() builds a bank of candidate grade vectors for each
+domain and defines their Cartesian product as the candidate set for
+postrank_mdomain_solve(). Every domain bank automatically includes the
+single-grade all-withheld column (1 for all units), and equal grades within
+a domain leave a pair unordered. Requires optional package gmp."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -9,7 +15,7 @@ A tied grade withholds direction. All-withheld columns are always included."><me
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,7 +23,7 @@ A tied grade withholds direction. All-withheld columns are always included."><me
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -31,14 +37,17 @@ A tied grade withholds direction. All-withheld columns are always included."><me
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Build a Bounded Multidomain Candidate Family</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Build a Candidate Family of Multidomain Grade Profiles</h1>
 
       <div class="d-none name"><code>postrank_mdomain_family.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>Construct explicit domain banks and their Cartesian product description.
-A tied grade withholds direction. All-withheld columns are always included.</p>
+    <p><code>postrank_mdomain_family()</code> builds a bank of candidate grade vectors for each
+domain and defines their Cartesian product as the candidate set for
+<code><a href="postrank_mdomain_solve.html">postrank_mdomain_solve()</a></code>. Every domain bank automatically includes the
+single-grade all-withheld column (<code>1</code> for all units), and equal grades within
+a domain leave a pair unordered. Requires optional package <code>gmp</code>.</p>
     </div>
 
     <div class="section level2">
@@ -62,49 +71,80 @@ A tied grade withholds direction. All-withheld columns are always included.</p>
 
 
 <dt id="arg-columns">columns<a class="anchor" aria-label="anchor" href="#arg-columns"></a></dt>
-<dd><p>A list named in input domain order, each entry a list of
-numeric grade vectors named in exact input unit order. Labels are
-canonicalized and duplicate columns removed, preserving ties and direction.</p></dd>
+<dd><p>Optional named list in exact domain order, where each domain
+entry is a list of numeric grade vectors named in exact unit order. Grade
+labels are canonicalized to <code>1..G</code> and duplicate columns are removed; a
+supplied column that splits a structural equality class or exceeds
+<code>max_grades</code> stops with an error.</p></dd>
 
 
 <dt id="arg-order">order<a class="anchor" aria-label="anchor" href="#arg-order"></a></dt>
-<dd><p>A list named in input domain order of explicit unit-ID
-permutations, or the explicit choice <code>"posterior_mean"</code>. The latter orders
-the current supplied states by decreasing weighted mean and uses unit IDs
-to break ties; it is recorded as sample-adaptive. <code>NULL</code> generates no
-ordered partitions beyond all-withheld.</p></dd>
+<dd><p><code>"posterior_mean"</code> (ranks units on each domain by decreasing
+exact state-weighted mean, breaking ties by UTF-8 unit ID and recording
+<code>sample_adaptive = TRUE</code>), a domain-ordered named list of unit-ID
+permutations, or <code>NULL</code> (the default, which adds no ordered-partition
+columns beyond all-withheld and <code>columns</code>).</p></dd>
 
 
 <dt id="arg-cuts">cuts<a class="anchor" aria-label="anchor" href="#arg-cuts"></a></dt>
-<dd><p>A list named in input domain order of permitted cut positions
-between consecutive units. Cuts require an order; no cuts are guessed.</p></dd>
+<dd><p>Optional domain-ordered named list of distinct integer cut
+positions in <code>1..(n - 1)</code> between consecutive units along <code>order</code>. Requires
+non-<code>NULL</code> <code>order</code>; no cut positions are guessed when <code>cuts</code> is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-max-grades">max_grades<a class="anchor" aria-label="anchor" href="#arg-max-grades"></a></dt>
-<dd><p>A positive integer or domain-ordered vector of grade caps.
-<code>NULL</code> permits up to the input unit count.</p></dd>
+<dd><p>Positive integer scalar or domain-ordered integer vector
+capping the number of occupied grades per domain (<code>NULL</code> allows up to <code>n</code>
+grades).</p></dd>
 
 
 <dt id="arg-max-actions">max_actions<a class="anchor" aria-label="anchor" href="#arg-max-actions"></a></dt>
-<dd><p>Maximum exact product size, checked before banks are
-materialized. Each domain also has a hard cap of 1,000 raw supplied columns
-and 1,000 deduplicated bank entries. Exceeding a cap errors without truncation.</p></dd>
+<dd><p>Positive integer cap (<code>100000L</code> by default) on the exact
+Cartesian product size across domains, checked in <code>gmp</code> integer arithmetic
+before any bank is materialized. Each domain also enforces a hard limit of
+<code>1,000</code> raw supplied <code>columns</code> and <code>1,000</code> deduplicated bank entries;
+exceeding any cap stops with an error without truncating the family.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>postrank_mdomain_family</code> wrapping an immutable native candidate
-family, source hashes, construction provenance, and exact size receipts.</p>
+    <p>A <code>postrank_mdomain_family</code> list wrapping the domain banks,
+<code>input_id</code>, <code>source_input_hash</code>, <code>family_hash</code>, <code>provenance</code>, and exact
+candidate-count records in <code>receipts</code> (including <code>receipts$preflight</code> and
+<code>product_size_exact</code>).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Structural equality guards also apply to zero-weight domains.
-Generated cuts that split an equality class are excluded; supplied columns
-that split a class are rejected. Construction and evaluation refer to the
-same input. External-column adaptation is not scientifically verified,
-and construction receipts do not provide numerical assurance.</p>
+    <p>Structural equality classes (<code>input$equality_classes</code>) apply on every domain,
+including zero-weight domains: cut positions that would split an equality
+class are skipped automatically (<code>blocked_cuts</code>), whereas externally supplied
+<code>columns</code> that split a class are rejected. When <code>order = "posterior_mean"</code>,
+the candidate family depends on the same supplied states later used by
+<code><a href="postrank_mdomain_solve.html">postrank_mdomain_solve()</a></code>, which is recorded in <code>provenance</code> without
+claiming out-of-sample validation or numerical guarantees.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="postrank_mdomain_input.html">postrank_mdomain_input()</a></code>, <code><a href="postrank_mdomain_solve.html">postrank_mdomain_solve()</a></code>,
+<code><a href="postrank_mdomain_decision.html">postrank_mdomain_decision()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">inp</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_mdomain_input.html">postrank_mdomain_input</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">postrank_toy</span>,</span></span>
+<span class="r-in"><span>  provenance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>input_id <span class="op">=</span> <span class="st">"toy"</span>, law_id <span class="op">=</span> <span class="st">"toy-normal"</span>, proper_law <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fam</span> <span class="op">&lt;-</span> <span class="fu">postrank_mdomain_family</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">inp</span>,</span></span>
+<span class="r-in"><span>  order <span class="op">=</span> <span class="st">"posterior_mean"</span>,</span></span>
+<span class="r-in"><span>  cuts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, need_B <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  max_grades <span class="op">=</span> <span class="fl">3L</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fam</span><span class="op">$</span><span class="va">receipts</span><span class="op">$</span><span class="va">product_size_exact</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "16"</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

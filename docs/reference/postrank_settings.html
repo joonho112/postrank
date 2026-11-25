@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Choose the Loss and Allowed Grade Reports — postrank_settings • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Choose the Loss and Allowed Grade Reports — postrank_settings"><meta name="description" content="The settings specify criterion weights, the withholding cost, the maximum
-number of grades and optional error budgets or an exact grade count for
-postrank() or postrank_problem(). They define the decision problem
-without fitting a posterior or selecting grades. Computation limits are
-specified separately by postrank_control()."><meta property="og:description" content="The settings specify criterion weights, the withholding cost, the maximum
-number of grades and optional error budgets or an exact grade count for
-postrank() or postrank_problem(). They define the decision problem
-without fitting a posterior or selecting grades. Computation limits are
-specified separately by postrank_control()."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Choose the Loss and Allowed Grade Reports — postrank_settings • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Choose the Loss and Allowed Grade Reports — postrank_settings"><meta name="description" content="postrank_settings() defines the loss function and allowed grade reports
+for postrank() and postrank_problem(): criterion weights, the cost tau
+of leaving a pair unordered, the maximum number of grades G_max, and
+optional per-criterion error budgets q or an exact grade count exact_G.
+Computation limits are set separately by postrank_control()."><meta property="og:description" content="postrank_settings() defines the loss function and allowed grade reports
+for postrank() and postrank_problem(): criterion weights, the cost tau
+of leaving a pair unordered, the maximum number of grades G_max, and
+optional per-criterion error budgets q or an exact grade count exact_G.
+Computation limits are set separately by postrank_control()."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -15,7 +15,7 @@ specified separately by postrank_control()."><meta property="og:image" content="
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,7 +23,7 @@ specified separately by postrank_control()."><meta property="og:image" content="
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -43,11 +43,11 @@ specified separately by postrank_control()."><meta property="og:image" content="
     </div>
 
     <div class="ref-description section level2">
-    <p>The settings specify criterion weights, the withholding cost, the maximum
-number of grades and optional error budgets or an exact grade count for
-<code><a href="postrank.html">postrank()</a></code> or <code><a href="postrank_problem.html">postrank_problem()</a></code>. They define the decision problem
-without fitting a posterior or selecting grades. Computation limits are
-specified separately by <code><a href="postrank_control.html">postrank_control()</a></code>.</p>
+    <p><code>postrank_settings()</code> defines the loss function and allowed grade reports
+for <code><a href="postrank.html">postrank()</a></code> and <code><a href="postrank_problem.html">postrank_problem()</a></code>: criterion weights, the cost <code>tau</code>
+of leaving a pair unordered, the maximum number of grades <code>G_max</code>, and
+optional per-criterion error budgets <code>q</code> or an exact grade count <code>exact_G</code>.
+Computation limits are set separately by <code><a href="postrank_control.html">postrank_control()</a></code>.</p>
     </div>
 
     <div class="section level2">
@@ -70,85 +70,106 @@ specified separately by <code><a href="postrank_control.html">postrank_control()
 
 
 <dl><dt id="arg-weights">weights<a class="anchor" aria-label="anchor" href="#arg-weights"></a></dt>
-<dd><p>Nonnegative finite criterion weights summing to one within
-<code>1e-12</code>; no automatic normalization is performed. Names identify criteria.
-Unnamed weights are matched in criterion order when used with an input.
-This constructor always requires weights, including weight 1 for one criterion.</p></dd>
+<dd><p>Criterion weights: nonnegative finite numbers summing to one
+within <code>1e-12</code>. They are never rescaled automatically. Always required by
+<code>postrank_settings()</code>, including weight <code>1</code> for a single criterion. Names
+identify criteria; unnamed weights are matched in criterion order when
+combined with an input.</p></dd>
 
 
 <dt id="arg-tau">tau<a class="anchor" aria-label="anchor" href="#arg-tau"></a></dt>
-<dd><p>Cost of a withheld comparison, <code>0 &lt; tau &lt;= 0.5</code>.</p></dd>
+<dd><p>Cost of leaving a pair unordered, relative to a cost of 1 for a
+wrong-order pair. Must satisfy <code>0 &lt; tau &lt;= 0.5</code>.</p></dd>
 
 
 <dt id="arg-g-max">G_max<a class="anchor" aria-label="anchor" href="#arg-g-max"></a></dt>
-<dd><p>Positive integer upper bound on occupied grades. Fewer grades
-are allowed unless <code>exact_G</code> is supplied.</p></dd>
+<dd><p>Largest number of occupied grades, a positive integer. Fewer
+grades are allowed unless <code>exact_G</code> is given.</p></dd>
 
 
 <dt id="arg-q">q<a class="anchor" aria-label="anchor" href="#arg-q"></a></dt>
-<dd><p><code>NULL</code> or a uniquely criterion-named vector of budgets in <code>[0, 1]</code>.
-Each included criterion requires <code>E_k &lt;= q_k * N</code>, including criteria with
-zero objective weight. At N=0 the count constraint holds, while <code>E_k/N</code>
-is undefined. These are expected-error budgets, not simultaneous guarantees.</p></dd>
+<dd><p><code>NULL</code> (the default) or a vector of per-criterion expected-error
+budgets in <code>[0, 1]</code>, uniquely named by criterion. Each named criterion <code>k</code>
+requires <code>E_k &lt;= q_k * N</code>, where <code>E_k</code> is the expected number of
+wrong-order ordered pairs on criterion <code>k</code> and <code>N</code> is the number of
+ordered pairs (including criteria with weight 0 in <code>weights</code>). When
+<code>N = 0</code>, the count constraint <code>0 &lt;= 0</code> holds while <code>E_k / N</code> is <code>NA</code>.
+These constrain posterior expected error counts, not simultaneous error
+rates.</p></dd>
 
 
 <dt id="arg-exact-g">exact_G<a class="anchor" aria-label="anchor" href="#arg-exact-g"></a></dt>
-<dd><p><code>NULL</code> or the required number of nonempty grades, at most
-<code>G_max</code>. This requirement is never relaxed to fit the input.</p></dd>
+<dd><p><code>NULL</code> (the default) or a positive integer giving the exact
+number of occupied grades required, at most <code>G_max</code>. Unlike <code>G_max</code>, this
+value is never reduced automatically to fit the number of entities.</p></dd>
 
 
 <dt id="arg-objective">objective<a class="anchor" aria-label="anchor" href="#arg-objective"></a></dt>
-<dd><p><code>"weighted"</code> (default) minimizes the weighted average of
-criterion risks; <code>"minimax"</code> minimizes the largest selected criterion risk.</p></dd>
+<dd><p><code>"weighted"</code> (the default) minimizes the weighted sum of
+criterion losses; <code>"minimax"</code> minimizes the largest loss among the
+selected criteria.</p></dd>
 
 
 <dt id="arg-minimax-criteria">minimax_criteria<a class="anchor" aria-label="anchor" href="#arg-minimax-criteria"></a></dt>
-<dd><p><code>NULL</code> (all criteria) or criterion IDs included in
-the minimax objective. Only allowed with <code>objective = "minimax"</code>.</p></dd>
+<dd><p><code>NULL</code> (the default, all criteria) or a character
+vector of criterion IDs included in the minimax objective. Allowed only
+when <code>objective = "minimax"</code>.</p></dd>
 
 
 <dt id="arg-minimax-refine">minimax_refine<a class="anchor" aria-label="anchor" href="#arg-minimax-refine"></a></dt>
-<dd><p><code>"weighted"</code> (default) refines a minimax solution using
-the original weighted risk; <code>"none"</code> keeps the first-stage action.
-See <code><a href="postrank_solve.html">postrank_solve()</a></code> for additional zero-weight refinement and its
-numerical qualifications. Ignored for weighted problems.</p></dd>
+<dd><p>How a minimax solution is refined when
+<code>objective = "minimax"</code>: <code>"weighted"</code> (the default) minimizes the weighted
+loss while keeping the first-stage minimax value, and <code>"none"</code> keeps the
+first-stage grading. Ignored when <code>objective = "weighted"</code>. See
+<code><a href="postrank_solve.html">postrank_solve()</a></code> for additional refinement on zero-weight criteria.</p></dd>
 
 
 <dt id="arg-label">label<a class="anchor" aria-label="anchor" href="#arg-label"></a></dt>
-<dd><p>Optional short display label for grids and figures.</p></dd>
+<dd><p>Optional non-empty string used to label this setting in grids
+and figures. Defaults to <code>"tau=&lt;tau&gt;, G_max=&lt;G_max&gt;"</code>. Does not change the
+decision problem.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>postrank_settings</code> named list with the policy arguments,
-<code>label</code>, <code>weight_sum_tolerance</code>, <code>schema_version</code>, <code>provenance</code> and <code>warnings</code>.</p>
-    </div>
+    <p>A <code>postrank_settings</code> object, a named list containing:</p><ul><li><p><code>weights</code>, <code>tau</code>, <code>G_max</code>, <code>q</code>, <code>exact_G</code>, <code>objective</code>,
+<code>minimax_criteria</code>, <code>minimax_refine</code> and <code>label</code>: the validated
+settings;</p></li>
+<li><p><code>weight_sum_tolerance</code>: <code>1e-12</code>;</p></li>
+<li><p><code>schema_version</code>: <code>"1"</code>, the version of this object's layout;</p></li>
+<li><p><code>provenance</code>: package and R versions, creation time, and function name;</p></li>
+<li><p><code>warnings</code>: character vector of notes added when the settings are bound
+to an input.</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>When settings are used with an input, named weights must cover its
-criteria and <code>q</code> must name known criteria. <code>G_max</code> is capped at the number
-of entities, with the requested and resolved caps recorded in the bound
-copy's provenance. <code>exact_G</code> cannot exceed the entity count.</p>
-<p>Ordinary draw and exact finite-law pairwise inputs support validated
-combinations of weighted/minimax objectives, error budgets and exact
-grade counts. Problems built by <code><a href="postrank_problem.html">postrank_problem()</a></code> or <code><a href="postrank.html">postrank()</a></code> from
-Gaussian/mixture coefficients or supplied probabilities currently support
-weighted at-most-G settings only. Constructing settings
-alone does not establish that a particular input supports them.
-Display labels and provenance do not alter the decision problem.</p>
+    <p>When settings are combined with an input in <code><a href="postrank.html">postrank()</a></code> or
+<code><a href="postrank_problem.html">postrank_problem()</a></code>, named weights must cover all criteria, <code>q</code> must name
+known criteria, and <code>exact_G</code> cannot exceed the number of entities. If
+<code>G_max</code> exceeds the number of entities, the bound copy reduces <code>G_max</code> to
+that number, records <code>requested_G_max</code> and <code>resolved_G_max</code> in
+<code>provenance</code>, and appends a note to <code>warnings</code>.</p>
+<p>Posterior draws and exact finite-law inputs support weighted and minimax
+objectives, <code>q</code> and <code>exact_G</code>. Normal or mixture posteriors
+(<code><a href="postrank_gaussian_coefficients.html">postrank_gaussian_coefficients()</a></code>, <code><a href="postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code>)
+and supplied probabilities (<code><a href="postrank_probabilities.html">postrank_probabilities()</a></code>) support only the
+weighted objective without <code>q</code>, <code>exact_G</code> or <code>minimax_criteria</code>. Creating
+a <code>postrank_settings</code> object checks the arguments on their own; whether an
+input supports them is checked when building or solving the problem.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="postrank_control.html">postrank_control()</a></code>, <code><a href="postrank_problem.html">postrank_problem()</a></code>, <code><a href="postrank.html">postrank()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="postrank.html">postrank()</a></code>, <code><a href="postrank_problem.html">postrank_problem()</a></code>, <code><a href="postrank_control.html">postrank_control()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu">postrank_settings</span><span class="op">(</span>weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.2</span>, G_max <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu">postrank_settings</span><span class="op">(</span>weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>score_A <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">0.2</span>, G_max <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">one</span><span class="op">$</span><span class="va">tau</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2</span>
-<span class="r-in"><span><span class="va">protected</span> <span class="op">&lt;-</span> <span class="fu">postrank_settings</span><span class="op">(</span>weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">.6</span>, need_B <span class="op">=</span> <span class="fl">.4</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  tau <span class="op">=</span> <span class="fl">.25</span>, G_max <span class="op">=</span> <span class="fl">3L</span>, q <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_B <span class="op">=</span> <span class="fl">.3</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">protected</span> <span class="op">&lt;-</span> <span class="fu">postrank_settings</span><span class="op">(</span>weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">0.6</span>, need_B <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  tau <span class="op">=</span> <span class="fl">0.25</span>, G_max <span class="op">=</span> <span class="fl">3L</span>, q <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_B <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">protected</span><span class="op">$</span><span class="va">q</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> need_B </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    0.3 </span>

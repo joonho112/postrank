@@ -1,5 +1,5 @@
-# T-doc-08: the installed cache reader validates every manifest field, restores stubbed
-# inputs losslessly, rejects forgeries with the field named, and never writes.
+# Stored-example reader validation: checks manifest fields, restores compact
+# inputs losslessly, rejects modified entries with the field named, and never writes.
 cf_reader <- function(root = NULL) {
   env <- new.env()
   sys.source(system.file("scripts", "_vignette-setup.R", package = "postrank", mustWork = TRUE), env)
@@ -44,7 +44,7 @@ test_that("forged manifests, digests, timestamps and identities are rejected wit
     cf_edit(file.path(root, "extdata", "manifests", "cache-manifest.json"), forge[[field]])
     expect_error(cf_reader(root)$load_or_compute("toy_analysis"), field, info = field)
   }
-  # A forged stub identity, with a re-sealed digest so only the identity check can catch it.
+  # Forged input identity with a matching file digest so only the identity check catches it.
   root <- cf_copy()
   f <- file.path(root, "extdata", "cached", "toy_analysis.rds")
   env <- readRDS(f); env$value$input$input_identity <- strrep("a", 64); saveRDS(env, f)

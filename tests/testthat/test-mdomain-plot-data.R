@@ -164,7 +164,7 @@ test_that("evaluation hashes and original ID aliases reject stale or malformed r
     expect_s3_class(error,"postrank_mdomain_error")
     expect_identical(error$code,"mdomain_result_mutated",info=name)
   }
-  # Receipt matching does not substitute for verifying the source/grade aliases.
+  # Hash matching does not substitute for verifying stored source and grade aliases.
   for (change in list(
       function(x) {x$input$unit_ids <- rev(x$input$unit_ids);x},
       function(x) {x$input$original_spec$domain_ids <- rev(x$input$domain_ids);x},

@@ -1,4 +1,4 @@
-# 014 repair (VA-1): R CMD check exercises the full model -> HiGHS -> normalizer
+# Live HiGHS solver integration checks against brute-force enumeration
 # -> validator chain and compares each released grade with an independent
 # brute-force oracle (helper-oracle-enumeration.R).
 # pr_random_payload() is defined in helper-oracle-enumeration.R.

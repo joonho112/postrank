@@ -1,10 +1,11 @@
 # Plot Posterior Directional-Error Probabilities
 
-For each possible reporting direction, the figure displays
-`Pr(row target <= column target)`, the expected error from placing the
-row entity above the column entity. A separate square matrix is shown
-for each criterion. Self-comparisons are excluded, with `NA` diagonal
-entries displayed in gray.
+`postrank_plot_pairwise()` draws a square matrix of posterior
+directional-error probabilities `Pr(row target <= column target)` for
+each criterion. Each off-diagonal cell gives the posterior expected
+wrong-direction error from placing the row entity in a higher-priority
+grade than the column entity; diagonal self-comparisons are `NA` and
+drawn in gray.
 
 ## Usage
 
@@ -24,75 +25,91 @@ postrank_plot_pairwise(
 
 - x:
 
-  A `postrank_analysis`, `postrank_fit`, prepared `postrank_pairwise`,
-  `postrank_probabilities` or `postrank_coefficients`. Raw posterior
-  draws and tie-aware equality-neutral inputs are unsupported.
+  A `postrank_analysis`, `postrank_fit`, `postrank_pairwise` (including
+  objects from
+  [`postrank_probabilities()`](https://joonho112.github.io/postrank/reference/postrank_probabilities.md)),
+  or `postrank_coefficients`. Raw `postrank_draws` (convert with
+  [`postrank_pairwise()`](https://joonho112.github.io/postrank/reference/postrank_pairwise.md)
+  first) and tie-mode inputs (`postrank_tie_*`) are not accepted.
 
 - criteria:
 
-  Optional nonempty subset and display order of criterion IDs.
+  Optional character vector of distinct criterion IDs from `x`, giving
+  the subset and panel order. `NULL` (the default) shows all criteria in
+  stored order.
 
 - entities:
 
-  Optional distinct entity IDs; at least two are required. Their display
-  order follows the stored input or result, not this vector.
+  Optional character vector of at least two distinct entity IDs from `x`
+  to display. Axis order follows the stored result or input order, not
+  `entities`.
 
 - max_entities:
 
-  Automatic display limit, an integer at least two; default 20. `NULL`
-  shows all entities. Explicit `entities` override the limit.
+  Integer cap of at least `2` on automatically displayed entities (`20L`
+  by default), or `NULL` to show all entities. Ignored when `entities`
+  is supplied.
 
 - entity_labels, criterion_labels:
 
-  Optional partial named maps from original IDs to display labels. Final
-  labels must be distinct. The data retain their original IDs.
+  Optional named character vectors mapping raw IDs to display labels.
+  Unmapped criterion IDs replace underscores with spaces unless that
+  creates duplicate labels. Final labels must be distinct; `$data` keeps
+  raw IDs.
 
 - ncol:
 
-  Positive integer number of facet columns; default at most two.
+  Positive integer number of facet columns; `NULL` (the default) uses
+  `min(2, length(criteria_shown))`.
 
 ## Value
 
-A `ggplot` object with original entity and criterion IDs and
-`error_probability` in its plotted table. No stored input is changed.
+A `ggplot` object whose `$data` table contains `entity_i`, `entity_j`,
+`criterion`, and `error_probability` for the displayed entities and
+criteria.
 
 ## Details
 
-A cell is not a selected grade, a probability of withholding or a claim
-of equality. Larger target values mean higher priority, so a small cell
-value supports placing its row entity above its column entity. In this
-ordinary zero-equality domain, opposite off-diagonal directions sum to
-one.
+Larger target values mean higher priority, so a small value in row `i`,
+column `j` supports placing entity `i` above entity `j`. Because
+ordinary `postrank` inputs have zero posterior probability of exact
+ties, opposite off-diagonal cells `(i, j)` and `(j, i)` sum to `1`.
+Cells show posterior comparison probabilities rather than chosen grades;
+see
+[`postrank_plot_relations()`](https://joonho112.github.io/postrank/reference/postrank_plot_relations.md)
+for the pairs ordered or withheld by a grading.
 
-The figure reads prepared probabilities; it does not aggregate raw
-draws, fit a model, evaluate an action or solve. A fit without a
-validated incumbent can still show its prepared input. Analyses with a
-card use its stored entity order; other validated actions use grade then
-ID; bare inputs and fits without an action retain input order. No
-posterior scores are computed for ordering.
+The plot reads prepared probabilities without aggregating draws,
+solving, or evaluating a grading, so a `postrank_fit` without a checked
+grading can still display its input probabilities. Entity order uses the
+report card's stored order when `x` is an analysis with a prepared card,
+grade-then-ID order for other checked fits or analyses, and input entity
+order otherwise.
 
-Automatic selection spreads entities across stored grades, or across
-input order when no action is available. It is a display selection, not
-a representative sample. Use a larger figure for a large explicit
-selection.
-[`postrank_plot_data()`](https://joonho112.github.io/postrank/reference/postrank_plot_data.md)
-with `which = "pairwise"` returns the complete unfiltered table,
-including every diagonal sentinel.
+When `entities` is `NULL` and `x` has more than `max_entities` entities,
+deterministic display selection spreads rows across stored grades (when
+available) or across input order for visual layout only. Use
+`postrank_plot_data(x, "pairwise")` for the complete `n * n * K` table.
 
 ## See also
 
 [`postrank_plot_data()`](https://joonho112.github.io/postrank/reference/postrank_plot_data.md),
 [`postrank_plot_relations()`](https://joonho112.github.io/postrank/reference/postrank_plot_relations.md),
+[`postrank_pairwise()`](https://joonho112.github.io/postrank/reference/postrank_pairwise.md),
 [`postrank_probabilities()`](https://joonho112.github.io/postrank/reference/postrank_probabilities.md)
 
 ## Examples
 
 ``` r
-# Prepared K = 1 and K = 2 Gaussian probabilities for six fictional sites.
-# No analysis or solver is needed to inspect these inputs.
-postrank_plot_pairwise(pr_tutorial$one,
-  criterion_labels = c(score_A = "Score A"))
+postrank_plot_pairwise(
+  pr_tutorial$one,
+  criterion_labels = c(score_A = "Score A")
+)
 
-postrank_plot_pairwise(pr_tutorial$two, entities = c("A", "C", "F"), ncol = 1,
-  criterion_labels = c(score_A = "Score A", score_B = "Score B"))
+postrank_plot_pairwise(
+  pr_tutorial$two,
+  entities = c("A", "C", "F"),
+  ncol = 1,
+  criterion_labels = c(score_A = "Score A", score_B = "Score B")
+)
 ```

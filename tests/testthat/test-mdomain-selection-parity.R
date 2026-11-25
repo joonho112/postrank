@@ -147,7 +147,7 @@ md_selection_coupling_case <- function(kind=c("coincident","disjoint")) {
 }
 
 md_selection_n5_case <- function() {
-  # Literal design, not scored output: P2 Step8.6 runtime-design.json n5-bank.
+  # Five-unit two-domain single-state design with seven candidate columns per domain.
   # A single complete state; u2/u3 have crossed priorities between domains.
   values <- array(0,c(1L,5L,2L),dimnames=list(state="complete-state",
     unit=paste0("u",1:5),domain=c("need","benefit")))

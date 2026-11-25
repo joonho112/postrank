@@ -1,4 +1,4 @@
-# 014 repair Phase 2: single-entity local search keeps the rows feasible, never
+# Single-entity move local search keeps constraints feasible, never
 # worsens the start, returns its exact objective (incremental updates do not
 # drift) and stops at a single-move local optimum.
 pr_single_moves <- function(g) {

@@ -1,6 +1,6 @@
-# 014 repair (CP-1): the vectorized Gurobi row conversion must reproduce the
-# original per-row implementation exactly. The original body is kept here as the
-# reference implementation.
+# Vectorized Gurobi constraint-row expansion matches the per-row reference
+# implementation on mixed equality, ranged, one-sided, and free rows.
+#
 pr_reference_gurobi_model <- function(model) {
   lower <- model$row_lower; upper <- model$row_upper
   source_rows <- integer(); sides <- senses <- names <- character(); rhs <- numeric()

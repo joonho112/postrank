@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Select and Evaluate Reports on Two Draw Folds — postrank_crossfit • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Select and Evaluate Reports on Two Draw Folds — postrank_crossfit"><meta name="description" content="Posterior draws are divided into two folds. A grading is selected on each
-fold and evaluated on the other, giving a diagnostic of sensitivity to
-finite posterior simulation. The supplied model is retained throughout; it
-is not refitted to held-out observations. The calculation requires two
-optimizations."><meta property="og:description" content="Posterior draws are divided into two folds. A grading is selected on each
-fold and evaluated on the other, giving a diagnostic of sensitivity to
-finite posterior simulation. The supplied model is retained throughout; it
-is not refitted to held-out observations. The calculation requires two
-optimizations."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Select and Evaluate Gradings on Two Draw Folds — postrank_crossfit • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Select and Evaluate Gradings on Two Draw Folds — postrank_crossfit"><meta name="description" content="postrank_crossfit() splits posterior draws into two folds (A and B),
+solves the grading problem on each fold, and evaluates each fold's grading on
+the held-out fold. It measures sensitivity of the chosen grading and its risk
+to finite posterior simulation without refitting your statistical model to
+held-out observations. Running postrank_crossfit() executes two solver
+runs."><meta property="og:description" content="postrank_crossfit() splits posterior draws into two folds (A and B),
+solves the grading problem on each fold, and evaluates each fold's grading on
+the held-out fold. It measures sensitivity of the chosen grading and its risk
+to finite posterior simulation without refitting your statistical model to
+held-out observations. Running postrank_crossfit() executes two solver
+runs."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -15,7 +17,7 @@ optimizations."><meta property="og:image" content="https://joonho112.github.io/p
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,7 +25,7 @@ optimizations."><meta property="og:image" content="https://joonho112.github.io/p
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -37,17 +39,18 @@ optimizations."><meta property="og:image" content="https://joonho112.github.io/p
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Select and Evaluate Reports on Two Draw Folds</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Select and Evaluate Gradings on Two Draw Folds</h1>
 
       <div class="d-none name"><code>postrank_crossfit.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>Posterior draws are divided into two folds. A grading is selected on each
-fold and evaluated on the other, giving a diagnostic of sensitivity to
-finite posterior simulation. The supplied model is retained throughout; it
-is not refitted to held-out observations. The calculation requires two
-optimizations.</p>
+    <p><code>postrank_crossfit()</code> splits posterior draws into two folds (<code>A</code> and <code>B</code>),
+solves the grading problem on each fold, and evaluates each fold's grading on
+the held-out fold. It measures sensitivity of the chosen grading and its risk
+to finite posterior simulation without refitting your statistical model to
+held-out observations. Running <code>postrank_crossfit()</code> executes two solver
+runs.</p>
     </div>
 
     <div class="section level2">
@@ -67,65 +70,65 @@ optimizations.</p>
 
 
 <dl><dt id="arg-draws">draws<a class="anchor" aria-label="anchor" href="#arg-draws"></a></dt>
-<dd><p>Joint equal-weight ordinary posterior draws, validated or a
-supported canonical payload. Whole states must preserve all entities and
-criteria. Separate criterion blocks, exact finite laws, Gaussian/mixture
-coefficients, supplied probabilities, and equality-neutral inputs are not
-supported by this draw-splitting diagnostic.</p></dd>
+<dd><p>Joint equal-weight posterior draws from <code><a href="postrank_draws.html">postrank_draws()</a></code> or
+<code><a href="as_postrank_draws.html">as_postrank_draws()</a></code> (<code>dependence_mode = "joint_model"</code>), so each draw
+contains a joint state across all entities and criteria. Criterion-wise
+blocks, exact finite laws, Gaussian or mixture coefficients, pre-computed
+probabilities, and tie-mode inputs are not accepted.</p></dd>
 
 
 <dt id="arg-fit">fit<a class="anchor" aria-label="anchor" href="#arg-fit"></a></dt>
-<dd><p>Optional <code>postrank_fit</code> or <code>postrank_analysis</code> on the same input.
-Its problem settings are used, and its grade, when available, is also
-evaluated on both folds. Supply exactly one of <code>fit</code> or <code>settings</code>.</p></dd>
+<dd><p>Optional <code>postrank_fit</code> or <code>postrank_analysis</code> solved on <code>draws</code>
+(for an original public problem, without protection envelopes or
+second-stage risk caps). Supplies the problem settings and, when a checked
+grading is present, also evaluates that full-draw grading on each fold.
+Supply <code>fit</code> or <code>settings</code>, not both.</p></dd>
 
 
 <dt id="arg-settings">settings<a class="anchor" aria-label="anchor" href="#arg-settings"></a></dt>
-<dd><p>Alternatively, a <code><a href="postrank_settings.html">postrank_settings()</a></code> object or a list with
-<code>weights</code>, <code>tau</code>, <code>G_max</code>, and optional <code>objective</code>, <code>q</code>, <code>exact_G</code>,
-<code>minimax_criteria</code>, and <code>minimax_refine</code>. The conditional unbiasedness
-interpretation requires loss settings fixed independently of evaluation draws.</p></dd>
+<dd><p>A <code><a href="postrank_settings.html">postrank_settings()</a></code> object or named list with <code>weights</code>,
+<code>tau</code>, <code>G_max</code>, and optional <code>objective</code>, <code>q</code>, <code>exact_G</code>,
+<code>minimax_criteria</code>, and <code>minimax_refine</code>. Supply <code>fit</code> or <code>settings</code>, not
+both.</p></dd>
 
 
 <dt id="arg-backend-control-strategy">backend, control, strategy<a class="anchor" aria-label="anchor" href="#arg-backend-control-strategy"></a></dt>
-<dd><p>Backend, numerical controls, and strategy as
-in <code><a href="postrank_solve.html">postrank_solve()</a></code>, applied separately to each fold. <code>backend = NULL</code>
-uses the <code>postrank.backend</code> option, then Gurobi; there is no fallback.</p></dd>
+<dd><p>Solver choice, <code><a href="postrank_control.html">postrank_control()</a></code> options,
+and search strategy passed to <code><a href="postrank_solve.html">postrank_solve()</a></code> on each fold. <code>backend = NULL</code> (the default) uses <code>getOption("postrank.backend")</code> or Gurobi (which
+requires a license); install <code>highs</code> and pass <code>backend = "highs"</code> to use
+HiGHS. <code>postrank</code> never switches solvers automatically.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>postrank_crossfit</code> list with split receipts and per-fold status,
-incumbent availability, absolute risk gap, selected grade, in-fold and
-out-of-fold risk, and <code>optimism</code> (out-of-fold minus in-fold). It also reports
-pair-relation agreement, <code>folds_with_incumbent</code>, <code>mean_optimism</code>, and
-<code>mean_abs_optimism</code>. With <code>q</code>, out-of-fold protection ratios are descriptive;
-they do not assert that the report remains protected under the target law.</p>
+    <p>A <code>postrank_crossfit</code> list containing <code>split</code> metadata, per-fold
+records in <code>folds</code> (<code>draws</code>, <code>status</code>, <code>incumbent_validated</code>,
+<code>risk_absolute_gap</code>, and when a checked grading exists, <code>grade</code>, <code>G</code>,
+<code>in_fold_risk</code>, <code>out_of_fold_risk</code>, <code>optimism = out_of_fold_risk - in_fold_risk</code>, plus <code>out_of_fold_protection</code> when <code>q</code> is set and
+<code>full_grade_risk_on_fold</code> when <code>fit</code> has grades), <code>agreement</code>
+(<code>between_folds</code>, plus <code>full_vs_A</code> and <code>full_vs_B</code> when <code>fit</code> has grades),
+<code>folds_with_incumbent</code>, <code>mean_optimism</code>, <code>mean_abs_optimism</code>, and
+<code>warnings</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>IID input uses the first and second halves of stored draws. MCMC
-input with at least two chains uses groups of whole original chains; one
-chain is split into halves. A half split requires at least four draws.
-The input's ordinary zero-equality condition is retained.</p>
-<p>For independent IID training and evaluation folds from the same target law,
-out-of-fold linear weighted risk is conditionally unbiased for the selected
-training-fold report's true risk. Its difference from in-fold risk therefore
-concerns that fold report's optimism, not the full-data report's optimism.
-The same linearity applies to each criterion risk. It does not apply to
-minimax risk: a maximum of empirical risks is generally biased upward.</p>
-<p>No exact unbiasedness is claimed for MCMC folds. Single-chain halves can
-be dependent, and grouping whole chains alone establishes neither
-independence nor target stationarity and does not remove initialization
-bias. Sampling declarations are not independently verified.</p>
-<p>Cross-fit values describe simulation sensitivity and do not correct the
-full-data risk. When both folds select the same report, the signed
-differences cancel, although their absolute magnitudes can remain
-informative about simulation sensitivity. A fold without a validated
-incumbent retains its reason for unavailability, and aggregates use only
-available folds. Interpretation therefore depends on the fold count and
-statuses. These diagnostics provide neither a finite-sample bound nor
-evidence of calibration on new observations.</p>
+    <p>For IID draws (<code>S &gt;= 4</code>), fold <code>A</code> is the first <code>floor(S / 2)</code> draws and fold
+<code>B</code> is the remainder. For MCMC draws with at least two chains, fold <code>A</code> holds
+the first <code>ceiling(C / 2)</code> whole chains and fold <code>B</code> holds the remaining
+chains; single-chain MCMC (<code>S &gt;= 4</code>) splits iterations into first and second
+halves with an autocorrelation warning.</p>
+<p>When <code>A</code> and <code>B</code> are independent IID folds from the same posterior and
+<code>objective = "weighted"</code> with loss settings fixed beforehand, out-of-fold
+weighted risk is conditionally unbiased for that fold grading's true
+posterior risk (computed from roughly <code>S / 2</code> draws rather than all <code>S</code>
+draws). When both folds select the exact same grading, their two signed
+<code>optimism</code> values have opposite signs and cancel in <code>mean_optimism</code>; check
+<code>mean_abs_optimism</code> for the noise scale. Under <code>objective = "minimax"</code> (a
+maximum of empirical criterion risks) or MCMC folds, out-of-fold risk is not
+unbiased. When <code>q</code> budgets are present, <code>out_of_fold_protection</code> reports
+held-out <code>E_k / N</code> descriptively.</p>
+<p>Cross-fitting is a descriptive summary of Monte Carlo sensitivity and does
+not adjust the full-sample risk or provide a finite-sample guarantee.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -135,14 +138,27 @@ evidence of calibration on new observations.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">.6</span>, need_B <span class="op">=</span> <span class="fl">.4</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.25</span>, G_max <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># Optional: two small native solves; no model is refitted.</span></span></span>
-<span class="r-in"><span><span class="va">cf</span> <span class="op">&lt;-</span> <span class="fu">postrank_crossfit</span><span class="op">(</span><span class="va">postrank_toy</span>, settings <span class="op">=</span> <span class="va">settings</span>,</span></span>
-<span class="r-in"><span>  backend <span class="op">=</span> <span class="st">"highs"</span>, control <span class="op">=</span> <span class="fu"><a href="postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span>, threads <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">cf</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"toy_crossfit"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">cf</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"folds_with_incumbent"</span>, <span class="st">"mean_optimism"</span>, <span class="st">"mean_abs_optimism"</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">cf</span><span class="op">$</span><span class="va">folds</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $folds_with_incumbent</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $mean_optimism</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $mean_abs_optimism</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.008333333</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="va">cf</span><span class="op">$</span><span class="va">agreement</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $between_folds</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $full_vs_A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $full_vs_B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -1,82 +1,101 @@
 ---
-title: "True ties and withheld comparisons"
+title: "Exact ties in the posterior versus withheld comparisons"
 output:
   rmarkdown::html_vignette:
     math_method: mathml
 vignette: >
-  %\VignetteIndexEntry{True ties and withheld comparisons}
+  %\VignetteIndexEntry{Exact ties in the posterior versus withheld comparisons}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ```{r m4-setup, include=FALSE}
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>", out.width = "100%")
+have_gmp <- requireNamespace("gmp", quietly = TRUE)
+knitr::opts_chunk$set(eval = have_gmp, collapse = TRUE, comment = "#>",
+  out.width = "100%")
 options(width = 82)
-fmt <- function(x, digits = 3) formatC(x, format = "f", digits = digits)
 ```
 
-A common grade is a decision to withhold a comparison, whereas latent
-equality is an event under the target distribution. These need not coincide:
-unequal targets may receive a common grade, and a model may assign positive
-probability to exact equality before grades are chosen. We compare losses
-that treat equality differently and evaluate a finite example using
-`postrank_tie_*`. The probabilities are determined by complete finite laws,
-without model fitting or optimization.
+In `postrank`, two entities can "tie" in two completely different senses:
 
-## Latent equality and shared grades {#a-tie-in-the-target-is-different-from-a-tie-in-the-report}
+1. **A shared grade in the report (`g_i = g_j`)** is a reporting action. It
+   leaves the pair unordered—withholding an ordering claim—without saying that
+   the two entities have equal target values.
+2. **Exact equality in the posterior (`theta_i = theta_j`)** is an event under
+   your posterior distribution before any grades are chosen.
 
-A **latent equality** is an event such as `theta_A == theta_B` under the
-supplied posterior law. It may occur with probability between zero and one,
-or with probability one when two entities share the same structural target.
-A **shared grade** is a reporting decision: it withholds the direction
-between those entities. Shared grades do not establish equality.
+Those two concepts need not coincide: two entities with unequal targets often
+receive the same grade when \(\tau\) makes ordering them too risky, and a
+discrete or structural posterior can assign positive probability to
+\(\theta_i = \theta_j\) before grading begins. This article explains that
+distinction, defines the **equality-neutral loss** used in **tie-aware mode**
+(`postrank_tie_*`), and walks through exact finite-law examples without model
+fitting or an optimization solver. Building and evaluating exact finite-law
+inputs requires the suggested `gmp` package (`install.packages("gmp")`).
 
-Neither equal posterior means nor rounded observations establish latent
-equality. Even continuous marginal distributions can have genuine ties:
-if both targets are the same continuous random variable, their equality
-probability is one. The relevant assumption concerns their joint law.
-A rule that treats differences within a practical margin as negligible
-defines a distinct decision convention; this article uses exact equality
-and no margin.
-The companion theory distinguishes these meanings in
-[Chapter 9, “Different meanings of a tie”](https://joonho112.github.io/postrank-theory-book/chapters/09-targets-actions-laws.html#different-meanings-of-a-tie).
+```{r m4-dependency-note, echo=FALSE, results='asis', eval=TRUE}
+if (!have_gmp) cat("**Computation skipped:** the suggested package `gmp` is not installed. Install `gmp` and rebuild to run the exact finite-law examples.\n")
+```
 
-## Loss conventions at equality {#two-losses-make-different-choices-at-equality}
+## Exact target equality versus a shared grade {#a-tie-in-the-target-is-different-from-a-tie-in-the-report}
 
-Take a pair of targets, with larger values having higher priority. The
-ordinary weak-error loss counts a disclosed direction “A above B” as wrong
-when `theta_A <= theta_B`. Withholding costs `tau`, regardless of the
-latent state. The opt-in **equality-neutral loss** instead counts only
-strict reversals as errors and charges withholding only when the targets
-are distinct:
+**Exact target equality** (\(\theta_A = \theta_B\)) is a property of the joint
+posterior distribution. It has probability zero under standard continuous
+posteriors for distinct entities, probability between zero and one under
+discrete posteriors or spike-and-slab / clustering models, and probability one
+when two entities share the exact same structural parameter.
 
-| Latent state | Weak: A above B | Weak: hold | Neutral: A above B | Neutral: hold |
-|---|---:|---:|---:|---:|
-| A > B | 0 | tau | 0 | tau |
-| A = B | 1 | tau | 0 | 0 |
-| A < B | 1 | tau | 1 | tau |
+**A shared grade** (\(g_A = g_B\)) is a reporting choice: `postrank` leaves `A`
+and `B` unordered; it does not say the entities are equal. Equal
+posterior means do not imply \(\Pr(\theta_A = \theta_B) > 0\), and rounding
+continuous MCMC draws creates artificial ties rather than genuine posterior
+equality. Conversely, continuous marginal distributions alone do not rule out
+exact ties if two entities share the same latent variable in the joint model.
+(Rules that treat small nonzero differences \(|\theta_A - \theta_B| \le \delta\)
+as practically equivalent define a separate margin-based decision problem;
+`postrank` uses exact equality with zero margin.) See Lee (2026), Chapter 9,
+[Different meanings of a tie](https://joonho112.github.io/postrank-theory-book/chapters/09-targets-actions-laws.html#different-meanings-of-a-tie).
 
-The neutral loss also assigns zero cost to “B above A” when the targets
-are equal. Consequently, zero loss under this convention does not imply
-strict superiority. Equality neutrality changes the consequences that the
-loss penalizes and hence defines a different decision problem.
+## Weak-error loss versus equality-neutral loss {#two-losses-make-different-choices-at-equality}
 
-The default package route retains its existing weak-error meaning and
-requires tie-free inputs. Its input checks do not assign an equality-neutral interpretation
-to atoms. The weak-loss column below is
-therefore calculated directly for illustration; a positive-tie law is
-passed to the separate tie-aware constructor. The two definitions and
-their difference are derived in
-[Chapter 11, “An equality-neutral extension of directional loss”](https://joonho112.github.io/postrank-theory-book/chapters/11-multicriteria-loss.html#sec-tie-aware-loss).
+Orient targets so that larger values receive higher priority toward Grade 1.
+Standard `postrank` functions use **weak-error loss** on tie-free inputs:
+reporting `A` ahead of `B` counts an error whenever \(\theta_A \le \theta_B\),
+and leaving the pair unordered costs \(\tau\) in every state.
 
-## A finite two-entity law {#specify-a-complete-two-entity-law}
+For posteriors in which \(\Pr(\theta_A = \theta_B) > 0\), `postrank`'s separate
+**tie-aware mode** (`postrank_tie_*`) uses **equality-neutral loss**:
 
-Consider a law in which B has score 1 with probability one and A has scores
-0, 1 and 2 with probabilities .1, .4 and .5. The three states specify the
-complete posterior for this example, rather than a Monte Carlo sample.
+- Only strict reversals (\(\theta_A < \theta_B\) when `A` is reported ahead of
+  `B`) count as wrong-direction errors (`cost = 1`).
+- Leaving a pair unordered costs \(\tau\) only when \(\theta_A \ne \theta_B\).
+- When \(\theta_A = \theta_B\), **exact equality has zero loss whether the pair
+  is ordered in either direction or left unordered**:
+
+| Posterior state | Weak loss: `A` ahead of `B` | Weak loss: unordered | Equality-neutral: `A` ahead of `B` | Equality-neutral: unordered |
+|:--|--:|--:|--:|--:|
+| \(\theta_A > \theta_B\) | `0` | \(\tau\) | `0` | \(\tau\) |
+| \(\theta_A = \theta_B\) | `1` | \(\tau\) | `0` | `0` |
+| \(\theta_A < \theta_B\) | `1` | \(\tau\) | `1` | \(\tau\) |
+
+Equality-neutral loss also assigns cost `0` to reporting `B` ahead of `A` when
+\(\theta_A = \theta_B\). Thus zero equality-neutral loss means zero strict
+reversals and zero withheld distinct pairs—not that every ordered pair is
+strictly unequal. Standard `postrank()` inputs reject positive tie probability
+rather than silently switching losses; to use equality-neutral loss, build
+inputs explicitly with `as_postrank_tie_draws()` and `postrank_tie_pairwise()`.
+See Lee (2026), Chapter 11,
+[An equality-neutral extension of directional loss](https://joonho112.github.io/postrank-theory-book/chapters/11-multicriteria-loss.html#sec-tie-aware-loss).
+
+## A finite two-entity posterior with exact ties {#specify-a-complete-two-entity-law}
+
+Consider two fictional entities `A` and `B` on one criterion (`score`), where
+`B` equals `1` in every state and `A` takes values `0`, `1`, and `2` with
+probabilities `0.1`, `0.4`, and `0.5`:
 
 ```{r m4-law}
 library(postrank)
+
 states <- lapply(c(0, 1, 2), function(a)
   matrix(c(a, 1), nrow = 2,
     dimnames = list(entity = c("A", "B"), criterion = "score")))
@@ -86,294 +105,313 @@ law_table <- data.frame(A = c(0, 1, 2), B = 1,
 knitr::kable(law_table)
 ```
 
-The exact-law constructor requires integer state values, integer mass
-numerators and a common denominator. Exact coefficient arithmetic uses
-the optional `gmp` package. The following helper supplies the declarations
-for the specified examples to `as_postrank_tie_draws()`. In applications,
-the target and model descriptions must correspond to the scientific
-quantities and assumptions of the analysis.
+An exact finite-law input in tie-aware mode (identified by input-format version
+`schema_version = "tie-aware-input-0.1"` and `input_kind = "exact_finite_posterior"`)
+requires the suggested `gmp` package (`install.packages("gmp")`) to verify
+integer target states and positive integer probability numerators sharing a
+common denominator, and retains exact rational probabilities alongside the
+double-precision arrays in `postrank_tie_pairwise()`. You also record where the
+input came from (`provenance`: the script or program `producer`, an `artifact_id`,
+and its SHA-256 `artifact_hash`) and set `not_empirical_posterior_relabeling = TRUE`
+to confirm that the listed states define a true discrete distribution rather
+than relabeled Monte Carlo draws. We split this setup into three short helpers:
 
-<details>
-<summary>Construct the finite input, including its target and equality declarations</summary>
-
-```{r m4-constructor}
-finite_input <- function(states, masses, description) {
-  ids <- rownames(states[[1]])
-  criteria <- colnames(states[[1]])
-  payload <- list(
-    schema_version = "tie-aware-input-0.1",
-    input_kind = "exact_finite_posterior",
-    dependence_mode = "joint_model",
-    requested_functional = "expected_rank_loss",
-    entity_ids = ids, criterion_ids = criteria,
+```{r m4-targets-context}
+tie_targets_context <- function(criteria, description) {
+  list(
     targets = lapply(criteria, function(k) list(
       criterion_id = k, estimand = paste("Specified", k, "target"),
       entity_population = "Fictional entities in the displayed law",
-      time_reference = "No observation period; mathematical example",
-      units = "Illustrative score units", source_transform = "Identity",
-      identification_basis = "Defined by the complete listed states",
+      time_reference = "Mathematical example", units = "Score units",
+      source_transform = "Identity",
+      identification_basis = "Defined by the listed states",
       orientation = "higher_priority")),
     context = list(cohort_id = "m4-example", data_version = "1",
-      data_conditioning = "No observations; the listed law is stipulated",
-      model_summary = description),
-    identification = list(status = "identified_declared",
-      note = "The mathematical targets are specified, not empirically identified"),
-    tie_policy = list(rule = "equality_neutral", declared = TRUE,
-      justification = "Equality in a listed state is genuine target equality",
-      observed_tie_action = "accept_declared_exact_equality"),
-    provenance = list(producer = "M4 vignette", artifact_id = "specified-law",
-      artifact_hash = digest::digest(list(states, masses), algo = "sha256"),
-      construction_note = "Complete finite law; no sampling or rounding",
-      created_at = format(Sys.time(), tz = "UTC", format = "%Y-%m-%dT%H:%M:%SZ")),
-    equality = list(basis = "exact_finite_law",
-      justification = "Check equality over every positive-mass state",
-      criterion_classes = NULL),
-    finite_law = list(denominator = sum(masses),
-      value_representation = "safe_integer",
-      states = lapply(seq_along(states), function(s) list(
-        state_id = paste0("state-", s), mass_numerator = masses[s],
-        theta = states[[s]])),
-      law_definition = description, not_empirical_posterior_relabeling = TRUE)
+      data_conditioning = "Stipulated finite distribution",
+      model_summary = description)
   )
-  as_postrank_tie_draws(payload)
 }
 ```
 
-</details>
+```{r m4-tie-declarations}
+tie_declarations <- function(criteria, description) {
+  c(tie_targets_context(criteria, description), list(
+    identification = list(status = "identified_declared",
+      note = "Targets are defined directly by the listed states"),
+    tie_policy = list(rule = "equality_neutral", declared = TRUE,
+      justification = "Equal values in a state represent exact target equality",
+      observed_tie_action = "accept_declared_exact_equality"),
+    equality = list(basis = "exact_finite_law",
+      justification = "Equality checked across all positive-mass states",
+      criterion_classes = NULL)
+  ))
+}
+```
+
+```{r m4-finite-law}
+finite_input <- function(states, masses, description) {
+  ids <- rownames(states[[1]]); criteria <- colnames(states[[1]])
+  decl <- tie_declarations(criteria, description)
+  as_postrank_tie_draws(c(list(
+    schema_version = "tie-aware-input-0.1", input_kind = "exact_finite_posterior",
+    dependence_mode = "joint_model", requested_functional = "expected_rank_loss",
+    entity_ids = ids, criterion_ids = criteria,
+    provenance = list(producer = "m4-ties-and-withholding", artifact_id = "law",
+      artifact_hash = digest::digest(list(states, masses), algo = "sha256"),
+      construction_note = "Exact finite distribution",
+      created_at = format(Sys.time(), tz = "UTC", format = "%Y-%m-%dT%H:%M:%SZ")),
+    finite_law = list(denominator = sum(masses), value_representation = "safe_integer",
+      states = lapply(seq_along(states), function(s) list(
+        state_id = paste0("state-", s), mass_numerator = masses[s], theta = states[[s]])),
+      law_definition = description, not_empirical_posterior_relabeling = TRUE)
+  ), decl))
+}
+```
+
+Passing those three states to `postrank_tie_pairwise()` decomposes the pair
+`(A, B)` into three probability arrays:
 
 ```{r m4-probabilities}
 input <- finite_input(states, masses,
-  "B is 1; A is 0, 1, or 2 with masses 1/10, 4/10, 5/10")
+  "B equals 1; A is 0, 1, or 2 with probabilities 1/10, 4/10, 5/10")
 pw <- postrank_tie_pairwise(input)
 probabilities <- data.frame(
-  Event = c("A < B", "A = B", "A != B", "B < A"),
-  Probability = c(pw$b["A", "B", "score"], pw$t["A", "B", "score"],
-    pw$d["A", "B", "score"], pw$b["B", "A", "score"])
+  Event = c("A < B (strict error of A ahead of B)", "A = B (equality)",
+    "A != B (distinctness)", "B < A (strict error of B ahead of A)"),
+  Probability = c(pw[["b"]]["A", "B", "score"], pw[["t"]]["A", "B", "score"],
+    pw[["d"]]["A", "B", "score"], pw[["b"]]["B", "A", "score"])
 )
 knitr::kable(probabilities)
 ```
 
-Here `b[i, j, k]` is the strict error probability for disclosing `i` above
-`j`; `t` is equality probability and `d` is distinctness probability.
-Off-diagonal entries satisfy `b[i,j,k] + b[j,i,k] = d[i,j,k]`, not generally
-one. In this example .1 + .5 = .6; using `1 - .1` for the reverse strict
-error would incorrectly include the equality mass. Diagonal entries are
-`NA` because an entity is not compared with itself.
+For distinct entities `i` and `j` on criterion `k`:
 
-## Evaluation of the three actions {#evaluate-directions-and-withholding}
+- `b[i, j, k]` is the **strict directional-error probability**
+  \(\Pr(\theta_{ik} < \theta_{jk})\) when `i` is graded ahead of `j`.
+- `t[i, j, k]` is the **equality probability** \(\Pr(\theta_{ik} = \theta_{jk})\).
+- `d[i, j, k]` is the **distinctness probability**
+  \(\Pr(\theta_{ik} \ne \theta_{jk}) = 1 - t_{ij,k}\).
 
-The three possible ordered reports for two entities can be evaluated
-directly. At `tau = .25`, their neutral risks are as follows:
+Off-diagonal entries satisfy `b[i, j, k] + b[j, i, k] = d[i, j, k]`, which is
+below `1` whenever `t[i, j, k] > 0` (here `0.1 + 0.5 = 0.6`). Using `1 - 0.1`
+for the reverse strict error would mistakenly add the `0.4` equality mass.
+Diagonal entries are `NA`.
+
+## Evaluating the three two-entity gradings {#evaluate-directions-and-withholding}
+
+With two entities there are three possible gradings: `A` ahead of `B` (`1/2`),
+`B` ahead of `A` (`2/1`), and leaving the pair unordered (`1/1`). At
+`tau = 0.25`, `postrank_tie_evaluate()` scores each grading under
+equality-neutral loss:
 
 ```{r m4-actions}
-tau <- .25
-actions <- list(`A above B` = c(A = 1L, B = 2L),
-  `B above A` = c(A = 2L, B = 1L), Hold = c(A = 1L, B = 1L))
+tau <- 0.25
+actions <- list(
+  `A ahead of B` = c(A = 1L, B = 2L),
+  `B ahead of A` = c(A = 2L, B = 1L),
+  Unordered = c(A = 1L, B = 1L)
+)
 evaluations <- lapply(actions, postrank_tie_evaluate,
   pairwise = pw, weights = c(score = 1), tau = tau)
 p <- masses / sum(masses)
-weak_risk <- c(sum(p * (law_table$A <= law_table$B)),
-  sum(p * (law_table$B <= law_table$A)), tau)
-action_table <- data.frame(Action = names(actions), Weak_loss = weak_risk,
-  Neutral_loss = vapply(evaluations, function(x) x$primary_risk, numeric(1)))
-knitr::kable(action_table, digits = 3, row.names = FALSE)
+weak_risk <- c(sum(p * (law_table[["A"]] <= law_table[["B"]])),
+  sum(p * (law_table[["B"]] <= law_table[["A"]])), tau)
+knitr::kable(data.frame(
+  Action = names(actions), Weak_loss = weak_risk,
+  Equality_neutral_loss = vapply(evaluations, `[[`, numeric(1), "primary_risk")
+), digits = 3, row.names = FALSE)
 ```
 
-Under neutral loss, A above B has risk .1, compared with .25 × .6 = .15
-for withholding, and is therefore preferred. Weak loss favors withholding
-because the disclosed error includes the .4 equality mass. Enumeration
-exhausts the two-entity action space, so no numerical optimality bound is
-required. For more entities, individually preferred pairwise actions may
-fail to define a coherent grading.
+Under equality-neutral loss, reporting `A` ahead of `B` has loss `0.100`,
+beating `1/1` (`0.25 * 0.6 = 0.150`). Under weak-error loss, the `0.4` equality
+probability is counted as a wrong direction (`0.1 + 0.4 = 0.500`), so weak loss
+leaves the pair unordered (`0.250`).
 
-For several entities and criteria, let `E_k` sum strict-error probabilities
-over disclosed pairs, `D_k` sum their distinctness probabilities, and
-`T_k` sum distinctness probabilities over **all** unordered pairs.
-With criterion weights summing to one, write
-`E_w = sum(w * E_k)`, `D = sum(w * D_k)` and `T = sum(w * T_k)`.
-The neutral risk is
+For \(n\) entities and \(K\) criteria with weights \(w_k\) summing to `1`, let
+\(E_k(g)\) sum `b[i, j, k]` over ordered pairs \(g_i < g_j\), \(D_k(g)\) sum
+`d[i, j, k]` over ordered pairs, and \(T_k\) sum `d[i, j, k]` over **all**
+\(M = \binom{n}{2}\) unordered pairs. Writing \(E_w = \sum_k w_k E_k\),
+\(D = \sum_k w_k D_k\), and \(T = \sum_k w_k T_k\), the equality-neutral loss is
 
 \[
-R = \frac{E_w + \tau(T-D)}{M}
-  = R_0 + \frac{E_w-\tau D}{M},
-\qquad R_0 = \frac{\tau T}{M},\qquad M=\binom{n}{2}.
+R(g) = \frac{E_w(g) + \tau\{T - D(g)\}}{M}
+     = R_0 + \frac{E_w(g) - \tau \, D(g)}{M},
+\qquad R_0 = \frac{\tau \, T}{M}.
 \]
 
-Consequently, the all-withhold baseline is `R0`, generally below `tau`.
-The centered objective `raw_Z` subtracts `tau * D`, not `tau * N`.
-The evaluator checks risk from the disclosed and withheld event masses;
-the identity can also be checked directly:
+Thus the **all-withheld risk** `R0` (`0.150` here) is below \(\tau\) whenever
+any pair has positive equality probability on a positive-weight criterion, and
+the centered objective `raw_Z` subtracts `tau * D` rather than `tau * N`:
 
 ```{r m4-risk-identity}
-forward <- evaluations[["A above B"]]
-c(direct = forward$primary_risk,
-  baseline_plus_centered = forward$R0 + forward$raw_Z / forward$M,
-  all_withhold = evaluations$Hold$primary_risk)
+forward <- evaluations[["A ahead of B"]]
+c(
+  direct = forward[["primary_risk"]],
+  baseline_plus_centered = forward[["R0"]] + forward[["raw_Z"]] / forward[["M"]],
+  all_withheld = evaluations[["Unordered"]][["primary_risk"]]
+)
 ```
 
-## Disclosure and distinctness denominators {#read-the-denominator-as-carefully-as-the-numerator}
+## Raw-pair versus distinct-pair denominators {#read-the-denominator-as-carefully-as-the-numerator}
 
-`N/M` counts the fraction of pairs assigned different grades. It does not
-discount possible latent equality. `D/T` measures the fraction of weighted
-distinct-comparison opportunity disclosed. Criterion-specific `E_over_N`
-and `E_over_D` divide the same strict-error count by different quantities:
+In tie-aware mode, `N / M` is the fraction of all pairs placed in different
+grades, whereas `D / T` (`D_over_T`) is the fraction of weighted distinct-pair
+mass that is ordered. Similarly, `E_over_N` divides expected strict errors
+\(E_k\) by `N`, whereas `E_over_D` divides \(E_k\) by criterion \(k\)'s ordered
+distinctness sum \(D_k\):
 
 ```{r m4-denominators}
 denominators <- do.call(rbind, lapply(evaluations, function(x)
-  data.frame(N = x$N, D = x$D, T = x$T,
-    `E/N` = unname(x$E_over_N), `E/D` = unname(x$E_over_D),
-    `D/T` = x$D_over_T, check.names = FALSE)))
+  data.frame(N = x[["N"]], D = x[["D"]], T = x[["T"]],
+    `E/N` = unname(x[["E_over_N"]]), `E/D` = unname(x[["E_over_D"]]),
+    `D/T` = x[["D_over_T"]], check.names = FALSE)))
 knitr::kable(denominators, digits = 3)
 ```
 
-For A above B, .1 strict errors per raw pair becomes .1/.6 = 1/6 per
-distinct comparison. These are ratios of posterior expected counts, not
-expectations of state-by-state error ratios. With several criteria,
-`E_over_D` uses each criterion's `D_k`; the scalar `D` is its weighted
-summary. In the companion theory this weighted quantity is denoted
-`Q_w`, avoiding a notation collision with an earlier weak-error count.
+For `A ahead of B`, `0.1` expected strict errors per ordered pair (`E/N = 0.100`)
+corresponds to `0.1 / 0.6 = 0.167` (`1/6`) expected strict errors per distinct
+comparison (`E/D`). Both are ratios of posterior expectations (`E[errors] / E[distinct]`),
+not expectations of draw-by-draw ratios.
 
-For comparison, consider equality with probability one and an action
-that withholds the comparison:
+When `A` and `B` are equal with probability `1` and left unordered, all three
+denominators `N`, `D`, and `T` are `0`, so `E_over_N`, `E_over_D`, and
+`D_over_T` are `NA` and `R0 = 0`:
 
 ```{r m4-zero-denominators}
 equal_pw <- postrank_tie_pairwise(finite_input(states[2], 1L,
-  "A and B both equal 1 with probability one"))
-equal_hold <- postrank_tie_evaluate(actions$Hold, equal_pw,
+  "A and B both equal 1 with probability 1"))
+equal_hold <- postrank_tie_evaluate(actions[["Unordered"]], equal_pw,
   weights = c(score = 1), tau = tau)
 equal_hold[c("N", "D", "T", "E_over_N", "E_over_D", "D_over_T", "R0")]
 ```
 
-All three denominators `N`, `D` and `T` are zero, giving `NA` for their
-ratios. Zero risk in this example follows from certain equality and
-provides no evidence for a strict order. A disclosure with `D = 0` could
-also have zero strict error; the equality guard described below restricts
-such disclosures.
+## Agreement when tie probability is zero {#check-the-zero-tie-case}
 
-## Reduction under zero equality probability {#check-the-zero-tie-case}
-
-For a separate comparison, move all equality mass to the state A=2, B=1.
-The new complete law has masses .1 and .9 and no equality. Strict and weak
-errors then coincide; `d = 1`, `D = N`, `T = M`, and `R0 = tau`.
+If we move the `0.4` tie mass onto `(A = 2, B = 1)`—giving probabilities `0.1`
+and `0.9` with zero tie probability—then `d = 1`, `D = N`, `T = M`, and
+`R0 = tau`, so `postrank_tie_evaluate()` and standard `postrank_evaluate()` give
+identical losses for every grading:
 
 ```{r m4-no-ties}
 no_tie <- postrank_tie_pairwise(finite_input(states[c(1, 3)], c(1L, 9L),
-  "A is 0 or 2 with masses 1/10 and 9/10; B is 1; equality is impossible"))
-ordinary <- postrank_probabilities(no_tie$b,
-  event = "directional_error", zero_ties = TRUE, margin = 0,
+  "A is 0 or 2 with probabilities 1/10 and 9/10; B equals 1"))
+ordinary <- postrank_probabilities(
+  no_tie[["b"]], event = "directional_error", zero_ties = TRUE, margin = 0,
   source = list(kind = "analytic_reference",
-    description = "Probabilities summed over the displayed two-state law",
-    conditioning = "Complete stipulated law; no sampled approximation"),
-  targets = c(score = "Higher specified score has higher priority"))
-no_tie_table <- data.frame(Action = names(actions),
-  Ordinary = vapply(actions, function(g)
-    postrank_evaluate(g, ordinary, c(score = 1), tau)$primary_risk, numeric(1)),
-  Neutral = vapply(actions, function(g)
-    postrank_tie_evaluate(g, no_tie, c(score = 1), tau)$primary_risk, numeric(1)))
-knitr::kable(no_tie_table, digits = 3, row.names = FALSE)
+    description = "Two-state probabilities without ties",
+    conditioning = "Stipulated two-state distribution"),
+  targets = c(score = "Higher score means higher priority")
+)
+knitr::kable(data.frame(
+  Action = names(actions),
+  Standard_loss = vapply(actions, function(g)
+    postrank_evaluate(g, ordinary, c(score = 1), tau)[["primary_risk"]], numeric(1)),
+  Equality_neutral_loss = vapply(actions, function(g)
+    postrank_tie_evaluate(g, no_tie, c(score = 1), tau)[["primary_risk"]], numeric(1))
+), digits = 3, row.names = FALSE)
 ```
 
-The losses agree for every action when all positive-weight criteria have
-zero pairwise equality probability and the action domain and other settings
-coincide. Zero-weight criteria do not affect the identity. This mathematical
-agreement does not require identical floating-point representations or the
-same numerical choice among multiple minimizers.
+Whenever every positive-weight criterion has zero equality probability, the two
+objectives coincide across all gradings (zero-weight criteria do not change the
+loss).
 
-## The same-grade constraint for identical active profiles {#keep-identical-active-profiles-in-the-same-grade}
+## Active-profile equality constraint {#keep-identical-active-profiles-in-the-same-grade}
 
-Positive equality probability for one pair is weaker than equality with
-probability one. The guard uses the latter: if two entities are equal in
-every state on **every positive-weight criterion**, they must receive the
-same grade in a released tie-aware solution.
+Without an extra safeguard, two entities that are equal with probability `1` on
+every active criterion (`D = 0`) could be placed in different grades at zero
+equality-neutral cost! Tie-aware mode prevents such arbitrary splits through the
+**active-profile equality constraint**: if two entities share the same
+criterion equality class on **every positive-weight criterion** (equal across
+all states of an exact finite law, or declared in the same structural class in
+`equality$criterion_classes` on Monte Carlo draws), they belong to the same
+**active-profile equality class** and must receive the same grade in any
+solution returned by `postrank_tie_solve()`.
 
-Consider one certain state with a shared attribute and an individual one:
+Consider a single-state three-entity example with a `shared` criterion and an
+`individual` criterion:
 
-```{r m4-guard-law}
+```{r m4-guard-state}
 profile_state <- matrix(c(2, 2, 0, 0, 1, 2), nrow = 3,
   dimnames = list(entity = c("A", "B", "C"),
     criterion = c("shared", "individual")))
 knitr::kable(profile_state)
-profile_pw <- postrank_tie_pairwise(finite_input(list(profile_state), 1L,
-  "One certain state with the displayed shared and individual attributes"))
-split <- c(A = 1L, B = 2L, C = 3L)
-only_shared <- postrank_tie_evaluate(split, profile_pw,
-  c(shared = 1, individual = 0), tau)
-both_active <- postrank_tie_evaluate(split, profile_pw,
-  c(shared = .5, individual = .5), tau)
-data.frame(Weights = c("1 / 0", ".5 / .5"),
-  Guard_satisfied = c(only_shared$guard_satisfied, both_active$guard_satisfied))
 ```
 
-A and B must share a grade when only `shared` has positive weight. When
-both criteria are active, their different individual values remove that
-requirement. The evaluator deliberately permits scoring a guard-violating
-action for comparison; a finite risk alone does not make it admissible.
+```{r m4-guard-eval}
+profile_pw <- postrank_tie_pairwise(finite_input(list(profile_state), 1L,
+  "Single state with shared and individual criteria"))
+split_grade <- c(A = 1L, B = 2L, C = 3L)
+only_shared <- postrank_tie_evaluate(split_grade, profile_pw,
+  c(shared = 1, individual = 0), tau)
+both_active <- postrank_tie_evaluate(split_grade, profile_pw,
+  c(shared = 0.5, individual = 0.5), tau)
+data.frame(Weights = c("1 / 0", "0.5 / 0.5"),
+  Guard_satisfied = c(only_shared[["guard_satisfied"]], both_active[["guard_satisfied"]]))
+```
 
-The problem constructor enforces the guard while keeping all original
-entities and pair multiplicities:
+When only `shared` has positive weight (`1 / 0`), `A` and `B` are identical on
+all active criteria, so `split_grade` violates the constraint
+(`guard_satisfied = FALSE`). When both criteria have positive weight (`0.5 / 0.5`),
+their distinct `individual` values separate them (`guard_satisfied = TRUE`).
+`postrank_tie_evaluate()` still computes the loss of a constraint-violating
+grading so you can inspect it, whereas `postrank_tie_problem()` enforces the
+constraint while keeping all original entities and \(M = 3\) pair counts intact:
 
 ```{r m4-problem}
 problem <- postrank_tie_problem(profile_pw,
   weights = c(shared = 1, individual = 0), tau = tau, G_max = 3L)
-problem$guard$classes
-problem$M
+problem[["guard"]][["classes"]]
+problem[["M"]]
 ```
 
-There are still three entities and three pairs, even when A and B must
-share a grade. Replacing them with one unweighted representative would
-change the problem. For the full weighted **at-most-G** family without
-additional restrictions, a global minimizer satisfying this guard exists:
-moving identical profiles to their least costly currently occupied grade
-cannot increase loss or the number of grades. This is an existence result,
-not a claim that every optimum obeys the guard or that any arbitrary merge
-preserves risk. See
-[“Same-grade guard for identical active profiles”](https://joonho112.github.io/postrank-theory-book/chapters/11-multicriteria-loss.html#a-guard-for-identical-active-profiles)
-for the argument and its restrictions.
+Notice that `M` stays `3` (`A` and `B` are constrained to share a grade, not
+merged into a single unweighted entity). Over the unrestricted weighted
+at-most-`G_max` family, at least one global minimizer always satisfies the
+active-profile equality constraint; see Lee (2026), Chapter 11,
+[Same-grade guard for identical active profiles](https://joonho112.github.io/postrank-theory-book/chapters/11-multicriteria-loss.html#a-guard-for-identical-active-profiles).
 
-For Monte Carlo input, structural equality classes must be declared and
-checked against the retained values. Coincidence in the sampled draws is
-insufficient to establish these classes. For a complete finite law, they
-are determined by all positive-mass states. If ties arise from rounding
-continuous draws, full-precision values are required; jitter and numerical
-tolerances would alter the comparison being defined.
+For Monte Carlo draw inputs (`as_postrank_tie_draws()`), **criterion equality
+partitions** (`equality$criterion_classes[[k]]`) must be declared from structural
+knowledge of the model and verified against the draws—accidental ties in a
+finite sample or ties created by rounding continuous draws do not define
+structural equality classes.
 
-## Supported inputs and decision problems {#use-the-supported-mode-deliberately}
+## Scope of tie-aware mode {#use-the-supported-mode-deliberately}
 
-The current mode supports complete exact finite laws and joint equal-weight
-IID or MCMC draws. It supports weighted at-most-G problems with the guard,
-and native HiGHS or Gurobi solution through `label_mip`. The following call
-is optional and is not executed by this article:
+Tie-aware mode (`postrank_tie_*`, inspected via `postrank_tie_capabilities()`)
+supports exact finite distributions and joint equal-weight IID or MCMC draw
+inputs, weighted expected-loss problems with `G_max` and the active-profile
+equality constraint, and direct mixed-integer solving via `strategy = "label_mip"`
+using HiGHS or licensed Gurobi. Solving requires installing `highs`
+(`install.packages("highs")`) or Gurobi, so the solver call below is shown
+without running here:
 
 ```{r m4-optional-solve, eval=FALSE}
-fit <- postrank_tie_solve(problem, backend = "highs",
+fit <- postrank_tie_solve(
+  problem, backend = "highs",
   control = postrank_control(strategy = "label_mip", time_limit = 30,
-    threads = 1L, seed = 1304L))
+    threads = 1L, seed = 1304L)
+)
 ```
 
-`q` error budgets, minimax, exact-G, and staged solving are unsupported in
-this mode. Criterionwise inputs and typed Gaussian/mixture coefficients
-are also outside its current input paths. The guard's weighted at-most-G
-argument does not automatically extend to those other constraints or
-objectives.
+Per-criterion error budgets `q`, `objective = "minimax"`, `exact_G`,
+`strategy = "staged"`, separate criterion draw matrices, normal/mixture
+coefficients, and `postrank_probabilities()` inputs are not available in
+tie-aware mode. Tie-aware fits provide `print()`,
+`format()`, and `summary()` methods with results in `fit$grade`,
+`fit$evaluation`, and `fit$objective`; standard common-grade accessors
+(`get_grades()`, `get_risk()`, `get_profile()`), baselines, HTML reports,
+`postrank_plot_*()` figures, Monte Carlo diagnostics, and IID bounds do not
+accept tie-aware objects.
 
-Tie-aware objects provide `print()`, `format()` and `summary()` methods,
-with results stored in `grade`, `evaluation` and `objective`. The legacy
-accessors, baseline comparisons, HTML reports and plots are unavailable
-for this object family, as are Monte Carlo diagnostics, uniform IID bounds,
-regret bounds and protection envelopes. These restrictions are listed by
-`postrank_tie_capabilities()`. Exact rational coefficients also leave
-subsequent floating-point losses and solver bounds subject to numerical
-error.
-
-The definitions here follow JoonHo Lee (2026), *Decisions from Noisy
-Multidimensional Indicators: Theory, Evidence, and Posterior Grading*,
-version 3: Chapter 9, “Grade actions and disclosed comparisons”; Chapter
-11, “An equality-neutral extension of directional loss,” especially
-“Risk identity and relation to the weak-error loss” and “Same-grade guard
-for identical active profiles”; and
-[Appendix D, “Equality-neutral implementation and capability limits”](https://joonho112.github.io/postrank-theory-book/appendices/D-package-correspondence.html#sec-package-tie-aware).
-The software limits above were
-also checked against the current package. The ordinary loss is defined in
-[Ranking, grades and loss](m1-ranking-and-loss.html), input assumptions in
-[Posterior inputs](m3-posterior-inputs.html), and numerical statuses in
-[Computing grades](m5-computing-grades.html).
+For full derivations and capability details, see JoonHo Lee (2026), *Decisions
+from Noisy Multidimensional Indicators: Theory, Evidence, and Posterior Grading*
+(`citation("postrank")`): Chapter 9 (`#different-meanings-of-a-tie`), Chapter 11
+(`#sec-tie-aware-loss` and `#a-guard-for-identical-active-profiles`), and
+Appendix D,
+[Equality-neutral implementation and capability limits](https://joonho112.github.io/postrank-theory-book/appendices/D-package-correspondence.html#sec-package-tie-aware).
+See also
+[Posterior ranking, integer grades, and reporting loss](m1-ranking-and-loss.html),
+[Posterior representations and pairwise comparison probabilities](m3-posterior-inputs.html),
+and
+[Computing grades, choosing settings, and reading solver bounds](m5-computing-grades.html).

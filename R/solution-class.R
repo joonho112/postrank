@@ -1,4 +1,4 @@
-# Adapter return contract (internal):
+# Backend solver return structure (internal):
 # list(primal=numeric or NULL, raw_status=character/integer,
 # raw_message=character, status_normalized=enum, termination_reason=character,
 # has_incumbent=logical, raw_objective=numeric or NA,

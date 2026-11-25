@@ -1,10 +1,15 @@
 # Build a Posterior Input from a Joint Array
 
-The builder constructs a posterior input from an already oriented array
-of joint draws, together with target definitions, source information and
-sampling history. Draw IDs, variable mappings and content hashes are
-generated before the input is validated by
+`postrank_draws_from_array()` builds a `postrank_draws` object from a
+numeric `S x n x K` array of joint posterior draws and its eight
+required descriptions, generating draw IDs, variable mappings, MCMC
+chain histories and array SHA-256 hashes before validating with
 [`as_postrank_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_draws.md).
+Most users can call
+[`postrank_draws()`](https://joonho112.github.io/postrank/reference/postrank_draws.md)
+with
+[`postrank_describe()`](https://joonho112.github.io/postrank/reference/postrank_describe.md)
+instead.
 
 ## Usage
 
@@ -30,26 +35,28 @@ postrank_draws_from_array(
 
 - values:
 
-  Numeric `S x n x K` array (draw, entity, criterion) with entity and
-  criterion dimnames. Keep `K = 1` as a third axis. Larger values must
-  already mean higher priority; this function performs no negation. Draw
-  names are generated when absent.
+  Numeric `S x n x K` array (draws x entities x criteria) with entity
+  (2nd axis) and criterion (3rd axis) `dimnames`. Keep the third axis
+  `S x n x 1` when `K = 1`. Larger values must already mean higher
+  priority; this function does not negate criteria. Draw names on the
+  1st axis are generated (`"draw_000001"`, ...) when absent.
 
 - regime:
 
-  `"iid"` (the default) or `"mcmc"`; select the actual regime.
+  `"iid"` (the default) or `"mcmc"`.
 
 - chains:
 
-  For MCMC, the original number of chains. Rows must be stored chain by
-  chain with equal retained lengths. Leave unset for IID draws.
+  Number of original MCMC chains when `regime = "mcmc"` (required; `S`
+  must be divisible by `chains`, with rows ordered chain by chain).
+  Leave `NULL` when `regime = "iid"`.
 
 - targets:
 
-  One record per criterion as a list of named lists or a data frame.
-  Required fields: `criterion_id`, `estimand`, `entity_population`,
-  `time_reference`, `units`. Optional `source_transform` defaults to
-  `"identity"`; `identification_basis` defaults to
+  One record per criterion, as a data frame or a list of named lists.
+  Required fields are `criterion_id`, `estimand`, `entity_population`,
+  `time_reference` and `units`. Optional `source_transform` defaults to
+  `"identity"` and `identification_basis` defaults to
   `identification_note`.
 
 - context:
@@ -60,92 +67,89 @@ postrank_draws_from_array(
 - provenance:
 
   Named list with `producer`, `artifact_id` and `construction_note`.
-  Optional `artifact_hash` defaults to the SHA-256 of the supplied
-  array; `created_at` defaults to the current UTC time.
+  Optional `artifact_hash` defaults to the SHA-256 of `values`, and
+  `created_at` defaults to the current UTC timestamp.
 
 - origin:
 
   Named list with `source_id`, `fit_id`, `model_id`, `source_format` and
   `source_artifact`. Optional `source_hash` defaults to the SHA-256 of
-  the supplied array.
+  `values`.
 
 - identification_note:
 
-  Why every labeled target is identified.
+  One non-empty string explaining why each target is identified.
 
 - tie_justification:
 
-  Why exact equality between distinct entities has probability zero on
-  each criterion. Observed ties are still rejected.
+  One non-empty string explaining why distinct entities have zero
+  probability of exact equality on each criterion. Observed ties in
+  `values` still stop the call.
 
 - joint_generation:
 
-  How each draw holds one joint state of all entities and criteria,
-  including their dependence.
+  One non-empty string explaining how each draw holds all entities and
+  criteria together, preserving model dependence.
 
 - sampling_provenance:
 
-  How the retained draws were produced.
+  One non-empty string describing how the retained draws were produced.
 
 - warmup_per_chain:
 
-  For MCMC, the number of removed warmup iterations per chain. Zero
-  declares no removed warmup. Leave unset for IID draws.
+  Number of warmup iterations removed per chain before the retained
+  draws when `regime = "mcmc"` (`0L` if none; leave `NULL` when
+  `regime = "iid"`).
 
 - thin:
 
-  For MCMC, retained-iteration spacing; use `1L` for no thinning. Leave
-  unset for IID draws.
+  Iteration spacing between retained draws when `regime = "mcmc"` (`1L`
+  if unthinned; leave `NULL` when `regime = "iid"`).
 
 ## Value
 
-A validated `postrank_draws` object with the supplied values and
-entity/criterion order, plus their declarations and generated
-bookkeeping.
+A validated `postrank_draws` object storing `values`, ordered
+`entity_ids` and `criterion_ids`, the supplied descriptions, generated
+draw indices and variable mappings, and a `validation` record.
 
 ## Details
 
-For MCMC, `chains`, `warmup_per_chain` and `thin` are required
-declarations, not estimates. Within each chain, retained iteration
-numbers are `warmup_per_chain + thin * seq_len(S / chains)`. This
-regular layout must match the producer's actual history. Use canonical
-metadata and
-[`as_postrank_posterior()`](https://joonho112.github.io/postrank/reference/as_postrank_posterior.md)
-for an explicit source mapping with other histories; never split a
-single chain into artificial independent chains.
-
-The eight scientific declarations are required. This strict builder
-checks required text and structure; the additional placeholder-text
-checks apply to
-[`postrank_declarations()`](https://joonho112.github.io/postrank/reference/postrank_declarations.md)
-and the numeric-array route of
-[`postrank_draws()`](https://joonho112.github.io/postrank/reference/postrank_draws.md).
-Neither kind of validation proves scientific jointness, identification,
-zero equality probability or convergence. A generated hash identifies
-the supplied in-memory array; it does not verify an external source
-file.
-
-`source_transform` describes a transformation already performed. To
-negate raw criteria automatically, use
-[`postrank_draws()`](https://joonho112.github.io/postrank/reference/postrank_draws.md)
-with its `orientation` argument. Use
-[`as_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_tie_draws.md)
-for genuine equality mass, and
+When `regime = "mcmc"`, `chains`, `warmup_per_chain` and `thin` are all
+required, and retained iteration numbers within each chain are recorded
+as `warmup_per_chain + thin * seq_len(S / chains)`. For irregular chain
+lengths or custom iteration numbers, pass full `applied-0.1` metadata to
 [`as_postrank_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_draws.md)
-for a completely specified exact finite law.
+or
+[`as_postrank_posterior()`](https://joonho112.github.io/postrank/reference/as_postrank_posterior.md);
+do not split one MCMC chain into artificial chains.
+
+`postrank_draws_from_array()` checks that all required strings are
+present and non-empty, whereas
+[`postrank_declarations()`](https://joonho112.github.io/postrank/reference/postrank_declarations.md)
+and the array route of
+[`postrank_draws()`](https://joonho112.github.io/postrank/reference/postrank_draws.md)
+also reject generic placeholder words such as `"TBD"`. Validation checks
+structure and presence of descriptions, not scientific identification,
+jointness or MCMC convergence, and generated SHA-256 hashes identify the
+in-memory `values` array rather than an external file.
+
+To negate lower-is-higher criteria automatically, use the `orientation`
+argument of
+[`postrank_draws()`](https://joonho112.github.io/postrank/reference/postrank_draws.md).
+For posteriors with positive probability of exact ties, use
+[`as_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_tie_draws.md).
 
 ## See also
 
 [`postrank_draws()`](https://joonho112.github.io/postrank/reference/postrank_draws.md),
+[`postrank_describe()`](https://joonho112.github.io/postrank/reference/postrank_describe.md),
 [`postrank_declarations()`](https://joonho112.github.io/postrank/reference/postrank_declarations.md),
-[`as_postrank_posterior()`](https://joonho112.github.io/postrank/reference/as_postrank_posterior.md)
+[`as_postrank_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_draws.md)
 
 ## Examples
 
 ``` r
-# Rebuild the unchanged two-criterion IID toy array with its own records.
-# Reuse is appropriate here because the values and specified law are identical.
-# For newly generated data, write declarations as in postrank_declarations().
+# Rebuild the bundled two-criterion IID toy array from its stored fields:
 x <- postrank_toy
 b <- x$joint_draws
 draws <- postrank_draws_from_array(b$tensor$values, regime = "iid",
@@ -156,5 +160,4 @@ draws <- postrank_draws_from_array(b$tensor$values, regime = "iid",
   sampling_provenance = b$sampling$sampling_provenance)
 identical(draws$joint_draws$tensor$values, b$tensor$values)
 #> [1] TRUE
-# The builder creates bookkeeping; use canonical input to retain custom draw IDs.
 ```

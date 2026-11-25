@@ -1,5 +1,5 @@
-# 014 repair Phase 4 (AP-2): the array builder keeps the scientific
-# declarations required and generates the bookkeeping.
+# postrank_draws_from_array() requires all eight declarations and derives
+# slot IDs, draw indices, variable maps, and content hashes.
 pr_builder_args <- function(values, ...) {
   K <- dim(values)[3L]; criteria <- dimnames(values)[[3L]]
   c(list(values = values,

@@ -137,66 +137,65 @@ format_postrank_summary_cli(
 )
 }
 \arguments{
-\item{x}{An object of the class named by the formatter. A wrong class
-raises \code{wrong_class}.}
+\item{x}{An object of the class named by the formatter (wrong classes stop
+with error code \code{wrong_class}). \code{format_postrank_validation_cli()} accepts
+both \code{postrank_validation} and \code{postrank_solution_validation};
+\code{format_postrank_guarantee_cli()} handles the conditional bound and
+envelope records; \code{format_postrank_summary_cli()} formats objects returned
+by \code{summary()}.}
 
-\item{...}{Additional display arguments.}
+\item{...}{Additional display arguments passed between methods.}
 
-\item{width}{Line width; \code{NULL} follows \code{getOption("width")}. Widths are
-floored at 40 characters.}
+\item{width}{Target line width in characters (\code{NULL} reads
+\code{getOption("width")}, floored at \code{40}).}
 
-\item{tier}{Styling: \code{NULL} detects the context, \code{1} uses ANSI styling,
-\code{2} is plain text, and \code{3} is for knitted documents.}
+\item{tier}{Styling mode: \code{NULL} detects the session context, \code{1} adds ANSI
+terminal styling, \code{2} produces plain text (identical to tier \code{1} with ANSI
+codes stripped), and \code{3} formats for knitted documents.}
 
-\item{n_head}{Maximum number of rows displayed in table bodies. This affects
-applicable displays only; it does not select or remove stored entities.}
+\item{n_head}{Maximum number of rows shown in printed table bodies (default
+\code{10L}). Does not drop or alter rows stored inside \code{x}.}
 
-\item{details}{For the summary formatter, include technical source records
-and identities. \code{NULL} follows the summary object's stored preference.}
+\item{details}{Logical for \code{format_postrank_summary_cli()} and \code{summary()}:
+whether to include technical source records and hashes. \code{NULL} uses the
+setting stored on the summary object.}
 }
 \value{
-Each formatter returns a character vector with one element per
-console line. The matching \code{format()} method returns the same lines for
-the same arguments. \code{print()} writes those lines and invisibly returns
-its input. \code{summary()} returns a structured summary with its own display.
+Each \verb{format_postrank_*_cli()} function and \code{format()} method
+returns a character vector with one element per line. \code{print()} writes
+those lines and returns \code{x} invisibly. \code{summary()} returns a structured
+\code{postrank_summary} object with its own \code{print()} and \code{format()} methods
+(controlled by \code{postrank.lang}; see \link{postrank_options}).
 }
 \description{
-The \code{print(x)} method gives a concise display, \code{summary(x)} describes the
-results and settings, and \code{format(x)} returns the display as text. The
-methods use stored results without optimization or recalculation of
-posterior probabilities. Grade 1 has highest priority and shared grades
-withhold comparisons. Valid all-withheld grades are distinguished from fits
-for which no validated grades are available.
+In ordinary use, call \code{print(x)} for a concise console display, \code{summary(x)}
+(or \code{summary(x, details = TRUE)}) for a fuller summary of settings and
+bounds, and \code{format(x)} to get the console lines as a character vector. The
+24 \verb{format_postrank_*_cli()} functions return the exact same lines as
+\code{format(x)} when you want to set line width, styling tier or table row count
+directly and verify \code{x}'s class. None of these methods run a solver or
+recompute probabilities.
 }
 \details{
-Default summaries emphasize grades, disclosure, expected loss and
-solver qualifications. Use \code{summary(x, details = TRUE)} to add technical
-details; structured fields remain available with either display setting.
-An optimization gap concerns the supplied numerical problem, separately
-from posterior uncertainty and Monte Carlo error.
-
-Large grade memberships and table bodies may be shortened for reading.
-Accessors and \link{postrank_tables} return the complete stored results, so use
-those for calculations, row selection or export. Console text is not a
-stable data format. Fix \code{width} and \code{tier = 2} when saving plain text.
-
-Styling tiers have the same content; stripping tier 1's ANSI styling gives
-tier 2. Entity IDs and stored warning text are preserved. The named
-formatter functions on this page remain available alongside \code{format()}.
-The validation formatter handles input and solution validations; the
-guarantee formatter handles conditional risk, regret and protection
-records; the summary formatter handles structured summaries.
+Console output uses \code{"disclosed"} for ordered pairs, \code{"withheld"} for
+unordered pairs (shared grades), and \code{"risk"} for posterior expected loss.
+Long grade member lists and tables are shortened for reading; use
+\code{\link[=get_grades]{get_grades()}}, \code{\link[=get_profile]{get_profile()}}, \code{\link[=get_risk]{get_risk()}} and \link{postrank_tables} to
+extract complete results rather than parsing console text. When saving plain
+text, fix \code{width} and \code{tier = 2}.
 }
 \examples{
-lines <- format(pr_tutorial$one, width = 72, tier = 2)
+one <- postrank_example("tutorial_one")
+lines <- format(one, width = 72, tier = 2)
 cat(lines, sep = "\n")
-identical(lines,
-  format_postrank_coefficients_cli(pr_tutorial$one, width = 72, tier = 2))
+identical(lines, format_postrank_analysis_cli(one, width = 72, tier = 2))
+
 summary(pr_tutorial$one)
-technical <- summary(pr_tutorial$one, details = TRUE)
-names(technical)
+tech <- summary(pr_tutorial$one, details = TRUE)
+names(tech)
 }
 \seealso{
-\code{\link[=get_grades]{get_grades()}}, \code{\link[=get_profile]{get_profile()}}, \code{\link[=get_risk]{get_risk()}}, \code{\link[=postrank_report]{postrank_report()}}
+\code{\link[=get_grades]{get_grades()}}, \code{\link[=get_profile]{get_profile()}}, \code{\link[=get_risk]{get_risk()}}, \link{postrank_tables},
+\code{\link[=postrank_report]{postrank_report()}}, \link{postrank_options}
 }
-\concept{reporting}
+\concept{formatters}

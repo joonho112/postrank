@@ -1,4 +1,4 @@
-# 014 repair Phase 2: building blocks of the staged engine.
+# Staged-engine components: fixed-order DP, triangle-cut separation, and LP lower bounds.
 # (1) The fixed-order dynamic programme is exact over contiguous partitions of
 #     that order (brute force over all cut sets).
 # (2) Every ordered partition satisfies all triangle inequalities, and the

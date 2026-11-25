@@ -17,14 +17,16 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Posterior Means and Intervals per Entity and Criterion — postrank_posterior_means">
-<meta name="description" content="Marginal posterior means are returned as a matrix. When level is supplied,
-central equal-tail intervals are added for the same oriented targets. These
-are marginal target summaries rather than simultaneous bands or intervals
-for grade numbers.">
-<meta property="og:description" content="Marginal posterior means are returned as a matrix. When level is supplied,
-central equal-tail intervals are added for the same oriented targets. These
-are marginal target summaries rather than simultaneous bands or intervals
-for grade numbers.">
+<meta name="description" content="postrank_posterior_means() computes an entity-by-criterion matrix of
+marginal posterior means, and optionally attaches central equal-tail
+posterior intervals at level. Intervals summarize marginal target
+uncertainty one entity and criterion at a time, not simultaneous coverage or
+intervals for grade numbers.">
+<meta property="og:description" content="postrank_posterior_means() computes an entity-by-criterion matrix of
+marginal posterior means, and optionally attaches central equal-tail
+posterior intervals at level. Intervals summarize marginal target
+uncertainty one entity and criterion at a time, not simultaneous coverage or
+intervals for grade numbers.">
 <meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
 </head>
 <body>
@@ -35,7 +37,7 @@ for grade numbers.">
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +46,7 @@ for grade numbers.">
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -68,10 +70,11 @@ for grade numbers.">
     </div>
 
     <div class="ref-description section level2">
-    <p>Marginal posterior means are returned as a matrix. When <code>level</code> is supplied,
-central equal-tail intervals are added for the same oriented targets. These
-are marginal target summaries rather than simultaneous bands or intervals
-for grade numbers.</p>
+    <p><code>postrank_posterior_means()</code> computes an entity-by-criterion matrix of
+marginal posterior means, and optionally attaches central equal-tail
+posterior intervals at <code>level</code>. Intervals summarize marginal target
+uncertainty one entity and criterion at a time, not simultaneous coverage or
+intervals for grade numbers.</p>
     </div>
 
     <div class="section level2">
@@ -88,53 +91,56 @@ for grade numbers.</p>
 <dl>
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a>
 </dt>
-<dd><p>A <code>postrank_draws</code>, <code>postrank_coefficients</code>, or
-<code>postrank_probabilities</code> object with supplied marginal summaries.</p></dd>
+<dd><p>A <code>postrank_draws</code> object, a <code>postrank_coefficients</code> object, or a
+<code><a href="postrank_probabilities.html">postrank_probabilities()</a></code> object that stores <code>summaries</code>. Bare
+<code>postrank_pairwise</code> objects do not determine marginal means and are
+rejected.</p></dd>
 
 
 <dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a>
 </dt>
-<dd><p><code>NULL</code> for means only, or a central interval level in <code>(0, 1)</code>.
-A probability input with retained intervals supports only its supplied
-level; <code>NULL</code> can still request its supplied means without intervals.</p></dd>
+<dd><p><code>NULL</code> (the default, returning means only) or a central interval
+level in <code>(0, 1)</code>. For a <code><a href="postrank_probabilities.html">postrank_probabilities()</a></code> input with stored
+intervals, a non-<code>NULL</code> <code>level</code> must equal <code>x$summaries$level</code>.</p></dd>
 
 </dl>
 </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
 </h2>
-    <p>An <code>n x K</code> numeric matrix with dimnames <code>entity</code> and <code>criterion</code>;
-when <code>level</code> is given it carries attributes <code>lower</code>, <code>upper</code>, <code>level</code> and
-<code>interval_source</code>.</p>
+    <p>An <code>n x K</code> numeric matrix with <code>dimnames</code> <code>entity</code> and <code>criterion</code>.
+When <code>level</code> is non-<code>NULL</code>, attributes <code>lower</code>, <code>upper</code>, <code>level</code> and
+<code>interval_source</code> (<code>"draws_equal_tail"</code>, <code>"exact_finite_law"</code>,
+<code>"gaussian_analytic"</code>, <code>"mixture_analytic"</code> or
+<code>"supplied_marginal_summaries"</code>) are attached.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
 </h2>
-    <p>Draw inputs use equal-weight means and
-<code>stats::quantile(type = 7)</code><span>; an exact finite law uses probability-weighted
-means and the generalized inverse <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">inf</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">{</mo><mi>x</mi><mo>:</mo><mi>F</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo>≥</mo><mi>p</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">Q(p) = \inf\{x : F(x) \ge p\}</annotation></semantics></math>;
-Gaussian coefficients use their stored means and analytic quantiles; a
-shared-state mixture uses its stored means and a bracketed root of the
-marginal mixture CDF in standardized coordinates. Mixture endpoints are
-checked against their CDF with absolute probability tolerance </span><code>1e-10</code>;
-a numerically unrepresentable endpoint raises <code>posterior_quantile_failure</code>.
-Stored mixture weights are never changed. Means and quantiles are computed separately, so a
-mean may lie outside its central interval for a skewed law. A pairwise
-error array alone does not determine posterior means, so <code>postrank_pairwise</code>
-objects are not accepted. Inputs from <code><a href="postrank_probabilities.html">postrank_probabilities()</a></code> can return
-explicitly supplied marginal summaries. Those values are not inferred from
-the probabilities, and their fixed interval level cannot be changed.</p>
+    <p>Calculation method by input type:</p>
+<ul>
+<li><p>IID or MCMC draws: equal-weight column means and <code>stats::quantile(..., type = 7)</code>;</p></li>
+<li><p><span>exact finite posterior: probability-weighted means and generalized inverse
+quantile <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">inf</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">{</mo><mi>x</mi><mo>:</mo><mi>F</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo>≥</mo><mi>p</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">Q(p) = \inf\{x : F(x) \ge p\}</annotation></semantics></math>;</span></p></li>
+<li><p>normal posterior coefficients: stored <code>means</code> and <code><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">stats::qnorm()</a></code>;</p></li>
+<li><p>shared-state mixture coefficients: stored <code>means</code> and bracketed roots of
+the marginal mixture CDF verified within probability tolerance <code>1e-10</code>
+(stopping with <code>posterior_quantile_failure</code> if unrepresentable);</p></li>
+<li><p>precomputed probabilities: stored <code>x$summaries</code> without recalculation.</p></li>
+</ul>
+<p>Because means and quantiles are computed separately, a posterior mean can lie
+outside an equal-tail interval under a skewed distribution.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
 </h2>
-    <div class="dont-index"><p><code><a href="postrank_report_card.html">postrank_report_card()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="postrank_report_card.html">postrank_report_card()</a></code>, <code><a href="postrank_composite.html">postrank_composite()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
 </h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu">postrank_posterior_means</span><span class="op">(</span><span class="va">postrank_toy</span>, level <span class="op">=</span> <span class="fl">.9</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu">postrank_posterior_means</span><span class="op">(</span><span class="va">postrank_toy</span>, level <span class="op">=</span> <span class="fl">0.90</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">m</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         criterion</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> entity       need_A      need_B</span>

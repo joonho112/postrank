@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Extract Stored Data for a Figure — postrank_plot_data • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Extract Stored Data for a Figure — postrank_plot_data"><meta name="description" content="The complete data underlying the seven postrank figure types are returned
-for inspection or alternative displays. Stored results are read and reshaped
-without optimization, action evaluation or calculation of posterior
-summaries. Plot row limits and display labels do not affect the returned
-tables."><meta property="og:description" content="The complete data underlying the seven postrank figure types are returned
-for inspection or alternative displays. Stored results are read and reshaped
-without optimization, action evaluation or calculation of posterior
-summaries. Plot row limits and display labels do not affect the returned
-tables."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Extract Stored Data for a Figure — postrank_plot_data • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Extract Stored Data for a Figure — postrank_plot_data"><meta name="description" content="postrank_plot_data() returns the complete data frame (or named list of data
+frames) underlying the seven postrank plot types without solving,
+evaluating gradings, or recomputing posterior summaries. Plot display caps
+(max_rows, max_entities) and label maps do not filter or rename the
+returned tables."><meta property="og:description" content="postrank_plot_data() returns the complete data frame (or named list of data
+frames) underlying the seven postrank plot types without solving,
+evaluating gradings, or recomputing posterior summaries. Plot display caps
+(max_rows, max_entities) and label maps do not filter or rename the
+returned tables."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -15,7 +15,7 @@ tables."><meta property="og:image" content="https://joonho112.github.io/postrank
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,7 +23,7 @@ tables."><meta property="og:image" content="https://joonho112.github.io/postrank
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -43,11 +43,11 @@ tables."><meta property="og:image" content="https://joonho112.github.io/postrank
     </div>
 
     <div class="ref-description section level2">
-    <p>The complete data underlying the seven postrank figure types are returned
-for inspection or alternative displays. Stored results are read and reshaped
-without optimization, action evaluation or calculation of posterior
-summaries. Plot row limits and display labels do not affect the returned
-tables.</p>
+    <p><code>postrank_plot_data()</code> returns the complete data frame (or named list of data
+frames) underlying the seven <code>postrank</code> plot types without solving,
+evaluating gradings, or recomputing posterior summaries. Plot display caps
+(<code>max_rows</code>, <code>max_entities</code>) and label maps do not filter or rename the
+returned tables.</p>
     </div>
 
     <div class="section level2">
@@ -62,49 +62,60 @@ tables.</p>
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p>A <code>postrank_analysis</code>, <code>postrank_fit</code>, <code>postrank_report_card</code>,
 <code>postrank_baseline</code>, <code>postrank_frontier</code>, <code>postrank_commonality_cost</code>,
-<code>postrank_comparison</code>, or prepared pairwise/coefficient input.</p></dd>
+<code>postrank_comparison</code>, <code>postrank_pairwise</code> (including
+<code><a href="postrank_probabilities.html">postrank_probabilities()</a></code>), or <code>postrank_coefficients</code>.</p></dd>
 
 
 <dt id="arg-which">which<a class="anchor" aria-label="anchor" href="#arg-which"></a></dt>
-<dd><p>Optional component name. Analysis components are
-<code>"report_card"</code>, <code>"relations"</code> and <code>"profile"</code>; <code>"pairwise"</code> explicitly
-requests prepared probabilities. See Details for other classes.</p></dd>
+<dd><p>Optional single string naming the component to extract. For a
+<code>postrank_analysis</code>, <code>NULL</code> returns a named list of <code>"report_card"</code>,
+<code>"relations"</code>, and <code>"profile"</code>, or pass one of <code>"report_card"</code>,
+<code>"relations"</code>, <code>"profile"</code>, or <code>"pairwise"</code>. See Details for other classes.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data frame, a named list for an analysis with <code>which = NULL</code>,
-or <code>NULL</code> for an unavailable card or relation component. A profile without
-a validated incumbent is an empty typed data frame. The analysis list has
-an <code>availability</code> attribute with an available flag and reason per component.</p>
+    <p>A data frame, a named list of three components (with an
+<code>"availability"</code> attribute) when <code>x</code> is a <code>postrank_analysis</code> and
+<code>which = NULL</code>, or <code>NULL</code> when a requested <code>"report_card"</code> or <code>"relations"</code>
+table has no underlying report card or checked grading. When <code>profile</code> is
+requested without a checked grading, returns the zero-row data frame from
+<code><a href="get_profile.html">get_profile()</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>For an analysis, <code>which = NULL</code> returns <code>report_card</code>, <code>relations</code> and
-<code>profile</code>. Pairwise probabilities are deliberately separate because the
-complete table has <code>n * n * K</code> rows. A fit defaults to <code>"relations"</code> and
-also accepts <code>"profile"</code> or <code>"pairwise"</code>. A report card returns its long
-table; a baseline returns its relations. Frontier and commonality objects
-return their stored tables. A comparison returns its summary table by
-default and its change-count table for <code>which = "relations"</code>.</p>
-<p>The report-card table has <code>entity_id</code>, <code>grade</code>, <code>sort_rank</code>, <code>n_withheld</code>,
-<code>criterion</code>, <code>mean</code>, <code>lower</code>, <code>upper</code> and <code>expected_rank</code>. Rows are grouped
-by criterion and follow stored card order within each criterion; interval
-level and source remain on the card object. Relations contain one row per
-unordered pair with <code>entity_i</code>, <code>entity_j</code>, <code>i_pos</code>, <code>j_pos</code>, <code>code</code> and
-<code>relation</code>, in grade-then-ID order. Code 1 means the first entity is above
-the second, 0 means withheld and -1 means below. Profile columns are
-listed in <code><a href="get_profile.html">get_profile()</a></code>.</p>
-<p><code>which = "pairwise"</code> returns <code>entity_i</code>, <code>entity_j</code>, <code>criterion</code> and
-<code>error_probability</code>, including the <code>NA</code> diagonal. It preserves input ID
-order, with <code>entity_i</code> varying fastest. This component remains available
-for fits without a validated grade. Prepared pairwise/probability/coefficient
-objects return it by default, but raw draws must first be aggregated with
-<code><a href="postrank_pairwise.html">postrank_pairwise()</a></code>. The table is not a relation-change map; use
-<code><a href="postrank_plot_relations.html">postrank_plot_relations()</a></code> with two actions for that view.</p>
-<p>The designs <code>"sensitivity"</code>, <code>"fragility"</code>, <code>"crossfit"</code>, <code>"trace"</code> and
-<code>"dispersion"</code> are reserved and raise <code>unshipped_figure</code>. This does not
-imply that all similarly named numerical diagnostic functions are unavailable.</p>
+    <p>Accepted <code>which</code> values by input class:</p><ul><li><p><code>postrank_analysis</code>: <code>NULL</code> returns <code>list(report_card = ..., relations = ..., profile = ...)</code> whose <code>"availability"</code> attribute gives
+<code>list(available, reason)</code> for each slot; <code>"pairwise"</code> must be requested
+by name because its table has <code>n * n * K</code> rows.</p></li>
+<li><p><code>postrank_fit</code>: defaults to <code>"relations"</code> and also accepts
+<code>"profile"</code> or <code>"pairwise"</code>.</p></li>
+<li><p><code>postrank_report_card</code>: returns the long report-card table.</p></li>
+<li><p><code>postrank_baseline</code>: returns the pair-relations table.</p></li>
+<li><p><code>postrank_frontier</code> and <code>postrank_commonality_cost</code>: return
+<code>x$table</code>.</p></li>
+<li><p><code>postrank_comparison</code>: returns <code>x$table</code> by default, or
+<code>x$relations</code> when <code>which = "relations"</code>.</p></li>
+<li><p><code>postrank_pairwise</code> and <code>postrank_coefficients</code>: accept <code>NULL</code> or
+<code>"pairwise"</code> and return the pairwise probability table (aggregate raw
+<code>postrank_draws</code> with <code><a href="postrank_pairwise.html">postrank_pairwise()</a></code> first).</p></li>
+</ul><p>Returned columns for reshaped views:</p><ul><li><p><code>report_card</code>: <code>entity_id</code>, <code>grade</code>, <code>sort_rank</code>, <code>n_withheld</code>,
+<code>criterion</code>, <code>mean</code>, <code>lower</code>, <code>upper</code>, and <code>expected_rank</code>, stacked by
+criterion in stored card order (interval <code>level</code> and <code>interval_source</code>
+stay on the <code>postrank_report_card</code> object).</p></li>
+<li><p><code>relations</code>: one row per unordered pair (<code>i_pos &lt; j_pos</code>) in
+grade-then-ID order with <code>entity_i</code>, <code>entity_j</code>, <code>i_pos</code>, <code>j_pos</code>,
+integer <code>code</code> (<code>1L</code> = <code>"above"</code>, <code>0L</code> = <code>"withheld"</code>, <code>-1L</code> = <code>"below"</code>),
+and factor <code>relation</code>.</p></li>
+<li><p><code>profile</code>: same columns as <code><a href="get_profile.html">get_profile()</a></code>.</p></li>
+<li><p><code>pairwise</code>: <code>entity_i</code>, <code>entity_j</code>, <code>criterion</code>, and
+<code>error_probability</code> (<code>n * n * K</code> rows in input order with <code>entity_i</code>
+varying fastest, including <code>NA</code> diagonal entries; available even when a
+fit has no checked grading).</p></li>
+</ul><p>Passing <code>which</code> equal to <code>"sensitivity"</code>, <code>"fragility"</code>, <code>"crossfit"</code>,
+<code>"trace"</code>, or <code>"dispersion"</code> stops with condition code <code>"unshipped_figure"</code>;
+those figure names are not implemented as plot views, although the numerical
+functions <code><a href="postrank_sensitivity.html">postrank_sensitivity()</a></code>, <code><a href="postrank_mc_fragility.html">postrank_mc_fragility()</a></code>, and
+<code><a href="postrank_crossfit.html">postrank_crossfit()</a></code> are available.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -114,10 +125,7 @@ imply that all similarly named numerical diagnostic functions are unavailable.</
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Read prepared tutorial results; no model fitting or optimization.</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"scripts"</span>, <span class="st">"_vignette-setup.R"</span>, package <span class="op">=</span> <span class="st">"postrank"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"tutorial_one"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_one"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">card_data</span> <span class="op">&lt;-</span> <span class="fu">postrank_plot_data</span><span class="op">(</span><span class="va">one</span>, <span class="st">"report_card"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">card_data</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   entity_id grade sort_rank n_withheld criterion  mean       lower      upper</span>
@@ -134,19 +142,6 @@ imply that all similarly named numerical diagnostic functions are unavailable.</
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4      3.646891</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5      5.129639</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6      5.855084</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Complete two-criterion probability table, including its gray diagonal cells.</span></span></span>
-<span class="r-in"><span><span class="va">pair_data</span> <span class="op">&lt;-</span> <span class="fu">postrank_plot_data</span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">two</span>, <span class="st">"pairwise"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pair_data</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 72</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pair_data</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   entity_i entity_j criterion error_probability</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1        A        A   score_A                NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2        B        A   score_A         0.8116204</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3        C        A   score_A         0.9996085</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4        D        A   score_A         0.9998973</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5        E        A   score_A         1.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6        F        A   score_A         1.0000000</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="fu">postrank_plot_data</span><span class="op">(</span><span class="va">one</span><span class="op">)</span>, <span class="st">"availability"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $report_card</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $report_card$available</span>
@@ -172,6 +167,18 @@ imply that all similarly named numerical diagnostic functions are unavailable.</
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">pair_data</span> <span class="op">&lt;-</span> <span class="fu">postrank_plot_data</span><span class="op">(</span><span class="va">pr_tutorial</span><span class="op">$</span><span class="va">two</span>, <span class="st">"pairwise"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pair_data</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 72</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pair_data</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   entity_i entity_j criterion error_probability</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        A        A   score_A                NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        B        A   score_A         0.8116204</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        C        A   score_A         0.9996085</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4        D        A   score_A         0.9998973</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5        E        A   score_A         1.0000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6        F        A   score_A         1.0000000</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

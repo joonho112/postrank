@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Computing grades and choosing settings • postrank</title>
+<title>Computing grades, choosing settings, and reading solver bounds • postrank</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Computing grades and choosing settings">
+<meta property="og:title" content="Computing grades, choosing settings, and reading solver bounds">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,7 +35,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -57,7 +57,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Computing grades and choosing settings</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Computing grades, choosing settings, and reading solver bounds</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/m5-computing-grades.Rmd" class="external-link"><code>vignettes/m5-computing-grades.Rmd</code></a></small>
@@ -66,101 +66,382 @@
 
     
     
-<p>A grading problem is specified by an action family and an objective.
-The family determines the admissible reports, and the objective orders
-them by their expected loss. An algorithm searches this family and
-returns a report together with numerical information about its
-optimality. Changes to these three components have distinct
-implications.</p>
-<p>We first consider a single criterion and then introduce criterion
-protections and minimax objectives. Enumeration of a complete
-three-entity law illustrates how restrictions affect the solution. Other
-tables and the figure use prepared HiGHS results. The article build
-requires neither an optimizer nor dynamic programming; optional
-calculations are specified at the end. <a href="m1-ranking-and-loss.html">Posterior ranking, grades, and loss</a>
-defines the loss, and <a href="a7-figures-sensitivity.html">Figures and
-sensitivity analysis</a> describes the corresponding applied
-analysis.</p>
+<p>Every <code>postrank</code> optimization problem has three distinct
+parts:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Allowed grade reports</strong>—set by <code>G_max</code>,
+<code>exact_G</code>, and optional per-criterion error budgets
+<code>q</code> in <code><a href="../reference/postrank_settings.html">postrank_settings()</a></code>.</li>
+<li>
+<strong>Expected loss objective</strong>—weighted directional loss
+(<code>objective = "weighted"</code>) or worst-criterion loss
+(<code>objective = "minimax"</code>), governed by <code>weights</code>
+and <code>tau</code>.</li>
+<li>
+<strong>Optimization search and bounds</strong>—controlled by
+<code>backend</code> and <code><a href="../reference/postrank_control.html">postrank_control()</a></code>, returning a
+checked grading, a solver lower bound, an optimality gap, and a
+termination status.</li>
+</ol>
+<p>This article explains what the solver computes and checks, how
+<code>G_max</code>, <code>exact_G</code>, <code>q</code>, and
+<code>minimax</code> reshape the problem, and how to choose a solver and
+controls. Executed chunks use exact three-entity enumeration and stored
+<code><a href="../reference/postrank_example.html">postrank_example()</a></code> results, so rendering needs no
+optimization solver. See <a href="m1-ranking-and-loss.html">Posterior
+ranking, integer grades, and reporting loss</a> for the loss formula and
+<a href="a7-figures-sensitivity.html">Figures and sensitivity to
+reporting settings</a> for plotting sensitivity grids and frontiers.</p>
 <div class="section level2">
-<h2 id="a-grade-cap-and-an-exact-count-define-different-families">Capped and exact-count action families<a class="anchor" aria-label="anchor" href="#a-grade-cap-and-an-exact-count-define-different-families"></a>
+<h2 id="read-the-incumbent-and-bounds-together">What the solver optimizes, checks, and bounds<a class="anchor" aria-label="anchor" href="#read-the-incumbent-and-bounds-together"></a>
 </h2>
-<p>Grade 1 has highest reporting priority. Different grades publish a
-direction; the same grade withholds a comparison. <code>G_max</code>
-limits the number of occupied grades. A cap of three permits one, two,
-or three grades. <code>exact_G = 3</code> instead requires three
-nonempty grades and must not exceed <code>G_max</code> or the number of
-entities. An exact count greater than one excludes the all-withheld
-report.</p>
-<p>Increasing a grade cap enlarges the action family, so the exact
-minimum of a fixed loss cannot increase. In contrast, exact-count
-families are disjoint, and increasing the required count from two to
-three can either increase or decrease minimum risk. Both changes concern
-the decision problem rather than computational effort. The <a href="https://joonho112.github.io/postrank-theory-book/chapters/14-computing-grades.html#action-spaces-must-be-compared-on-their-stated-terms">action-family
-derivation</a> gives the relevant set inclusions.</p>
-<p>Consider the finite law from M1, whose complete states have masses
-12/20, 3/20, 3/20, and 2/20. These probabilities specify the joint law
-rather than an empirical distribution of draws. At
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mn>1</mn><mi>/</mi><mn>5</mn></mrow><annotation encoding="application/x-tex">\tau=1/5</annotation></semantics></math>,
-the risk of every ordered partition is obtained by summing the
-state-specific wrong-direction losses.</p>
+<p>When <code><a href="../reference/postrank.html">postrank()</a></code> or <code><a href="../reference/postrank_solve.html">postrank_solve()</a></code>
+searches for a grading, it tracks two numbers in <code>[0, 1]</code>
+loss (<code>risk</code>) units:</p>
+<ul>
+<li>
+<strong>Checked grading loss
+(<code>U = R(\widehat{g})</code>)</strong>: the loss of the best valid
+grading
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>g</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\widehat{g}</annotation></semantics></math>
+found by the solver, recomputed independently by
+<code><a href="../reference/validate_postrank_solution.html">validate_postrank_solution()</a></code> from the rounded integer
+grades (for minimax, the actual largest criterion loss
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">max</mi><mo>⁡</mo></mrow><mrow><mi>k</mi><mo>∈</mo><mi>S</mi></mrow></msub><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mover><mi>g</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\max_{k \in S} R_k(\widehat{g})</annotation></semantics></math>
+rather than an unverified auxiliary variable).</li>
+<li>
+<strong>Solver lower bound (<code>L</code>)</strong>: a loss value
+that no valid grading in the allowed family can beat, obtained from a
+linear-programming (LP) relaxation or the mixed-integer programming
+(MIP) dual bound.</li>
+</ul>
+<p>Whenever
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>g</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\widehat{g}</annotation></semantics></math>
+is valid and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>L</mi><annotation encoding="application/x-tex">L</annotation></semantics></math>
+is a valid whole-family lower bound, the unknown true minimum loss
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mo>*</mo></msup><annotation encoding="application/x-tex">R^*</annotation></semantics></math>
+over the allowed family satisfies</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>≤</mo><msup><mi>R</mi><mo>*</mo></msup><mo>≤</mo><mi>R</mi><mo stretchy="false" form="prefix">(</mo><mover><mi>g</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>U</mi><mo>,</mo><mspace width="2.0em"></mspace><mn>0</mn><mo>≤</mo><mi>R</mi><mo stretchy="false" form="prefix">(</mo><mover><mi>g</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msup><mi>R</mi><mo>*</mo></msup><mo>≤</mo><mi>U</mi><mo>−</mo><mi>L</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">
+L \le R^* \le R(\widehat{g}) = U, \qquad
+0 \le R(\widehat{g}) - R^* \le U - L.
+</annotation></semantics></math></p>
+<p>The difference <code>gap = U - L</code>
+(<code>risk_absolute_gap</code>) bounds how much lower the loss could
+possibly get if optimization continued on the <strong>same</strong>
+pairwise probabilities. For weighted problems, the solver works
+internally on the centered raw objective
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Z</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mo>∑</mo><mrow><mi>i</mi><mo>≠</mo><mi>j</mi></mrow></msub><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><msub><mover><mi>e</mi><mo accent="true">‾</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><mi>τ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Z(g) = \sum_{i \ne j} x_{ij}(g)(\bar{e}_{ij} - \tau)</annotation></semantics></math>,
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>τ</mi><mo>+</mo><mi>Z</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mi>M</mi></mrow><annotation encoding="application/x-tex">R(g) = \tau + Z(g)/M</annotation></semantics></math>;
+<code>postrank</code> divides raw gaps by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><mi>n</mi><mn>2</mn></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">M = \binom{n}{2}</annotation></semantics></math>
+so <code>risk_absolute_gap</code> is always on the <code>[0, 1]</code>
+loss scale (note that a relative gap on the centered scale
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Z</mi><annotation encoding="application/x-tex">Z</annotation></semantics></math>
+differs from a relative gap on
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>R</mi><annotation encoding="application/x-tex">R</annotation></semantics></math>).</p>
+<p>We can inspect these fields on the stored weighted and minimax fits
+for the 32-draw, 3-entity, 2-criterion dataset
+<code>postrank_toy</code>, alongside the six-site tutorial result
+<code>tutorial_one</code>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A<span class="op">=</span><span class="fl">3</span>, B<span class="op">=</span><span class="fl">2</span>, C<span class="op">=</span><span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A<span class="op">=</span><span class="fl">3</span>, B<span class="op">=</span><span class="fl">1</span>, C<span class="op">=</span><span class="fl">2</span><span class="op">)</span>,</span>
-<span>                <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A<span class="op">=</span><span class="fl">2</span>, B<span class="op">=</span><span class="fl">3</span>, C<span class="op">=</span><span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A<span class="op">=</span><span class="fl">1</span>, B<span class="op">=</span><span class="fl">2</span>, C<span class="op">=</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">mass</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12L</span>, <span class="fl">3L</span>, <span class="fl">3L</span>, <span class="fl">2L</span><span class="op">)</span></span>
-<span><span class="va">actions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>A<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, B<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, C<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">keep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">actions</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">actions</span> <span class="op">&lt;-</span> <span class="va">actions</span><span class="op">[</span><span class="va">keep</span>, , drop<span class="op">=</span><span class="cn">FALSE</span><span class="op">]</span></span>
-<span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">actions</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">disclose</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/outer.html" class="external-link">outer</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">g</span>, <span class="st">"&lt;"</span><span class="op">)</span></span>
-<span>  <span class="va">wrong</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">states</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">theta</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">disclose</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/outer.html" class="external-link">outer</a></span><span class="op">(</span><span class="va">theta</span>, <span class="va">theta</span>, <span class="st">"&lt;="</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>G<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span>, N<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">disclose</span><span class="op">)</span>, E_numerator<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">mass</span> <span class="op">*</span> <span class="va">wrong</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joonho112/postrank" class="external-link">postrank</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">toy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"toy_analysis"</span><span class="op">)</span></span>
+<span><span class="va">mm_stored</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"toy_minimax"</span><span class="op">)</span></span>
+<span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_one"</span><span class="op">)</span></span>
+<span><span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Tutorial_one <span class="op">=</span> <span class="va">one</span><span class="op">[[</span><span class="st">"fit"</span><span class="op">]</span><span class="op">]</span>, Toy_weighted <span class="op">=</span> <span class="va">toy</span><span class="op">[[</span><span class="st">"fit"</span><span class="op">]</span><span class="op">]</span>, Toy_minimax <span class="op">=</span> <span class="va">mm_stored</span><span class="op">)</span></span>
+<span><span class="va">bound_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">fits</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">name</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">fit</span> <span class="op">&lt;-</span> <span class="va">fits</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="va">obj</span> <span class="op">&lt;-</span> <span class="va">fit</span><span class="op">[[</span><span class="st">"objective"</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    Fit <span class="op">=</span> <span class="va">name</span>, Status <span class="op">=</span> <span class="va">fit</span><span class="op">[[</span><span class="st">"status"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"normalized"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    Lower <span class="op">=</span> <span class="va">obj</span><span class="op">[[</span><span class="st">"risk_lower_bound"</span><span class="op">]</span><span class="op">]</span>, Upper <span class="op">=</span> <span class="va">obj</span><span class="op">[[</span><span class="st">"risk_upper_bound"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    Gap <span class="op">=</span> <span class="va">obj</span><span class="op">[[</span><span class="st">"risk_absolute_gap"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    Bound_minus_risk <span class="op">=</span> <span class="va">obj</span><span class="op">[[</span><span class="st">"risk_bound_minus_action_risk"</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">risk_numerator</span> <span class="op">&lt;-</span> <span class="fl">5</span> <span class="op">*</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"E_numerator"</span><span class="op">]</span> <span class="op">+</span> <span class="fl">20</span> <span class="op">*</span> <span class="op">(</span><span class="fl">3</span> <span class="op">-</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"N"</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="va">risk</span> <span class="op">&lt;-</span> <span class="va">risk_numerator</span> <span class="op">/</span> <span class="fl">300</span></span>
-<span><span class="va">families</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  <span class="st">"At most 1"</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"G"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="fl">1</span>,</span>
-<span>  <span class="st">"At most 2"</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"G"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="fl">2</span>,</span>
-<span>  <span class="st">"At most 3"</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"G"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="fl">3</span>,</span>
-<span>  <span class="st">"Exactly 3"</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"G"</span><span class="op">]</span> <span class="op">==</span> <span class="fl">3</span>,</span>
-<span>  <span class="st">"Fixed order C, B, A"</span> <span class="op">=</span> <span class="va">actions</span><span class="op">[</span>, <span class="st">"C"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="va">actions</span><span class="op">[</span>, <span class="st">"B"</span><span class="op">]</span> <span class="op">&amp;</span></span>
-<span>    <span class="va">actions</span><span class="op">[</span>, <span class="st">"B"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="va">actions</span><span class="op">[</span>, <span class="st">"A"</span><span class="op">]</span>,</span>
-<span>  <span class="st">"At most 3; q = 0.10"</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"E_numerator"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"N"</span><span class="op">]</span>,</span>
-<span>  <span class="st">"Exactly 3; q = 0.10"</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"G"</span><span class="op">]</span> <span class="op">==</span> <span class="fl">3</span> <span class="op">&amp;</span></span>
-<span>    <span class="va">counts</span><span class="op">[</span>, <span class="st">"E_numerator"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"N"</span><span class="op">]</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">family_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">families</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">name</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">eligible</span> <span class="op">&lt;-</span> <span class="va">families</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Family<span class="op">=</span><span class="va">name</span>, Reports<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">eligible</span><span class="op">)</span>,</span>
-<span>    Minimum<span class="op">=</span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">eligible</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">risk</span><span class="op">[</span><span class="va">eligible</span><span class="op">]</span><span class="op">)</span> <span class="kw">else</span> <span class="cn">NA_real_</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">family_table</span>, digits<span class="op">=</span><span class="fl">4</span>, row.names<span class="op">=</span><span class="cn">FALSE</span>,</span>
-<span>  col.names<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Family"</span>, <span class="st">"Eligible reports"</span>, <span class="st">"Minimum risk"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">bound_table</span>, digits <span class="op">=</span> <span class="fl">6</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
-<th align="left">Family</th>
-<th align="right">Eligible reports</th>
-<th align="right">Minimum risk</th>
+<th align="left">Fit</th>
+<th align="left">Status</th>
+<th align="right">Lower</th>
+<th align="right">Upper</th>
+<th align="right">Gap</th>
+<th align="right">Bound_minus_risk</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">At most 1</td>
+<td align="left">Tutorial_one</td>
+<td align="left">optimal</td>
+<td align="right">0.041652</td>
+<td align="right">0.041652</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Toy_weighted</td>
+<td align="left">optimal</td>
+<td align="right">0.212500</td>
+<td align="right">0.212500</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">Toy_minimax</td>
+<td align="left">optimal</td>
+<td align="right">0.250000</td>
+<td align="right">0.250000</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Floating-point bound clamping.</strong> Because LP and MIP
+solvers use finite-precision floating-point arithmetic and internal
+feasibility tolerances, an unclamped <code>[0, 1]</code> loss-scale
+lower bound
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>L</mi><mrow><mi mathvariant="normal">u</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">p</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">d</mi></mrow></msub><annotation encoding="application/x-tex">L_{\mathrm{unclamped}}</annotation></semantics></math>
+can occasionally exceed the independently recomputed loss
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>U</mi><annotation encoding="application/x-tex">U</annotation></semantics></math>
+of a valid grading by a tiny rounding amount
+(<code>risk_bound_minus_action_risk</code>, such as
+<code>6.94e-18</code> in <code>tutorial_one</code> or
+<code>2.78e-17</code> in <code>toy_analysis</code>). For a weighted
+problem, the tolerance on the loss scale is
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>t</mi><mi>M</mi></mfrac><mrow><mi mathvariant="normal">max</mi><mo>⁡</mo></mrow><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>,</mo><munder><mo>∑</mo><mi>j</mi></munder><mo stretchy="false" form="prefix">|</mo><msub><mi>c</mi><mi>j</mi></msub><msub><mi>x</mi><mi>j</mi></msub><mo stretchy="false" form="prefix">|</mo><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+  \frac{t}{M}\max\!\left(1, \sum_j |c_j x_j|\right),
+</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
+is <code>tolerances$objective</code> (default <code>1e-7</code>),
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>c</mi><mi>j</mi></msub><annotation encoding="application/x-tex">c_j</annotation></semantics></math>
+are the raw objective coefficients, and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mi>j</mi></msub><annotation encoding="application/x-tex">x_j</annotation></semantics></math>
+are the variables of the checked, rounded solution. The fitted value is
+<code>fit$objective$bound_validation_risk_tolerance</code>.</p>
+<p>When
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>&lt;</mo><msub><mi>L</mi><mrow><mi mathvariant="normal">u</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">p</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">d</mi></mrow></msub><mo>−</mo><mi>U</mi></mrow><annotation encoding="application/x-tex">0 &lt; L_{\mathrm{unclamped}} - U</annotation></semantics></math>
+is within that tolerance, the package sets the reported lower bound to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>U</mi><annotation encoding="application/x-tex">U</annotation></semantics></math>,
+records a zero gap, and adds a warning. A second warning appears when
+the difference exceeds both the absolute gap requested and the relative
+gap requested times
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mi>U</mi><mo>−</mo><mrow><mi mathvariant="normal">o</mi><mi mathvariant="normal">f</mi><mi mathvariant="normal">f</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">t</mi></mrow><mo stretchy="false" form="prefix">|</mo></mrow><annotation encoding="application/x-tex">|U-\mathrm{offset}|</annotation></semantics></math>,
+with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">o</mi><mi mathvariant="normal">f</mi><mi mathvariant="normal">f</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">t</mi></mrow><mo>=</mo><mi>τ</mi></mrow><annotation encoding="application/x-tex">\mathrm{offset}=\tau</annotation></semantics></math>
+for the weighted loss. An inversion larger than the validation tolerance
+leads to rejection of the bound and a <code>"numerical_error"</code>
+status.</p>
+<p>Use the normalized solver status in
+<code>fit$status$normalized</code> (and <code><a href="../reference/get_risk.html">get_risk()</a></code>) to
+decide how to read a result:</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Status (<code>fit$status$normalized</code>)</th>
+<th align="left">Meaning and what to check</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>"optimal"</code></td>
+<td align="left">Checked grades passed validation and <code>gap</code>
+met <code>absolute_risk_gap</code> / <code>relative_gap</code> within
+solver tolerances; check <code>warnings</code> for any bound
+clamping.</td>
+</tr>
+<tr class="even">
+<td align="left"><code>"feasible_not_certified"</code></td>
+<td align="left">Checked grades are valid and usable, but the lower
+bound or gap did not establish optimality (for example when MIP search
+was skipped or stopped early).</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>"time_limit"</code></td>
+<td align="left">The time budget ended before optimality was
+established; check whether a checked grading was found
+(<code>!is.null(get_grades(x))</code>) and inspect
+<code>gap</code>.</td>
+</tr>
+<tr class="even">
+<td align="left">No checked grading
+(<code>fit$incumbent_validated</code> is <code>FALSE</code>;
+<code>reason = "no_validated_incumbent"</code> in <code>extras</code>
+and grid tables)</td>
+<td align="left">The solver finished without finding any grading that
+passed validation, so <code>evaluation</code> and
+<code><a href="../reference/get_grades.html">get_grades()</a></code> are <code>NULL</code>. This is a missing
+solution, completely different from a valid 1-grade all-withheld report
+(<code>1/1/.../1</code>, loss <code>tau</code>).</td>
+</tr>
+<tr class="odd">
+<td align="left">
+<code>"infeasible"</code> or
+<code>"numerical_error"</code>
+</td>
+<td align="left">Either no grading satisfies <code>exact_G</code> and
+<code>q</code> together, or solver residuals/bounds failed validation
+checks; inspect <code>fit$numerical_issues</code>,
+<code>fit$solution_validation$issues</code>, and
+<code>fit$warnings</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Scope of solver status, bounds, and gaps.</strong> Solver
+status, lower bound, and gap describe the optimization for the supplied
+probabilities, not posterior uncertainty or model checking. A zero gap
+means no valid grading beats
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>g</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\widehat{g}</annotation></semantics></math>
+on the numbers passed to the solver (beyond solver tolerances); it does
+not rule out tied optimal gradings, Monte Carlo error in estimated
+probabilities, or misspecification of the statistical model. See Lee
+(2026), Chapter 19, <a href="https://joonho112.github.io/postrank-theory-book/chapters/19-computing-grades.html#sec-solver-qualifications">Feasible
+reports, bounds, and computational scope</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="fixed-order-cuts-and-joint-search-solve-different-problems">Fixed-order cutpoints versus joint search<a class="anchor" aria-label="anchor" href="#fixed-order-cuts-and-joint-search-solve-different-problems"></a>
+</h2>
+<p>If you fix a single entity ordering in advance (for example by
+posterior means or <code><a href="../reference/postrank_expected_rank.html">postrank_expected_rank()</a></code>), every allowed
+grade must be a contiguous block along that order. For the weighted
+objective without <code>q</code>, dynamic programming in
+<code><a href="../reference/postrank_cuts.html">postrank_cuts()</a></code> finds the optimal cutpoints along that
+order in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false" form="prefix">(</mo><mi>G</mi><msup><mi>n</mi><mn>2</mn></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">O(G n^2)</annotation></semantics></math>
+operations once pair costs and the order are available; see Lee (2026),
+Chapter 19, <a href="https://joonho112.github.io/postrank-theory-book/chapters/19-computing-grades.html#sec-fixed-order-dp">Exact
+segmentation of a declared order</a>. Because other entity orderings are
+never considered, a fixed-order optimum is only an upper bound on the
+unrestricted minimum loss.</p>
+<p><code><a href="../reference/postrank.html">postrank()</a></code> and <code><a href="../reference/postrank_solve.html">postrank_solve()</a></code> optimize
+the entity ordering and grade cutpoints jointly using one of two
+<code>strategy</code> settings in <code><a href="../reference/postrank_control.html">postrank_control()</a></code>:</p>
+<ul>
+<li>
+<code>"staged"</code> (the default): builds initial candidate
+gradings from fixed orders and local search, computes a whole-family
+lower bound via an LP relaxation with cutting planes, and—if a nonzero
+gap remains and problem size rules (<code>engine$mip</code>,
+<code>engine$mip_max_n</code>) allow—launches the full MIP.</li>
+<li>
+<code>"label_mip"</code>: sends the integer grade labels and
+pairwise ordering variables directly to the MIP solver.</li>
+</ul>
+<p>Both strategies solve the exact same optimization problem and pass
+their returned grading through
+<code><a href="../reference/validate_postrank_solution.html">validate_postrank_solution()</a></code>.</p>
+</div>
+<div class="section level2">
+<h2 id="a-grade-cap-and-an-exact-count-define-different-families">Grade caps, exact grade counts, and error budgets<a class="anchor" aria-label="anchor" href="#a-grade-cap-and-an-exact-count-define-different-families"></a>
+</h2>
+<p>Three settings in <code><a href="../reference/postrank_settings.html">postrank_settings()</a></code> restrict which
+gradings belong to the allowed family:</p>
+<ul>
+<li>
+<strong><code>G_max</code></strong> caps the number of occupied
+grades (<code>1</code> up to <code>G_max</code>). Raising
+<code>G_max</code> enlarges the allowed family, so the exact minimum of
+a fixed loss can only stay the same or decrease. (When
+<code>postrank_settings</code> is bound to an input with fewer than
+<code>G_max</code> entities, <code>G_max</code> is reduced to
+<code>n</code> with a recorded warning.)</li>
+<li>
+<strong><code>exact_G</code></strong> requires an exact number of
+occupied grades (<code>exact_G &lt;= G_max</code> and
+<code>exact_G &lt;= n</code>; never reduced automatically). Exact-count
+families are disjoint, so moving from <code>exact_G = 2</code> to
+<code>exact_G = 3</code> can either raise or lower the minimum loss, and
+setting <code>exact_G &gt;= 2</code> excludes the single-grade
+all-withheld report. See Lee (2026), Chapter 19, <a href="https://joonho112.github.io/postrank-theory-book/chapters/19-computing-grades.html#action-spaces-must-be-compared-on-their-stated-terms">Inclusion
+relations among specified action families</a>.</li>
+<li>
+<strong><code>q</code></strong> imposes per-criterion expected-error
+budgets on ordered pairs:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>E</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>≤</mo><msub><mi>q</mi><mi>k</mi></msub><mspace width="0.167em"></mspace><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>E</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><munder><mo>∑</mo><mrow><mi>i</mi><mo>≠</mo><mi>j</mi></mrow></munder><mn>𝟏</mn><mo stretchy="false" form="prefix">{</mo><msub><mi>g</mi><mi>i</mi></msub><mo>&lt;</mo><msub><mi>g</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">}</mo><mspace width="0.167em"></mspace><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
+E_k(g) \le q_k \, N(g), \qquad
+E_k(g) = \sum_{i \ne j} \mathbf{1}\{g_i &lt; g_j\} \, e_{ij,k}.
+</annotation></semantics></math> Notice the denominator:
+<code>q_k</code> bounds expected wrong-direction errors divided by the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">N(g)</annotation></semantics></math><strong>ordered</strong> pairs, not by all
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>M</mi><annotation encoding="application/x-tex">M</annotation></semantics></math>
+pairs, and bounds the average across ordered pairs rather than each pair
+individually or a tail probability of realized errors. When
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">N(g) = 0</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>≤</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">0 \le 0</annotation></semantics></math>
+holds automatically even though <code>E_over_N</code> is
+<code>NA</code>. Budgets can also protect criteria whose objective
+weight in <code>weights</code> is <code>0</code>. See Lee (2026),
+Chapter 13, <a href="https://joonho112.github.io/postrank-theory-book/chapters/13-protections-preferences.html#sec-criterion-protections">Criterion-specific
+expected-error protections</a>.</li>
+</ul>
+<p>We can see all three restrictions at work on the exact four-state,
+three-entity distribution (<code>12/20, 3/20, 3/20, 2/20</code>) from <a href="m1-ranking-and-loss.html">Posterior ranking, integer grades, and
+reporting loss</a> at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mn>1</mn><mi>/</mi><mn>5</mn><mo>=</mo><mn>0.20</mn></mrow><annotation encoding="application/x-tex">\tau = 1/5 = 0.20</annotation></semantics></math>.
+First we compute the exact counts and losses of all 13 valid
+three-entity gradings:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">3</span>, B <span class="op">=</span> <span class="fl">2</span>, C <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">3</span>, B <span class="op">=</span> <span class="fl">1</span>, C <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>                <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">2</span>, B <span class="op">=</span> <span class="fl">3</span>, C <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">1</span>, B <span class="op">=</span> <span class="fl">2</span>, C <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">mass</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12L</span>, <span class="fl">3L</span>, <span class="fl">3L</span>, <span class="fl">2L</span><span class="op">)</span></span>
+<span><span class="va">actions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>A <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, B <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, C <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">keep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">actions</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">actions</span> <span class="op">&lt;-</span> <span class="va">actions</span><span class="op">[</span><span class="va">keep</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
+<span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">actions</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">disclose</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/outer.html" class="external-link">outer</a></span><span class="op">(</span><span class="va">g</span>, <span class="va">g</span>, <span class="st">"&lt;"</span><span class="op">)</span></span>
+<span>  <span class="va">wrong</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">states</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">theta</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">disclose</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/outer.html" class="external-link">outer</a></span><span class="op">(</span><span class="va">theta</span>, <span class="va">theta</span>, <span class="st">"&lt;="</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>G <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span>, N <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">disclose</span><span class="op">)</span>, E_num <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">mass</span> <span class="op">*</span> <span class="va">wrong</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">risk</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">5</span> <span class="op">*</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"E_num"</span><span class="op">]</span> <span class="op">+</span> <span class="fl">20</span> <span class="op">*</span> <span class="op">(</span><span class="fl">3</span> <span class="op">-</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"N"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">300</span></span></code></pre></div>
+<p>Next we check how many gradings remain eligible—and what minimum loss
+they achieve—under seven family definitions:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">families</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="st">"At most 1 grade"</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"G"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="fl">1</span>,</span>
+<span>  <span class="st">"At most 2 grades"</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"G"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="fl">2</span>,</span>
+<span>  <span class="st">"At most 3 grades"</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"G"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="fl">3</span>,</span>
+<span>  <span class="st">"Exactly 3 grades"</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"G"</span><span class="op">]</span> <span class="op">==</span> <span class="fl">3</span>,</span>
+<span>  <span class="st">"Fixed order C, B, A"</span> <span class="op">=</span> <span class="va">actions</span><span class="op">[</span>, <span class="st">"C"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="va">actions</span><span class="op">[</span>, <span class="st">"B"</span><span class="op">]</span> <span class="op">&amp;</span> <span class="va">actions</span><span class="op">[</span>, <span class="st">"B"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="va">actions</span><span class="op">[</span>, <span class="st">"A"</span><span class="op">]</span>,</span>
+<span>  <span class="st">"At most 3; q = 0.10"</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"E_num"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"N"</span><span class="op">]</span>,</span>
+<span>  <span class="st">"Exactly 3; q = 0.10"</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"G"</span><span class="op">]</span> <span class="op">==</span> <span class="fl">3</span> <span class="op">&amp;</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"E_num"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">counts</span><span class="op">[</span>, <span class="st">"N"</span><span class="op">]</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">family_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">families</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">name</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">ok</span> <span class="op">&lt;-</span> <span class="va">families</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Family <span class="op">=</span> <span class="va">name</span>, Reports <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">ok</span><span class="op">)</span>,</span>
+<span>    Minimum <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">ok</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">risk</span><span class="op">[</span><span class="va">ok</span><span class="op">]</span><span class="op">)</span> <span class="kw">else</span> <span class="cn">NA_real_</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">family_table</span>, digits <span class="op">=</span> <span class="fl">4</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Allowed family"</span>, <span class="st">"Eligible gradings"</span>, <span class="st">"Minimum loss"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Allowed family</th>
+<th align="right">Eligible gradings</th>
+<th align="right">Minimum loss</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">At most 1 grade</td>
 <td align="right">1</td>
 <td align="right">0.2000</td>
 </tr>
 <tr class="even">
-<td align="left">At most 2</td>
+<td align="left">At most 2 grades</td>
 <td align="right">7</td>
 <td align="right">0.1833</td>
 </tr>
 <tr class="odd">
-<td align="left">At most 3</td>
+<td align="left">At most 3 grades</td>
 <td align="right">13</td>
 <td align="right">0.1833</td>
 </tr>
 <tr class="even">
-<td align="left">Exactly 3</td>
+<td align="left">Exactly 3 grades</td>
 <td align="right">6</td>
 <td align="right">0.2000</td>
 </tr>
@@ -181,130 +462,102 @@ state-specific wrong-direction losses.</p>
 </tr>
 </tbody>
 </table>
-<p>At most three grades retains the two-grade minimum 0.1833; exactly
-three forces the risk to 0.2000. The reversed fixed order also excludes
-both unrestricted minimizers. That order was deliberately imposed to
-illustrate a restriction; this is not evidence that a particular
-score-ordering method would choose it. The final two rows introduce the
-expected-error budget explained below. <code>NA</code> marks an empty
-family, not zero risk or a failed calculation.</p>
-</div>
-<div class="section level2">
-<h2 id="fixed-order-cuts-and-joint-search-solve-different-problems">Fixed-order and joint optimization<a class="anchor" aria-label="anchor" href="#fixed-order-cuts-and-joint-search-solve-different-problems"></a>
-</h2>
-<p>Once an order is fixed, every allowed grade must be a contiguous
-block of that order. For the additive weighted objective, dynamic
-programming finds the best cut locations by combining optimal prefix
-partitions with a final block. The solution is exact for that order and
-scalar cost calculation. Other orderings are excluded from this search.
-Establishing global optimality for a candidate obtained from several
-orders requires a bound covering the larger action family.</p>
-<p>The <a href="https://joonho112.github.io/postrank-theory-book/chapters/14-computing-grades.html#sec-fixed-order-dp">fixed-order
-recurrence</a> has
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false" form="prefix">(</mo><mi>G</mi><msup><mi>n</mi><mn>2</mn></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">O(Gn^2)</annotation></semantics></math>
-arithmetic cost after the pair costs and order are available. That
-mathematical count excludes posterior calculation and order selection;
-it is not a wall-clock guarantee. The package’s internal DP supports
-candidate construction. It is not a separate public solve strategy, and
-its exactness does not transfer to protected or minimax surrogate
-problems.</p>
-<p>The public strategies are <code>"staged"</code> and
-<code>"label_mip"</code>. The label MIP optimizes integer grade labels
-and pair relations jointly under the chosen constraints. The default
-staged strategy first builds candidates from orders and local search,
-then seeks a lower bound from a linear relaxation. If the gap remains
-and the configured size rules permit it, it proceeds to the label MIP
-with added valid inequalities. Both strategies target the same declared
-problem and validate their released action.</p>
-<p>A feasible candidate supplies an upper bound for a minimization
-problem. A relaxation supplies a lower bound when it contains the entire
-action family and agrees with the objective on that family. The minimum
-within a fixed order generally provides an upper bound for unrestricted
-grading, whereas fractional relaxation solutions generally do not
-correspond to admissible grade reports.</p>
-</div>
-<div class="section level2">
-<h2 id="error-budgets-constrain-disclosed-pairs">Error budgets constrain disclosed pairs<a class="anchor" aria-label="anchor" href="#error-budgets-constrain-disclosed-pairs"></a>
-</h2>
-<p>For criterion
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>,
-<code>q</code> imposes</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>E</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>≤</mo><msub><mi>q</mi><mi>k</mi></msub><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>E</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><munder><mo>∑</mo><mrow><mi>i</mi><mo>≠</mo><mi>j</mi></mrow></munder><mn mathvariant="bold">𝟏</mn><mo stretchy="false" form="prefix">{</mo><msub><mi>g</mi><mi>i</mi></msub><mo>&lt;</mo><msub><mi>g</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">}</mo><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
-E_k(g)\leq q_k N(g),
-\qquad
-E_k(g)=\sum_{i\ne j}\mathbf1\{g_i&lt;g_j\}e_{ij,k}.
-</annotation></semantics></math></p>
-<p>The denominator is the number of disclosed pairs, not all
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><mi>n</mi><mn>2</mn></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">M=\binom n2</annotation></semantics></math>
-pairs. When
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">N&gt;0</annotation></semantics></math>,
-the row bounds the posterior expected wrong-direction fraction among
-those disclosed pairs. It does not bound each pair separately or the
-probability that the realized error fraction exceeds the budget. These
-distinctions are derived in the <a href="https://joonho112.github.io/postrank-theory-book/chapters/13-protections-preferences.html#sec-criterion-protections">criterion-protection
-section</a>.</p>
-<p>At
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">N=0</annotation></semantics></math>,
-the count inequality becomes
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>≤</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">0\leq0</annotation></semantics></math>,
-while
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>E</mi><mi>k</mi></msub><mi>/</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">E_k/N</annotation></semantics></math>
-remains undefined. Hence the capped family in the example retains the
-all-withheld action when <code>q = .10</code> excludes every disclosed
-report. Exactly three grades removes that action and leaves no feasible
-report. Restoring withholding would change the requested problem.</p>
-<p>Budgets can protect criteria with zero objective weight: constraint
-rows are not multiplied by those weights. Tightening budgets while
-holding the law, loss and base family fixed cannot lower its exact
-minimum when the remaining family is nonempty. It need not preserve the
-chosen grades or disclosure count. Protections refer to the supplied
-probabilities; model calibration and coefficient approximation require
-additional assessment.</p>
+<p>Allowing at most <code>3</code> grades keeps the two-grade optimum
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>11</mn><mi>/</mi><mn>60</mn></mrow><annotation encoding="application/x-tex">11/60</annotation></semantics></math>).
+Requiring <code>exact_G = 3</code> raises the minimum loss to 0.2000.
+Adding a tight error budget <code>q = 0.10</code> with
+<code>G_max = 3</code> rules out every grading with ordered pairs,
+leaving only the 1-grade all-withheld report
+(<code>loss = 0.2000</code>); combining <code>exact_G = 3</code> with
+<code>q = 0.10</code> removes that 1-grade fallback too and makes the
+problem infeasible (<code>0</code> eligible gradings,
+<code>Minimum = NA</code>).</p>
+<p>In <code><a href="../reference/postrank_problem.html">postrank_problem()</a></code>, each combination of objective and
+family constraints builds an optimization problem tied to the pairwise
+probabilities’ <code>input_identity</code> (weighted problems optimize
+centered pair sums internally and rescale bounds to <code>[0, 1]</code>
+loss units, whereas minimax problems optimize <code>[0, 1]</code>
+criterion-loss units directly):</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pairwise</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_pairwise.html">postrank_pairwise</a></span><span class="op">(</span><span class="va">postrank_toy</span><span class="op">)</span></span>
+<span><span class="va">weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">0.6</span>, need_B <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span></span>
+<span><span class="va">problem</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_problem.html">postrank_problem</a></span><span class="op">(</span><span class="va">pairwise</span>, <span class="va">weights</span>, tau <span class="op">=</span> <span class="fl">0.25</span>, G_max <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span>
+<span><span class="va">protected</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_problem.html">postrank_problem</a></span><span class="op">(</span><span class="va">pairwise</span>, <span class="va">weights</span>, <span class="fl">0.25</span>, <span class="fl">3L</span>, q <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_B <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">exact_two</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_problem.html">postrank_problem</a></span><span class="op">(</span><span class="va">pairwise</span>, <span class="va">weights</span>, <span class="fl">0.25</span>, <span class="fl">3L</span>, exact_G <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span>
+<span><span class="va">minimax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_problem.html">postrank_problem</a></span><span class="op">(</span><span class="va">pairwise</span>, <span class="va">weights</span>, <span class="fl">0.25</span>, <span class="fl">3L</span>, objective <span class="op">=</span> <span class="st">"minimax"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">problem</span><span class="op">[[</span><span class="st">"input_identity"</span><span class="op">]</span><span class="op">]</span>, <span class="va">pairwise</span><span class="op">[[</span><span class="st">"input_identity"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>weighted <span class="op">=</span> <span class="va">problem</span><span class="op">[[</span><span class="st">"objective_units"</span><span class="op">]</span><span class="op">]</span>, minimax <span class="op">=</span> <span class="va">minimax</span><span class="op">[[</span><span class="st">"objective_units"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $weighted.raw</span></span>
+<span><span class="co">#&gt; [1] "weighted_Z"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $weighted.scale</span></span>
+<span><span class="co">#&gt; [1] 0.3333333</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $weighted.offset</span></span>
+<span><span class="co">#&gt; [1] 0.25</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $minimax.raw</span></span>
+<span><span class="co">#&gt; [1] "minimax_risk_t"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $minimax.scale</span></span>
+<span><span class="co">#&gt; [1] 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $minimax.offset</span></span>
+<span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="minimax-changes-the-objective-then-refinement-chooses-among-candidates">Minimax loss and refinement<a class="anchor" aria-label="anchor" href="#minimax-changes-the-objective-then-refinement-chooses-among-candidates"></a>
 </h2>
-<p>With several criteria define</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><msub><mi>E</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>τ</mi><mo stretchy="false" form="prefix">{</mo><mi>M</mi><mo>−</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo></mrow><mi>M</mi></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
-R_k(g)=\frac{E_k(g)+\tau\{M-N(g)\}}M.
+<p>With
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
+criteria and per-criterion loss
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">[</mo><msub><mi>E</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>τ</mi><mo stretchy="false" form="prefix">{</mo><mi>M</mi><mo>−</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo><mo stretchy="false" form="postfix">]</mo><mi>/</mi><mi>M</mi></mrow><annotation encoding="application/x-tex">R_k(g) = [E_k(g) + \tau\{M - N(g)\}]/M</annotation></semantics></math>,
+<code>objective = "weighted"</code> minimizes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></msubsup><msub><mi>w</mi><mi>k</mi></msub><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\sum_{k=1}^K w_k R_k(g)</annotation></semantics></math>,
+whereas <code>objective = "minimax"</code> minimizes</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><munder><mi mathvariant="normal">max</mi><mrow><mi>k</mi><mo>∈</mo><mi>S</mi></mrow></munder><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
+\max_{k \in S} R_k(g),
 </annotation></semantics></math></p>
-<p>Weighted loss minimizes
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>k</mi></msub><msub><mi>w</mi><mi>k</mi></msub><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\sum_k w_kR_k(g)</annotation></semantics></math>.
-<code>objective = "minimax"</code> instead minimizes
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">max</mi><mo>⁡</mo></mrow><mrow><mi>k</mi><mo>∈</mo><msub><mi mathvariant="script">𝒦</mi><mo>+</mo></msub></mrow></msub><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\max_{k\in\mathcal K_+}R_k(g)</annotation></semantics></math>,
-with all criteria included unless <code>minimax_criteria</code> selects
-a subset. A zero weighted-loss weight does not remove a criterion from
-that set. This is the maximum of criterion expectations, not the
-expectation of a draw-specific maximum or a separate worst criterion
-selected for each pair. Its common loss scale and included criteria are
-substantive choices, as the <a href="https://joonho112.github.io/postrank-theory-book/chapters/13-protections-preferences.html#sec-expected-criterion-minimax">minimax
-derivation</a> explains.</p>
-<p>The prepared toy results use the same 32 retained IID states of three
-fictional entities on two criteria, <code>postrank_toy</code>. These are
-draws from a specified normal toy law, so the optimization coefficients
-are empirical frequencies. Both reports allow at most three grades and
-use
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mn>.25</mn></mrow><annotation encoding="application/x-tex">\tau=.25</annotation></semantics></math>;
-weighted loss uses
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>.6</mn><mo>,</mo><mn>.4</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(.6,.4)</annotation></semantics></math>.
-Entity order in the grade vectors is 001, site-B, site C.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Weighted<span class="op">=</span><span class="va">toy</span><span class="op">$</span><span class="va">fit</span>, Minimax<span class="op">=</span><span class="va">minimax</span><span class="op">)</span></span>
-<span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">fits</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">name</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">fit</span> <span class="op">&lt;-</span> <span class="va">fits</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Objective<span class="op">=</span><span class="va">name</span>, Grades<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">grade</span>, collapse<span class="op">=</span><span class="st">"/"</span><span class="op">)</span>,</span>
-<span>    N<span class="op">=</span><span class="va">fit</span><span class="op">$</span><span class="va">evaluation</span><span class="op">$</span><span class="va">N</span>, Weighted<span class="op">=</span><span class="va">fit</span><span class="op">$</span><span class="va">evaluation</span><span class="op">$</span><span class="va">weighted_risk</span>,</span>
-<span>    Worst<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">evaluation</span><span class="op">$</span><span class="va">criterion_risk</span><span class="op">)</span><span class="op">)</span></span>
+<p>where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
+is <code>minimax_criteria</code> (all criteria by default, including any
+criterion with weight <code>0</code> in <code>weights</code>). This
+objective minimizes the largest <strong>posterior expected</strong>
+criterion loss—not the expectation of a draw-by-draw maximum across
+criteria; see Lee (2026), Chapter 13, <a href="https://joonho112.github.io/postrank-theory-book/chapters/13-protections-preferences.html#sec-expected-criterion-minimax">Preference
+sensitivity and expected-criterion minimax</a>.</p>
+<p>Comparing the stored weighted (<code>weights = c(0.6, 0.4)</code>)
+and minimax fits on <code>postrank_toy</code> (<code>tau = 0.25</code>,
+<code>G_max = 3</code>, entities <code>001</code>, <code>site-B</code>,
+<code>site C</code>) shows how the two objectives trade average loss
+against worst-criterion loss:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">toy_fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Weighted <span class="op">=</span> <span class="va">toy</span><span class="op">[[</span><span class="st">"fit"</span><span class="op">]</span><span class="op">]</span>, Minimax <span class="op">=</span> <span class="va">mm_stored</span><span class="op">)</span></span>
+<span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">toy_fits</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">name</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">fit</span> <span class="op">&lt;-</span> <span class="va">toy_fits</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="va">ev</span> <span class="op">&lt;-</span> <span class="va">fit</span><span class="op">[[</span><span class="st">"evaluation"</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    Objective <span class="op">=</span> <span class="va">name</span>, Grades <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">fit</span><span class="op">[[</span><span class="st">"grade"</span><span class="op">]</span><span class="op">]</span>, collapse <span class="op">=</span> <span class="st">"/"</span><span class="op">)</span>,</span>
+<span>    Ordered_pairs <span class="op">=</span> <span class="va">ev</span><span class="op">[[</span><span class="st">"N"</span><span class="op">]</span><span class="op">]</span>, Weighted_loss <span class="op">=</span> <span class="va">ev</span><span class="op">[[</span><span class="st">"weighted_risk"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    Largest_criterion_loss <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">ev</span><span class="op">[[</span><span class="st">"criterion_risk"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">comparison</span>, digits<span class="op">=</span><span class="fl">4</span>, row.names<span class="op">=</span><span class="cn">FALSE</span>,</span>
-<span>  col.names<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Objective"</span>, <span class="st">"Grades"</span>, <span class="st">"Disclosed"</span>, <span class="st">"Weighted risk"</span>, <span class="st">"Largest criterion risk"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">comparison</span>, digits <span class="op">=</span> <span class="fl">4</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
+<colgroup>
+<col width="14%">
+<col width="10%">
+<col width="20%">
+<col width="20%">
+<col width="33%">
+</colgroup>
 <thead><tr class="header">
 <th align="left">Objective</th>
 <th align="left">Grades</th>
-<th align="right">Disclosed</th>
-<th align="right">Weighted risk</th>
-<th align="right">Largest criterion risk</th>
+<th align="right">Ordered_pairs</th>
+<th align="right">Weighted_loss</th>
+<th align="right">Largest_criterion_loss</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -323,211 +576,186 @@ Entity order in the grade vectors is 001, site-B, site C.</p>
 </tr>
 </tbody>
 </table>
-<p>The weighted report has lower weighted risk but higher maximum
-criterion risk. Minimax withholds every comparison here; its
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>E</mi><mi>k</mi></msub><mi>/</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">E_k/N</annotation></semantics></math>
-values are undefined. The table compares two objectives on the same
-inputs and action family; it does not determine which reporting
-preferences are substantively appropriate.</p>
-<p>The default <code>minimax_refine = "weighted"</code> adds a stage
-minimizing the original weighted risk while keeping selected criterion
-risks below the first-stage primary value. If some weights are zero, a
-further stage uses uniform criterion risk while also preserving the
-original weighted result. Weights are not perturbed. With
-<code>minimax_refine = "none"</code>, the first-stage report is
-retained.</p>
-<p>The record <code>fit$minimax_refine</code> contains the stage
-statuses, caps and released action. Refinement may start from an
-unfinished primary solve; its caps need not therefore characterize the
-exact minimax-optimal set. The stated lexicographic and Pareto
-conclusions depend on the relevant stages and their numerical
-tolerances. In this prepared example, refinement was applied and
-<code>improved</code> is FALSE. Neither refinement nor a fixed seed
-establishes uniqueness or a generally deterministic choice among
-minimizers.</p>
+<p>Weighted optimization chooses <code>1/1/2</code>
+(<code>N = 2</code>), achieving weighted loss <code>0.2125</code> while
+incurring <code>0.3750</code> on <code>need_B</code>. Minimax instead
+leaves all pairs unordered (<code>1/1/1</code>, <code>N = 0</code>) so
+neither criterion exceeds <code>0.2500</code>.</p>
+<p>When multiple gradings tie at the minimax value,
+<code>minimax_refine = "weighted"</code> (the default) runs a second
+solver stage that minimizes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>k</mi></msub><msub><mi>w</mi><mi>k</mi></msub><msub><mi>R</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\sum_k w_k R_k(g)</annotation></semantics></math>
+while keeping every criterion in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
+at or below the first-stage minimax value (and, if any criterion has
+weight <code>0</code>, adds a third uniform-average tie-break stage).
+Setting <code>minimax_refine = "none"</code> keeps the first-stage
+grading directly. Stage details are stored in
+<code>fit$minimax_refine</code>, and any degenerate criteria are
+recorded on the problem object:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"toy_minimax"</span><span class="op">)</span></span>
+<span><span class="va">mm</span><span class="op">[[</span><span class="st">"minimax_refine"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mode"</span>, <span class="st">"applied"</span>, <span class="st">"improved"</span>, <span class="st">"reason"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $mode</span></span>
+<span><span class="co">#&gt; [1] "weighted"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $applied</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $improved</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $reason</span></span>
+<span><span class="co">#&gt; [1] "released_action_lexicographic_and_pareto_certified"</span></span>
+<span><span class="va">minimax</span><span class="op">[[</span><span class="st">"minimax_diagnostics"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"degenerate_criteria"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; character(0)</span></span></code></pre></div>
+<p>Refinement and a fixed random seed pick one deterministic solution;
+they do not rule out other tied optimal gradings.</p>
 </div>
 <div class="section level2">
-<h2 id="read-the-incumbent-and-bounds-together">Incumbents and optimization bounds<a class="anchor" aria-label="anchor" href="#read-the-incumbent-and-bounds-together"></a>
+<h2 id="change-settings-with-a-clear-comparison-in-mind">Varying withholding cost along a frontier<a class="anchor" aria-label="anchor" href="#change-settings-with-a-clear-comparison-in-mind"></a>
 </h2>
-<p>An incumbent is the best valid report found. For an exact feasible
-action and a valid whole-family lower bound, the mathematical
-relationship is</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>≤</mo><msup><mi>R</mi><mo>*</mo></msup><mo>≤</mo><mi>R</mi><mo stretchy="false" form="prefix">(</mo><mover><mi>g</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>U</mi><mo>,</mo><mspace width="2.0em"></mspace><mn>0</mn><mo>≤</mo><mi>R</mi><mo stretchy="false" form="prefix">(</mo><mover><mi>g</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msup><mi>R</mi><mo>*</mo></msup><mo>≤</mo><mi>U</mi><mo>−</mo><mi>L</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">
-L\leq R^*\leq R(\widehat g)=U,\qquad
-0\leq R(\widehat g)-R^*\leq U-L.
-</annotation></semantics></math></p>
-<p>The package recomputes the released action’s risk. For minimax it
-uses that action’s largest included criterion risk, rather than a
-potentially slack epigraph value. The actual prepared results have these
-recorded bounds:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bound_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">fits</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">name</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">fit</span> <span class="op">&lt;-</span> <span class="va">fits</span><span class="op">[[</span><span class="va">name</span><span class="op">]</span><span class="op">]</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Objective<span class="op">=</span><span class="va">name</span>, Status<span class="op">=</span><span class="va">fit</span><span class="op">$</span><span class="va">status</span><span class="op">$</span><span class="va">normalized</span>,</span>
-<span>    L<span class="op">=</span><span class="va">fit</span><span class="op">$</span><span class="va">objective</span><span class="op">$</span><span class="va">risk_lower_bound</span>, U<span class="op">=</span><span class="va">fit</span><span class="op">$</span><span class="va">objective</span><span class="op">$</span><span class="va">risk_upper_bound</span>,</span>
-<span>    Gap<span class="op">=</span><span class="va">fit</span><span class="op">$</span><span class="va">objective</span><span class="op">$</span><span class="va">risk_absolute_gap</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">bound_table</span>, digits<span class="op">=</span><span class="fl">4</span>, row.names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="left">Objective</th>
-<th align="left">Status</th>
-<th align="right">L</th>
-<th align="right">U</th>
-<th align="right">Gap</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Weighted</td>
-<td align="left">optimal</td>
-<td align="right">0.2125</td>
-<td align="right">0.2125</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">Minimax</td>
-<td align="left">optimal</td>
-<td align="right">0.2500</td>
-<td align="right">0.2500</td>
-<td align="right">0</td>
-</tr>
-</tbody>
-</table>
-<p>These <code>optimal</code> labels are numerical conclusions for the
-recorded coefficient arrays. Both report
-<code>numerical_certification = FALSE</code>. In the weighted toy, the
-reported lower bound exceeded recomputed risk by 2.78e-17 and was
-clamped within the objective tolerance, with a retained warning. Its
-zero displayed gap must be read with that qualification.</p>
-<p>For weighted problems, the raw objective is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Z</mi><mo>=</mo><msub><mo>∑</mo><mrow><mi>i</mi><mo>≠</mo><mi>j</mi></mrow></msub><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><msub><mover><mi>e</mi><mo accent="true">‾</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><mi>τ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Z=\sum_{i\ne j}x_{ij}(\bar e_{ij}-\tau)</annotation></semantics></math>,
-with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>=</mo><mi>τ</mi><mo>+</mo><mi>Z</mi><mi>/</mi><mi>M</mi></mrow><annotation encoding="application/x-tex">R=\tau+Z/M</annotation></semantics></math>.
-Thus a raw absolute gap must be divided by
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>M</mi><annotation encoding="application/x-tex">M</annotation></semantics></math>.
-A relative gap on the centered raw objective generally differs from one
-on risk. Interpretation of <code>risk_absolute_gap</code> depends on its
-bound source and controls; an unspecified percentage does not quantify
-posterior regret. The <a href="https://joonho112.github.io/postrank-theory-book/chapters/14-computing-grades.html#sec-solver-qualifications">bound
-and normalization discussion</a> states the mathematical premises.</p>
-<p>The recorded states have the following interpretations. The table
-summarizes the output fields rather than additional solver
-executions.</p>
-<table class="table">
-<colgroup>
-<col width="50%">
-<col width="50%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">Recorded state</th>
-<th align="left">What to inspect</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left"><code>optimal</code></td>
-<td align="left">Validated grades, usable whole-problem bounds, gap
-controls and numerical warnings.</td>
-</tr>
-<tr class="even">
-<td align="left"><code>feasible_not_certified</code></td>
-<td align="left">A feasible grade is available, but the recorded bounds
-do not establish the requested optimality conclusion.</td>
-</tr>
-<tr class="odd">
-<td align="left"><code>time_limit</code></td>
-<td align="left">Availability of a validated grade must be established
-separately from the time-limit status.</td>
-</tr>
-<tr class="even">
-<td align="left">No validated grade</td>
-<td align="left">Grades and action risk are unavailable. This is
-different from a valid all-withheld report.</td>
-</tr>
-<tr class="odd">
-<td align="left">
-<code>infeasible</code> or a numerical issue</td>
-<td align="left">Assessment requires the declared action family and
-diagnostics. Relaxing a grade count or budget changes the problem.</td>
-</tr>
-</tbody>
-</table>
-<p>A missing bound gives an unavailable gap. An inconsistent bound can
-be rejected even when a feasible action survives validation. Bounds
-concern optimization of the coefficients actually supplied. They do not
-prove posterior calibration, coefficient accuracy, or the uniqueness of
-an optimum.</p>
-</div>
-<div class="section level2">
-<h2 id="change-settings-with-a-clear-comparison-in-mind">Comparisons across decision settings<a class="anchor" aria-label="anchor" href="#change-settings-with-a-clear-comparison-in-mind"></a>
-</h2>
-<p>The prepared cost path uses the six-site, two-criterion Gaussian law
-from <a href="a1-getting-started.html">Getting started</a>. The
-posterior, equal criterion weights and cap of three grades are held
-fixed, so variation along the path is confined to the withholding
-cost.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_frontier.html">postrank_plot_frontier</a></span><span class="op">(</span><span class="va">frontier</span>, panels<span class="op">=</span><span class="st">"disclosure"</span><span class="op">)</span></span></code></pre></div>
+<p>Holding the posterior, criterion weights (<code>0.5</code> and
+<code>0.5</code>), and grade cap (<code>G_max = 3</code>) fixed while
+varying <code>tau</code> traces how pair ordering responds to the cost
+of withholding. We load the stored five-point frontier on
+<code>pr_tutorial$two</code>:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">frontier</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_frontier"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/postrank_plot_frontier.html">postrank_plot_frontier</a></span><span class="op">(</span><span class="va">frontier</span>, panels <span class="op">=</span> <span class="st">"disclosure"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<a href="m5-computing-grades_files/figure-html/m5-cost-path-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Prepared HiGHS results for six fictional sites under equal criterion weights and a three-grade cap. The vertical axis is disclosed pairs divided by all 15 pairs. Lines join sampled costs; they do not locate every transition." target="_blank" rel="noopener"><img src="m5-computing-grades_files/figure-html/m5-cost-path-1.png" class="r-plt" alt="Prepared HiGHS results for six fictional sites under equal criterion weights and a three-grade cap. The vertical axis is disclosed pairs divided by all 15 pairs. Lines join sampled costs; they do not locate every transition." width="100%"></a><span class="figure-full-size-link d-block small"><a href="m5-computing-grades_files/figure-html/m5-cost-path-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Prepared HiGHS results for six fictional sites under equal criterion weights and a three-grade cap. The vertical axis is disclosed pairs divided by all 15 pairs. Lines join sampled costs; they do not locate every transition.">Open full-size figure</a></span><p class="caption">
-Prepared HiGHS results for six fictional sites under equal criterion
-weights and a three-grade cap. The vertical axis is disclosed pairs
-divided by all 15 pairs. Lines join sampled costs; they do not locate
-every transition.
+<a href="m5-computing-grades_files/figure-html/m5-cost-path-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Step-like line plot showing the fraction of the 15 entity pairs ordered increasing from 8/15 (0.533) at tau = 0.05 and 0.10, to 9/15 (0.600) at tau = 0.20, 11/15 (0.733) at tau = 0.30, and 12/15 (0.800) at tau = 0.40." target="_blank" rel="noopener"><img src="m5-computing-grades_files/figure-html/m5-cost-path-1.png" class="r-plt" alt="Step-like line plot showing the fraction of the 15 entity pairs ordered increasing from 8/15 (0.533) at tau = 0.05 and 0.10, to 9/15 (0.600) at tau = 0.20, 11/15 (0.733) at tau = 0.30, and 12/15 (0.800) at tau = 0.40." width="100%"></a><span class="figure-full-size-link d-block small"><a href="m5-computing-grades_files/figure-html/m5-cost-path-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Step-like line plot showing the fraction of the 15 entity pairs ordered increasing from 8/15 (0.533) at tau = 0.05 and 0.10, to 9/15 (0.600) at tau = 0.20, 11/15 (0.733) at tau = 0.30, and 12/15 (0.800) at tau = 0.40.">Open full-size figure</a></span><p class="caption">
+Ordered pair fraction across five withholding costs (tau from 0.05 to
+0.40) for the six-site, two-criterion tutorial posterior with G_max = 3.
 </p>
 </div>
-<p>Disclosure increases from 8 to 12 of 15 pairs across these sampled
-costs. All points have recorded numerical <code>optimal</code> status;
-the largest absolute gap is 1.39e-17. Under exact minimization with a
-fixed family, disclosure is nondecreasing in
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>.
-A sparse numerical grid is not the complete frontier or a proof that
-every transition was found. Risk values at different costs also use
-different losses. The <a href="https://joonho112.github.io/postrank-theory-book/chapters/16-evaluation-frontiers.html#which-endpoints-and-paths-actually-exist">frontier
-conditions</a> explain why changing a cap or budget at the same time
-changes the comparison.</p>
-<p>Input capabilities further restrict which settings are available.
-Ordinary draw and exact finite-law inputs support the validated
-exact-count, protection and minimax modes. Gaussian, shared-state
-mixture and direct probability inputs currently support weighted
-at-most-G native joint problems. Fixed-order
-<code><a href="../reference/postrank_cuts.html">postrank_cuts()</a></code> additionally accepts an exact count for
-Gaussian and mixture coefficients; that narrower dynamic program does
-not enable exact-count joint optimization. Direct-probability cuts
-remain at-most-G. The separate equality-neutral domain uses its own
-weighted at-most-G label-MIP route. A mathematical extension in the
-theory text is not an implemented combination; see <a href="m3-posterior-inputs.html">Posterior inputs and pairwise
-probabilities</a> and <a href="m4-ties-and-withholding.html">True ties
-and withheld comparisons</a>.</p>
+<p>Across <code>tau = 0.05, 0.10, 0.20, 0.30, 0.40</code>, ordered pairs
+increase from <code>8</code> to <code>12</code> of <code>15</code> (all
+five points have status <code>"optimal"</code>, with largest gap
+<code>1.39e-17</code>). Under exact optimization over a fixed allowed
+family, the number of ordered pairs is nondecreasing in
+<code>tau</code>, though evaluating a finite grid of <code>tau</code>
+values samples points along the path rather than locating every jump
+point; see Lee (2026), Chapter 22, <a href="https://joonho112.github.io/postrank-theory-book/chapters/22-evaluation-frontiers.html#which-endpoints-and-paths-actually-exist">Feasible
+frontier endpoints and cost paths</a>.</p>
+<p>Keep in mind that which settings are available depends on your
+posterior input: posterior draws and exact finite laws support
+<code>G_max</code>, <code>exact_G</code>, <code>q</code>, and
+<code>objective = "minimax"</code>, whereas normal/mixture coefficients
+(<code><a href="../reference/postrank_gaussian_coefficients.html">postrank_gaussian_coefficients()</a></code>,
+<code><a href="../reference/postrank_mixture_coefficients.html">postrank_mixture_coefficients()</a></code>) and supplied probabilities
+(<code><a href="../reference/postrank_probabilities.html">postrank_probabilities()</a></code>) support
+<code>objective = "weighted"</code> with <code>G_max</code> in
+<code><a href="../reference/postrank.html">postrank()</a></code> and <code><a href="../reference/postrank_problem.html">postrank_problem()</a></code>
+(<code><a href="../reference/postrank_cuts.html">postrank_cuts()</a></code> also accepts <code>exact_G</code> for
+normal/mixture coefficients); see <a href="m3-posterior-inputs.html">Posterior representations and pairwise
+comparison probabilities</a> and <a href="m4-ties-and-withholding.html">Exact ties in the posterior versus
+withheld comparisons</a>.</p>
 </div>
 <div class="section level2">
-<h2 id="make-a-fresh-calculation-explicit">Settings and computational controls<a class="anchor" aria-label="anchor" href="#make-a-fresh-calculation-explicit"></a>
+<h2 id="make-a-fresh-calculation-explicit">Choosing a solver and computation controls<a class="anchor" aria-label="anchor" href="#make-a-fresh-calculation-explicit"></a>
 </h2>
-<p>Typed settings use <code>tau = .25</code>, <code>G_max = 4</code>,
-and weighted loss by default. These values define the reporting problem
-and should be stated in the analysis. The default controls specify a
-60-second budget, one thread, seed 1304, staged search, absolute risk
-gap <code>1e-8</code> and relative gap zero. Construction, validation
-and refinement add overhead, so the time budget is not a strict limit on
-total elapsed time.</p>
-<p>An explicit <code>backend</code> takes precedence over
-<code>options(postrank.backend=)</code>; if neither is supplied, Gurobi
-is the default. HiGHS requires explicit selection. Unavailable, failed,
-or timed-out backends are not silently replaced. The following optional
-calculation applies criterion protection to a supported draw input:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">policy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_settings.html">postrank_settings</a></span><span class="op">(</span>weights<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A<span class="op">=</span><span class="fl">.6</span>, need_B<span class="op">=</span><span class="fl">.4</span><span class="op">)</span>,</span>
-<span>  tau<span class="op">=</span><span class="fl">.25</span>, G_max<span class="op">=</span><span class="fl">3L</span>, q<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_B<span class="op">=</span><span class="fl">.30</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">fresh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank.html">postrank</a></span><span class="op">(</span><span class="va">postrank_toy</span>, settings<span class="op">=</span><span class="va">policy</span>, backend<span class="op">=</span><span class="st">"highs"</span>,</span>
-<span>  control<span class="op">=</span><span class="fu"><a href="../reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit<span class="op">=</span><span class="fl">30</span>, absolute_risk_gap<span class="op">=</span><span class="fl">1e-8</span><span class="op">)</span>,</span>
-<span>  fragility<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">fresh</span><span class="op">$</span><span class="va">fit</span><span class="op">$</span><span class="va">status</span></span>
-<span><span class="va">fresh</span><span class="op">$</span><span class="va">fit</span><span class="op">$</span><span class="va">objective</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"risk_lower_bound"</span>, <span class="st">"risk_upper_bound"</span>, <span class="st">"risk_absolute_gap"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<p>Additional computation or a smaller stopping gap can reduce
-optimization uncertainty. The adequacy of the posterior producer and the
-justification for the reporting preferences require separate assessment.
-<a href="m6-uncertainty-diagnostics.html">Monte Carlo uncertainty and
-diagnostics</a> considers uncertainty in the estimated comparison
-probabilities.</p>
+<p><strong>Solver choice (<code>backend</code>).</strong>
+<code>postrank</code> uses an external optimization solver
+(<code>"gurobi"</code> or <code>"highs"</code>) and <strong>never
+switches solvers on its own</strong>:</p>
+<ul>
+<li>If <code>backend</code> is <code>NULL</code> (the default),
+<code>postrank</code> reads <code>getOption("postrank.backend")</code>,
+or uses Gurobi if that option is unset.</li>
+<li>
+<strong>HiGHS</strong> is free and open source: install it with
+<code>install.packages("highs")</code> and select it per call with
+<code>backend = "highs"</code> or for your R session with
+<code>options(postrank.backend = "highs")</code>.</li>
+<li>
+<strong>Gurobi</strong> (the default when no solver is chosen) is
+commercial software requiring Gurobi Optimizer (version 10 or later),
+the <code>gurobi</code> R package, and a valid license.</li>
+<li>If the chosen solver is not installed, cannot be loaded, or throws
+an uncaught R execution error (such as a missing Gurobi license during
+LP setup or <code>strategy = "label_mip"</code>), the call stops with an
+error. In the default <code>strategy = "staged"</code> search, inspect
+<code>fit$engine$stages$lp$status</code> and
+<code>fit$engine$stages$lp$trace</code> for LP cut-round errors. If the
+final MIP call throws an error, its message appears in
+<code>fit$engine$stages$mip$error</code> and <code>fit$warnings</code>.
+Read <code>fit$status</code> for the overall outcome, including a time
+limit or a numerical termination.</li>
+</ul>
+<p><strong>Default settings and controls.</strong>
+<code><a href="../reference/postrank_settings.html">postrank_settings()</a></code> always requires <code>weights</code>
+(including <code>1</code> for a single criterion) and defaults to
+<code>tau = 0.25</code>, <code>G_max = 4L</code>, and
+<code>objective = "weighted"</code> (in <code><a href="../reference/postrank.html">postrank()</a></code>,
+<code>weights</code> defaults to <code>1</code> when omitted for a
+single criterion and is required for two or more criteria).
+<code><a href="../reference/postrank_control.html">postrank_control()</a></code> defaults to <code>time_limit = 60</code>
+seconds, <code>threads = 1L</code>, <code>seed = 1304L</code>,
+<code>absolute_risk_gap = 1e-8</code>, <code>relative_gap = 0</code>,
+and <code>strategy = "staged"</code> (problem construction, validation,
+and minimax refinement add small overhead, so <code>time_limit</code> is
+not a hard wall-clock cap on the entire R call).</p>
+<p><code><a href="../reference/postrank_backend_available.html">postrank_backend_available()</a></code> checks whether a solver’s R
+package metadata is installed (without running a live solve or checking
+a Gurobi license):</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">availability</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_backend_available.html">postrank_backend_available</a></span><span class="op">(</span><span class="st">"highs"</span><span class="op">)</span></span>
+<span><span class="va">availability</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"installed"</span>, <span class="st">"available_for_attempt"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; $installed</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $available_for_attempt</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<p>At the lower level, <code><a href="../reference/postrank_solve.html">postrank_solve()</a></code> solves a
+<code>postrank_problem</code> directly (<code>solve-example</code> shows
+an explicit Gurobi call without running during vignette builds, while
+<code>solve-highs</code> inspects the stored HiGHS fit for the same
+<code>problem</code> object):</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit_gurobi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_solve.html">postrank_solve</a></span><span class="op">(</span><span class="va">problem</span>, backend <span class="op">=</span> <span class="st">"gurobi"</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span>, threads <span class="op">=</span> <span class="fl">1L</span>, seed <span class="op">=</span> <span class="fl">1304L</span>,</span>
+<span>                 absolute_risk_gap <span class="op">=</span> <span class="fl">1e-6</span>, relative_gap <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">control</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">10</span>, threads <span class="op">=</span> <span class="fl">1L</span>, seed <span class="op">=</span> <span class="fl">1304L</span><span class="op">)</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"toy_analysis"</span><span class="op">)</span><span class="op">[[</span><span class="st">"fit"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">fit</span><span class="op">[[</span><span class="st">"status"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"normalized"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] "optimal"</span></span>
+<span><span class="va">fit</span><span class="op">[[</span><span class="st">"grade"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt;    001 site-B site C </span></span>
+<span><span class="co">#&gt;      1      1      2</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">fit</span><span class="op">[[</span><span class="st">"objective"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"risk_upper_bound"</span>, <span class="st">"risk_lower_bound"</span>, <span class="st">"risk_absolute_gap"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  risk_upper_bound  risk_lower_bound risk_absolute_gap </span></span>
+<span><span class="co">#&gt;            0.2125            0.2125            0.0000</span></span>
+<span><span class="va">fit</span><span class="op">[[</span><span class="st">"objective"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"bound_source"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] "engine_lp_relaxation_bound_clamped"</span></span></code></pre></div>
+<p>With <code>highs</code> installed, the one-call wrapper
+<code><a href="../reference/postrank.html">postrank()</a></code> solves a <code>q</code>-protected two-criterion
+grading on <code>postrank_toy</code> (shown without running during
+vignette builds):</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">policy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_settings.html">postrank_settings</a></span><span class="op">(</span></span>
+<span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">0.6</span>, need_B <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,</span>
+<span>  tau <span class="op">=</span> <span class="fl">0.25</span>, G_max <span class="op">=</span> <span class="fl">3L</span>, q <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_B <span class="op">=</span> <span class="fl">0.30</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">fresh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank.html">postrank</a></span><span class="op">(</span></span>
+<span>  <span class="va">postrank_toy</span>, settings <span class="op">=</span> <span class="va">policy</span>, backend <span class="op">=</span> <span class="st">"highs"</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="../reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">30</span>, absolute_risk_gap <span class="op">=</span> <span class="fl">1e-8</span><span class="op">)</span>,</span>
+<span>  fragility <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/get_risk.html">get_risk</a></span><span class="op">(</span><span class="va">fresh</span><span class="op">)</span></span></code></pre></div>
+<p>Tighter stopping gaps or longer time limits reduce optimization
+uncertainty on the supplied probabilities; Monte Carlo uncertainty in
+those probabilities is the subject of <a href="m6-uncertainty-diagnostics.html">Monte Carlo diagnostics,
+cross-fitting, and IID bounds</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<p>Lee, JoonHo (2026). <em>Decisions from Noisy Multidimensional
+Indicators: Theory, Evidence, and Posterior Grading</em>. Companion book
+(<code>citation("postrank")</code>; online Chapters 13, 19, and 22 in
+the expanded online edition linked above).</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

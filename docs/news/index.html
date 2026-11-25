@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -15,7 +15,7 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -34,30 +34,47 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.3.0" id="postrank-130">postrank 1.3.0<a class="anchor" aria-label="anchor" href="#postrank-130"></a></h2>
+<div class="section level3">
+<h3 id="new-functions-1-3-0">New functions<a class="anchor" aria-label="anchor" href="#new-functions-1-3-0"></a></h3>
+<ul><li>
+<code><a href="../reference/postrank_example.html">postrank_example()</a></code> lists the 21 precomputed analysis objects shipped with the package and returns one by name after verifying compatibility, so help examples and vignettes show the exact code that runs without calling a solver.</li>
+<li>
+<code><a href="../reference/postrank_describe.html">postrank_describe()</a></code> builds the required posterior description for a numeric draw array from plain arguments and passes it to <code><a href="../reference/postrank_declarations.html">postrank_declarations()</a></code>. Substantive statements are still written by the user; the helper fills in identifiers and, when given the array, its type and dimensions.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-and-compatibility-1-3-0">Documentation and compatibility<a class="anchor" aria-label="anchor" href="#documentation-and-compatibility-1-3-0"></a></h3>
+<ul><li>Rewrote all 91 reference help pages, the shipped vignettes, <code>README</code>, <code>DESCRIPTION</code>, and internal code comments in plain R-package prose, removing software-development jargon and clarifying literature attributions.</li>
+<li>Consolidated four overlapping articles (<code>quickstart</code>, <code>inputs-and-producers</code>, <code>baselines-and-the-cost-of-a-common-grade</code>, and <code>migration-from-0-9</code>) into the Start here and Methods vignettes and <code>system.file("MIGRATION-1.2.0.md", package = "postrank")</code>, with pkgdown URL redirects preserved from the previous article paths.</li>
+<li>Stored-result compatibility checks now hash parsed R expressions rather than raw file bytes, so documentation and comment updates do not invalidate the 21 shipped <code>.rds</code> example results.</li>
+<li>Function arguments, defaults, return structures, console and HTML report formatting, solver selection rules, and numerical results are unchanged from version 1.2.0.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.2.0" id="postrank-120">postrank 1.2.0<a class="anchor" aria-label="anchor" href="#postrank-120"></a></h2>
 <div class="section level3">
 <h3 id="multidomain-profile-report-cards-1-2-0">Multidomain profile report cards<a class="anchor" aria-label="anchor" href="#multidomain-profile-report-cards-1-2-0"></a></h3>
 <ul><li>
 <code><a href="../reference/postrank_mdomain_input.html">postrank_mdomain_input()</a></code> retains identified unit-by-domain states, declared target laws, structural identities and actual coupling/sampling provenance.</li>
 <li>
-<code><a href="../reference/postrank_mdomain_decision.html">postrank_mdomain_decision()</a></code> specifies weights, withholding loss, mean guards, direct joint exceedance thresholds and scopes using exact policy values.</li>
+<code><a href="../reference/postrank_mdomain_decision.html">postrank_mdomain_decision()</a></code> sets domain weights and the cost of leaving a pair unordered. For selected pairs in each domain, it can limit expected errors per ordered pair and cap the probability that any protected error proportion exceeds its threshold.</li>
 <li>
 <code><a href="../reference/postrank_mdomain_evaluate.html">postrank_mdomain_evaluate()</a></code> evaluates one fixed grade matrix, and <code><a href="../reference/postrank_mdomain_grades.html">postrank_mdomain_grades()</a></code> extracts a verified evaluated or selected matrix.</li>
 <li>
-<code><a href="../reference/postrank_mdomain_family.html">postrank_mdomain_family()</a></code> constructs explicit or ordered-cut product banks; <code><a href="../reference/postrank_mdomain_solve.html">postrank_mdomain_solve()</a></code> examines the complete declared bank with hard workload caps. Public selection uses additive risk A and direct joint protection. Optimality is restricted to that bank.</li>
+<code><a href="../reference/postrank_mdomain_family.html">postrank_mdomain_family()</a></code> defines candidate grade columns explicitly or through cuts along a specified ordering. When the number of combinations fits within <code>max_actions</code>, <code><a href="../reference/postrank_mdomain_solve.html">postrank_mdomain_solve()</a></code> examines them all and selects a feasible card with the lowest weighted expected loss, if one exists.</li>
 <li>
-<code><a href="../reference/postrank_mdomain_assess.html">postrank_mdomain_assess()</a></code> separates complete finite-law evaluation, conditional fixed-sample iid count assurance and descriptive MCMC diagnostics. Producer declarations remain declarations; no model-calibration certificate is inferred. Exact represented-measure arithmetic is distinct from numerical assurance about an intended posterior.</li>
+<code><a href="../reference/postrank_mdomain_assess.html">postrank_mdomain_assess()</a></code> separates complete finite-law evaluation, conditional fixed-sample iid count bounds and descriptive MCMC diagnostics. Metadata fields record how the input was constructed without verifying model calibration, and exact rational arithmetic over the supplied distribution is distinct from numerical bounds on an intended posterior.</li>
 <li>
 <code><a href="../reference/postrank_plot_mdomain.html">postrank_plot_mdomain()</a></code> displays stored grades, cell counts or pair directions. Filtering/labels preserve original grades and denominators. Stored plots need neither a solver nor optional exact-arithmetic tooling.</li>
-<li>The quickstart and decision vignettes explain separable domain decisions, dependence-sensitive protection, crossed priorities and the permitted synthetic 40-site illustration. Raw posterior archives are not bundled.</li>
+<li>The quickstart and decision vignettes explain separable domain decisions, dependence-sensitive protection, crossed priorities and the synthetic 40-site illustration. Raw posterior archives are not bundled.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="compatibility-1-2-0">Compatibility<a class="anchor" aria-label="anchor" href="#compatibility-1-2-0"></a></h3>
-<ul><li>The existing 97 exports, 127 S3 registrations, P1 signatures, eight datasets and common-grade behavior are retained. Eight exports and 15 stored-summary methods are added; the package now has 105 exports and 142 S3 registrations.</li>
-<li>P1 <code><a href="../reference/get_profile.html">get_profile()</a></code> summarizes criterion contributions to a common grading. P2 uses a unit-by-domain grade matrix; it does not replace that accessor.</li>
-<li>Original prepared P1 results retain their computation versions, source IDs, backend records and timestamps. A separately sealed, exact-version reader compatibility receipt records their validation by the new reader.</li>
+<ul><li>The existing 97 exports, 127 S3 registrations, common-grade signatures, eight datasets and common-grade behavior are retained. Eight exports and 15 stored-summary methods are added; the package now has 105 exports and 142 S3 registrations.</li>
+<li>Common-grade <code><a href="../reference/get_profile.html">get_profile()</a></code> summarizes criterion contributions to a common grading. Multidomain report cards use a unit-by-domain grade matrix and do not replace that accessor.</li>
+<li>Original precomputed common-grade results retain their computation versions, source IDs, backend records and timestamps, and a versioned reader compatibility check records their validation by the current reader.</li>
 <li>Numeric policy inputs mean their stored binary values. Use decimal/fraction strings when the scientific policy is an exact decimal or fraction. Numeric weights retain the existing normalization rule when bound to an input.</li>
-<li>Existing P1 solver defaults are preserved. P2 finite-bank evaluation and selection use optional <code>gmp</code> arithmetic and require no MIP backend.</li>
+<li>Existing common-grade solver defaults are preserved. Multidomain finite-bank evaluation and selection use optional <code>gmp</code> arithmetic and require no MIP backend.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -81,7 +98,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.0" id="postrank-090">postrank 0.9.0<a class="anchor" aria-label="anchor" href="#postrank-090"></a></h2>
-<p>GitHub release candidate. The reviewed mathematical kernels and the legacy scientific payload identities are preserved; every inherited behavioral case remains an obligation, with reviewed public-adapter and English presentation expectation migrations. Acceptance of the new API precedes any 1.0.0 label.</p>
+<p>GitHub release candidate. The reviewed mathematical calculations and existing scientific outputs are preserved; all previous behavioral test cases are retained alongside updated public function interfaces and English console output. Acceptance of the new API precedes any 1.0.0 label.</p>
 <div class="section level3">
 <h3 id="opt-in-tie-aware-mode-development-addition-0-9-0">Opt-in tie-aware mode (development addition)<a class="anchor" aria-label="anchor" href="#opt-in-tie-aware-mode-development-addition-0-9-0"></a></h3>
 <ul><li>The separate <code>tie_aware_v1</code> domain adds <code><a href="../reference/as_postrank_tie_draws.html">as_postrank_tie_draws()</a></code>, <code><a href="../reference/validate_postrank_tie_draws.html">validate_postrank_tie_draws()</a></code>, <code><a href="../reference/read_postrank_tie_draws.html">read_postrank_tie_draws()</a></code> and <code><a href="../reference/write_postrank_tie_draws.html">write_postrank_tie_draws()</a></code> for explicitly declared genuine ties in joint IID/MCMC inputs or complete exact finite laws. Legacy schemas and readers remain unchanged. No sampled coincidence establishes structural identity.</li>
@@ -165,9 +182,9 @@
 <h2 class="pkg-version" data-toc-text="0.0.1.9002" id="postrank-0019002">postrank 0.0.1.9002<a class="anchor" aria-label="anchor" href="#postrank-0019002"></a></h2>
 <p>Development version with independent audit corrections and an LP time-budget repair.</p>
 <div class="section level3">
-<h3 id="audit-corrections-0-0-1-9002">Audit corrections<a class="anchor" aria-label="anchor" href="#audit-corrections-0-0-1-9002"></a></h3>
-<ul><li>AUD-01: minimax refinement preserves the original weighted secondary objective. Zero weights no longer trigger a perturbation of that objective. A separate Pareto tie-break, when applicable, preserves the preceding objectives, and certification describes the action actually released.</li>
-<li>AUD-02: cross-fit unbiasedness is conditional on independent IID folds and a linear weighted or criterion-specific risk functional. Empirical minimax maxima and MCMC fold comparisons are descriptive; no exact unbiasedness guarantee is claimed for them. Numerical cross-fit summaries are unchanged.</li>
+<h3 id="review-corrections-0-0-1-9002">Review corrections<a class="anchor" aria-label="anchor" href="#review-corrections-0-0-1-9002"></a></h3>
+<ul><li>Minimax refinement preserves the original weighted secondary objective. Zero weights no longer trigger a perturbation of that objective. A separate Pareto tie-break, when applicable, preserves the preceding objectives, and solver status describes the action actually released.</li>
+<li>Cross-fit unbiasedness is conditional on independent IID folds and a linear weighted or criterion-specific risk functional. Empirical minimax maxima and MCMC fold comparisons are descriptive; no exact unbiasedness guarantee is claimed for them. Numerical cross-fit summaries are unchanged.</li>
 <li>Regression tests include the zero/tiny-weight minimax counterexample and exact enumeration of the minimax cross-fit bias example.</li>
 </ul></div>
 </div>
@@ -180,7 +197,7 @@
 <li>With the default minimax second stage, stage 1 now uses nearly all of its three quarters of the time limit on such problems, so stage 2 gets about the last quarter instead of the larger remainder it had before (n = 250 with a 60 s limit: 15 s instead of 34 s; the whole run took 59.5 s instead of 45.3 s).</li>
 <li>
 <code>lp_time_share</code> sets the relaxation’s share when the MIP stage may follow; otherwise it is only a lower bound on its budget. <code>fit$engine$stages$lp</code> records the budget the relaxation received (<code>time_budget</code>) and the rule that set it (<code>time_budget_rule</code>); each round in its <code>trace</code> records the solver time limit for that call (<code>time_limit</code>).</li>
-<li>The HiGHS LP stage resets the solver’s time limit before each call to the run time used so far plus the remaining budget. HiGHS counts the limit against the solver object’s cumulative run time, so the cut separation between calls was never charged and the stage could overrun its budget (in the weighted and q runs of the 014 Phase 2 benchmark, by 10-13 s at n = 400 and 74-88 s at n = 807). A call that still runs more than a second past the budget adds a warning. Gurobi already received the remaining budget on each call.</li>
+<li>The HiGHS LP stage resets the solver’s time limit before each call to the run time used so far plus the remaining budget. HiGHS counts the limit against the solver object’s cumulative run time, so the cut separation between calls was never charged and the stage could overrun its budget (by 10-13 s at n = 400 and 74-88 s at n = 807 in weighted and error-budget benchmark runs). A call that still runs more than a second past the budget adds a warning. Gurobi already received the remaining budget on each call.</li>
 <li>Without a MIP stage, the LP stage separates no more cuts once its budget is spent; they could only have served a MIP stage.</li>
 </ul></div>
 </div>
@@ -222,7 +239,7 @@
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.1" id="postrank-001">postrank 0.0.1<a class="anchor" aria-label="anchor" href="#postrank-001"></a></h2>
-<ul><li>Local research development edition (<code>p1-applied-local-development-2026-10-19-r1</code>); see <code>registry/release-manifest.json</code>.</li>
+<ul><li>Initial local research development version.</li>
 </ul></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

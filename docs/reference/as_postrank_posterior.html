@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Import Explicitly Mapped Posterior Draws — as_postrank_posterior • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Import Explicitly Mapped Posterior Draws — as_postrank_posterior"><meta name="description" content="This adapter maps a posterior::draws_array to the declared entities and
-criteria, retaining its source history. Each imported target value is
-compared with the corresponding source cell. Variable names are matched
-through an explicit mapping; entity and criterion labels are not inferred
-from those names."><meta property="og:description" content="This adapter maps a posterior::draws_array to the declared entities and
-criteria, retaining its source history. Each imported target value is
-compared with the corresponding source cell. Variable names are matched
-through an explicit mapping; entity and criterion labels are not inferred
-from those names."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Import Mapped Posterior Draws — as_postrank_posterior • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Import Mapped Posterior Draws — as_postrank_posterior"><meta name="description" content="as_postrank_posterior() imports a posterior::draws_array into a
+postrank_draws object using supplied variable and draw-position mappings,
+and checks that every imported cell equals its source cell in x. Entity
+and criterion labels come from variable_map and metadata, never from
+parsing variable names."><meta property="og:description" content="as_postrank_posterior() imports a posterior::draws_array into a
+postrank_draws object using supplied variable and draw-position mappings,
+and checks that every imported cell equals its source cell in x. Entity
+and criterion labels come from variable_map and metadata, never from
+parsing variable names."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -15,7 +15,7 @@ from those names."><meta property="og:image" content="https://joonho112.github.i
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,7 +23,7 @@ from those names."><meta property="og:image" content="https://joonho112.github.i
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -37,17 +37,17 @@ from those names."><meta property="og:image" content="https://joonho112.github.i
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Import Explicitly Mapped Posterior Draws</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Import Mapped Posterior Draws</h1>
 
       <div class="d-none name"><code>as_postrank_posterior.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>This adapter maps a <code><a href="https://rdrr.io/pkg/posterior/man/draws_array.html" class="external-link">posterior::draws_array</a></code> to the declared entities and
-criteria, retaining its source history. Each imported target value is
-compared with the corresponding source cell. Variable names are matched
-through an explicit mapping; entity and criterion labels are not inferred
-from those names.</p>
+    <p><code>as_postrank_posterior()</code> imports a <code><a href="https://rdrr.io/pkg/posterior/man/draws_array.html" class="external-link">posterior::draws_array</a></code> into a
+<code>postrank_draws</code> object using supplied variable and draw-position mappings,
+and checks that every imported cell equals its source cell in <code>x</code>. Entity
+and criterion labels come from <code>variable_map</code> and <code>metadata</code>, never from
+parsing variable names.</p>
     </div>
 
     <div class="section level2">
@@ -60,56 +60,57 @@ from those names.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>A <code><a href="https://rdrr.io/pkg/posterior/man/draws_array.html" class="external-link">posterior::draws_array</a></code> with iteration, chain and variable axes.
-The optional <code>posterior</code> package is required.</p></dd>
+<dd><p>A <code><a href="https://rdrr.io/pkg/posterior/man/draws_array.html" class="external-link">posterior::draws_array</a></code> with named <code>iteration</code>, <code>chain</code> and
+<code>variable</code> axes (requires the optional <code>posterior</code> package).</p></dd>
 
 
 <dt id="arg-variable-map">variable_map<a class="anchor" aria-label="anchor" href="#arg-variable-map"></a></dt>
-<dd><p>List of records containing <code>entity_id</code>, <code>criterion_id</code>,
-<code>source_target_variable_id</code> and <code>derivation_note</code>. Map each entity/criterion
-target once to a distinct source variable. Unused source variables are allowed.</p></dd>
+<dd><p>List of <code>n * K</code> named lists, each with <code>entity_id</code>,
+<code>criterion_id</code>, <code>source_target_variable_id</code> and <code>derivation_note</code>. Every
+entity-by-criterion pair must map once to a distinct variable in <code>x</code>;
+extra variables in <code>x</code> may remain unused.</p></dd>
 
 
 <dt id="arg-metadata">metadata<a class="anchor" aria-label="anchor" href="#arg-metadata"></a></dt>
-<dd><p>Complete canonical <code>applied-0.1</code> metadata for joint
-equal-weight draws, including the tensor shape and ordered IDs, target
-definitions, source records and sampling history. Tensor values may be
-omitted; if present, they must equal the mapped source values exactly.</p></dd>
+<dd><p>Complete <code>applied-0.1</code> list for joint equal-weight draws
+(<code>joint_draws</code>), including <code>tensor$shape</code>, ordered <code>entity_ids</code> and
+<code>criterion_ids</code>, target descriptions, source records and sampling history.
+<code>tensor$values</code> may be omitted; if present, it must match the mapped
+values from <code>x</code>.</p></dd>
 
 
 <dt id="arg-source-coordinates">source_coordinates<a class="anchor" aria-label="anchor" href="#arg-source-coordinates"></a></dt>
-<dd><p>One record per declared draw slot, containing
-<code>slot_id</code>, <code>iteration_index</code> and <code>chain_index</code>. Indices are positions in
-<code>x</code>, not original iteration numbers or chain IDs. Every source
-iteration-by-chain position must be used exactly once.</p></dd>
+<dd><p>List of <code>S</code> named lists, one per declared draw
+slot, each with <code>slot_id</code>, <code>iteration_index</code> and <code>chain_index</code>. Indices
+are integer positions along the <code>iteration</code> and <code>chain</code> axes of <code>x</code> (not
+original MCMC iteration numbers), and must cover every iteration-by-chain
+position of <code>x</code> once.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A validated <code>postrank_draws</code> object with
 <code>validation$source_values_checked = TRUE</code> and a <code>validation$source_audit</code>
-describing the mappings and comparisons performed.</p>
+list recording the checked cell count, variable and chain mappings, and
+<code>source_object_sha256</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Source values must already be the higher-priority targets. No negation or
-other numerical transformation is performed. The target array has shape
-<code>S x n x K</code>, where <code>S</code> is the number of source iteration-by-chain positions;
-<code>K = 1</code> retains its third axis.</p>
-<p>Original MCMC chain IDs and iteration numbers come from <code>metadata</code>, not
-from the source axis labels. Each source chain must map to one distinct
-declared chain, with original iterations increasing in source iteration
-order. Preserve actual warmup, discarding and thinning history. For IID
-input the source chain axis is only a container grouping and makes no
-MCMC claim. <code><a href="postrank_draws.html">postrank_draws()</a></code> also accepts <code>posterior</code> data-frame and
-matrix formats through <code><a href="https://rdrr.io/pkg/posterior/man/draws_array.html" class="external-link">posterior::as_draws_array()</a></code>; a conversion cannot
-recover a chain history that the export lost.</p>
-<p>The audit's <code>source_object_sha256</code> identifies serialized <code>unclass(x)</code>.
-The separately retained origin <code>source_hash</code> may identify an external
-file; this adapter does not verify that file's bytes. Source-value equality
-verifies the conversion, not scientific jointness, identification or
-convergence. Canonical declaration checks apply without the additional
-placeholder-text checks of <code><a href="postrank_declarations.html">postrank_declarations()</a></code>.</p>
+    <p>Values in <code>x</code> must already be oriented so that larger values mean higher
+priority; this function performs no negation or rescaling. The imported
+array has dimensions <code>S x n x K</code>, keeping the third dimension when <code>K = 1</code>.</p>
+<p>When <code>metadata</code> specifies <code>regime = "mcmc"</code>, original chain IDs and
+iteration numbers come from <code>metadata$joint_draws$draw_index</code> and
+<code>chain_history</code>. Each chain of <code>x</code> must map to a distinct declared chain
+with strictly increasing original iteration numbers. When <code>regime = "iid"</code>,
+the <code>chain</code> axis of <code>x</code> is treated only as a storage index.
+<code><a href="postrank_draws.html">postrank_draws()</a></code> also accepts <code>draws_df</code> and <code>draws_matrix</code> objects by
+converting them with <code><a href="https://rdrr.io/pkg/posterior/man/draws_array.html" class="external-link">posterior::as_draws_array()</a></code> first.</p>
+<p><code>source_audit$source_object_sha256</code> hashes <code>unclass(x)</code> in R memory; it does
+not check external files named in <code>origin</code>. Cell-by-cell equality confirms
+the import mapping, not scientific identification, jointness or MCMC
+convergence. Required strings are checked for non-empty text without the
+placeholder-word list of <code><a href="postrank_declarations.html">postrank_declarations()</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -119,25 +120,23 @@ placeholder-text checks of <code><a href="postrank_declarations.html">postrank_d
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"posterior"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="co"># Re-express the unchanged bundled two-criterion IID sample.</span></span></span>
-<span class="r-in"><span>  <span class="co"># Its original declarations apply because no values or law are replaced.</span></span></span>
-<span class="r-in"><span>  <span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">unclass</a></span><span class="op">(</span><span class="va">postrank_toy</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">metadata</span><span class="op">$</span><span class="va">schema_version</span> <span class="op">&lt;-</span> <span class="va">metadata</span><span class="op">$</span><span class="va">input_schema_version</span></span></span>
-<span class="r-in"><span>  <span class="va">metadata</span><span class="op">$</span><span class="va">input_schema_version</span> <span class="op">&lt;-</span> <span class="va">metadata</span><span class="op">$</span><span class="va">validation</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span></span>
-<span class="r-in"><span>  <span class="va">a</span> <span class="op">&lt;-</span> <span class="va">metadata</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">tensor</span><span class="op">$</span><span class="va">values</span></span></span>
-<span class="r-in"><span>  <span class="va">map</span> <span class="op">&lt;-</span> <span class="va">metadata</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">variable_map</span></span></span>
-<span class="r-in"><span>  <span class="va">variable_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">map</span>, <span class="va">`[[`</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="st">"source_target_variable_id"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">source_array</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">map</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>iteration <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>      chain <span class="op">=</span> <span class="st">"1"</span>, variable <span class="op">=</span> <span class="va">variable_ids</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">source_draws</span> <span class="op">&lt;-</span> <span class="fu">posterior</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/posterior/man/draws_array.html" class="external-link">as_draws_array</a></span><span class="op">(</span><span class="va">source_array</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">coordinates</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>slot_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span><span class="op">$</span><span class="va">draw</span><span class="op">[</span><span class="va">s</span><span class="op">]</span>, iteration_index <span class="op">=</span> <span class="va">s</span>, chain_index <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">imported</span> <span class="op">&lt;-</span> <span class="fu">as_postrank_posterior</span><span class="op">(</span><span class="va">source_draws</span>, <span class="va">map</span>, <span class="va">metadata</span>, <span class="va">coordinates</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">imported</span><span class="op">$</span><span class="va">validation</span><span class="op">$</span><span class="va">source_values_checked</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">imported</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">tensor</span><span class="op">$</span><span class="va">values</span>, <span class="va">a</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Map the bundled two-criterion IID sample through posterior::draws_array:</span></span></span>
+<span class="r-in"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">unclass</a></span><span class="op">(</span><span class="va">postrank_toy</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">meta</span><span class="op">$</span><span class="va">schema_version</span> <span class="op">&lt;-</span> <span class="va">meta</span><span class="op">$</span><span class="va">input_schema_version</span></span></span>
+<span class="r-in"><span><span class="va">meta</span><span class="op">$</span><span class="va">input_schema_version</span> <span class="op">&lt;-</span> <span class="va">meta</span><span class="op">$</span><span class="va">validation</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="va">meta</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">tensor</span><span class="op">$</span><span class="va">values</span></span></span>
+<span class="r-in"><span><span class="va">map</span> <span class="op">&lt;-</span> <span class="va">meta</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">variable_map</span></span></span>
+<span class="r-in"><span><span class="va">var_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">map</span>, <span class="va">`[[`</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="st">"source_target_variable_id"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">src_arr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">map</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>iteration <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    chain <span class="op">=</span> <span class="st">"1"</span>, variable <span class="op">=</span> <span class="va">var_ids</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">src</span> <span class="op">&lt;-</span> <span class="fu">posterior</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/posterior/man/draws_array.html" class="external-link">as_draws_array</a></span><span class="op">(</span><span class="va">src_arr</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>slot_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span><span class="op">$</span><span class="va">draw</span><span class="op">[</span><span class="va">s</span><span class="op">]</span>, iteration_index <span class="op">=</span> <span class="va">s</span>, chain_index <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">imported</span> <span class="op">&lt;-</span> <span class="fu">as_postrank_posterior</span><span class="op">(</span><span class="va">src</span>, <span class="va">map</span>, <span class="va">meta</span>, <span class="va">coords</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">imported</span><span class="op">$</span><span class="va">validation</span><span class="op">$</span><span class="va">source_values_checked</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">imported</span><span class="op">$</span><span class="va">joint_draws</span><span class="op">$</span><span class="va">tensor</span><span class="op">$</span><span class="va">values</span>, <span class="va">a</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 </code></pre></div>
     </div>

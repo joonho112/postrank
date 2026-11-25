@@ -1,4 +1,4 @@
-# Standalone action normalization for the local P2 reference engine.
+# Multidomain grade-matrix normalization and constraint validation.
 # Numeric label order encodes report priority: smaller grade means higher.
 # This function validates supplied reporting guards, not their scientific provenance.
 p2_validate_action <- function(grades, unit_ids, domain_ids,

@@ -1,5 +1,5 @@
 # Decision binding only consumes identified dimensions and the external spec ID.
-# These small metadata objects isolate decision tests from posterior adapters.
+# These small metadata objects isolate decision tests from input constructors.
 md_decision_metadata <- function() {
   structure(list(n=3L, D=2L, unit_ids=c("A", "B", "C"),
                  domain_ids=c("need", "cost"), decision_spec_hash="designed-policy-id"),

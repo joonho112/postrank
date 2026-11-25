@@ -1,47 +1,52 @@
-# Required figure fig-method-comparison and the autoplot()/plot() dispatch (Chapter 12).
+# Method-comparison plots and autoplot()/plot() S3 dispatch.
 
 #' Plot Grading Rules Evaluated Under the Same Loss
 #'
-#' Stored reports are compared by risk, disclosure and grade count, or by
-#' changes in pairwise relations relative to the reference report. Risk values
-#' use the comparison object's common posterior and loss settings. The plotting
-#' function neither evaluates nor optimizes additional actions.
+#' `postrank_plot_compare()` plots stored grading rules from
+#' [postrank_compare()] side by side on risk, disclosure rate (`N / M`), and
+#' grade count (`G`), or by pairwise relation changes relative to the reference
+#' rule. All risk values come from `x`'s shared posterior and loss settings
+#' without solving or evaluating new gradings.
 #'
 #' @param x A `postrank_comparison` from [postrank_compare()].
-#' @param view `"summary"` for risk, disclosure and grade-count panels;
-#'   `"relations"` for pair-relation change counts.
-#' @param ... Unused.
-#' @param ncol Optional positive integer number of facet columns in the
-#'   summary view. Supply by name. `NULL` uses three columns; `ncol = 1`
-#'   with a taller output suits a narrow page. Ignored in the relations view.
-#' @return A `ggplot` object. Unavailable actions keep their method labels,
-#'   statuses and reasons, with unavailable points and relation counts omitted. The
-#'   relations view returns a status panel if no comparison has grades.
+#' @param view `"summary"` (the default) for risk, disclosure, and grade-count
+#'   panels, or `"relations"` for stacked counts of pairwise relation changes
+#'   from `x$reference` to each other rule.
+#' @param ... Unused; unnamed extra arguments are ignored. Pass `ncol` by name.
+#' @param ncol Positive integer number of facet columns in `view = "summary"`,
+#'   or `NULL` (the default, which uses 3 columns). Use `ncol = 1` for narrow
+#'   pages. Ignored when `view = "relations"`.
+#' @return A `ggplot` object. Rules without a finite risk (`!is.finite(risk)`)
+#'   keep their y-axis labels, statuses, and reasons in the subtitle while their
+#'   points and bars are omitted. When `view = "relations"` and no compared rule
+#'   has grades, returns an empty status `ggplot` stating why.
 #' @details
-#' The summary view plots risk, `N/M` (disclosed pairs over all unordered
-#' pairs), and the number of grades. The reference action's point is filled;
-#' other actions are hollow. A tick marks an available stored risk lower bound.
-#' Method labels give status, optimization scope and any absolute risk gap.
-#' An optimal fixed-order baseline is optimal within its contiguous partitions,
-#' not over every possible grading; baselines have no full-family lower bound.
+#' In `view = "summary"`, the reference rule (`x$reference`) is drawn as a
+#' filled circle and other rules as hollow circles; a vertical tick marks any
+#' stored `risk_lower_bound`. Y-axis labels show the rule name, solver status
+#' (`"optimal (numerical)"` for full-family optimal solves), optimization scope
+#' (`"full family"`, `"fixed score order"`, or `"supplied action"`), and any
+#' absolute solver risk gap. A score-order baseline searches only contiguous
+#' cuts of its fixed score order rather than all gradings, so it has no
+#' full-family lower bound.
 #'
-#' The relations view counts unchanged, newly disclosed, newly withheld and
-#' reversed pairs from the reference to each alternative. Every bar covers all
-#' `M = choose(n, 2)` pairs, including those withheld by both actions.
+#' In `view = "relations"`, each bar covers all `M = choose(n, 2)` unordered
+#' pairs across `"unchanged"`, `"newly disclosed"`, `"newly withheld"`, and
+#' `"reversed"` relative to `x$reference`; `"unchanged"` includes pairs left
+#' unordered by both rules.
 #'
-#' Supplied actions outside the declared grade or budget constraints are
-#' marked `outside family`. Their fixed-action risks can be evaluated under
-#' the common loss, but do not compare minima over the same feasible family.
-#' The absence of feasibility records in older comparison objects is indicated
-#' in the plot. These checks require reconstruction of the comparison; they
-#' are not performed during plotting.
-#' @seealso [postrank_compare()], [postrank_plot_relations()], [postrank_plot_data()]
+#' Rules recorded with `family_feasible == FALSE` (for example, exceeding
+#' `G_max` or violating an error budget `q_k`) are tagged `"[outside family]"`
+#' on the y-axis and listed in the subtitle: their fixed-action risks are
+#' evaluated under the same loss, but they are outside the constrained feasible
+#' set. If `family_feasible` is absent from an older comparison object, the
+#' subtitle notes that constraint checks require rebuilding `x` with
+#' [postrank_compare()].
+#' @seealso [postrank_compare()], [postrank_plot_relations()],
+#'   [postrank_plot_data()]
 #' @concept visualization
 #' @examples
-#' # Read a prepared three-criterion method comparison; no new solve or evaluation.
-#' source(system.file("scripts", "_vignette-setup.R", package = "postrank"),
-#'   local = TRUE)
-#' comparison <- load_or_compute("comparison_30x3_tau35")
+#' comparison <- postrank_example("comparison_30x3_tau35")
 #' postrank_plot_compare(comparison, ncol = 1)
 #' postrank_plot_compare(comparison, view = "relations")
 #' @export
@@ -122,31 +127,37 @@ postrank_plot_compare <- function(x, view = c("summary", "relations"), ..., ncol
 
 #' Draw a Stored postrank Result with autoplot
 #'
-#' The re-exported [ggplot2::autoplot()] generic dispatches prepared postrank
-#' results to the corresponding plotting method and returns a `ggplot`. Base R
-#' `plot()` uses the same dispatch, prints the figure and returns it invisibly.
-#' Both methods use prepared results without computing a new grading or
-#' diagnostic.
+#' `autoplot()` (re-exported from [ggplot2::autoplot()]) dispatches stored
+#' `postrank` objects to the matching `postrank_plot_*()` function and returns a
+#' `ggplot` object. Base R `plot()` uses the same dispatch, prints the figure,
+#' and returns the `ggplot` invisibly. Neither method solves or computes new
+#' posterior summaries.
 #'
-#' @param object A prepared postrank analysis, fit, report card, baseline,
-#'   frontier, commonality result or method comparison.
-#' @param ... Arguments for the selected plotting method. Analyses and fits
-#'   accept `type` to choose the view; other arguments, such as `ncol` or
-#'   `view`, follow the corresponding plotting function's help.
-#' @return For the supported postrank classes, a `ggplot` object.
+#' @param object A `postrank_analysis`, `postrank_fit`, `postrank_report_card`,
+#'   `postrank_baseline`, `postrank_frontier`, `postrank_commonality_cost`, or
+#'   `postrank_comparison`.
+#' @param ... Arguments passed on to the target plotting function. Analyses and
+#'   fits accept `type` to select the figure; other arguments (such as `ncol` or
+#'   `view`) follow the target `postrank_plot_*()` function.
+#' @return For supported `postrank` classes, a `ggplot` object (`plot()` returns
+#'   it invisibly after printing).
 #' @details
-#' An analysis defaults to its prepared report card and also accepts
-#' `type = "relations"`, `"profile"` or `"pairwise"`. A fit defaults to
-#' relations and accepts `"relations"`, `"profile"` or `"pairwise"`.
-#' Report cards, frontiers, commonality results, comparisons and baselines
-#' dispatch to their corresponding plotting functions. Other named arguments
-#' are passed to that figure, such as `ncol = 1` for a card or
-#' `view = "relations"` for a comparison.
+#' Dispatch by class:
+#' \itemize{
+#'   \item `postrank_analysis`: `type = "report_card"` (default), `"relations"`,
+#'     `"profile"`, or `"pairwise"`.
+#'   \item `postrank_fit`: `type = "relations"` (default), `"profile"`, or
+#'     `"pairwise"`.
+#'   \item `postrank_report_card`: [postrank_plot_report_card()].
+#'   \item `postrank_baseline`: [postrank_plot_relations()].
+#'   \item `postrank_frontier`: [postrank_plot_frontier()].
+#'   \item `postrank_commonality_cost`: [postrank_plot_commonality()].
+#'   \item `postrank_comparison`: [postrank_plot_compare()].
+#' }
 #'
-#' Missing prepared results are handled according to the corresponding plotting
-#' function. Prepared pairwise probabilities remain available for a fit without
-#' grades. The seven `postrank_plot_*()` functions provide explicit selection
-#' of the figure type.
+#' Objects missing a report card or checked grading return the same status
+#' `ggplot` as the underlying `postrank_plot_*()` function, while
+#' `type = "pairwise"` remains available on fits without grades.
 #' @name reexports
 #' @seealso [postrank_plot_report_card()], [postrank_plot_relations()],
 #'   [postrank_plot_profile()], [postrank_plot_pairwise()],
@@ -154,12 +165,10 @@ postrank_plot_compare <- function(x, view = c("summary", "relations"), ..., ncol
 #'   [postrank_plot_commonality()]
 #' @concept visualization
 #' @examples
-#' source(system.file("scripts", "_vignette-setup.R", package = "postrank"),
-#'   local = TRUE)
-#' one <- load_or_compute("tutorial_one")
-#' p <- autoplot(one) # prepared one-criterion report card
-#' p
-#' two <- load_or_compute("tutorial_two")
+#' one <- postrank_example("tutorial_one")
+#' autoplot(one)
+#'
+#' two <- postrank_example("tutorial_two")
 #' autoplot(two, type = "relations")
 #' @importFrom ggplot2 autoplot
 #' @export

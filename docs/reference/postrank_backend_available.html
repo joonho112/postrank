@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Inspect Solver Package Availability — postrank_backend_available • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Inspect Solver Package Availability — postrank_backend_available"><meta name="description" content="The installed Gurobi or HiGHS package is inspected through its package and
-linkage information. The inspection does not load the solver namespace,
-execute an optimization or check a license."><meta property="og:description" content="The installed Gurobi or HiGHS package is inspected through its package and
-linkage information. The inspection does not load the solver namespace,
-execute an optimization or check a license."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Inspect Solver Package Availability — postrank_backend_available • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Inspect Solver Package Availability — postrank_backend_available"><meta name="description" content="postrank_backend_available() checks whether the gurobi or highs R
+package is installed and passes static runtime-linkage checks, without
+loading the solver namespace, running an optimization or querying a license."><meta property="og:description" content="postrank_backend_available() checks whether the gurobi or highs R
+package is installed and passes static runtime-linkage checks, without
+loading the solver namespace, running an optimization or querying a license."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -11,7 +11,7 @@ execute an optimization or check a license."><meta property="og:image" content="
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,7 +19,7 @@ execute an optimization or check a license."><meta property="og:image" content="
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -39,9 +39,9 @@ execute an optimization or check a license."><meta property="og:image" content="
     </div>
 
     <div class="ref-description section level2">
-    <p>The installed Gurobi or HiGHS package is inspected through its package and
-linkage information. The inspection does not load the solver namespace,
-execute an optimization or check a license.</p>
+    <p><code>postrank_backend_available()</code> checks whether the <code>gurobi</code> or <code>highs</code> R
+package is installed and passes static runtime-linkage checks, without
+loading the solver namespace, running an optimization or querying a license.</p>
     </div>
 
     <div class="section level2">
@@ -54,35 +54,39 @@ execute an optimization or check a license.</p>
 
 
 <dl><dt id="arg-backend">backend<a class="anchor" aria-label="anchor" href="#arg-backend"></a></dt>
-<dd><p><code>"gurobi"</code> (default) or <code>"highs"</code>.</p></dd>
+<dd><p>Solver package to inspect, <code>"gurobi"</code> (the default) or
+<code>"highs"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>postrank_backend_availability</code> list with <code>installed</code>,
-<code>package_path</code>, <code>wrapper_version</code>, <code>available_for_attempt</code>, <code>runtime_check</code>
-and <code>license_check</code>. <code>available_for_attempt = TRUE</code> means no known obstacle
-was found by this inspection, not that a solve or license check succeeded.</p>
+    <p>A <code>postrank_backend_availability</code> list containing <code>backend</code>,
+<code>installed</code>, <code>package_path</code>, <code>wrapper_version</code>, <code>available_for_attempt</code>,
+<code>runtime_check</code>, <code>license_check</code> and <code>interpretation</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The inspection can identify a known macOS mismatch between Gurobi's
-linked R runtime and the running R. Other runtime failures may only become
-apparent when solving. It does not change library paths or select another
-backend. Choose HiGHS explicitly in <code><a href="postrank.html">postrank()</a></code> or <code><a href="postrank_solve.html">postrank_solve()</a></code>;
-neither function silently replaces an unavailable backend.</p>
+    <p><code>available_for_attempt = TRUE</code> means the package directory was found and, on
+macOS for Gurobi, no mismatch between Gurobi's linked R library and the
+running R session was detected. Because no namespace is loaded and no
+license or test solve is run, <code>available_for_attempt = TRUE</code> does not
+confirm that a solve will succeed or that a Gurobi license is active.</p>
+<p>Calling this function does not change library paths or select a solver. To
+use HiGHS in <code><a href="postrank.html">postrank()</a></code> or <code><a href="postrank_solve.html">postrank_solve()</a></code>, pass <code>backend = "highs"</code> or
+set <code>options(postrank.backend = "highs")</code>; <code>postrank</code> never switches solvers
+automatically.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="postrank_solve.html">postrank_solve()</a></code>, <code><a href="postrank_control.html">postrank_control()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="postrank.html">postrank()</a></code>, <code><a href="postrank_solve.html">postrank_solve()</a></code>, <a href="postrank_options.html">postrank_options</a></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">availability</span> <span class="op">&lt;-</span> <span class="fu">postrank_backend_available</span><span class="op">(</span><span class="st">"highs"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">availability</span><span class="op">$</span><span class="va">available_for_attempt</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">avail</span> <span class="op">&lt;-</span> <span class="fu">postrank_backend_available</span><span class="op">(</span><span class="st">"highs"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">avail</span><span class="op">$</span><span class="va">available_for_attempt</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
-<span class="r-in"><span><span class="va">availability</span><span class="op">$</span><span class="va">runtime_check</span><span class="op">$</span><span class="va">executed</span></span></span>
+<span class="r-in"><span><span class="va">avail</span><span class="op">$</span><span class="va">runtime_check</span><span class="op">$</span><span class="va">executed</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 </code></pre></div>
     </div>

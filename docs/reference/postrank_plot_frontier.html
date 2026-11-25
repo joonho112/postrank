@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Plot Disclosure, Error and Risk Across Settings — postrank_plot_frontier • postrank</title>
+<title>Plot Disclosure, Error, and Risk Across Settings — postrank_plot_frontier • postrank</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,15 +16,15 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Plot Disclosure, Error and Risk Across Settings — postrank_plot_frontier">
-<meta name="description" content="A prepared frontier is displayed over a grid of withholding costs or error
-budgets. The available panels give disclosure N/M, criterion error E_k/N
-and risk at each setting. The figure uses stored results without repeating
-the grid calculations.">
-<meta property="og:description" content="A prepared frontier is displayed over a grid of withholding costs or error
-budgets. The available panels give disclosure N/M, criterion error E_k/N
-and risk at each setting. The figure uses stored results without repeating
-the grid calculations.">
+<meta property="og:title" content="Plot Disclosure, Error, and Risk Across Settings — postrank_plot_frontier">
+<meta name="description" content="postrank_plot_frontier() plots stored disclosure rates (N / M),
+criterion wrong-direction error rates (E_k / N), and primary risk across a
+grid of withholding costs tau or error budgets q_k from
+postrank_frontier(), without re-solving the grid.">
+<meta property="og:description" content="postrank_plot_frontier() plots stored disclosure rates (N / M),
+criterion wrong-direction error rates (E_k / N), and primary risk across a
+grid of withholding costs tau or error budgets q_k from
+postrank_frontier(), without re-solving the grid.">
 <meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
 </head>
 <body>
@@ -35,7 +35,7 @@ the grid calculations.">
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,7 @@ the grid calculations.">
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -62,16 +62,16 @@ the grid calculations.">
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Plot Disclosure, Error and Risk Across Settings</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Plot Disclosure, Error, and Risk Across Settings</h1>
 
       <div class="d-none name"><code>postrank_plot_frontier.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>A prepared frontier is displayed over a grid of withholding costs or error
-budgets. The available panels give disclosure <code>N/M</code>, criterion error <code>E_k/N</code>
-and risk at each setting. The figure uses stored results without repeating
-the grid calculations.</p>
+    <p><code>postrank_plot_frontier()</code> plots stored disclosure rates (<code>N / M</code>),
+criterion wrong-direction error rates (<code>E_k / N</code>), and primary risk across a
+grid of withholding costs <code>tau</code> or error budgets <code>q_k</code> from
+<code><a href="postrank_frontier.html">postrank_frontier()</a></code>, without re-solving the grid.</p>
     </div>
 
     <div class="section level2">
@@ -94,74 +94,78 @@ the grid calculations.</p>
 <dl>
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a>
 </dt>
-<dd><p>A <code>postrank_frontier</code> with stored grid results.</p></dd>
+<dd><p>A <code>postrank_frontier</code> object.</p></dd>
 
 
 <dt id="arg-panels">panels<a class="anchor" aria-label="anchor" href="#arg-panels"></a>
 </dt>
-<dd><p>Nonempty subset of <code>"disclosure"</code>, <code>"error"</code> and <code>"risk"</code>.
-Selected panels retain this standard display order.</p></dd>
+<dd><p>Non-empty character vector chosen from
+<code>c("disclosure", "error", "risk")</code> (all three by default). Selected panels
+always appear in that top-to-bottom order.</p></dd>
 
 
 <dt id="arg-highlight">highlight<a class="anchor" aria-label="anchor" href="#arg-highlight"></a>
 </dt>
-<dd><p>Optional value on the displayed horizontal axis (<code>tau</code> or
-the varied error budget), marked by a dashed line.</p></dd>
+<dd><p>Optional numeric value on the horizontal axis (<code>tau</code> or the
+varied error budget <code>q_value</code>) marked with a vertical dashed line.</p></dd>
 
 
 <dt id="arg-mark-uncertified">mark_uncertified<a class="anchor" aria-label="anchor" href="#arg-mark-uncertified"></a>
 </dt>
-<dd><p>Logical; draw rows whose recorded status is not
-<code>"optimal"</code> hollow. <code>FALSE</code> gives every available row its ordinary point
-style. This legacy argument name does not imply numerical certification.</p></dd>
+<dd><p>Logical scalar (<code>TRUE</code> by default). When <code>TRUE</code>, grid
+points whose solver <code>status</code> is not <code>"optimal"</code> are drawn as hollow
+circles; when <code>FALSE</code>, all available points use the standard shape scale.
+Here <code>"optimal"</code> records the solver's numerical termination status, which
+is not a mathematical certificate.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a>
 </dt>
-<dd><p>Unused.</p></dd>
+<dd><p>Unused; unnamed extra arguments are ignored.</p></dd>
 
 </dl>
 </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
 </h2>
-    <p>A <code>ggplot</code> object. When no selected panel has an available value,
-a status panel explains the missing incumbent or undefined error rate.</p>
+    <p>A <code>ggplot</code> object. When no grid point has a finite value for the
+requested panels (for example, no checked grading or <code>N = 0</code> when only
+<code>"error"</code> is shown), returns an empty status <code>ggplot</code> stating why.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
 </h2>
-    <p><code>M</code> is the number of all unordered pairs and <code>N</code> the number disclosed.
-Point shape distinguishes grade counts; criterion color and line style
-identify error series. Rows without an incumbent retain their status in
-the subtitle and receive no point. Lines stop at unavailable rows and at
-undefined <code>E_k/N</code> when <code>N = 0</code>; a single available point has no connecting
-line. Axes start at zero and adapt to the available values.</p>
-<p>Changing <code>tau</code> changes the loss. Risks at different <code>tau</code> values therefore
-do not rank policies under one shared loss. Changing an error budget changes
-the feasible action family. If a budget grid contains several <code>tau</code> values,
-they receive separate panel columns rather than a common connecting line.</p>
-<p>Disclosure is nondecreasing in <code>tau</code> for exact optima when all other
-settings are fixed, but the set of disclosed pairs need not be nested.
-Recorded optimal statuses and numerical gaps do not establish exact
-monotonicity of the displayed actions or posterior validity. Available
-statuses and gaps remain visible even when points are styled alike.</p>
+    <p><code>M = choose(n, 2)</code> is the number of unordered entity pairs and <code>N</code> is the
+number of disclosed (ordered) pairs. Point shapes indicate the number of
+distinct grades <code>G</code> (up to 18 distinct <code>G</code> values; above 18, solid circles
+are used and noted in the subtitle). Color and line type distinguish criteria
+in the <code>"error"</code> panel. Grid rows without a checked grading are listed in the
+subtitle and omitted from the plot; connecting lines stop at missing rows and
+at <code>N = 0</code> where <code>E_k / N</code> is undefined, so non-adjacent available points are
+never joined across a gap. Vertical axes start at zero.</p>
+<p>Changing <code>tau</code> changes the loss function itself, so risk values at different
+<code>tau</code> settings do not compare rules under one shared loss. Changing an error
+budget <code>q_k</code> changes the feasible set of gradings; when an error-budget grid
+spans multiple <code>tau</code> values, each <code>tau</code> receives its own facet column rather
+than a single connecting line.</p>
+<p>Under exact optimization with all other settings fixed, disclosure <code>N / M</code> is
+nondecreasing in <code>tau</code>, although the disclosed pair sets need not be nested.
+Numerical solver statuses and gaps do not guarantee exact monotonicity of the
+returned gradings.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
 </h2>
-    <div class="dont-index"><p><code><a href="postrank_frontier.html">postrank_frontier()</a></code>, <code><a href="postrank_plot_data.html">postrank_plot_data()</a></code>, <code><a href="postrank_plot_profile.html">postrank_plot_profile()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="postrank_frontier.html">postrank_frontier()</a></code>, <code><a href="postrank_plot_data.html">postrank_plot_data()</a></code>,
+<code><a href="postrank_plot_profile.html">postrank_plot_profile()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
 </h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Read prepared tutorial results; no model fitting or optimization.</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"scripts"</span>, <span class="st">"_vignette-setup.R"</span>, package <span class="op">=</span> <span class="st">"postrank"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">frontier</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"tutorial_frontier"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">postrank_plot_frontier</span><span class="op">(</span><span class="va">frontier</span>, highlight <span class="op">=</span> <span class="fl">.2</span><span class="op">)</span></span></span>
-<span class="r-plt img"><a href="postrank_plot_frontier-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Stored disclosure and error summaries across five withholding costs for the six-site common-grade problem." target="_blank" rel="noopener"><img src="postrank_plot_frontier-1.png" alt="Stored disclosure and error summaries across five withholding costs for the six-site common-grade problem." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="postrank_plot_frontier-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Stored disclosure and error summaries across five withholding costs for the six-site common-grade problem.">Open full-size figure</a></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">frontier</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_frontier"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">postrank_plot_frontier</span><span class="op">(</span><span class="va">frontier</span>, highlight <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></span>
+<span class="r-plt img"><a href="postrank_plot_frontier-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Ordered-pair share and expected error summaries across five withholding costs for the six-site common-grade problem." target="_blank" rel="noopener"><img src="postrank_plot_frontier-1.png" alt="Ordered-pair share and expected error summaries across five withholding costs for the six-site common-grade problem." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="postrank_plot_frontier-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Ordered-pair share and expected error summaries across five withholding costs for the six-site common-grade problem.">Open full-size figure</a></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

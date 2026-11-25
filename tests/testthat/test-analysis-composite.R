@@ -1,5 +1,5 @@
-# T-obj-03 / T-api-01: postrank() composition, capability-gated extras, no-incumbent
-# branch and failure records. Solves are mocked unless the test is tier 2 (HiGHS).
+# postrank() composition, capability-checked extras, missing-solution
+# handling, and failure records. Solves are mocked except in the HiGHS block.
 ac_w <- c(need_A = .6, need_B = .4)
 # A deterministic stand-in for the solver: returns the normalized fit of a fixed grade.
 ac_mock_fit <- function(grade = c("001" = 1L, "site-B" = 2L, "site C" = 2L), status = "optimal") {

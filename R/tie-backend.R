@@ -1,5 +1,5 @@
-# New-domain entry guards around the unchanged numeric backend converters.
-# The legacy adapters continue to reject non-legacy problem classes.
+# Tie-aware solver wrappers around the shared numeric model converters;
+# standard solver wrappers reject tie-aware problem classes.
 .pr_tie_backend_highs <- function(problem,control) {
   .pr_validate_tie_problem(problem);control <- .pr_control(control)
   package_path <- .pr_backend_require("highs")$package_path

@@ -112,8 +112,9 @@ test_that("source validation catches missing additions and re-sealed changes to 
   incomplete <- receipt
   incomplete$compatible_source_entries <- head(incomplete$compatible_source_entries, -1L)
   expect_error(env$.cache_assert_compatibility_sources(stage, incomplete), "compatible_source_entries membership")
+  # A code change in an original R file (comment-only edits are accepted; see the next test).
   original <- file.path(stage, "R", "accessors.R")
-  cat("\n# unexpected original source change\n", file = original, append = TRUE)
+  cat("\n.pr_unexpected_code_change <- TRUE\n", file = original, append = TRUE)
   for (i in seq_along(receipt$compatible_source_entries))
     if (identical(receipt$compatible_source_entries[[i]]$path, "R/accessors.R"))
       receipt$compatible_source_entries[[i]]$sha256 <- digest::digest(file = original, algo = "sha256")
@@ -125,6 +126,35 @@ test_that("source validation catches missing additions and re-sealed changes to 
   expect_identical(tools::md5sum(path), before)
 })
 
+
+test_that("comment-only edits of original files are accepted; code and data edits are not", {
+  root <- pr_source_root()
+  skip_if(is.null(root), "not a source checkout")
+  fresh_stage <- function() {
+    stage <- withr::local_tempdir(.local_envir = parent.frame())
+    file.copy(file.path(root, c("DESCRIPTION", "LICENSE", "R", "data", "inst")), stage, recursive = TRUE)
+    stage
+  }
+  env <- new.env()
+  sys.source(file.path(root, "inst", "scripts", "validate-cache-reader-compatibility.R"), env)
+  withr::local_envvar(POSTRANK_VALIDATE_CACHE_READER_COMPATIBILITY = "true")
+  stage <- fresh_stage()
+  cat("\n# A comment-only edit.\n", file = file.path(stage, "R", "accessors.R"), append = TRUE)
+  cat("# A comment-only edit.\n", file = file.path(stage, "inst", "scripts", "build-cached-assets.R"), append = TRUE)
+  receipt <- env$validate_cache_reader_compatibility(stage)
+  expect_true(all(c("R/accessors.R", "inst/scripts/build-cached-assets.R") %in% unlist(receipt$comment_only_origin_differences)))
+  expect_true(env$.cache_assert_compatibility_sources(stage, jsonlite::read_json(file.path(stage, "inst", "extdata", "manifests", "cache-reader-compatibility.json"))))
+  stage <- fresh_stage()
+  cat("\n.pr_unexpected_code_change <- TRUE\n", file = file.path(stage, "inst", "scripts", "build-cached-assets.R"), append = TRUE)
+  expect_error(env$validate_cache_reader_compatibility(stage), "unapproved original source change")
+  stage <- fresh_stage()
+  cat("x", file = file.path(stage, "data", "postrank_toy.rda"), append = TRUE)
+  expect_error(env$validate_cache_reader_compatibility(stage), "unchanged original R/data hashes")
+  stage <- fresh_stage()
+  code <- file.path(stage, "inst", "extdata", "manifests", "origin-code-manifest.json")
+  cat(" ", file = code, append = TRUE)
+  expect_error(env$validate_cache_reader_compatibility(stage), "Original code manifest bytes changed")
+})
 
 test_that("temporary receipt authoring preserves the current package namespace", {
   root <- pr_source_root()

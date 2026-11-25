@@ -6,33 +6,34 @@
 write_postrank_draws(x, path, overwrite = FALSE)
 }
 \arguments{
-\item{x}{A \code{postrank_draws} or complete canonical \code{applied-0.1} payload.}
+\item{x}{A \code{postrank_draws} object or a complete \code{applied-0.1} input list.}
 
-\item{path}{Destination JSON file. Its parent directory must exist.}
+\item{path}{Destination JSON file path. Its parent directory must exist.}
 
-\item{overwrite}{Logical; allow replacement of an existing file.
-Defaults to \code{FALSE}.}
+\item{overwrite}{Logical scalar (default \code{FALSE}); whether to replace an
+existing file at \code{path}.}
 }
 \value{
-The destination path, invisibly.
+\code{path}, invisibly.
 }
 \description{
-The writer saves posterior values and their scientific descriptions in the
-format read by \code{\link[=read_postrank_draws]{read_postrank_draws()}}. The input is validated before
-writing, and its declared entity, criterion and draw order is preserved.
+\code{write_postrank_draws()} validates a \code{postrank_draws} object (or complete
+\code{applied-0.1} list) and writes its values, target descriptions and sampling
+history to a JSON file that \code{\link[=read_postrank_draws]{read_postrank_draws()}} can restore.
 }
 \details{
-Joint arrays, criterion-wise blocks and complete exact finite laws are
-supported. Values are written with 17 significant digits, retaining
-singleton dimensions and source sampling histories. The writer creates a
-temporary file in the destination directory and renames it into place.
+Joint arrays, criterion-wise blocks and exact finite laws are supported.
+Numbers are formatted with 17 significant digits, preserving entity,
+criterion and draw order, singleton dimensions (\code{K = 1}), and MCMC chain
+histories. The JSON text is checked against the installed
+\code{draws-schema.json} specification, written to a temporary file in
+\code{dirname(path)} and renamed into place.
 
-The file contains the canonical input, not a saved validation receipt or
-external source-value audit. Reading it performs validation again; a
-prior adapter's source-value comparison is not claimed merely because the
-file round-trips. Required declaration checks apply without the high-level
-array route's extra placeholder check. Use \code{\link[=write_postrank_tie_draws]{write_postrank_tie_draws()}} for
-an equality-neutral input.
+The file stores the input fields (\code{schema_version = "applied-0.1"}), not the
+in-memory \code{validation} record. Reading the file runs
+\code{\link[=validate_postrank_draws]{validate_postrank_draws()}} afresh, so a prior \code{\link[=as_postrank_posterior]{as_postrank_posterior()}}
+\code{source_audit} is not carried through JSON. For exact-tie inputs, use
+\code{\link[=write_postrank_tie_draws]{write_postrank_tie_draws()}}.
 }
 \examples{
 path <- tempfile(fileext = ".json")

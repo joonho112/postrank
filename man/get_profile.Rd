@@ -6,44 +6,38 @@
 get_profile(x, ...)
 }
 \arguments{
-\item{x}{A \code{postrank_fit} or \code{postrank_analysis}.}
+\item{x}{A \code{postrank_fit} or \code{postrank_analysis} object.}
 
 \item{...}{Unused arguments for generic compatibility.}
 }
 \value{
-A data frame in input criterion order with columns:
-\code{criterion}, \code{weight}, \code{E}, \code{E_over_M}, \code{E_over_N}, \code{risk}, \code{q},
-\code{budget_slack} and \code{is_minimax_max}. Returns zero rows with these same
-columns when no validated grade is available.
+A data frame in input criterion order with columns \code{criterion},
+\code{weight}, \code{E}, \code{E_over_M}, \code{E_over_N}, \code{risk}, \code{q}, \code{budget_slack} and
+\code{is_minimax_max}. When no checked grading is available, a zero-row data
+frame with these same columns and types is returned.
 }
 \description{
-The stored grade report is summarized by criterion. A one-criterion analysis
-has one row; for several criteria, the rows give the expected errors and
-withholding loss associated with the common grading. The calculation uses
-the stored evaluation without recalculating grades or posterior summaries.
+\code{get_profile()} returns a one-row-per-criterion table of posterior expected
+wrong-order errors, losses and error-budget margins for the checked grading
+stored in \code{x}, without running a solver or recomputing probabilities.
 }
 \details{
-\code{E} is the posterior expected number of wrong disclosed directions.
-\code{E_over_M} divides by all unordered pairs; \code{E_over_N} divides by disclosed
-pairs and is \code{NA} when N=0. Criterion \code{risk} adds the withholding cost:
-\code{(E + tau * (M - N)) / M}. These describe the supplied posterior and loss,
-not realized error rates or simultaneous guarantees.
+For each criterion, \code{E} is the posterior expected number of wrong-order
+ordered (\code{disclosed}) pairs, \code{E_over_M} divides \code{E} by all \code{M} unordered
+pairs, \code{E_over_N} divides \code{E} by the \code{N} ordered pairs (\code{NA} when \code{N = 0}),
+and \code{risk} is the posterior expected loss \code{(E + tau * (M - N)) / M}.
 
-\code{q} is the criterion's error budget and \code{budget_slack = q * N - E};
-both are \code{NA} without a budget. A nonnegative slack satisfies that count
-constraint before numerical tolerance is considered. \code{is_minimax_max}
-identifies included criteria attaining the minimax maximum within the
-comparison tolerance; it is false for weighted problems.
+\code{q} is the criterion's expected-error budget from \code{\link[=postrank_settings]{postrank_settings()}} and
+\code{budget_slack} is \code{q * N - E} (both \code{NA} when no \code{q} budget was set for that
+criterion). \code{is_minimax_max} is \code{TRUE} for included criteria within \code{1e-12}
+of the maximum criterion loss when \code{objective == "minimax"}, and \code{FALSE} for
+weighted problems.
 }
 \examples{
-if (requireNamespace("highs", quietly = TRUE)) {
-  two <- postrank(pr_tutorial$two, weights = c(score_A = .5, score_B = .5),
-    tau = .2, G_max = 3L, backend = "highs",
-    control = postrank_control(time_limit = 10), fragility = FALSE)
-  get_profile(two)
-}
+two <- postrank_example("tutorial_two")
+get_profile(two)
 }
 \seealso{
-\code{\link[=get_risk]{get_risk()}}, \code{\link[=postrank_evaluate]{postrank_evaluate()}}
+\code{\link[=get_risk]{get_risk()}}, \code{\link[=get_grades]{get_grades()}}, \code{\link[=postrank_evaluate]{postrank_evaluate()}}
 }
 \concept{reporting}

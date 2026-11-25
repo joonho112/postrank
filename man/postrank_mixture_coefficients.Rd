@@ -13,102 +13,132 @@ postrank_mixture_coefficients(
 )
 }
 \arguments{
-\item{components}{Nonempty named list of state records, each with exactly
-\code{mu}, \code{Sigma}, \code{means}, and \code{covariance}. \code{mu} is a criterion-named vector;
-\code{Sigma} is a symmetric positive definite matrix with dimension names
-\code{criterion_i} and \code{criterion_j}. Conditional \code{means} and \code{covariance} use
-the entity and criterion axes described in
-\code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}}. Within-entity covariance may connect
-criteria; between-entity dependence enters through the shared state.}
+\item{components}{Non-empty plain named list of state records
+(\code{names(components)} are unique state IDs). Every state must share the
+exact same \code{entity_ids} (\code{n >= 2}) and \code{criterion_ids} (\code{K >= 1}) in
+identical order, and no element may carry extra R attributes:
+\itemize{
+\item \code{mu}: finite numeric vector named by \code{criterion_ids} recording the shared
+state \code{h}'s criterion-level hyperparameter mean (checked and stored for
+provenance/identity);
+\item \code{Sigma}: finite symmetric positive-definite \verb{K x K} matrix (\code{Sigma == t(Sigma)} with zero tolerance) with
+\code{dimnames = list(criterion_i = criterion_ids, criterion_j = criterion_ids)}, recording the shared state \code{h}'s criterion-level
+hyperparameter covariance;
+\item \code{means}: finite \verb{n x K} precomputed entity conditional posterior mean
+matrix given \code{h}, with
+\code{dimnames = list(entity = entity_ids, criterion = criterion_ids)} (larger
+values mean higher priority; used directly to compute mixture \code{means} and
+\code{e});
+\item \code{covariance}: finite symmetric positive-definite \verb{K x K x n} array of
+within-entity conditional posterior covariances given \code{h} (every slice
+must satisfy \code{S == t(S)} with zero tolerance; symmetrize \code{(V + t(V)) / 2}
+beforehand if needed), with \code{dimnames} named \code{criterion_i},
+\code{criterion_j}, and \code{entity} (\code{criterion_ids}, \code{criterion_ids},
+\code{entity_ids}). \code{covariance} links criteria within an entity only;
+cross-entity dependence enters through the shared state \code{h}.
+}}
 
-\item{weights}{Nonnegative state-named probability weights in component
-order, summing to one within \code{1e-12}. They are not normalized automatically.
-These mixture masses describe the law, not criterion-loss weights.}
+\item{weights}{Nonnegative finite plain numeric state probabilities named by
+\code{names(components)} in component order, summing to one within \code{1e-12}
+(never rescaled automatically, with no extra R attributes). When
+\code{source_regime = "hyperparameter_mcmc"}, all weights must equal
+\code{1 / length(components)}. These are mixture probabilities over states, not
+criterion loss weights.}
 
-\item{state_index}{Plain data.frame in component order. A fixed finite
-mixture has only \code{state_id}; hyperparameter MCMC has \code{state_id}, \code{chain_id},
-and original \code{iteration}, with unique positive integer chain/iteration
-coordinates. Chain coordinates are inapplicable to a fixed mixture.}
+\item{state_index}{Base \code{data.frame} (no tibble or extra attributes) in
+component order, with \code{state_id} matching \code{names(components)}. When
+\code{source_regime = "fixed_finite_mixture"}, \code{state_id} is the only column;
+when \code{source_regime = "hyperparameter_mcmc"}, columns must be
+\code{c("state_id", "chain_id", "iteration")} with positive integer chain and
+original iteration numbers and unique \verb{(chain_id, iteration)} pairs.}
 
-\item{source_regime}{\code{"fixed_finite_mixture"} for an explicitly supplied
-finite mixture, or \code{"hyperparameter_mcmc"} for retained shared-state MCMC
-output. The MCMC regime requires uniform weights over retained states.}
+\item{source_regime}{\code{"fixed_finite_mixture"} for a specified finite mixture
+or quadrature rule, or \code{"hyperparameter_mcmc"} for retained hyperparameter
+MCMC states.}
 
-\item{conditional_independence}{Explicitly \code{"entities_given_shared_h"}.
-Independence is conditional on the same state for all entities; it is not
-inferred from marginal moments.}
+\item{conditional_independence}{Must be \code{"entities_given_shared_h"}, an
+explicit model declaration (not inferred from marginal moments) stating
+that entities are conditionally independent given each shared state \code{h}.}
 
-\item{provenance}{Named list with \code{producer_id}, \code{producer_version},
-\code{posterior_id}, \code{input_payload_sha256}, \code{source_sha256}, and \code{config_sha256};
-\code{model_sha256} is optional. Supply actual source descriptions and lowercase
-SHA-256 digests. These records do not authenticate the scientific source.}
+\item{provenance}{Plain named list of non-empty character strings (with no
+extra R attributes): \code{producer_id}, \code{producer_version}, \code{posterior_id},
+\code{input_payload_sha256}, \code{source_sha256}, and \code{config_sha256}, plus optional
+\code{model_sha256}. Every \verb{*_sha256} entry must be a 64-character lowercase
+hexadecimal SHA-256 digest.}
 }
 \value{
-A \code{postrank_coefficients} object with mixture \code{means}, directional
-probabilities \code{e}, the supplied states and provenance, and supported-operation
-indicators. No target draws or target sample sizes are generated.
+A \code{postrank_coefficients} object
+(\code{input_kind = "shared_hyperstate_mixture"}) containing \code{entity_ids},
+\code{criterion_ids}, mixture \code{means}, the \verb{n x n x K} directional-error array
+\code{e}, \code{source}, \code{provenance}, \code{capabilities}, \code{validation},
+\code{coefficient_identity}, \code{input_identity}, \code{pairwise_identity}, and
+\code{schema_version} (\code{"coefficient-0.1.0"}). No entity-level target draws are
+generated.
 }
 \description{
-Means and directional-error probabilities are obtained by averaging
-conditional Gaussian laws over supplied shared states. Each state is common
-to all entities. Consequently, averaging over the states can retain
-dependence between entities that are independent conditional on a state. The
-model and shared states are supplied externally; the package neither fits
-nor samples the model.
+\code{postrank_mixture_coefficients()} computes posterior means and pairwise
+directional-error probabilities by averaging conditional normal (Gaussian)
+posteriors across shared parameter states \code{h} (such as hyperparameter MCMC
+draws or discrete mixture components). Because every entity shares each state
+\code{h}, averaging across states preserves cross-entity dependence induced by \code{h}
+even when entities are independent conditional on \code{h}. For distinct entities
+\code{i} and \code{j}, \eqn{e_{ij,k} = \sum_s w_s P(\theta_{i,k} \le \theta_{j,k} \mid h_s)}
+is the expected error if \code{i} is graded above \code{j} (diagonals are \code{NA}).
+\code{postrank} does not fit or sample the model.
 }
 \details{
-Each conditional probability is the error for reporting entity i above
-entity j: \eqn{P(\theta_{i,k}\leq\theta_{j,k}\mid h)}. Positive variances
-and conditional independence make pairwise equality have probability zero.
-The output has \code{NA} diagonals because self-comparisons are unused.
+Conditional probabilities and means are combined across states with
+compensated summation (to reduce floating-point rounding error) rather than
+replacing the mixture by a single moment-matched normal distribution. Unlike
+a discrete finite law of target atoms (\code{exact_finite_posterior}), each
+mixture state here is a continuous normal distribution with positive
+variances, so distinct entities have zero probability of exact equality;
+calculations use ordinary floating-point arithmetic rather than exact
+rational arithmetic.
 
-The constructor averages conditional probabilities and means using
-compensated summation. It does not replace the mixture with a moment-matched
-Gaussian. A finite mixture of continuous Gaussian target laws is also
-different from a finite law of target atoms; these coefficients use
-floating-point arithmetic, not exact rational finite-law masses.
-
-\code{mu}, \code{Sigma}, and the conditional moments are supplied declarations. Their
-structural checks do not establish that one dataset or a converged sampler
-produced them. Empirical Bayes quantities held fixed remain conditioned on;
-only uncertainty represented by the supplied states is averaged over.
-
-The native \code{\link[=postrank_problem]{postrank_problem()}} route supports weighted expected loss with
-an upper grade-count limit, not minimax, \code{q} protections, or exact-G there.
-\code{\link[=postrank_coefficient_diagnose]{postrank_coefficient_diagnose()}} can describe conditional expected-risk
-variation across states; MCMC metrics additionally require original history.
-Neither those metrics nor this calculation certify numerical or model error.
+In \code{\link[=postrank]{postrank()}} and \code{\link[=postrank_problem]{postrank_problem()}}, mixture coefficients support the
+weighted expected-loss objective with \code{G_max} (minimax, \code{q} error budgets,
+and \code{exact_G} are unavailable there, while \code{\link[=postrank_cuts]{postrank_cuts()}} also supports
+\code{exact_G} along a score order; see \code{\link[=postrank_coefficient_capabilities]{postrank_coefficient_capabilities()}}).
+\code{\link[=postrank_coefficient_diagnose]{postrank_coefficient_diagnose()}} evaluates conditional expected loss across
+the supplied states and, when \code{source_regime = "hyperparameter_mcmc"} and
+\code{chain_history} is supplied (providing each chain's ordered retained
+iterations so equal chain lengths and regular thinning spacing can be checked
+before computing R-hat, ESS, and MCSE), computes MCMC integration
+diagnostics. Any empirical-Bayes quantities held fixed outside \code{components}
+remain conditioned on; neither this constructor nor
+\code{\link[=postrank_coefficient_diagnose]{postrank_coefficient_diagnose()}} verifies that one coherent dataset produced
+the moments, checks external files, or certifies numerical or model error.
 }
 \examples{
-# A specified one-criterion law, not the output of a fitted model or sampler.
 state <- function(d) {
   ks <- "score"; ids <- c("A", "B")
   list(mu = c(score = d),
     Sigma = matrix(1, 1, 1,
       dimnames = list(criterion_i = ks, criterion_j = ks)),
-    means = matrix(c(d, .4), 2, 1,
+    means = matrix(c(d, 0.4), 2, 1,
       dimnames = list(entity = ids, criterion = ks)),
-    covariance = array(.5, c(1, 1, 2),
+    covariance = array(0.5, c(1, 1, 2),
       dimnames = list(criterion_i = ks, criterion_j = ks, entity = ids)))
 }
-components <- list(low = state(-1), high = state(.5))
-config <- list(weights = c(low = .5, high = .5),
+comps <- list(low = state(-1), high = state(0.5))
+cfg <- list(weights = c(low = 0.5, high = 0.5),
   state_index = data.frame(state_id = c("low", "high")),
   source_regime = "fixed_finite_mixture",
   conditional_independence = "entities_given_shared_h")
-provenance <- list(producer_id = "postrank_mixture_coefficients help example",
-  producer_version = "1", posterior_id = "specified-two-state-normal-law",
-  input_payload_sha256 = digest::digest(components, algo = "sha256"),
+prov <- list(producer_id = "postrank_mixture_coefficients help example",
+  producer_version = "1", posterior_id = "two-state-normal-mixture",
+  input_payload_sha256 = digest::digest(comps, algo = "sha256"),
   source_sha256 = digest::digest(body(state), algo = "sha256"),
-  config_sha256 = digest::digest(config, algo = "sha256"))
-x <- postrank_mixture_coefficients(components, config$weights,
-  config$state_index, config$source_regime, config$conditional_independence,
-  provenance)
+  config_sha256 = digest::digest(cfg, algo = "sha256"))
+x <- postrank_mixture_coefficients(comps, cfg$weights, cfg$state_index,
+  cfg$source_regime, cfg$conditional_independence, prov)
 x$e[, , "score"]
 validate_postrank_coefficients(x, recompute = TRUE)
 }
 \seealso{
-\code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}}, \code{\link[=validate_postrank_coefficients]{validate_postrank_coefficients()}},
-\code{\link[=postrank_coefficient_capabilities]{postrank_coefficient_capabilities()}}
+\code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}},
+\code{\link[=validate_postrank_coefficients]{validate_postrank_coefficients()}}, \code{\link[=postrank_coefficient_capabilities]{postrank_coefficient_capabilities()}},
+\code{\link[=postrank_coefficient_diagnose]{postrank_coefficient_diagnose()}}
 }
 \concept{coefficients}

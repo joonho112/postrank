@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -15,7 +15,7 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -33,74 +33,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="multidomain-profiles">Multidomain profiles<a class="anchor" aria-label="anchor" href="#multidomain-profiles"></a></h2>
+      <h2 id="grading-and-stored-examples">Grading and stored examples<a class="anchor" aria-label="anchor" href="#grading-and-stored-examples"></a></h2>
 
-      <div class="section-desc"><p>Separate domain grades, additive risk and direct joint protection within a declared candidate bank; exact finite-law evaluation, conditional iid assessment, MCMC diagnostics and stored report views.</p></div>
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="postrank_mdomain_assess.html">postrank_mdomain_assess()</a></code>
-
-        </dt>
-        <dd>Assess a Fixed Multidomain Report</dd>
-
-        <dt>
-
-          <code><a href="postrank_mdomain_decision.html">postrank_mdomain_decision()</a></code>
-
-        </dt>
-        <dd>Specify a Multidomain Reporting Decision</dd>
-
-        <dt>
-
-          <code><a href="postrank_mdomain_evaluate.html">postrank_mdomain_evaluate()</a></code>
-
-        </dt>
-        <dd>Evaluate a Fixed Multidomain Report</dd>
-
-        <dt>
-
-          <code><a href="postrank_mdomain_family.html">postrank_mdomain_family()</a></code>
-
-        </dt>
-        <dd>Build a Bounded Multidomain Candidate Family</dd>
-
-        <dt>
-
-          <code><a href="postrank_mdomain_grades.html">postrank_mdomain_grades()</a></code>
-
-        </dt>
-        <dd>Extract Verified Multidomain Grades</dd>
-
-        <dt>
-
-          <code><a href="postrank_mdomain_input.html">postrank_mdomain_input()</a></code>
-
-        </dt>
-        <dd>Prepare Identified Multidomain Posterior States</dd>
-
-        <dt>
-
-          <code><a href="postrank_mdomain_solve.html">postrank_mdomain_solve()</a></code>
-
-        </dt>
-        <dd>Solve a Declared Multidomain Candidate Family</dd>
-
-        <dt>
-
-          <code><a href="postrank_plot_mdomain.html">postrank_plot_mdomain()</a></code>
-
-        </dt>
-        <dd>Plot a Multidomain Profile Report Card</dd>
-      </dl></div><div class="section level2">
-      <h2 id="tie-aware-mode-opt-in-">Tie-aware mode (opt-in)<a class="anchor" aria-label="anchor" href="#tie-aware-mode-opt-in-"></a></h2>
-
-      <div class="section-desc"><p>Separate equality-neutral input, coefficients and guarded weighted at-most-G label-MIP. Legacy reports and guarantees are unsupported here.</p></div>
+      <div class="section-desc"><p>Run a common-grade analysis in one call, load precomputed example results without a solver, or build, solve, and evaluate a grading problem step by step.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -109,84 +44,63 @@
 
       <dl><dt>
 
-          <code><a href="as_postrank_tie_draws.html">as_postrank_tie_draws()</a></code>
+          <code><a href="canonical_postrank_grade.html">canonical_postrank_grade()</a></code>
 
         </dt>
-        <dd>Prepare Posterior Inputs with Genuine Equality Mass</dd>
+        <dd>Renumber Grades While Preserving Comparisons</dd>
 
         <dt>
 
-          <code><a href="postrank_tie_capabilities.html">postrank_tie_capabilities()</a></code>
+          <code><a href="postrank.html">postrank()</a></code>
 
         </dt>
-        <dd>Check Which Tie-Aware Operations Are Available</dd>
+        <dd>Assign Grades to Entities Under Posterior Uncertainty</dd>
 
         <dt>
 
-          <code><a href="postrank_tie_evaluate.html">postrank_tie_evaluate()</a></code>
+          <code><a href="postrank_backend_available.html">postrank_backend_available()</a></code>
 
         </dt>
-        <dd>Score Fixed Grades When True Equality Has Zero Loss</dd>
+        <dd>Inspect Solver Package Availability</dd>
 
         <dt>
 
-          <code><a href="postrank_tie_pairwise.html">postrank_tie_pairwise()</a></code>
+          <code><a href="postrank_evaluate.html">postrank_evaluate()</a></code>
 
         </dt>
-        <dd>Calculate Strict Error and Equality Probabilities</dd>
+        <dd>Evaluate the Posterior Loss of Supplied Grades</dd>
 
         <dt>
 
-          <code><a href="postrank_tie_problem.html">postrank_tie_problem()</a></code>
+          <code><a href="postrank_problem.html">postrank_problem()</a></code>
 
         </dt>
-        <dd>Build a Grading Problem with Equality-Neutral Loss</dd>
+        <dd>Build a Problem for Choosing Common Grades</dd>
 
         <dt>
 
-          <code><a href="postrank_tie_solve.html">postrank_tie_solve()</a></code>
+          <code><a href="postrank_solve.html">postrank_solve()</a></code>
 
         </dt>
-        <dd>Choose Grades Under Equality-Neutral Loss</dd>
+        <dd>Find Grades and Report Their Optimization Bounds</dd>
 
         <dt>
 
-          <code><a href="read_postrank_tie_draws.html">read_postrank_tie_draws()</a></code>
+          <code><a href="validate_postrank_solution.html">validate_postrank_solution()</a></code>
 
         </dt>
-        <dd>Read an Equality-Neutral Posterior Input from JSON</dd>
+        <dd>Check a Solver Candidate for the Grading Problem</dd>
 
         <dt>
 
-          <code><a href="validate_postrank_tie_draws.html">validate_postrank_tie_draws()</a></code>
+          <code><a href="postrank_example.html">postrank_example()</a></code>
 
         </dt>
-        <dd>Check an Equality-Neutral Posterior Input</dd>
-
-        <dt>
-
-          <code><a href="validate_postrank_tie_pairwise.html">validate_postrank_tie_pairwise()</a></code>
-
-        </dt>
-        <dd>Check Equality-Neutral Comparison Coefficients</dd>
-
-        <dt>
-
-          <code><a href="validate_postrank_tie_solution.html">validate_postrank_tie_solution()</a></code>
-
-        </dt>
-        <dd>Check a Candidate Solution to a Tie-Aware Problem</dd>
-
-        <dt>
-
-          <code><a href="write_postrank_tie_draws.html">write_postrank_tie_draws()</a></code>
-
-        </dt>
-        <dd>Save an Equality-Neutral Posterior Input as JSON</dd>
+        <dd>Stored Example Results</dd>
       </dl></div><div class="section level2">
-      <h2 id="input">Input<a class="anchor" aria-label="anchor" href="#input"></a></h2>
+      <h2 id="posterior-draw-inputs">Posterior draw inputs<a class="anchor" aria-label="anchor" href="#posterior-draw-inputs"></a></h2>
 
-      <div class="section-desc"><p>Posterior draws, their required declarations and the strict constructors for one or several criteria.</p></div>
+      <div class="section-desc"><p>Describe posterior draws in plain arguments or structured blocks, build and validate draw objects, and read or write draw files.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -205,7 +119,7 @@
           <code><a href="as_postrank_posterior.html">as_postrank_posterior()</a></code>
 
         </dt>
-        <dd>Import Explicitly Mapped Posterior Draws</dd>
+        <dd>Import Mapped Posterior Draws</dd>
 
         <dt>
 
@@ -213,6 +127,13 @@
 
         </dt>
         <dd>Describe the Targets and Source of Posterior Draws</dd>
+
+        <dt>
+
+          <code><a href="postrank_describe.html">postrank_describe()</a></code>
+
+        </dt>
+        <dd>Describe Posterior Draws in Plain Arguments</dd>
 
         <dt>
 
@@ -263,9 +184,9 @@
         </dt>
         <dd>Save a Posterior Input as JSON</dd>
       </dl></div><div class="section level2">
-      <h2 id="coefficients">Coefficients<a class="anchor" aria-label="anchor" href="#coefficients"></a></h2>
+      <h2 id="analytic-posteriors-and-comparison-probabilities">Analytic posteriors and comparison probabilities<a class="anchor" aria-label="anchor" href="#analytic-posteriors-and-comparison-probabilities"></a></h2>
 
-      <div class="section-desc"><p>Prepared directional-error probabilities, typed posterior laws and their input-specific capabilities.</p></div>
+      <div class="section-desc"><p>Compute pairwise directional-error probabilities from draws or normal and mixture posteriors, or supply precomputed comparison probabilities.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -314,9 +235,9 @@
         </dt>
         <dd>Check Conditional Coefficients and Source Calculations</dd>
       </dl></div><div class="section level2">
-      <h2 id="settings-and-control">Settings and control<a class="anchor" aria-label="anchor" href="#settings-and-control"></a></h2>
+      <h2 id="settings-and-solver-control">Settings and solver control<a class="anchor" aria-label="anchor" href="#settings-and-solver-control"></a></h2>
 
-      <div class="section-desc"><p>The declared policy (weights, tau, grade cap) and the computation controls.</p></div>
+      <div class="section-desc"><p>Specify reporting loss settings (<code>weights</code>, <code>tau</code>, <code>G_max</code>, error budgets, minimax) and solver time limits, tolerances, and backend availability.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -337,67 +258,9 @@
         </dt>
         <dd>Choose the Loss and Allowed Grade Reports</dd>
       </dl></div><div class="section level2">
-      <h2 id="decision">Decision<a class="anchor" aria-label="anchor" href="#decision"></a></h2>
+      <h2 id="tables-accessors-and-html-reports">Tables, accessors, and HTML reports<a class="anchor" aria-label="anchor" href="#tables-accessors-and-html-reports"></a></h2>
 
-      <div class="section-desc"><p>The one-call analysis, the decision problem, the solver and fixed-grade evaluation.</p></div>
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="canonical_postrank_grade.html">canonical_postrank_grade()</a></code>
-
-        </dt>
-        <dd>Renumber Grades While Preserving Comparisons</dd>
-
-        <dt>
-
-          <code><a href="postrank.html">postrank()</a></code>
-
-        </dt>
-        <dd>Choose Posterior Grades and Prepare Their Summaries</dd>
-
-        <dt>
-
-          <code><a href="postrank_backend_available.html">postrank_backend_available()</a></code>
-
-        </dt>
-        <dd>Inspect Solver Package Availability</dd>
-
-        <dt>
-
-          <code><a href="postrank_evaluate.html">postrank_evaluate()</a></code>
-
-        </dt>
-        <dd>Evaluate the Posterior Loss of Supplied Grades</dd>
-
-        <dt>
-
-          <code><a href="postrank_problem.html">postrank_problem()</a></code>
-
-        </dt>
-        <dd>Build a Problem for Choosing Common Grades</dd>
-
-        <dt>
-
-          <code><a href="postrank_solve.html">postrank_solve()</a></code>
-
-        </dt>
-        <dd>Find Grades and Report Their Optimization Bounds</dd>
-
-        <dt>
-
-          <code><a href="validate_postrank_solution.html">validate_postrank_solution()</a></code>
-
-        </dt>
-        <dd>Check a Solver Candidate for the Grading Problem</dd>
-      </dl></div><div class="section level2">
-      <h2 id="baselines-and-comparison">Baselines and comparison<a class="anchor" aria-label="anchor" href="#baselines-and-comparison"></a></h2>
-
-      <div class="section-desc"><p>Score orders with optimal or quantile cuts, compared with the joint rule on one posterior and loss.</p></div>
+      <div class="section-desc"><p>Extract assigned grades, pair relations, criterion error profiles, report-card tables, and standalone HTML reports from stored results.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -405,124 +268,6 @@
 
 
       <dl><dt>
-
-          <code><a href="postrank_compare.html">postrank_compare()</a></code>
-
-        </dt>
-        <dd>Compare Grading Rules on One Posterior and Loss</dd>
-
-        <dt>
-
-          <code><a href="postrank_composite.html">postrank_composite()</a></code>
-
-        </dt>
-        <dd>Posterior-Mean Composite Scores with Declared Scales</dd>
-
-        <dt>
-
-          <code><a href="postrank_cuts.html">postrank_cuts()</a></code>
-
-        </dt>
-        <dd>Optimal or Quantile Cuts of a Declared Score Order</dd>
-
-        <dt>
-
-          <code><a href="postrank_expected_rank.html">postrank_expected_rank()</a></code>
-
-        </dt>
-        <dd>Weighted Expected-Rank Scores from Pairwise Errors</dd>
-
-        <dt>
-
-          <code><a href="postrank_posterior_means.html">postrank_posterior_means()</a></code>
-
-        </dt>
-        <dd>Posterior Means and Intervals per Entity and Criterion</dd>
-      </dl></div><div class="section level2">
-      <h2 id="criterion-summaries-and-settings-grids">Criterion summaries and settings grids<a class="anchor" aria-label="anchor" href="#criterion-summaries-and-settings-grids"></a></h2>
-
-      <div class="section-desc"><p>Criterion-specific losses, tau frontiers and specified settings grids.</p></div>
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="postrank_commonality_cost.html">postrank_commonality_cost()</a></code>
-
-        </dt>
-        <dd>Criterion-Wise Cost of a Common Grade</dd>
-
-        <dt>
-
-          <code><a href="postrank_frontier.html">postrank_frontier()</a></code>
-
-        </dt>
-        <dd>Disclosure and Error Frontier Over Tau or One Budget</dd>
-
-        <dt>
-
-          <code><a href="postrank_sensitivity.html">postrank_sensitivity()</a></code>
-
-        </dt>
-        <dd>Re-Solve a Decision Problem Over a Settings Grid</dd>
-
-        <dt>
-
-          <code><a href="postrank_settings_grid.html">postrank_settings_grid()</a></code>
-
-        </dt>
-        <dd>Build a One-at-a-Time or Full Settings Grid</dd>
-      </dl></div><div class="section level2">
-      <h2 id="diagnostics">Diagnostics<a class="anchor" aria-label="anchor" href="#diagnostics"></a></h2>
-
-      <div class="section-desc"><p>Descriptive diagnostics for cross-fitting, Monte Carlo fragility and decision traces. These diagnostics do not provide certificates.</p></div>
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="postrank_crossfit.html">postrank_crossfit()</a></code>
-
-        </dt>
-        <dd>Select and Evaluate Reports on Two Draw Folds</dd>
-
-        <dt>
-
-          <code><a href="postrank_diagnose.html">postrank_diagnose()</a></code>
-
-        </dt>
-        <dd>Inspect Monte Carlo Precision for Reports or Pairs</dd>
-
-        <dt>
-
-          <code><a href="postrank_mc_fragility.html">postrank_mc_fragility()</a></code>
-
-        </dt>
-        <dd>Find Pairwise Decisions Close to the Monte Carlo Noise Scale</dd>
-      </dl></div><div class="section level2">
-      <h2 id="reporting-and-accessors">Reporting and accessors<a class="anchor" aria-label="anchor" href="#reporting-and-accessors"></a></h2>
-
-      <div class="section-desc"><p>Report cards, the standalone English report, accessors and console formatters.</p></div>
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="format_postrank_cli.html">format_postrank_fit_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_analysis_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_draws_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_validation_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_pairwise_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_coefficients_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_coefficient_diagnostics_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_declarations_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_settings_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_control_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_problem_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_report_card_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_baseline_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_comparison_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_frontier_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_commonality_cost_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_sensitivity_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_crossfit_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_mc_fragility_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_diagnostics_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_report_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_guarantee_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_backend_availability_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_summary_cli()</a></code>
-
-        </dt>
-        <dd>Format postrank Results for Reading in the Console</dd>
-
-        <dt>
 
           <code><a href="get_grades.html">get_grades()</a></code>
 
@@ -571,9 +316,9 @@
         </dt>
         <dd>Convert Stored Results to Tables</dd>
       </dl></div><div class="section level2">
-      <h2 id="visualization">Visualization<a class="anchor" aria-label="anchor" href="#visualization"></a></h2>
+      <h2 id="figures-and-plot-helpers">Figures and plot helpers<a class="anchor" aria-label="anchor" href="#figures-and-plot-helpers"></a></h2>
 
-      <div class="section-desc"><p>Seven graphical summaries, their underlying tables, and plotting themes and grade palettes.</p></div>
+      <div class="section-desc"><p>Draw the seven common-grade ggplot2 figures, extract their underlying data tables, and apply package themes and grade palettes.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -613,7 +358,7 @@
           <code><a href="postrank_plot_frontier.html">postrank_plot_frontier()</a></code>
 
         </dt>
-        <dd>Plot Disclosure, Error and Risk Across Settings</dd>
+        <dd>Plot Disclosure, Error, and Risk Across Settings</dd>
 
         <dt>
 
@@ -634,7 +379,7 @@
           <code><a href="postrank_plot_relations.html">postrank_plot_relations()</a></code>
 
         </dt>
-        <dd>Plot Disclosed Comparisons or Their Changes</dd>
+        <dd>Plot Disclosed Pair Relations or Their Changes</dd>
 
         <dt>
 
@@ -664,9 +409,120 @@
         </dt>
         <dd>Use the postrank Figure Theme</dd>
       </dl></div><div class="section level2">
-      <h2 id="reference-calculations-conditional-">Reference calculations (conditional)<a class="anchor" aria-label="anchor" href="#reference-calculations-conditional-"></a></h2>
+      <h2 id="baseline-rules-and-method-comparison">Baseline rules and method comparison<a class="anchor" aria-label="anchor" href="#baseline-rules-and-method-comparison"></a></h2>
 
-      <div class="section-desc"><p>Conditional IID reference bounds and protection envelopes; they issue no general guarantee.</p></div>
+      <div class="section-desc"><p>Score entities by posterior means, expected ranks, or linear composites, cut fixed orders into grades, and compare rules under one common loss.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="postrank_compare.html">postrank_compare()</a></code>
+
+        </dt>
+        <dd>Compare Grading Rules on One Posterior and Loss</dd>
+
+        <dt>
+
+          <code><a href="postrank_composite.html">postrank_composite()</a></code>
+
+        </dt>
+        <dd>Posterior-Mean Composite Scores with Declared Scales</dd>
+
+        <dt>
+
+          <code><a href="postrank_cuts.html">postrank_cuts()</a></code>
+
+        </dt>
+        <dd>Optimal or Quantile Cuts of a Declared Score Order</dd>
+
+        <dt>
+
+          <code><a href="postrank_expected_rank.html">postrank_expected_rank()</a></code>
+
+        </dt>
+        <dd>Weighted Expected-Rank Scores from Pairwise Errors</dd>
+
+        <dt>
+
+          <code><a href="postrank_posterior_means.html">postrank_posterior_means()</a></code>
+
+        </dt>
+        <dd>Posterior Means and Intervals per Entity and Criterion</dd>
+      </dl></div><div class="section level2">
+      <h2 id="sensitivity-grids-and-frontiers">Sensitivity grids and frontiers<a class="anchor" aria-label="anchor" href="#sensitivity-grids-and-frontiers"></a></h2>
+
+      <div class="section-desc"><p>Trace grades across tau or error-budget frontiers, run grids of reporting settings, and measure the per-criterion cost of sharing one common grade.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="postrank_commonality_cost.html">postrank_commonality_cost()</a></code>
+
+        </dt>
+        <dd>Criterion-Wise Cost of a Common Grade</dd>
+
+        <dt>
+
+          <code><a href="postrank_frontier.html">postrank_frontier()</a></code>
+
+        </dt>
+        <dd>Disclosure and Error Frontier Over Tau or One Budget</dd>
+
+        <dt>
+
+          <code><a href="postrank_sensitivity.html">postrank_sensitivity()</a></code>
+
+        </dt>
+        <dd>Re-Solve a Decision Problem Over a Settings Grid</dd>
+
+        <dt>
+
+          <code><a href="postrank_settings_grid.html">postrank_settings_grid()</a></code>
+
+        </dt>
+        <dd>Build a One-at-a-Time or Full Settings Grid</dd>
+      </dl></div><div class="section level2">
+      <h2 id="monte-carlo-diagnostics">Monte Carlo diagnostics<a class="anchor" aria-label="anchor" href="#monte-carlo-diagnostics"></a></h2>
+
+      <div class="section-desc"><p>Summarize Monte Carlo standard errors, resampling fragility, and out-of-fold loss differences without claiming calibration guarantees.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="postrank_crossfit.html">postrank_crossfit()</a></code>
+
+        </dt>
+        <dd>Select and Evaluate Gradings on Two Draw Folds</dd>
+
+        <dt>
+
+          <code><a href="postrank_diagnose.html">postrank_diagnose()</a></code>
+
+        </dt>
+        <dd>Inspect Monte Carlo Precision for Reports or Pairs</dd>
+
+        <dt>
+
+          <code><a href="postrank_mc_fragility.html">postrank_mc_fragility()</a></code>
+
+        </dt>
+        <dd>Find Pairwise Decisions Near the Monte Carlo Noise Scale</dd>
+      </dl></div><div class="section level2">
+      <h2 id="conditional-iid-bounds-and-envelopes">Conditional IID bounds and envelopes<a class="anchor" aria-label="anchor" href="#conditional-iid-bounds-and-envelopes"></a></h2>
+
+      <div class="section-desc"><p>Compute conditional error radii, regret bounds, and protection envelopes that hold only under independent draws with a sample size fixed in advance.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -678,39 +534,190 @@
           <code><a href="postrank_guarantee_capabilities.html">postrank_guarantee_capabilities()</a></code>
 
         </dt>
-        <dd>Check Which Uncertainty Bounds Are Implemented</dd>
+        <dd>List Which Uncertainty Bounds postrank Computes</dd>
 
         <dt>
 
           <code><a href="postrank_iid_bounds.html">postrank_iid_bounds()</a></code>
 
         </dt>
-        <dd>Calculate a Conditional Fixed-Sample IID Probability Bound</dd>
+        <dd>Compute a Conditional Fixed-Sample IID Probability Bound</dd>
 
         <dt>
 
           <code><a href="postrank_protection_analysis.html">postrank_protection_analysis()</a></code>
 
         </dt>
-        <dd>Solve Protection Envelopes and Compare Their Risk Bounds</dd>
+        <dd>Solve Protection Envelopes and Bound Regret</dd>
 
         <dt>
 
           <code><a href="postrank_protection_envelopes.html">postrank_protection_envelopes()</a></code>
 
         </dt>
-        <dd>Construct Inner and Outer Problems for Criterion Protections</dd>
+        <dd>Build Inner and Outer Problems for Error Budgets</dd>
 
         <dt>
 
           <code><a href="postrank_regret_bound.html">postrank_regret_bound()</a></code>
 
         </dt>
-        <dd>Bound Weighted Risk with IID and Optimization Errors</dd>
+        <dd>Bound Weighted Risk Regret Under Fixed-Sample IID Draws</dd>
       </dl></div><div class="section level2">
-      <h2 id="data-and-examples">Data and examples<a class="anchor" aria-label="anchor" href="#data-and-examples"></a></h2>
+      <h2 id="multidomain-profile-report-cards">Multidomain profile report cards<a class="anchor" aria-label="anchor" href="#multidomain-profile-report-cards"></a></h2>
 
-      <div class="section-desc"><p>Synthetic posterior inputs and the three applied case studies.</p></div>
+      <div class="section-desc"><p>Assign each entity a separate grade per domain, evaluate additive losses and joint cross-domain error caps over a declared candidate set, and plot profile cards.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="postrank_mdomain_assess.html">postrank_mdomain_assess()</a></code>
+
+        </dt>
+        <dd>Assess a Fixed Multidomain Grade Profile</dd>
+
+        <dt>
+
+          <code><a href="postrank_mdomain_decision.html">postrank_mdomain_decision()</a></code>
+
+        </dt>
+        <dd>Specify Loss and Error Controls for Multidomain Grading</dd>
+
+        <dt>
+
+          <code><a href="postrank_mdomain_evaluate.html">postrank_mdomain_evaluate()</a></code>
+
+        </dt>
+        <dd>Evaluate a Fixed Multidomain Grade Profile</dd>
+
+        <dt>
+
+          <code><a href="postrank_mdomain_family.html">postrank_mdomain_family()</a></code>
+
+        </dt>
+        <dd>Build a Candidate Family of Multidomain Grade Profiles</dd>
+
+        <dt>
+
+          <code><a href="postrank_mdomain_grades.html">postrank_mdomain_grades()</a></code>
+
+        </dt>
+        <dd>Extract Verified Multidomain Grades</dd>
+
+        <dt>
+
+          <code><a href="postrank_mdomain_input.html">postrank_mdomain_input()</a></code>
+
+        </dt>
+        <dd>Prepare Posterior States for Multidomain Grading</dd>
+
+        <dt>
+
+          <code><a href="postrank_mdomain_solve.html">postrank_mdomain_solve()</a></code>
+
+        </dt>
+        <dd>Select a Multidomain Grade Profile from a Candidate Family</dd>
+
+        <dt>
+
+          <code><a href="postrank_plot_mdomain.html">postrank_plot_mdomain()</a></code>
+
+        </dt>
+        <dd>Plot a Multidomain Grade Profile</dd>
+      </dl></div><div class="section level2">
+      <h2 id="posteriors-with-exact-ties">Posteriors with exact ties<a class="anchor" aria-label="anchor" href="#posteriors-with-exact-ties"></a></h2>
+
+      <div class="section-desc"><p>Grade entities under posteriors where exact equality between distinct entities has positive probability; see postrank_tie_capabilities() for supported modes.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="as_postrank_tie_draws.html">as_postrank_tie_draws()</a></code>
+
+        </dt>
+        <dd>Prepare Posterior Inputs with Positive Equality Probability</dd>
+
+        <dt>
+
+          <code><a href="postrank_tie_capabilities.html">postrank_tie_capabilities()</a></code>
+
+        </dt>
+        <dd>List Supported Features in Tie-Aware Mode</dd>
+
+        <dt>
+
+          <code><a href="postrank_tie_evaluate.html">postrank_tie_evaluate()</a></code>
+
+        </dt>
+        <dd>Evaluate a Fixed Grading Under Equality-Neutral Loss</dd>
+
+        <dt>
+
+          <code><a href="postrank_tie_pairwise.html">postrank_tie_pairwise()</a></code>
+
+        </dt>
+        <dd>Compute Strict Error and Equality Probabilities</dd>
+
+        <dt>
+
+          <code><a href="postrank_tie_problem.html">postrank_tie_problem()</a></code>
+
+        </dt>
+        <dd>Build a Grading Problem Under Equality-Neutral Loss</dd>
+
+        <dt>
+
+          <code><a href="postrank_tie_solve.html">postrank_tie_solve()</a></code>
+
+        </dt>
+        <dd>Solve a Grading Problem Under Equality-Neutral Loss</dd>
+
+        <dt>
+
+          <code><a href="read_postrank_tie_draws.html">read_postrank_tie_draws()</a></code>
+
+        </dt>
+        <dd>Read a Tie-Aware Posterior Input from JSON</dd>
+
+        <dt>
+
+          <code><a href="validate_postrank_tie_draws.html">validate_postrank_tie_draws()</a></code>
+
+        </dt>
+        <dd>Validate a Tie-Aware Posterior Input</dd>
+
+        <dt>
+
+          <code><a href="validate_postrank_tie_pairwise.html">validate_postrank_tie_pairwise()</a></code>
+
+        </dt>
+        <dd>Validate Tie-Aware Pairwise Probabilities</dd>
+
+        <dt>
+
+          <code><a href="validate_postrank_tie_solution.html">validate_postrank_tie_solution()</a></code>
+
+        </dt>
+        <dd>Validate a Candidate Solution to a Tie-Aware Problem</dd>
+
+        <dt>
+
+          <code><a href="write_postrank_tie_draws.html">write_postrank_tie_draws()</a></code>
+
+        </dt>
+        <dd>Write a Tie-Aware Posterior Input to JSON</dd>
+      </dl></div><div class="section level2">
+      <h2 id="bundled-datasets">Bundled datasets<a class="anchor" aria-label="anchor" href="#bundled-datasets"></a></h2>
+
+      <div class="section-desc"><p>Synthetic teaching posteriors and the California school, employer callback, and Alabama county case-study datasets.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -773,9 +780,9 @@
         </dt>
         <dd>One or Two Criteria for Six Fictional Sites</dd>
       </dl></div><div class="section level2">
-      <h2 id="package-and-options">Package and options<a class="anchor" aria-label="anchor" href="#package-and-options"></a></h2>
+      <h2 id="package-overview-and-global-options">Package overview and global options<a class="anchor" aria-label="anchor" href="#package-overview-and-global-options"></a></h2>
 
-
+      <div class="section-desc"><p>Package-level overview and session options (postrank.backend, postrank.verbose, and postrank.lang).</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -795,6 +802,22 @@
 
         </dt>
         <dd>Session Options for Solving and Reporting</dd>
+      </dl></div><div class="section level2">
+      <h2 id="console-text-formatters">Console text formatters<a class="anchor" aria-label="anchor" href="#console-text-formatters"></a></h2>
+
+      <div class="section-desc"><p>Class-checked wrappers that return the same console output lines as format(x) with width and styling controls.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="format_postrank_cli.html">format_postrank_fit_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_analysis_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_draws_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_validation_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_pairwise_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_coefficients_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_coefficient_diagnostics_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_declarations_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_settings_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_control_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_problem_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_report_card_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_baseline_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_comparison_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_frontier_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_commonality_cost_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_sensitivity_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_crossfit_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_mc_fragility_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_diagnostics_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_report_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_guarantee_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_backend_availability_cli()</a></code> <code><a href="format_postrank_cli.html">format_postrank_summary_cli()</a></code>
+
+        </dt>
+        <dd>Format postrank Results for Reading in the Console</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

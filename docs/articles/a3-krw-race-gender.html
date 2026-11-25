@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Race and gender at large employers • postrank</title>
+<title>Grading large employers on race and gender contact gaps • postrank</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Race and gender at large employers">
+<meta property="og:title" content="Grading large employers on race and gender contact gaps">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,7 +35,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="active nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -57,7 +57,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Race and gender at large employers</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Grading large employers on race and gender contact gaps</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/joonho112/postrank/blob/HEAD/vignettes/a3-krw-race-gender.Rmd" class="external-link"><code>vignettes/a3-krw-race-gender.Rmd</code></a></small>
@@ -66,26 +66,26 @@
 
     
     
-<p>Employer comparisons may concern both race and gender, with a single
-grade required to summarize the two criteria. We consider such a report
-for the 97 firms in the bundled Kline, Rose, and Walters case. The
-analysis specifies the comparison probabilities and reporting loss,
-examines the resulting disclosure and withholding, and compares the
-common grading with archived single-criterion cards.</p>
-<p>The results use a prepared analysis of the bundled input. Rendering
-the article requires neither posterior model fitting nor a solver. An
-optional call specifies a new analysis using HiGHS. The input and
-prepared result refer to the same firms and targets, with no Gaussian
-approximation.</p>
+<p>When an accountability study measures two outcomes on the same
+organizations, a single common grading has to decide which pairs of
+organizations can be ordered across both criteria and which pairs should
+remain unordered. Here we walk through a two-criterion common grading of
+the <code>97</code> U.S. employers in <code>pr_case_krw</code>, adapted
+from the replication archive of Kline, Rose, and Walters (2024), <em>A
+Discrimination Report Card</em>.</p>
+<p>All posterior inputs and optimization results below are stored in the
+package and loaded without fitting a model or running a solver during
+rendering.</p>
 <div class="section level2">
-<h2 id="the-question-encoded-in-the-input">Targets and source data<a class="anchor" aria-label="anchor" href="#the-question-encoded-in-the-input"></a>
+<h2 id="the-question-encoded-in-the-input">Targets, source data, and license<a class="anchor" aria-label="anchor" href="#the-question-encoded-in-the-input"></a>
 </h2>
-<p>The data are adapted from Kline, Rose, and Walters’ <em>Data and Code
-for: A Discrimination Report Card</em>, available in the <a href="https://doi.org/10.3886/E198284V1" class="external-link">replication archive</a>. They
-concern the original correspondence experiment. A grade here describes
-the modelled contact differences in those data; it is not a statement
-about an employer’s current practices or the effect of an
-intervention.</p>
+<p><code>pr_case_krw</code> is adapted from Kline, Rose, and Walters
+(2024), <em>Replication Data for: A Discrimination Report Card</em>
+(titled <em>Data and Code for: A Discrimination Report Card</em> on <a href="https://doi.org/10.3886/E198284V1" class="external-link">openICPSR E198284V1</a>). The
+underlying counts come from that study’s resume correspondence
+experiment, so the grades below summarize modeled callback gaps in those
+experimental data rather than current hiring practices or causal effects
+of workplace interventions.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joonho112/postrank" class="external-link">postrank</a></span><span class="op">)</span></span>
 <span><span class="va">krw</span> <span class="op">&lt;-</span> <span class="va">pr_case_krw</span></span>
@@ -96,111 +96,123 @@ intervention.</p>
 <span><span class="co">#&gt; "log(p_white) - log(p_black); larger white-name contact advantage means higher reporting priority" </span></span>
 <span><span class="co">#&gt;                                                                                      gender_signed </span></span>
 <span><span class="co">#&gt;  "log(p_male) - log(p_female); larger male-name contact advantage means higher reporting priority"</span></span></code></pre></div>
-<p>The first target is the signed white-name contact advantage,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>w</mi><mi>h</mi><mi>i</mi><mi>t</mi><mi>e</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>b</mi><mi>l</mi><mi>a</mi><mi>c</mi><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\log(p_{white})-\log(p_{black})</annotation></semantics></math>.
-The second is the signed male-name contact advantage,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>m</mi><mi>a</mi><mi>l</mi><mi>e</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>f</mi><mi>e</mi><mi>m</mi><mi>a</mi><mi>l</mi><mi>e</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\log(p_{male})-\log(p_{female})</annotation></semantics></math>.
-Larger values receive higher reporting priority on each criterion.
-Consequently, grade 1 denotes the higher-priority group. A negative
-gender target means a female-name contact advantage; taking its absolute
-value would answer a different question.</p>
-<p>Both targets are log ratios. Their posterior means differ from the
-logarithms of posterior mean probability ratios, and exponentiating a
-posterior mean log ratio generally differs from taking the posterior
-mean ratio. Retaining the supplied scale ensures a common interpretation
-of the target, intervals and pairwise comparisons.</p>
-<p>The source README states, “The data are licensed under a Creative
-Commons/CC-BY-NC license.” Its license version is unspecified. The
-bundled adaptation retains the same noncommercial source notice. See
-<code><a href="../reference/pr_case_krw.html">?pr_case_krw</a></code> for attribution and the extraction
-description. The package code license does not replace those
-conditions.</p>
+<p>Both criteria are signed log callback-rate ratios:</p>
+<ul>
+<li>
+<code>race_signed</code>:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mrow><mi mathvariant="normal">w</mi><mi mathvariant="normal">h</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">e</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mrow><mi mathvariant="normal">b</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\log(p_{\mathrm{white}}) - \log(p_{\mathrm{black}})</annotation></semantics></math>,
+the white-name callback advantage;</li>
+<li>
+<code>gender_signed</code>:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">e</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mrow><mi mathvariant="normal">f</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">e</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\log(p_{\mathrm{male}}) - \log(p_{\mathrm{female}})</annotation></semantics></math>,
+the male-name callback advantage.</li>
+</ul>
+<p>Larger values receive higher priority (grade 1) on both criteria.
+Because <code>gender_signed</code> keeps its sign, negative values
+represent a female-name callback advantage; folding
+<code>gender_signed</code> to its absolute magnitude answers a different
+question (examined in the final section). Posterior means and intervals
+are reported on this same log-ratio scale because
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">exp</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>E</mi><mo stretchy="false" form="prefix">[</mo><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mi>r</mi><mo stretchy="false" form="postfix">]</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\exp(E[\log r])</annotation></semantics></math>
+generally differs from
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mo stretchy="false" form="prefix">[</mo><mi>r</mi><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">E[r]</annotation></semantics></math>.</p>
+<p>The replication archive README states: <em>“The data are licensed
+under a Creative Commons/CC-BY-NC license”</em> (version unspecified).
+<code>pr_case_krw</code> and its stored results retain that
+noncommercial <code>CC-BY-NC</code> condition separately from
+<code>postrank</code>’s MIT code license, and no endorsement by the
+original authors is implied (see <code><a href="../reference/pr_case_krw.html">?pr_case_krw</a></code> and the
+installed <code>DATA-NOTICE.md</code>).</p>
 <div class="section level3">
-<h3 id="what-distribution-do-these-numbers-describe">Posterior specification<a class="anchor" aria-label="anchor" href="#what-distribution-do-these-numbers-describe"></a>
+<h3 id="what-distribution-do-these-numbers-describe">Continuous midpoint-cell posterior<a class="anchor" aria-label="anchor" href="#what-distribution-do-these-numbers-describe"></a>
 </h3>
-<p>The original empirical-Bayes analysis supplies posterior grids. This
-case uses continuous uniform cells whose boundaries lie between retained
-grid midpoints, preserving each cell’s posterior mass. The first race
-cell has nonnegative support. The fitted prior and its parameters remain
-fixed. The supplied means and 90% equal-tail marginal intervals describe
-those same continuous cells.</p>
-<p>For distinct firms, <code>e[i, j, k]</code> is the posterior
-probability that firm <code>i</code>’s target is no larger than firm
-<code>j</code>’s target on criterion <code>k</code>. It is therefore the
-expected directional error when the report places <code>i</code> above
-<code>j</code>. These probabilities were calculated assuming conditional
-independence of firms given the fixed empirical-Bayes quantities.
-Importing the array preserves this assumption without establishing its
-empirical validity.</p>
-<p>The archive’s <code>Pi</code> matrix, discrete grid atoms and the
-continuous cell law used here represent different probability
-specifications. <code>Pi</code> is a published comparison reference with
-its own conventions. Grid atoms assign mass to nodes and can produce
-positive equality probabilities; the continuous law distributes each
-mass over an interval and declares zero equality probability for
-distinct firms. The archive’s plotting repair and the grade generator’s
-probability floor are not applied to this input. Their reference records
-are retained separately in <code>krw$reference$archive_pi</code>.</p>
-<p>Criterion-wise probabilities and marginal summaries suffice for the
-weighted loss below, which adds expected errors across criteria. The
-input contains neither target draws nor a within-firm joint distribution
-of race and gender. Consequently, it does not identify probabilities
-involving a composite race-and-gender target or simultaneous dominance
-on both criteria.</p>
+<p>In the replication archive, empirical-Bayes posteriors are stored on
+discrete grids with the estimated prior held fixed. To form a tie-free
+continuous input for <code><a href="../reference/postrank_probabilities.html">postrank_probabilities()</a></code>,
+<code>pr_case_krw$input</code> distributes each grid node’s posterior
+mass uniformly across the continuous cell between adjacent grid
+midpoints (with nonnegative support on the lowest race cell), holding
+the archive’s empirical-Bayes prior fixed without refitting or normal
+approximation. Both the <code>97 x 97 x 2</code> directional-error array
+<code>e[i, j, k]</code> and the matching 90% equal-tail marginal
+intervals integrate that same continuous midpoint-cell law, assuming
+conditional independence across firms given the fixed empirical-Bayes
+prior.</p>
+<p>In <code>krw$reference$archive_pi</code>, <code>raw</code> holds the
+archive’s original discrete-grid comparison probabilities. The
+<code>plotting</code> version keeps the upper triangle, sets each
+lower-triangle entry to one minus its transposed entry, and sets the
+diagonal to 0.5. The archive’s grade generator also replaced exact zeros
+with <code>1e-7</code>. The <code>grade_generator_convention</code>
+field documents that rule. The continuous-cell input uses the integrated
+probabilities described above. Because <code>krw$input</code> supplies
+criterion-by-criterion pairwise probabilities and marginal intervals
+without posterior draws or a within-firm joint race-gender distribution,
+it supports weighted directional-error loss across the two criteria
+while leaving composite race-plus-gender scores and draw-based Monte
+Carlo diagnostics unavailable.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="choose-the-comparisons-worth-reporting">Loss and grade constraints<a class="anchor" aria-label="anchor" href="#choose-the-comparisons-worth-reporting"></a>
+<h2 id="choose-the-comparisons-worth-reporting">Two-criterion loss and example settings<a class="anchor" aria-label="anchor" href="#choose-the-comparisons-worth-reporting"></a>
 </h2>
-<p>The reporting loss assigns equal criterion weights, a withholding
-cost of 0.25, and at most 4 grades. The weights average expected
-directional errors; they neither combine the posterior means nor impose
-equal precision across criteria.</p>
+<p>In <strong>this example’s</strong> two-criterion problem (distinct
+from the single-criterion settings in the KRW replication archive, which
+we compare later), we give equal weights (<code>0.5</code> and
+<code>0.5</code>) to <code>race_signed</code> and
+<code>gender_signed</code>, set the unordered-pair cost to
+<code>tau = 0.25</code>, and cap the report at <code>G_max = 4</code>
+grades:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">settings</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_settings.html">postrank_settings</a></span><span class="op">(</span></span>
-<span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>race_signed <span class="op">=</span> <span class="fl">.5</span>, gender_signed <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span>,</span>
-<span>  tau <span class="op">=</span> <span class="fl">.25</span>,</span>
+<span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>race_signed <span class="op">=</span> <span class="fl">0.5</span>, gender_signed <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>  tau <span class="op">=</span> <span class="fl">0.25</span>,</span>
 <span>  G_max <span class="op">=</span> <span class="fl">4L</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>There are
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><mi>n</mi><mn>2</mn></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">M=\binom{n}{2}</annotation></semantics></math>
-unordered firm pairs. A grade either discloses a direction for a pair or
-leaves it unordered. Let
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
-be the number disclosed and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>E</mi><mi>k</mi></msub><annotation encoding="application/x-tex">E_k</annotation></semantics></math>
-the expected number of wrong-direction disclosures on criterion
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>.
-The risk for this policy is</p>
+<p>Across the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><mn>97</mn><mn>2</mn></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>4</mn><mo>,</mo><mn>656</mn></mrow><annotation encoding="application/x-tex">M = \binom{97}{2} = 4{,}656</annotation></semantics></math>
+unordered firm pairs, a grading
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>
+orders
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">N(g)</annotation></semantics></math>
+pairs and leaves
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>−</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">M - N(g)</annotation></semantics></math>
+pairs unordered. With expected wrong-direction counts
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>E</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">E_k(g)</annotation></semantics></math>
+on criterion
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>,
+the weighted loss is</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><munder><mo>∑</mo><mi>k</mi></munder><msub><mi>w</mi><mi>k</mi></msub><msub><mi>E</mi><mi>k</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>τ</mi><mo stretchy="false" form="prefix">{</mo><mi>M</mi><mo>−</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo></mrow><mi>M</mi></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
- R(g)=\frac{\sum_k w_k E_k(g)+\tau\{M-N(g)\}}{M}.
+  R(g) = \frac{\sum_k w_k E_k(g) + \tau \{M - N(g)\}}{M}.
 </annotation></semantics></math></p>
-<p>Each pair receives a common grade relation whose expected error may
-differ across criteria. Assigning all firms to one grade is admissible
-and gives risk
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>
-by withholding every comparison. This action makes no equality claim
-about firms. Likewise, an increase in the grade cap expands the
-permitted number of groups without requiring all grades to be
-occupied.</p>
-<p>The following optional call uses the supplied interval level,
-explicitly selects a solver and imposes a time limit. It is not executed
-during document rendering. For a new run, the returned status and bound
-determine whether optimality was established within tolerance; the time
-limit alone provides no such assurance.</p>
+<p>The weights <code>0.5</code> and <code>0.5</code> average expected
+wrong-direction errors across the two criteria rather than adding the
+two log-ratio estimates into a single index. Placing all <code>97</code>
+firms in grade 1 is allowed and gives loss
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">\tau = 0.25</annotation></semantics></math>
+by leaving every pair unordered, without claiming that the firms have
+equal callback gaps.</p>
+<p>Recomputing this grading requires a solver (Gurobi is the default and
+needs a license; <code>backend = "highs"</code> uses the open-source
+<code>highs</code> package from <code>install.packages("highs")</code>).
+The solver call is shown below with <code>eval = FALSE</code>, and the
+stored result from an equivalent call is loaded with
+<code><a href="../reference/postrank_example.html">postrank_example()</a></code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">analysis</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank.html">postrank</a></span><span class="op">(</span></span>
 <span>  <span class="va">krw</span><span class="op">$</span><span class="va">input</span>, settings <span class="op">=</span> <span class="va">settings</span>,</span>
-<span>  level <span class="op">=</span> <span class="va">krw</span><span class="op">$</span><span class="va">input</span><span class="op">$</span><span class="va">summaries</span><span class="op">$</span><span class="va">level</span>,</span>
+<span>  level <span class="op">=</span> <span class="fl">0.90</span>,</span>
 <span>  backend <span class="op">=</span> <span class="st">"highs"</span>,</span>
 <span>  control <span class="op">=</span> <span class="fu"><a href="../reference/postrank_control.html">postrank_control</a></span><span class="op">(</span>time_limit <span class="op">=</span> <span class="fl">30</span>, threads <span class="op">=</span> <span class="fl">1L</span>, seed <span class="op">=</span> <span class="fl">1304L</span><span class="op">)</span>,</span>
 <span>  fragility <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">analysis</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"case_krw_signed97"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="what-the-common-grade-discloses">Common grading<a class="anchor" aria-label="anchor" href="#what-the-common-grade-discloses"></a>
+<h2 id="what-the-common-grade-discloses">Common grading, risk, and criterion error rates<a class="anchor" aria-label="anchor" href="#what-the-common-grade-discloses"></a>
 </h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">analysis</span></span>
 <span><span class="co">#&gt; &lt;postrank_analysis&gt;  97 entities in 3 grades (sizes 6 / 90 / 1)</span></span>
 <span><span class="co">#&gt;   2 criteria: race_signed, gender_signed.</span></span>
@@ -212,7 +224,7 @@ limit alone provides no such assurance.</p>
 <span><span class="co">#&gt;   Prepared: report card.</span></span>
 <span><span class="co">#&gt;   Grade 1 has highest priority; a shared grade withholds the comparison.</span></span>
 <span><span class="co">#&gt;   97 entities; membership in get_grades(x)</span></span>
-<span><span class="co">#&gt;   !  1 warning recorded: Reported lower bound exceeded the validated action r...</span></span>
+<span><span class="co">#&gt;   !  1 warning recorded: Reported lower bound exceeded the validated action ris...</span></span>
 <span><span class="co">#&gt;   i summary(x) explains the loss, settings and bounds; get_grades(x) returns</span></span>
 <span><span class="co">#&gt;     all grades.</span></span>
 <span><span class="fu"><a href="../reference/get_risk.html">get_risk</a></span><span class="op">(</span><span class="va">analysis</span><span class="op">)</span></span>
@@ -227,21 +239,28 @@ limit alone provides no such assurance.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $status</span></span>
 <span><span class="co">#&gt; [1] "optimal"</span></span></code></pre></div>
-<p>The prepared result has 3 grades containing 6 / 90 / 1 firms. It
-discloses 636 of 4,656 pairs (13.7%) and withholds 4,020. Its risk is
-0.24547041087, compared with 0.25 for withholding all pairs under the
-same settings. The large middle grade thus reflects substantial
-withholding at the specified cost.</p>
-<p>The returned status is optimal, meaning optimal within the numerical
-solver tolerances for the supplied coefficient problem. The recorded gap
-is 0. The result also retains a warning: the reported lower bound
-exceeded the validated action risk by 2.78e-17, within its
-bound-validation tolerance of 1.19e-09, and was clamped to the action
-risk. Thus a displayed zero gap is a numerical optimization statement
-conditional on this finite probability table. It does not certify the
-underlying posterior approximation, the empirical-Bayes assumptions, or
-the firms’ true contact differences.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p>Although <code>G_max = 4</code> allows up to four grades, the stored
+grading uses <code>3</code> grades containing <code>6 / 90 / 1</code>
+firms (<code>table(get_grades(analysis))</code>). It orders
+<code>636</code> of the <code>4,656</code> firm pairs
+(<code>13.7%</code>) and leaves <code>4,020</code> pairs unordered,
+achieving weighted loss <code>0.245470</code> compared with
+<code>0.250000</code> for leaving all pairs unordered. (In the printed
+output, <code>"disclosed"</code> means ordered pairs,
+<code>"withheld"</code> means pairs left unordered, and
+<code>"risk"</code> means posterior expected loss.) Placing
+<code>90</code> of the <code>97</code> firms in grade 2 reflects
+substantial posterior overlap at <code>tau = 0.25</code>.</p>
+<p>The solver finished with status <code>"optimal"</code> and gap
+<code>0</code>. As noted by the printed warning, the solver’s raw lower
+bound exceeded the checked grading’s loss by <code>2.78e-17</code>
+(inside the bound-check tolerance <code>1.19e-09</code>) and was clamped
+to the loss; see <a href="m5-computing-grades.html">Computing grades,
+choosing settings, and reading solver bounds</a>. That zero gap
+describes optimization over this <code>97 x 97 x 2</code> probability
+array and does not verify the continuous cell approximation or the
+empirical-Bayes prior.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">profile</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_profile.html">get_profile</a></span><span class="op">(</span><span class="va">analysis</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">profile</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"criterion"</span>, <span class="st">"weight"</span>, <span class="st">"E"</span>, <span class="st">"E_over_N"</span>, <span class="st">"E_over_M"</span>, <span class="st">"risk"</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>  digits <span class="op">=</span> <span class="fl">4</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
@@ -273,37 +292,33 @@ the firms’ true contact differences.</p>
 </tr>
 </tbody>
 </table>
-<p>The expected error per disclosed pair is 0.196 for race and 0.237 for
-gender. These ratios use the same 636 disclosed pairs. By contrast,
-<code>E_over_M</code> divides by all 4,656 pairs. Neither quantity is a
-count of observed mistakes: both average over the declared posterior
-uncertainty. The criterion risks also include the cost of the withheld
-pairs.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p>Across the <code>636</code> ordered firm pairs, expected
+wrong-direction errors per ordered pair (<code>E_over_N</code>) are
+<code>0.196</code> (<code>19.6%</code>) on <code>race_signed</code> and
+<code>0.237</code> (<code>23.7%</code>) on <code>gender_signed</code>
+(<code>E_over_M</code> divides by all <code>4,656</code> pairs instead,
+giving <code>0.0268</code> and <code>0.0324</code>). Both ratios are
+posterior expectations rather than counts of observed mistakes.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_profile.html">postrank_plot_profile</a></span><span class="op">(</span><span class="va">analysis</span>, show <span class="op">=</span> <span class="st">"E_over_N"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<a href="a3-krw-race-gender_files/figure-html/criterion-profile-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Expected wrong-direction comparisons per disclosed pair. Both criteria describe the same common grade, and both use N as the denominator." target="_blank" rel="noopener"><img src="a3-krw-race-gender_files/figure-html/criterion-profile-1.png" class="r-plt" alt="Expected wrong-direction comparisons per disclosed pair. Both criteria describe the same common grade, and both use N as the denominator." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a3-krw-race-gender_files/figure-html/criterion-profile-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Expected wrong-direction comparisons per disclosed pair. Both criteria describe the same common grade, and both use N as the denominator.">Open full-size figure</a></span><p class="caption">
-Expected wrong-direction comparisons per disclosed pair. Both criteria
-describe the same common grade, and both use N as the denominator.
+<a href="a3-krw-race-gender_files/figure-html/a3-criterion-profile-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Horizontal dot plot of E/N for race_signed (0.1963) and gender_signed (0.2374) across the 636 ordered firm pairs." target="_blank" rel="noopener"><img src="a3-krw-race-gender_files/figure-html/a3-criterion-profile-1.png" class="r-plt" alt="Horizontal dot plot of E/N for race_signed (0.1963) and gender_signed (0.2374) across the 636 ordered firm pairs." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a3-krw-race-gender_files/figure-html/a3-criterion-profile-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Horizontal dot plot of E/N for race_signed (0.1963) and gender_signed (0.2374) across the 636 ordered firm pairs.">Open full-size figure</a></span><p class="caption">
+Posterior expected wrong-direction errors per ordered pair (E/N) on
+race_signed and gender_signed for the 97-firm common grading.
 </p>
 </div>
-<p>A weighted loss may retain a direction with greater uncertainty on
-one criterion when the other criterion provides sufficient support.
-Equal weights can therefore yield different criterion-specific errors.
-This analysis imposes no separate criterion error budget, so
-<code>q</code> is unavailable in the extracted profile rather than equal
-to zero.</p>
 </div>
 <div class="section level2">
-<h2 id="read-a-named-report-without-hiding-the-withheld-group">Posterior summaries for selected firms<a class="anchor" aria-label="anchor" href="#read-a-named-report-without-hiding-the-withheld-group"></a>
+<h2 id="read-a-named-report-without-hiding-the-withheld-group">Report card for selected firms<a class="anchor" aria-label="anchor" href="#read-a-named-report-without-hiding-the-withheld-group"></a>
 </h2>
-<p>The following report card includes every firm outside the largest
-grade and a spaced selection within that grade. This display allocation
-retains the small outer groups and permits legible intervals. It changes
-neither the grading nor the population represented by the full result,
-and is not a representative subsample. All 97 firms remain available in
-<code>as.data.frame(analysis)</code>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<p>To keep the report card legible while showing all three occupied
+grades, we display all <code>7</code> firms outside grade 2
+(<code>6</code> in grade 1 and <code>1</code> in grade 3) together with
+<code>5</code> evenly spaced firms from grade 2. Filtering
+<code>entities</code> in <code><a href="../reference/postrank_plot_report_card.html">postrank_plot_report_card()</a></code>
+changes only which rows are drawn; all <code>97</code> firms remain in
+<code>as.data.frame(analysis)</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grades</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">analysis</span><span class="op">)</span></span>
 <span><span class="va">largest_grade</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">grades</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">middle_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">grades</span><span class="op">)</span><span class="op">[</span><span class="va">grades</span> <span class="op">==</span> <span class="va">largest_grade</span><span class="op">]</span></span>
@@ -311,13 +326,14 @@ and is not a representative subsample. All 97 firms remain available in
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">grades</span><span class="op">)</span><span class="op">[</span><span class="va">grades</span> <span class="op">!=</span> <span class="va">largest_grade</span><span class="op">]</span>,</span>
 <span>  <span class="va">middle_ids</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">middle_ids</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="op">)</span></span>
+<span><span class="va">units_df</span> <span class="op">&lt;-</span> <span class="va">krw</span><span class="op">$</span><span class="va">units</span></span>
 <span><span class="va">firm_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">krw</span><span class="op">$</span><span class="va">units</span><span class="op">$</span><span class="va">firm_name</span>, <span class="st">" ["</span>, <span class="va">krw</span><span class="op">$</span><span class="va">units</span><span class="op">$</span><span class="va">entity_id</span>, <span class="st">"]"</span><span class="op">)</span>,</span>
-<span>  <span class="va">krw</span><span class="op">$</span><span class="va">units</span><span class="op">$</span><span class="va">entity_id</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">units_df</span><span class="op">[[</span><span class="st">"firm_name"</span><span class="op">]</span><span class="op">]</span>, <span class="st">" ["</span>, <span class="va">units_df</span><span class="op">[[</span><span class="st">"entity_id"</span><span class="op">]</span><span class="op">]</span>, <span class="st">"]"</span><span class="op">)</span>,</span>
+<span>  <span class="va">units_df</span><span class="op">[[</span><span class="st">"entity_id"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">firm_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">firm_labels</span>, <span class="kw">function</span><span class="op">(</span><span class="va">z</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/strwrap.html" class="external-link">strwrap</a></span><span class="op">(</span><span class="va">z</span>, width <span class="op">=</span> <span class="fl">23</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span>, <span class="st">""</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_report_card.html">postrank_plot_report_card</a></span><span class="op">(</span></span>
 <span>  <span class="va">analysis</span>, entities <span class="op">=</span> <span class="va">selected</span>, entity_labels <span class="op">=</span> <span class="va">firm_labels</span>,</span>
 <span>  criterion_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -326,47 +342,48 @@ and is not a representative subsample. All 97 firms remain available in
 <span>  <span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<a href="a3-krw-race-gender_files/figure-html/named-card-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Selected firms, with identifiers retained beside their names. Points and intervals are marginal means and 90% equal-tail intervals from the continuous cell law. The original common grades are unchanged." target="_blank" rel="noopener"><img src="a3-krw-race-gender_files/figure-html/named-card-1.png" class="r-plt" alt="Selected firms, with identifiers retained beside their names. Points and intervals are marginal means and 90% equal-tail intervals from the continuous cell law. The original common grades are unchanged." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a3-krw-race-gender_files/figure-html/named-card-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Selected firms, with identifiers retained beside their names. Points and intervals are marginal means and 90% equal-tail intervals from the continuous cell law. The original common grades are unchanged.">Open full-size figure</a></span><p class="caption">
-Selected firms, with identifiers retained beside their names. Points and
-intervals are marginal means and 90% equal-tail intervals from the
-continuous cell law. The original common grades are unchanged.
+<a href="a3-krw-race-gender_files/figure-html/a3-named-card-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Two-panel horizontal dot-and-interval report card for 12 employers across grades 1, 2, and 3 on white-name and male-name log callback advantages." target="_blank" rel="noopener"><img src="a3-krw-race-gender_files/figure-html/a3-named-card-1.png" class="r-plt" alt="Two-panel horizontal dot-and-interval report card for 12 employers across grades 1, 2, and 3 on white-name and male-name log callback advantages." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a3-krw-race-gender_files/figure-html/a3-named-card-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Two-panel horizontal dot-and-interval report card for 12 employers across grades 1, 2, and 3 on white-name and male-name log callback advantages.">Open full-size figure</a></span><p class="caption">
+Posterior means and 90% equal-tail marginal intervals on race_signed and
+gender_signed for 12 selected employers, grouped by their 97-firm common
+grades.
 </p>
 </div>
-<p>The horizontal intervals describe uncertainty about firm targets,
-whereas the grades specify the reporting action across firms. The
-grading is chosen from pairwise directional probabilities and the
-declared loss, rather than interval overlap. Firms assigned to the same
-grade may therefore have different posterior means, intervals and
-targets.</p>
-<p>Firm names provide display labels, while IDs retain the
-correspondence with source rows. The estimates and standard errors in
-<code>krw$units</code> are source estimates and differ from the
-posterior summaries shown here. The latter are available in
-<code>as.data.frame(analysis, what = "report_card")</code>. Combining
-source standard errors with posterior means would not reconstruct the
-reported intervals.</p>
+<p>Horizontal bars show 90% marginal intervals from the continuous
+midpoint-cell posterior (available for all <code>97</code> firms via
+<code>as.data.frame(analysis, what = "report_card")</code>). Note that
+<code>krw$units</code> holds the unshrunk firm-level log-gap estimates
+and standard errors (<code>race_estimate</code>, <code>race_se</code>,
+<code>gender_estimate</code>, <code>gender_se</code>), which differ from
+the empirical-Bayes posterior means and intervals plotted above.</p>
 </div>
 <div class="section level2">
-<h2 id="put-the-archived-cards-on-the-same-loss-before-comparing">Evaluation of archived cards under a common loss<a class="anchor" aria-label="anchor" href="#put-the-archived-cards-on-the-same-loss-before-comparing"></a>
+<h2 id="put-the-archived-cards-on-the-same-loss-before-comparing">Evaluating archived cards under one common loss<a class="anchor" aria-label="anchor" href="#put-the-archived-cards-on-the-same-loss-before-comparing"></a>
 </h2>
-<p>The archived single-criterion cards use
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>
-= 0.25, corresponding to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mi>λ</mi><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>λ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\tau=\lambda/(1+\lambda)</annotation></semantics></math>
-= 0.20. The common analysis above uses
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>
-= 0.25. Numerically equal lambda and tau values therefore do not denote
-the same withholding cost. The original single-criterion cards also
-permit up to 97 grades and address one target at a time. Direct
-comparison of their original losses with the common loss would therefore
-compare values of different objective functions.</p>
-<p>For a common comparison, each archived card can be evaluated under
-the current signed cell probabilities, equal criterion weights and
-common withholding cost. Supplying its named grade vector to
-<code><a href="../reference/postrank_compare.html">postrank_compare()</a></code> performs this fixed-action evaluation.
-The archived optimization is neither rerun nor assigned a new
-optimization status.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<p>Kline, Rose, and Walters (2024, Figures 7 and 14, pp. 2505 and 2517)
+construct <strong>single-criterion</strong> report cards
+(<code>krw$reference$single_criterion</code>) at benchmark preference
+parameter
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">\lambda = 0.25</annotation></semantics></math>,
+which corresponds to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mi>λ</mi><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>λ</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0.20</mn></mrow><annotation encoding="application/x-tex">\tau = \lambda / (1 + \lambda) = 0.20</annotation></semantics></math>,
+allowing up to <code>97</code> grades (<code>3</code> occupied grades on
+race and <code>4</code> on gender without industry controls) and
+optimizing one target at a time. Because both the objective and the
+withholding cost differ from our two-criterion setting
+(<code>tau = 0.25</code>, equal weights, <code>G_max = 4</code>), their
+single-criterion losses cannot be compared directly with
+<code>0.245470</code>.</p>
+<p>Instead, <code><a href="../reference/postrank_compare.html">postrank_compare()</a></code> evaluates those published
+single-criterion grade vectors—alongside the companion study’s stored
+two-criterion reference vector
+<code>krw$reference$signed_core$grade</code>
+(<code>archived_common</code>)—on the current <code>krw$input</code>
+probabilities and two-criterion <code>settings</code>. Each supplied
+vector is scored as a fixed action (not a new solve or exact optimality
+claim over alternative probability laws;
+<code>baselines = character()</code> omits the built-in score-cut
+baselines):</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/postrank_compare.html">postrank_compare</a></span><span class="op">(</span></span>
 <span>  <span class="va">analysis</span>,</span>
 <span>  archived_common <span class="op">=</span> <span class="va">krw</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">signed_core</span><span class="op">$</span><span class="va">grade</span>,</span>
@@ -375,15 +392,24 @@ optimization status.</p>
 <span>  baselines <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">comparison</span><span class="op">$</span><span class="va">table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"method"</span>, <span class="st">"risk"</span>, <span class="st">"N"</span>, <span class="st">"G"</span>, <span class="st">"status"</span>, <span class="st">"family_feasible"</span><span class="op">)</span><span class="op">]</span>,</span>
-<span>  digits <span class="op">=</span> <span class="fl">6</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span>  digits <span class="op">=</span> <span class="fl">6</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Grading"</span>, <span class="st">"Two-criterion loss"</span>, <span class="st">"Ordered pairs"</span>, <span class="st">"Grades"</span>, <span class="st">"Status"</span>, <span class="st">"Within G_max"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
+<colgroup>
+<col width="21%">
+<col width="23%">
+<col width="17%">
+<col width="8%">
+<col width="12%">
+<col width="16%">
+</colgroup>
 <thead><tr class="header">
-<th align="left">method</th>
-<th align="right">risk</th>
-<th align="right">N</th>
-<th align="right">G</th>
-<th align="left">status</th>
-<th align="left">family_feasible</th>
+<th align="left">Grading</th>
+<th align="right">Two-criterion loss</th>
+<th align="right">Ordered pairs</th>
+<th align="right">Grades</th>
+<th align="left">Status</th>
+<th align="left">Within G_max</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -420,63 +446,66 @@ optimization status.</p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/postrank_plot_compare.html">postrank_plot_compare</a></span><span class="op">(</span><span class="va">comparison</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<a href="a3-krw-race-gender_files/figure-html/compare-figure-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: All displayed risks use the current signed cell input and one common policy. Supplied archived actions are evaluated only; their original numerical statuses are not inherited." target="_blank" rel="noopener"><img src="a3-krw-race-gender_files/figure-html/compare-figure-1.png" class="r-plt" alt="All displayed risks use the current signed cell input and one common policy. Supplied archived actions are evaluated only; their original numerical statuses are not inherited." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a3-krw-race-gender_files/figure-html/compare-figure-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: All displayed risks use the current signed cell input and one common policy. Supplied archived actions are evaluated only; their original numerical statuses are not inherited.">Open full-size figure</a></span><p class="caption">
-All displayed risks use the current signed cell input and one common
-policy. Supplied archived actions are evaluated only; their original
-numerical statuses are not inherited.
+<a href="a3-krw-race-gender_files/figure-html/a3-compare-figure-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Comparison plot showing two-criterion loss of 0.245470 for joint and archived_common, 0.265418 for published_gender, and 0.269304 for published_race." target="_blank" rel="noopener"><img src="a3-krw-race-gender_files/figure-html/a3-compare-figure-1.png" class="r-plt" alt="Comparison plot showing two-criterion loss of 0.245470 for joint and archived_common, 0.265418 for published_gender, and 0.269304 for published_race." width="100%"></a><span class="figure-full-size-link d-block small"><a href="a3-krw-race-gender_files/figure-html/a3-compare-figure-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Comparison plot showing two-criterion loss of 0.245470 for joint and archived_common, 0.265418 for published_gender, and 0.269304 for published_race.">Open full-size figure</a></span><p class="caption">
+Two-criterion loss (tau = 0.25, equal weights) for the common grading
+and three archived grade vectors evaluated on the continuous
+midpoint-cell probabilities.
 </p>
 </div>
-<p>The archived and prepared common actions differ in 0 pair relations.
-The archived race and gender cards disclose 1,324 and 731 pairs,
-respectively. These evaluations describe the trade-off between
-disclosure and expected error for the fixed actions under the common
-loss; they do not establish a general advantage over single-criterion
-reports.</p>
-<p>Even for a fixed action, its evaluated risk depends on the
-coefficient law. For the archived common action, the archive-reference
-risk is 0.24546990279 and the continuous-cell risk is 0.24547041087, a
-difference of 5.08e-07. The difference results from the probability
-reference rather than a new optimization. Its magnitude is retained when
-assessing numerical reproduction.</p>
+<p><code>archived_common</code> agrees with <code>joint</code> on all
+<code>4,656</code> pairs (<code>0</code> changed pair relations). On
+this two-criterion loss, <code>published_race</code> orders
+<code>1,324</code> pairs with loss <code>0.269304</code> and
+<code>published_gender</code> orders <code>731</code> pairs with loss
+<code>0.265418</code>. That comparison describes how single-criterion
+cards perform when judged on a two-criterion objective; it does not mean
+a two-criterion card is better when a study’s goal is race alone or
+gender alone.</p>
+<p>Holding the <code>archived_common</code> grades and their 636 ordered
+pairs fixed, the loss is <code>0.24547010019</code> using the original
+discrete-grid probabilities and <code>0.24546990279</code> using the
+plotting probabilities
+(<code>krw$reference$signed_core$archive_metrics$risk</code>). The
+continuous midpoint-cell loss is <code>0.24547041087</code>
+(<code>krw$reference$signed_core$cell_metrics$risk</code>), about
+<code>5.08e-07</code> higher than the plotting-based loss.</p>
 </div>
 <div class="section level2">
-<h2 id="changes-of-target-and-the-limits-of-the-stored-evidence">Changes of target and the limits of the stored evidence<a class="anchor" aria-label="anchor" href="#changes-of-target-and-the-limits-of-the-stored-evidence"></a>
+<h2 id="signed-versus-folded-gender-targets-and-scope-of-stored-runs">Signed versus folded gender targets and scope of stored runs<a class="anchor" aria-label="anchor" href="#signed-versus-folded-gender-targets-and-scope-of-stored-runs"></a>
 </h2>
-<p>The inputs <code>krw$alternatives$race</code> and
-<code>krw$alternatives$gender</code> support single-criterion analyses
-of the same signed targets.
-<code>krw$alternatives$absolute_gender</code> retains signed race and
-replaces gender by the magnitude of its contact gap. This input folds
-the original continuous cells, including those crossing zero, and
-provides the corresponding probabilities and summaries.</p>
-<p>Absolute gender assigns high priority to a large advantage in either
-direction. It therefore changes the target even when the numerical
-policy settings are held fixed. The stored action is a separate
-reference whose risk cannot be interpreted as an improvement over the
-signed analysis. Changes in weights or tau likewise require evaluation
-or optimization under the newly specified loss.</p>
-<p>The source research campaign completed 9 of 236 distinct numerical
-problems: 8 passed its solver and finite-reference coefficient checks,
-and 1 had an independent reference validation. The other 227 were not
-run. Those qualifications belong to their declared research
-calculations. They are neither a completed sensitivity sweep nor
-additional certification of this prepared package result. This article
-does not run a weight path, refit the prior, or fill in the missing
-research problems.</p>
-<p>A smaller one-criterion analysis is given in <a href="a1-getting-started.html">Analysis with one or several
-criteria</a>. The preparation of other posterior inputs is described in
-<a href="a5-your-posterior-results.html">Analysis of supplied posterior
-results</a>. <a href="a6-reading-exporting-results.html">Reading and
-exporting results</a> documents the result tables, and <a href="a7-figures-sensitivity.html">Figures and sensitivity analysis</a>
-considers explicit changes to reporting settings.</p>
-<p>The <a href="m2-several-criteria.html">several-criteria article</a>
-develops the distinction between weighted directional errors and
-composite targets. <a href="m6-uncertainty-diagnostics.html">Monte Carlo
-uncertainty and diagnostics</a> separates numerical checks from model
-calibration and empirical-Bayes conditioning.</p>
+<p><code>krw$alternatives</code> includes single-criterion inputs
+(<code>race</code> and <code>gender</code>) plus a two-criterion input
+<code>absolute_gender</code> that keeps <code>race_signed</code> and
+folds gender to <code>|log(p_male) - log(p_female)|</code> across the
+continuous cells (including cells straddling zero). Folding gender gives
+high priority to large callback advantages in either direction
+(male-name or female-name), changing the substantive target even when
+<code>weights</code>, <code>tau</code>, and <code>G_max</code> stay the
+same.</p>
+<p>Additional reference records in <code>krw$reference</code> document
+which problem specifications from the background replication study were
+solved and bundled in <code>pr_case_krw</code>; see
+<code><a href="../reference/pr_case_krw.html">?pr_case_krw</a></code>.</p>
+</div>
+<div class="section level2">
+<h2 id="where-next">Where next<a class="anchor" aria-label="anchor" href="#where-next"></a>
+</h2>
+<ul>
+<li>For a smaller two-criterion walkthrough, see <a href="a1-getting-started.html">Getting started: grading with one or two
+criteria</a>.</li>
+<li>To build a <code><a href="../reference/postrank_probabilities.html">postrank_probabilities()</a></code> input from your own
+numerical integration, read <a href="a5-your-posterior-results.html">Preparing your posterior draws and
+comparison probabilities</a>.</li>
+<li>To inspect result tables or run your own sensitivity grid, read <a href="a6-reading-exporting-results.html">Reading and exporting grading
+results</a> and <a href="a7-figures-sensitivity.html">Figures and
+sensitivity to reporting settings</a>.</li>
+<li>For the theory of multi-criterion weighting versus composite
+targets, see <a href="m2-several-criteria.html">Combining several
+criteria in one common grading</a>.</li>
+</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

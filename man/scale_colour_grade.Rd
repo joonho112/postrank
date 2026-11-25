@@ -12,36 +12,36 @@ scale_color_grade(n_grades = NULL, ...)
 scale_fill_grade(n_grades = NULL, ...)
 }
 \arguments{
-\item{n_grades}{Number of grades in the full object, from 1 to 64.
-With \code{NULL}, colors follow the discrete levels present in the data;
-specify the full count when a displayed subset omits grades.}
+\item{n_grades}{Integer number of grades in the full grading (\code{1} to \code{64}),
+or \code{NULL} (the default) to size the palette from the discrete levels
+present in the plotted data.}
 
-\item{...}{Additional arguments passed to \code{\link[ggplot2:discrete_scale]{ggplot2::discrete_scale()}}.
-The helper already sets \code{aesthetics}, \code{palette}, \code{drop} and \code{name}, and
-sets \code{limits} when \code{n_grades} is supplied; do not pass those arguments again.}
+\item{...}{Additional arguments passed to \code{\link[ggplot2:discrete_scale]{ggplot2::discrete_scale()}}. Do not
+pass \code{aesthetics}, \code{palette}, \code{drop}, \code{name}, or (when \code{n_grades} is
+supplied) \code{limits}, which are set by the scale helper.}
 }
 \value{
-A ggplot2 discrete color or fill scale.
+A \code{ggplot2} discrete color or fill scale.
 }
 \description{
-Discrete color and fill scales represent grade membership. The number of
-grades in the full report is supplied so that subsets retain the original
-grade colors and legend. \code{scale_color_grade()} is the spelling alias of
-\code{scale_colour_grade()}; \code{scale_fill_grade()} uses the same palette for fill.
+\code{scale_colour_grade()}, \code{scale_color_grade()}, and \code{scale_fill_grade()}
+construct discrete \code{ggplot2} color and fill scales for grade membership using
+\code{\link[=postrank_palette]{postrank_palette()}}. Passing the full report's grade count \code{n_grades} keeps
+grade colors and legend entries identical when plotting a subset of entities
+that omits one or more grades.
 }
 \details{
-Map grades as discrete labels, for example \code{factor(grade)}. With an explicit
-full count, limits are \code{as.character(seq_len(n_grades))} and \code{drop = FALSE}.
-Absent grades remain on the scale. The same full count must be used across
-views; inferring a count from a displayed subset can assign different colors.
-Grade 1 has highest priority. Equal colors indicate shared grade membership,
-which withholds comparisons rather than asserting target equality.
+Map grades as discrete values such as \code{factor(grade)}. When \code{n_grades} is
+supplied, the scale fixes \code{limits = as.character(seq_len(n_grades))} and
+\code{drop = FALSE} so missing grades retain their slot on the color ramp. Grade
+\code{1} has highest priority; shared color indicates shared grade membership
+(withheld ordering, not equal targets).
 }
 \examples{
-# Grade 2 is absent from the display, but keeps its place in the full scale.
 d <- data.frame(entity = c("A", "C"), value = c(2, 1), grade = factor(c(1, 3)))
 ggplot2::ggplot(d, ggplot2::aes(value, entity, colour = grade)) +
-  ggplot2::geom_point(size = 3) + scale_colour_grade(n_grades = 3) +
+  ggplot2::geom_point(size = 3) +
+  scale_colour_grade(n_grades = 3) +
   theme_postrank()
 }
 \seealso{

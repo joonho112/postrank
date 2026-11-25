@@ -6,43 +6,41 @@
 validate_postrank_coefficients(x, recompute = FALSE)
 }
 \arguments{
-\item{x}{An object from \code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}} or
-\code{\link[=postrank_mixture_coefficients]{postrank_mixture_coefficients()}}.}
+\item{x}{A \code{postrank_coefficients} object from
+\code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}} or \code{\link[=postrank_mixture_coefficients]{postrank_mixture_coefficients()}}.}
 
-\item{recompute}{Logical scalar, default \code{FALSE}. If \code{TRUE}, recompute the
-projection from the stored conditional law as well as checking the object.}
+\item{recompute}{Plain logical scalar (default \code{FALSE}). When \code{TRUE}, also
+recomputes \code{means} and \code{e} from \code{x$source} and checks agreement.}
 }
 \value{
-Invisible \code{TRUE} on success; invalid structure, altered content, or
-an inconsistent recomputed projection raises an error. The object is not repaired.
+\code{TRUE}, invisibly, when all checks pass; otherwise stops with an
+error (\code{invalid_coefficients}, \code{stale_coefficient_identity} or
+\code{coefficient_projection_mismatch}).
 }
 \description{
-Gaussian or mixture coefficients are checked for consistency with their
-stored input and source records. With \code{recompute = TRUE}, the means and
-directional probabilities are recalculated from the supplied law.
+\code{validate_postrank_coefficients()} checks that a \code{postrank_coefficients}
+object has intact axes, positive-definite covariances, valid \code{provenance}
+SHA-256 digests and unchanged identity hashes, and optionally recalculates
+\code{means} and \code{e} from the stored normal or mixture parameters.
 }
 \details{
-The default checks named axes, finite values, covariance geometry,
-provenance fields, supported-operation indicators, and content identity.
-It does not repeatedly integrate every mixture component.
+With \code{recompute = FALSE}, structure, positive definiteness and SHA-256
+object identities are verified without re-evaluating every mixture state.
+With \code{recompute = TRUE}, recomputed probabilities must match stored \code{e}
+within \code{1e-12} and recomputed means must match within
+\code{1e-12 * max(1, abs(recomputed_mean))}.
 
-The optional recomputation requires identical axes and \code{NA} masks. It
-compares probabilities to absolute tolerance \code{1e-12} and means to
-\verb{1e-12 * max(1, abs(recomputed mean))} element by element. These tolerances
-apply to floating-point recalculation; they do not permit changes to the
-recorded object.
-
-Passing validation establishes neither a connection to actual observations
-nor the scientific truth of conditional independence, source provenance,
-or MCMC convergence. It is not a probability-accuracy certificate. To
-change a law or its source records, call its constructor again.
+Passing validation confirms internal consistency of \code{x}; it does not verify
+conditional independence in the underlying data, MCMC convergence or
+external files. To modify parameters or provenance, call the constructor
+again.
 }
 \examples{
 validate_postrank_coefficients(pr_tutorial$one)
 validate_postrank_coefficients(pr_tutorial$one, recompute = TRUE)
 }
 \seealso{
-\code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}}, \code{\link[=postrank_mixture_coefficients]{postrank_mixture_coefficients()}},
-\code{\link[=postrank_coefficient_capabilities]{postrank_coefficient_capabilities()}}
+\code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}},
+\code{\link[=postrank_mixture_coefficients]{postrank_mixture_coefficients()}}, \code{\link[=postrank_coefficient_capabilities]{postrank_coefficient_capabilities()}}
 }
 \concept{coefficients}

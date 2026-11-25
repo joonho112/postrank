@@ -1,8 +1,9 @@
 # Check a Posterior Input and Inspect Its Validation Results
 
-The validator checks the target definitions, numerical values, axes and
-sampling history required by the ordinary input routes. Its `valid` and
-`issues` fields report whether the input meets those requirements.
+`validate_postrank_draws()` checks whether a `postrank_draws` object or
+an `applied-0.1` input list satisfies `postrank`'s structural, numeric
+and description requirements, returning a report rather than stopping on
+an invalid input.
 
 ## Usage
 
@@ -14,40 +15,53 @@ validate_postrank_draws(x, source = NULL)
 
 - x:
 
-  A canonical `applied-0.1` named-list payload or a `postrank_draws`.
+  A `postrank_draws` object or an `applied-0.1` named list.
 
 - source:
 
-  Reserved; leave `NULL`. To compare mapped values with a `posterior`
-  source object, use
+  Reserved; leave `NULL` (any non-`NULL` value stops with
+  `unsupported_source_audit`). To check values against a `posterior`
+  package object, use
   [`as_postrank_posterior()`](https://joonho112.github.io/postrank/reference/as_postrank_posterior.md).
 
 ## Value
 
-A `postrank_validation` list with logical `valid`, an `issues` list of
-error codes, paths and messages, and separate check flags. Invalid
-payloads are reported in this record rather than constructed as inputs.
+A `postrank_validation` list with components:
+
+- `valid`: `TRUE` if all R structural and semantic checks passed,
+  `FALSE` otherwise;
+
+- `issues`: empty list when `valid` is `TRUE`, otherwise a list
+  containing the error `code`, `path`, `message` and `severity`;
+
+- `semantic_checks_completed`: check IDs `"DC01"` through `"DC15"` when
+  `valid` is `TRUE`, otherwise
+  [`character()`](https://rdrr.io/r/base/character.html);
+
+- `eligible_functional`, `input_identity`, `validator_version`,
+  `check_results` and `limitations`;
+
+- `schema_checked` (`FALSE`), `source_values_checked`,
+  `jointness_verified` (`FALSE`) and `convergence_verified` (`FALSE`).
 
 ## Details
 
-The checks cover the supported structures, ordered IDs, target and
-source declarations, numeric values, zero-tie policy and sampling
-history. They do not change the values or perform a fit. The function
-does not run a general JSON Schema validator, so `schema_checked` is
-`FALSE` even for a valid R input. The additional placeholder-text checks
-of
-[`postrank_declarations()`](https://joonho112.github.io/postrank/reference/postrank_declarations.md)
-are not applied here.
+The checks verify axis order, entity and criterion IDs, target and
+source descriptions, finite numeric values, absence of within-criterion
+ties, and MCMC chain-history consistency. They do not run an external
+Draft 2020-12 JSON Schema validator (`schema_checked` is always
+`FALSE`), and they do not apply the placeholder-word list of
+[`postrank_declarations()`](https://joonho112.github.io/postrank/reference/postrank_declarations.md).
 
-`source_values_checked`, `jointness_verified` and `convergence_verified`
-are separate from `valid`. Source-value comparison is retained only when
-an existing object's successful
-[`as_postrank_posterior()`](https://joonho112.github.io/postrank/reference/as_postrank_posterior.md)
-audit matches its current input identity. Structural validity does not
-establish the scientific truth of the declarations, model adequacy or
-convergence. The tie-aware validator has a different return convention;
-see
-[`validate_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/validate_postrank_tie_draws.md).
+`source_values_checked` is `TRUE` only when `x` is an unchanged
+`postrank_draws` object created by
+[`as_postrank_posterior()`](https://joonho112.github.io/postrank/reference/as_postrank_posterior.md),
+in which case `source_audit` is also retained. `valid = TRUE` means the
+input's structure and required descriptions are complete; it does not
+verify scientific identification, joint sampling or MCMC convergence.
+For exact-tie inputs, see
+[`validate_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/validate_postrank_tie_draws.md),
+which uses a different return format.
 
 ## See also
 
@@ -72,7 +86,7 @@ check[c("source_values_checked", "jointness_verified", "convergence_verified")]
 #> [1] FALSE
 #> 
 
-# Deliberately omit required context to inspect the reported problem.
+# Omit required context to inspect the reported issue without throwing an error:
 bad <- postrank_toy
 bad$context <- NULL
 validate_postrank_draws(bad)$issues

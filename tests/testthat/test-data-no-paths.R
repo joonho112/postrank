@@ -1,4 +1,4 @@
-# T-doc-05 / T-pil-06: no shipped data object, cached asset, manifest or vignette source
+# No shipped dataset, stored example, manifest, or vignette source contains
 # carries an absolute machine path; manifests use package-relative paths.
 pr_bad_path <- function(v) any(grepl("^/|/Users/|/home/|^[A-Za-z]:\\\\", v))
 pr_all_chars <- function(x) {

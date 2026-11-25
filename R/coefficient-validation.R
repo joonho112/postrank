@@ -121,32 +121,31 @@
 }
 #' Check Conditional Coefficients and Source Calculations
 #'
-#' Gaussian or mixture coefficients are checked for consistency with their
-#' stored input and source records. With `recompute = TRUE`, the means and
-#' directional probabilities are recalculated from the supplied law.
+#' `validate_postrank_coefficients()` checks that a `postrank_coefficients`
+#' object has intact axes, positive-definite covariances, valid `provenance`
+#' SHA-256 digests and unchanged identity hashes, and optionally recalculates
+#' `means` and `e` from the stored normal or mixture parameters.
 #'
-#' @param x An object from [postrank_gaussian_coefficients()] or
-#'   [postrank_mixture_coefficients()].
-#' @param recompute Logical scalar, default `FALSE`. If `TRUE`, recompute the
-#'   projection from the stored conditional law as well as checking the object.
-#' @return Invisible `TRUE` on success; invalid structure, altered content, or
-#'   an inconsistent recomputed projection raises an error. The object is not repaired.
-#' @details The default checks named axes, finite values, covariance geometry,
-#'   provenance fields, supported-operation indicators, and content identity.
-#'   It does not repeatedly integrate every mixture component.
+#' @param x A `postrank_coefficients` object from
+#'   [postrank_gaussian_coefficients()] or [postrank_mixture_coefficients()].
+#' @param recompute Plain logical scalar (default `FALSE`). When `TRUE`, also
+#'   recomputes `means` and `e` from `x$source` and checks agreement.
+#' @returns `TRUE`, invisibly, when all checks pass; otherwise stops with an
+#'   error (`invalid_coefficients`, `stale_coefficient_identity` or
+#'   `coefficient_projection_mismatch`).
+#' @details
+#' With `recompute = FALSE`, structure, positive definiteness and SHA-256
+#' object identities are verified without re-evaluating every mixture state.
+#' With `recompute = TRUE`, recomputed probabilities must match stored `e`
+#' within `1e-12` and recomputed means must match within
+#' `1e-12 * max(1, abs(recomputed_mean))`.
 #'
-#'   The optional recomputation requires identical axes and `NA` masks. It
-#'   compares probabilities to absolute tolerance `1e-12` and means to
-#'   `1e-12 * max(1, abs(recomputed mean))` element by element. These tolerances
-#'   apply to floating-point recalculation; they do not permit changes to the
-#'   recorded object.
-#'
-#'   Passing validation establishes neither a connection to actual observations
-#'   nor the scientific truth of conditional independence, source provenance,
-#'   or MCMC convergence. It is not a probability-accuracy certificate. To
-#'   change a law or its source records, call its constructor again.
-#' @seealso [postrank_gaussian_coefficients()], [postrank_mixture_coefficients()],
-#'   [postrank_coefficient_capabilities()]
+#' Passing validation confirms internal consistency of `x`; it does not verify
+#' conditional independence in the underlying data, MCMC convergence or
+#' external files. To modify parameters or provenance, call the constructor
+#' again.
+#' @seealso [postrank_gaussian_coefficients()],
+#'   [postrank_mixture_coefficients()], [postrank_coefficient_capabilities()]
 #' @examples
 #' validate_postrank_coefficients(pr_tutorial$one)
 #' validate_postrank_coefficients(pr_tutorial$one, recompute = TRUE)

@@ -17,16 +17,16 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Draw a Stored postrank Result with autoplot — reexports">
-<meta name="description" content="The re-exported ggplot2::autoplot() generic dispatches prepared postrank
-results to the corresponding plotting method and returns a ggplot. Base R
-plot() uses the same dispatch, prints the figure and returns it invisibly.
-Both methods use prepared results without computing a new grading or
-diagnostic.">
-<meta property="og:description" content="The re-exported ggplot2::autoplot() generic dispatches prepared postrank
-results to the corresponding plotting method and returns a ggplot. Base R
-plot() uses the same dispatch, prints the figure and returns it invisibly.
-Both methods use prepared results without computing a new grading or
-diagnostic.">
+<meta name="description" content="autoplot() (re-exported from ggplot2::autoplot()) dispatches stored
+postrank objects to the matching postrank_plot_*() function and returns a
+ggplot object. Base R plot() uses the same dispatch, prints the figure,
+and returns the ggplot invisibly. Neither method solves or computes new
+posterior summaries.">
+<meta property="og:description" content="autoplot() (re-exported from ggplot2::autoplot()) dispatches stored
+postrank objects to the matching postrank_plot_*() function and returns a
+ggplot object. Base R plot() uses the same dispatch, prints the figure,
+and returns the ggplot invisibly. Neither method solves or computes new
+posterior summaries.">
 <meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
 </head>
 <body>
@@ -37,7 +37,7 @@ diagnostic.">
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +46,7 @@ diagnostic.">
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -70,11 +70,11 @@ diagnostic.">
     </div>
 
     <div class="ref-description section level2">
-    <p>The re-exported <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">ggplot2::autoplot()</a></code> generic dispatches prepared postrank
-results to the corresponding plotting method and returns a <code>ggplot</code>. Base R
-<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> uses the same dispatch, prints the figure and returns it invisibly.
-Both methods use prepared results without computing a new grading or
-diagnostic.</p>
+    <p><code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot()</a></code> (re-exported from <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">ggplot2::autoplot()</a></code>) dispatches stored
+<code>postrank</code> objects to the matching <code>postrank_plot_*()</code> function and returns a
+<code>ggplot</code> object. Base R <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> uses the same dispatch, prints the figure,
+and returns the <code>ggplot</code> invisibly. Neither method solves or computes new
+posterior summaries.</p>
     </div>
 
     <div class="section level2">
@@ -91,37 +91,43 @@ diagnostic.</p>
 <dl>
 <dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a>
 </dt>
-<dd><p>A prepared postrank analysis, fit, report card, baseline,
-frontier, commonality result or method comparison.</p></dd>
+<dd><p>A <code>postrank_analysis</code>, <code>postrank_fit</code>, <code>postrank_report_card</code>,
+<code>postrank_baseline</code>, <code>postrank_frontier</code>, <code>postrank_commonality_cost</code>, or
+<code>postrank_comparison</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a>
 </dt>
-<dd><p>Arguments for the selected plotting method. Analyses and fits
-accept <code>type</code> to choose the view; other arguments, such as <code>ncol</code> or
-<code>view</code>, follow the corresponding plotting function's help.</p></dd>
+<dd><p>Arguments passed on to the target plotting function. Analyses and
+fits accept <code>type</code> to select the figure; other arguments (such as <code>ncol</code> or
+<code>view</code>) follow the target <code>postrank_plot_*()</code> function.</p></dd>
 
 </dl>
 </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
 </h2>
-    <p>For the supported postrank classes, a <code>ggplot</code> object.</p>
+    <p>For supported <code>postrank</code> classes, a <code>ggplot</code> object (<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> returns
+it invisibly after printing).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
 </h2>
-    <p>An analysis defaults to its prepared report card and also accepts
-<code>type = "relations"</code>, <code>"profile"</code> or <code>"pairwise"</code>. A fit defaults to
-relations and accepts <code>"relations"</code>, <code>"profile"</code> or <code>"pairwise"</code>.
-Report cards, frontiers, commonality results, comparisons and baselines
-dispatch to their corresponding plotting functions. Other named arguments
-are passed to that figure, such as <code>ncol = 1</code> for a card or
-<code>view = "relations"</code> for a comparison.</p>
-<p>Missing prepared results are handled according to the corresponding plotting
-function. Prepared pairwise probabilities remain available for a fit without
-grades. The seven <code>postrank_plot_*()</code> functions provide explicit selection
-of the figure type.</p>
+    <p>Dispatch by class:</p>
+<ul>
+<li><p><code>postrank_analysis</code>: <code>type = "report_card"</code> (default), <code>"relations"</code>,
+<code>"profile"</code>, or <code>"pairwise"</code>.</p></li>
+<li><p><code>postrank_fit</code>: <code>type = "relations"</code> (default), <code>"profile"</code>, or
+<code>"pairwise"</code>.</p></li>
+<li><p><code>postrank_report_card</code>: <code><a href="postrank_plot_report_card.html">postrank_plot_report_card()</a></code>.</p></li>
+<li><p><code>postrank_baseline</code>: <code><a href="postrank_plot_relations.html">postrank_plot_relations()</a></code>.</p></li>
+<li><p><code>postrank_frontier</code>: <code><a href="postrank_plot_frontier.html">postrank_plot_frontier()</a></code>.</p></li>
+<li><p><code>postrank_commonality_cost</code>: <code><a href="postrank_plot_commonality.html">postrank_plot_commonality()</a></code>.</p></li>
+<li><p><code>postrank_comparison</code>: <code><a href="postrank_plot_compare.html">postrank_plot_compare()</a></code>.</p></li>
+</ul>
+<p>Objects missing a report card or checked grading return the same status
+<code>ggplot</code> as the underlying <code>postrank_plot_*()</code> function, while
+<code>type = "pairwise"</code> remains available on fits without grades.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
@@ -135,15 +141,13 @@ of the figure type.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
 </h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"scripts"</span>, <span class="st">"_vignette-setup.R"</span>, package <span class="op">=</span> <span class="st">"postrank"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"tutorial_one"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span> <span class="co"># prepared one-criterion report card</span></span></span>
-<span class="r-in"><span><span class="va">p</span></span></span>
-<span class="r-plt img"><a href="reexports-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: The prepared one-criterion report card drawn through autoplot." target="_blank" rel="noopener"><img src="reexports-1.png" alt="The prepared one-criterion report card drawn through autoplot." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="reexports-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: The prepared one-criterion report card drawn through autoplot.">Open full-size figure</a></span></span>
-<span class="r-in"><span><span class="va">two</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"tutorial_two"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_one"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span></span>
+<span class="r-plt img"><a href="reexports-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: One-criterion six-site report card drawn through ggplot2::autoplot()." target="_blank" rel="noopener"><img src="reexports-1.png" alt="One-criterion six-site report card drawn through ggplot2::autoplot()." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="reexports-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: One-criterion six-site report card drawn through ggplot2::autoplot().">Open full-size figure</a></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">two</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_two"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">two</span>, type <span class="op">=</span> <span class="st">"relations"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><a href="reexports-2.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: The prepared common two-criterion pair relations drawn through autoplot." target="_blank" rel="noopener"><img src="reexports-2.png" alt="The prepared common two-criterion pair relations drawn through autoplot." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="reexports-2.png" target="_blank" rel="noopener" aria-label="Open full-size figure: The prepared common two-criterion pair relations drawn through autoplot.">Open full-size figure</a></span></span>
+<span class="r-plt img"><a href="reexports-2.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Common two-criterion pair-relation matrix drawn through ggplot2::autoplot()." target="_blank" rel="noopener"><img src="reexports-2.png" alt="Common two-criterion pair-relation matrix drawn through ggplot2::autoplot()." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="reexports-2.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Common two-criterion pair-relation matrix drawn through ggplot2::autoplot().">Open full-size figure</a></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

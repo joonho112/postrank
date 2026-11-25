@@ -1,4 +1,4 @@
-# T-base-01, -04, -07, -08, -09, -12: score baselines and cut rules.
+# Expected-rank and composite score baselines and optimal/quantile cut rules.
 bl_three <- function() {
   ids <- c("A", "B", "C"); e <- array(NA_real_, c(3, 3, 2), dimnames = list(ids, ids, c("k1", "k2")))
   for (k in 1:2) { e["A", "B", k] <- 0; e["B", "A", k] <- 1; e["A", "C", k] <- 0; e["C", "A", k] <- 1; e["B", "C", k] <- .3; e["C", "B", k] <- .7 }

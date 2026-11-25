@@ -1,11 +1,15 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Inspect Monte Carlo Precision for Reports or Pairs — postrank_diagnose • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Inspect Monte Carlo Precision for Reports or Pairs — postrank_diagnose"><meta name="description" content="The diagnostics summarize target draws, requested pair-error traces and the
-loss of a supplied grading. Posterior target intervals describe uncertainty
-under the model, whereas Monte Carlo standard errors describe the numerical
-precision with which features of that law are estimated."><meta property="og:description" content="The diagnostics summarize target draws, requested pair-error traces and the
-loss of a supplied grading. Posterior target intervals describe uncertainty
-under the model, whereas Monte Carlo standard errors describe the numerical
-precision with which features of that law are estimated."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Inspect Monte Carlo Precision for Reports or Pairs — postrank_diagnose • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Inspect Monte Carlo Precision for Reports or Pairs — postrank_diagnose"><meta name="description" content="postrank_diagnose() summarizes posterior target distributions, requested
+directed-pair error traces, and per-draw loss traces for a supplied grading,
+with optional subset or settings-grid stability re-solves. Posterior target
+intervals describe uncertainty under your statistical model, whereas Monte
+Carlo standard errors (MCSEs) describe simulation precision when estimating
+summaries of that posterior from finite draws."><meta property="og:description" content="postrank_diagnose() summarizes posterior target distributions, requested
+directed-pair error traces, and per-draw loss traces for a supplied grading,
+with optional subset or settings-grid stability re-solves. Posterior target
+intervals describe uncertainty under your statistical model, whereas Monte
+Carlo standard errors (MCSEs) describe simulation precision when estimating
+summaries of that posterior from finite draws."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -13,7 +17,7 @@ precision with which features of that law are estimated."><meta property="og:ima
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,7 +25,7 @@ precision with which features of that law are estimated."><meta property="og:ima
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -41,10 +45,12 @@ precision with which features of that law are estimated."><meta property="og:ima
     </div>
 
     <div class="ref-description section level2">
-    <p>The diagnostics summarize target draws, requested pair-error traces and the
-loss of a supplied grading. Posterior target intervals describe uncertainty
-under the model, whereas Monte Carlo standard errors describe the numerical
-precision with which features of that law are estimated.</p>
+    <p><code>postrank_diagnose()</code> summarizes posterior target distributions, requested
+directed-pair error traces, and per-draw loss traces for a supplied grading,
+with optional subset or settings-grid stability re-solves. Posterior target
+intervals describe uncertainty under your statistical model, whereas Monte
+Carlo standard errors (MCSEs) describe simulation precision when estimating
+summaries of that posterior from finite draws.</p>
     </div>
 
     <div class="section level2">
@@ -64,95 +70,97 @@ precision with which features of that law are estimated.</p>
 
 
 <dl><dt id="arg-draws">draws<a class="anchor" aria-label="anchor" href="#arg-draws"></a></dt>
-<dd><p>Ordinary input from <code><a href="postrank_draws.html">postrank_draws()</a></code> or <code><a href="as_postrank_draws.html">as_postrank_draws()</a></code>,
-including a specified finite law, or Gaussian/mixture coefficients. The
-latter delegate to <code><a href="postrank_coefficient_diagnose.html">postrank_coefficient_diagnose()</a></code> and have no latent
-target-draw traces. Supplied probability arrays and equality-neutral inputs
-do not provide this diagnostic route.</p></dd>
+<dd><p>Posterior draws from <code><a href="postrank_draws.html">postrank_draws()</a></code> or <code><a href="as_postrank_draws.html">as_postrank_draws()</a></code>
+(equal-weight IID or MCMC draws, or an exact finite law), or a
+<code>postrank_coefficients</code> object (Gaussian or mixture, which delegates to
+<code><a href="postrank_coefficient_diagnose.html">postrank_coefficient_diagnose()</a></code>). Pre-computed <code><a href="postrank_probabilities.html">postrank_probabilities()</a></code>
+and tie-mode inputs (<code>postrank_tie_*</code>) are not accepted.</p></dd>
 
 
 <dt id="arg-fit">fit<a class="anchor" aria-label="anchor" href="#arg-fit"></a></dt>
-<dd><p>Optional <code>postrank_fit</code> from exactly the same input. Its settings
-and validated grade are used; results are marked descriptive after selection
-on those draws. A fit without a validated incumbent supplies no fixed grade.</p></dd>
+<dd><p>Optional <code>postrank_fit</code> (for example <code>analysis$fit</code>) solved on
+<code>draws</code>. Supplies problem settings and, when a checked grading is present,
+its grade vector; results are marked <code>post_selection_descriptive = TRUE</code>.</p></dd>
 
 
 <dt id="arg-grade">grade<a class="anchor" aria-label="anchor" href="#arg-grade"></a></dt>
-<dd><p>Optional named fixed grade vector, with smaller grades indicating
-higher priority. It must agree with <code>fit</code> when both are supplied. The
-software cannot verify that a manually supplied grade was chosen independently
-of these draws.</p></dd>
+<dd><p>Optional named integer vector of fixed grades (<code>1</code> = highest
+priority). Must match <code>fit$grade</code> when both are supplied; requires
+<code>settings</code> when <code>fit</code> is <code>NULL</code>. <code>postrank</code> cannot verify whether a
+manually supplied <code>grade</code> was chosen independently of <code>draws</code>.</p></dd>
 
 
 <dt id="arg-settings">settings<a class="anchor" aria-label="anchor" href="#arg-settings"></a></dt>
-<dd><p>Explicit <code>weights</code> and <code>tau</code> for a grade without a fit, plus
-optional problem settings. <code>G_max</code> is required for stability solves.</p></dd>
+<dd><p>Named list (or <code>postrank_settings</code> fields) with <code>weights</code> and
+<code>tau</code> when <code>grade</code> is supplied without <code>fit</code>, plus optional <code>G_max</code>,
+<code>objective</code>, <code>q</code>, <code>exact_G</code>, <code>minimax_criteria</code>, and <code>minimax_refine</code>.
+<code>G_max</code> is required when <code>stability</code> is requested.</p></dd>
 
 
 <dt id="arg-pairs">pairs<a class="anchor" aria-label="anchor" href="#arg-pairs"></a></dt>
-<dd><p>Explicit list of records or a data.frame with <code>entity_i</code>,
-<code>entity_j</code>, and <code>criterion_id</code>, naming up to 500 distinct directed comparisons.
-Each trace is the indicator that the row entity's target is less than or
-equal to the column entity's. <code>NULL</code> requests no pair traces.</p></dd>
+<dd><p>Optional list of records or data frame with columns <code>entity_i</code>,
+<code>entity_j</code>, and <code>criterion_id</code> naming up to 500 distinct directed pairs.
+Each pair trace records the per-draw indicator <code>I(theta_i &lt;= theta_j)</code>.
+<code>NULL</code> (the default) requests no pair traces.</p></dd>
 
 
 <dt id="arg-stability">stability<a class="anchor" aria-label="anchor" href="#arg-stability"></a></dt>
-<dd><p>Optional request for additional optimization runs, with
-explicit <code>backend</code> and <code>control</code> (<code>threads = 1</code>). <code>prefixes</code>, <code>include_full</code>,
-<code>chain_subsets</code>, and <code>settings_grid</code> select at most <code>max_solves</code> attempts
-(default and hard maximum 12); the settings grid has at most six overrides.
-Joint equal-weight draws are required. IID inputs allow full-input settings
-grids only; chain subsets and per-chain prefixes require original MCMC history.</p></dd>
+<dd><p>Optional named list requesting up to <code>max_solves</code> (default
+and maximum <code>12L</code>) re-solves on joint equal-weight draws. Requires explicit
+<code>backend</code> (<code>"gurobi"</code> or <code>"highs"</code>) and <code>control</code> with <code>threads = 1L</code>, plus
+optional <code>prefixes</code>, <code>include_full</code>, <code>chain_subsets</code>, and <code>settings_grid</code>
+(at most 6 overrides). Chain subsets and per-chain prefixes require MCMC
+chain history; IID inputs support full-draw <code>settings_grid</code> runs only.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>For draw input, a <code>postrank_diagnostics</code> list containing <code>traces</code>,
-their <code>summaries</code>, <code>posterior_profiles</code>, <code>total_loss</code> availability, and any
-<code>stability</code> results, along with grade, settings, sampling regimes, selection
-context, and warnings. Metric records retain <code>value</code>, <code>available</code>,
-<code>unavailable_reason</code>, and <code>method</code>; unavailable is not zero.
-Gaussian/mixture input instead returns <code>postrank_coefficient_diagnostics</code>;
+    <p>For draw inputs, a <code>postrank_diagnostics</code> list containing <code>traces</code>,
+<code>summaries</code>, <code>posterior_profiles</code>, <code>total_loss</code>, <code>stability</code>, <code>grade</code>,
+<code>settings</code>, <code>regimes</code>, <code>post_selection_descriptive</code>, and <code>warnings</code>. Each
+diagnostic metric record stores <code>value</code>, <code>available</code>, <code>unavailable_reason</code>,
+and <code>method</code> (unavailable metrics remain <code>NA</code>, never zero). For
+<code>postrank_coefficients</code> inputs, returns <code>postrank_coefficient_diagnostics</code>;
 see <code><a href="postrank_coefficient_diagnose.html">postrank_coefficient_diagnose()</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>IID trace MCSE is sample SD divided by the square root of the actual
-retained count. Eligible MCMC traces use the optional <code>posterior</code> package
-for MCSE, R-hat, and ESS. Original chain/iteration history is retained;
-unequal chains are not truncated or padded to obtain cross-chain metrics.
-Missing, nonfinite, or inapplicable metrics keep their reasons. A complete
-finite law uses its stated masses and has no Monte Carlo error to diagnose.</p>
-<p>Joint inputs combine criterion losses within the same state, preserving
-covariance in the total-loss trace. Criterion-wise blocks can provide
-individual traces without a joint total-loss MCSE. Under minimax, a weighted
-total-loss trace is auxiliary; it is not MCSE for the maximum of expected
-criterion risks. Without a fixed grade, no total-loss trace is produced.</p>
-<p>Pointwise MCSE for a grading selected on the same draws is a descriptive
-measure and does not automatically provide post-selection coverage or regret
-bounds. An all-withheld report has constant ordinary loss <code>tau</code>, which
-provides no information about exploration of the targets. Similarly, a
-constant observed pair trace does not establish a posterior probability of
-zero or one. Stability across overlapping subsets is insufficient to
-establish convergence. Changes in grades after changes in policy settings
-may reflect the decision problem rather than simulation error.</p>
-<p>Gaussian/mixture inputs reject pair traces and stability solves. This
-wrapper supplies no original hyperparameter chain history; use
-<code><a href="postrank_coefficient_diagnose.html">postrank_coefficient_diagnose()</a></code> with explicit <code>chain_history</code> for eligible
-conditional expected-risk metrics. No route here verifies convergence,
-numerical accuracy, or external repeated-data calibration.</p>
+    <p>For IID draws, trace MCSE is <code>sd(z) / sqrt(S)</code> using the retained draw count
+<code>S</code>. For MCMC draws with equal-length chains and the optional <code>posterior</code>
+package installed, <code>postrank_diagnose()</code> computes <code>mcse_mean</code>, <code>rhat</code>,
+<code>ess_bulk</code>, and <code>ess_tail</code> from the original chain-by-iteration layout;
+unequal chains are never truncated or padded to force cross-chain metrics. An
+exact finite law uses its rational state masses (<code>gmp</code> quantiles at <code>1/40</code>,
+<code>1/2</code>, and <code>39/40</code>) and has zero Monte Carlo error.</p>
+<p>Joint draws (<code>dependence_mode = "joint_model"</code>) combine criterion losses
+within each draw to form <code>weighted_total_loss</code>, preserving cross-criterion
+covariance; criterion-wise draw blocks provide per-criterion traces without a
+joint total-loss MCSE. Under <code>objective = "minimax"</code>, <code>weighted_total_loss</code>
+is marked <code>"weighted_auxiliary"</code> because minimax optimizes the maximum of
+expected criterion risks rather than an expectation of per-draw maxima.
+Without a fixed grade, no loss trace is computed.</p>
+<p>An all-withheld single-grade report has constant per-draw loss <code>tau</code> (zero
+variance), and an all-zero or all-one pair indicator trace does not establish
+an exact posterior probability of <code>0</code> or <code>1</code>. Gaussian and mixture
+coefficient inputs reject <code>pairs</code> and <code>stability</code>; call
+<code><a href="postrank_coefficient_diagnose.html">postrank_coefficient_diagnose()</a></code> directly when supplying hyperparameter
+<code>chain_history</code>. These diagnostics are descriptive summaries and do not
+provide post-selection coverage, convergence proof, or a finite-sample
+guarantee.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="postrank_mc_fragility.html">postrank_mc_fragility()</a></code>, <code><a href="postrank_crossfit.html">postrank_crossfit()</a></code>,
-<code><a href="postrank_iid_bounds.html">postrank_iid_bounds()</a></code></p></div>
+<code><a href="postrank_coefficient_diagnose.html">postrank_coefficient_diagnose()</a></code>, <code><a href="postrank_iid_bounds.html">postrank_iid_bounds()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Begin with one explicitly named directional comparison.</span></span></span>
-<span class="r-in"><span><span class="va">pair</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>entity_i <span class="op">=</span> <span class="st">"001"</span>, entity_j <span class="op">=</span> <span class="st">"site-B"</span>,</span></span>
-<span class="r-in"><span>  criterion_id <span class="op">=</span> <span class="st">"need_A"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pair</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  entity_i <span class="op">=</span> <span class="st">"001"</span>,</span></span>
+<span class="r-in"><span>  entity_j <span class="op">=</span> <span class="st">"site-B"</span>,</span></span>
+<span class="r-in"><span>  criterion_id <span class="op">=</span> <span class="st">"need_A"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">postrank_diagnose</span><span class="op">(</span><span class="va">postrank_toy</span>, pairs <span class="op">=</span> <span class="va">pair</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">d</span><span class="op">$</span><span class="va">summaries</span><span class="op">$</span><span class="va">pair_1</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">mcse_mean</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $value</span>
@@ -183,13 +191,15 @@ numerical accuracy, or external repeated-data calibration.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "iid_sample_sd_over_sqrt_S"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># A declared report, evaluated without optimizing its grades.</span></span></span>
 <span class="r-in"><span><span class="va">grade</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"001"</span> <span class="op">=</span> <span class="fl">1L</span>, <span class="st">"site-B"</span> <span class="op">=</span> <span class="fl">1L</span>, <span class="st">"site C"</span> <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">postrank_diagnose</span><span class="op">(</span><span class="va">postrank_toy</span>, grade <span class="op">=</span> <span class="va">grade</span>,</span></span>
-<span class="r-in"><span>  settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">.6</span>, need_B <span class="op">=</span> <span class="fl">.4</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">.25</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">d</span><span class="op">$</span><span class="va">summaries</span><span class="op">$</span><span class="va">weighted_total_loss</span><span class="op">$</span><span class="va">mean</span></span></span>
+<span class="r-in"><span><span class="va">d_grade</span> <span class="op">&lt;-</span> <span class="fu">postrank_diagnose</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">postrank_toy</span>,</span></span>
+<span class="r-in"><span>  grade <span class="op">=</span> <span class="va">grade</span>,</span></span>
+<span class="r-in"><span>  settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">0.6</span>, need_B <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>, tau <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">d_grade</span><span class="op">$</span><span class="va">summaries</span><span class="op">$</span><span class="va">weighted_total_loss</span><span class="op">$</span><span class="va">mean</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2125</span>
-<span class="r-in"><span><span class="va">d</span><span class="op">$</span><span class="va">post_selection_descriptive</span></span></span>
+<span class="r-in"><span><span class="va">d_grade</span><span class="op">$</span><span class="va">post_selection_descriptive</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 </code></pre></div>
     </div>

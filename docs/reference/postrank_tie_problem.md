@@ -1,12 +1,13 @@
-# Build a Grading Problem with Equality-Neutral Loss
+# Build a Grading Problem Under Equality-Neutral Loss
 
-A weighted problem is constructed for targets that may be exactly equal.
-One common grading is selected for all criteria, subject to at most
-`G_max` occupied grades and a constraint retaining verified identical
-active profiles in the same grade. The resulting problem is passed to
-[`postrank_tie_solve()`](https://joonho112.github.io/postrank/reference/postrank_tie_solve.md)
-for optimization. This explicitly selected loss leaves ordinary postrank
-problems unchanged.
+`postrank_tie_problem()` builds a weighted mixed-integer grading problem
+for tie-aware mode under equality-neutral loss (where true target
+equality has zero loss whether the pair is ordered or placed in the same
+grade). It chooses one common grading across criteria with at most
+`G_max` occupied grades while constraining entities in the same
+active-profile equality class to receive the same grade. Pass the
+returned problem to
+[`postrank_tie_solve()`](https://joonho112.github.io/postrank/reference/postrank_tie_solve.md).
 
 ## Usage
 
@@ -26,88 +27,105 @@ postrank_tie_problem(
 
 - pairwise:
 
-  A validated object from
-  [`postrank_tie_pairwise()`](https://joonho112.github.io/postrank/reference/postrank_tie_pairwise.md),
-  with strict-error, equality and distinctness probabilities and
-  verified criterion equality partitions.
+  A validated `postrank_tie_pairwise` object from
+  [`postrank_tie_pairwise()`](https://joonho112.github.io/postrank/reference/postrank_tie_pairwise.md).
 
 - weights:
 
-  Nonnegative finite weights named for every criterion exactly once and
-  summing to one. No automatic normalization is used. A single criterion
-  requires its named weight of 1.
+  Non-negative finite numeric vector named by every criterion in
+  `pairwise` and summing to `1` (for a single criterion, supply a named
+  weight of `1`; weights are not normalized automatically).
 
 - tau:
 
-  Cost of withholding a distinct comparison, with `0 < tau <= 0.5`.
+  Cost of withholding a distinct comparison, a finite scalar with
+  `0 < tau <= 0.5`.
 
 - G_max:
 
-  Positive integer upper bound on occupied grades, no larger than the
-  original entity count. This is a cap, not a required grade count.
+  Positive integer cap on the number of occupied grades
+  (`1 <= G_max <= n`).
 
 - objective:
 
-  Only `"weighted"` is supported in this mode.
+  Must be `"weighted"` (`"minimax"` is not supported in tie-aware mode).
 
 - q:
 
-  Must be `NULL`; tie-aware error-budget protection is unsupported.
+  Must be `NULL` (criterion error budgets are not supported in tie-aware
+  mode).
 
 - exact_G:
 
-  Must be `NULL`; requiring an exact grade count is unsupported.
+  Must be `NULL` (requiring an exact grade count is not supported in
+  tie-aware mode).
 
 ## Value
 
-A `postrank_tie_problem` with a sparse label mixed-integer model,
-`guard`, `M`, `objective_units`, settings and input/loss identities. Its
-raw objective Z is weighted expected strict errors minus `tau` times
-weighted disclosed-distinct opportunities. Risk is `R0 + Z/M`; the
-offset `objective_units$offset` is the all-withheld risk R0, not
-generally `tau`.
+A `postrank_tie_problem` list (separate from `postrank_problem`)
+containing `pairwise`, `settings`, `guard` (the active-profile equality
+constraint), sparse label-MIP `model`, `index`, `pair_map`,
+`M = choose(n, 2)`, `objective_units`, and `problem_identity`. Its raw
+objective `Z` equals weighted expected strict errors minus `tau` times
+weighted expected disclosed-distinct pairs, so weighted risk is
+`R0 + Z / M`, where `objective_units$offset` is the all-withheld risk
+`R0 = tau * T / M` (smaller than `tau` whenever positive equality
+probability is present on an active criterion).
 
 ## Details
 
-Grade 1 has highest priority; a shared grade withholds a direction.
-Disclosing i above j has criterion loss `P(theta_i < theta_j)`;
-withholding has loss `tau * P(theta_i != theta_j)`. Genuine equality
-costs zero under either action. With T the weighted expected number of
-distinct pairs, `R0 = tau * T/M`. M still counts the original unordered
-entity pairs, including pairs with equality mass.
+Grade `1` is the highest priority, and placing two entities in the same
+grade leaves them unordered without claiming equal targets. On criterion
+`k`, ordering `i` above `j` has expected loss
+`b[i, j, k] = Pr(theta_{i,k} < theta_{j,k})`, leaving them in the same
+grade has expected loss
+`tau * d[i, j, k] = tau * Pr(theta_{i,k} != theta_{j,k})`, and exact
+equality (`theta_{i,k} = theta_{j,k}`) contributes zero loss under
+either decision. With `T` denoting the criterion-weighted sum of
+expected distinct pairs, placing all entities in one shared grade has
+risk `R0 = tau * T / M`, where `M = choose(n, 2)` counts all original
+unordered entity pairs.
 
-The mandatory guard intersects verified equality partitions over the
-positive-weight criteria. Entities in the same resulting active-profile
-class receive the same grade. The sparse model enforces label equality
-within each class; it retains all entities and original pair
-multiplicities. Equal sample values or posterior means alone cannot
-establish an almost-sure equality class.
-
-For weighted at-most-G decisions without extra constraints, there exists
-a global minimizer obeying the guard: moving an equality class to its
-least costly currently occupied class grade cannot increase risk or the
-number of occupied grades. This is an existence result, not a claim that
-every unconstrained optimum obeys the guard. It does not extend here to
-quotas, q budgets, minimax or exact-G decisions, or guarantee that a
-funding schedule is preserved when the grade count changes.
+`postrank_tie_problem()` intersects the criterion equality partitions
+across positive-weight (`weights > 0`) criteria to form *active-profile
+equality classes* (`guard$classes` and `guard$groups`, labeled
+`"profile_1"`, ...) and adds linear equality rows forcing every member
+of a class to receive the same grade while keeping all `n` entities and
+original pair multiplicities. For weighted at-most-`G_max` problems
+without extra constraints, there always exists a global risk minimizer
+obeying this constraint (moving all members of a class to the
+lowest-cost grade among their currently occupied grades cannot increase
+risk or add occupied grades), although unconstrained problems can also
+admit other minimizers that split a class.
 
 ## See also
 
-[`postrank_tie_evaluate()`](https://joonho112.github.io/postrank/reference/postrank_tie_evaluate.md),
 [`postrank_tie_solve()`](https://joonho112.github.io/postrank/reference/postrank_tie_solve.md),
+[`postrank_tie_evaluate()`](https://joonho112.github.io/postrank/reference/postrank_tie_evaluate.md),
 [`postrank_tie_capabilities()`](https://joonho112.github.io/postrank/reference/postrank_tie_capabilities.md)
 
 ## Examples
 
 ``` r
-if (requireNamespace("gmp", quietly = TRUE)) {
-  path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
-  pw <- postrank_tie_pairwise(read_postrank_tie_draws(path))
-  problem <- postrank_tie_problem(pw, weights = c(S = .6, C = .4),
-    tau = .25, G_max = 3L)
-  problem$guard$groups
-  problem$objective_units
-}
+path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
+pw <- postrank_tie_pairwise(read_postrank_tie_draws(path))
+problem <- postrank_tie_problem(
+  pw,
+  weights = c(S = 0.6, C = 0.4),
+  tau = 0.25,
+  G_max = 3L
+)
+problem$guard$groups
+#> $profile_1
+#> [1] "A" "B"
+#> 
+#> $profile_2
+#> [1] "C"
+#> 
+#> $profile_3
+#> [1] "D"
+#> 
+problem$objective_units
 #> $raw
 #> [1] "tie_weighted_Z"
 #> 

@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Calculate a Conditional Fixed-Sample IID Probability Bound — postrank_iid_bounds • postrank</title>
+<title>Compute a Conditional Fixed-Sample IID Probability Bound — postrank_iid_bounds • postrank</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,17 +16,19 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Calculate a Conditional Fixed-Sample IID Probability Bound — postrank_iid_bounds">
-<meta name="description" content="A simultaneous reference radius is calculated for directional-error
-probabilities estimated from a fixed number of IID posterior draws. The
-associated probability statement concerns repeated Monte Carlo generation
-conditional on the same supplied posterior law. It does not give a posterior
-probability that a grade is correct.">
-<meta property="og:description" content="A simultaneous reference radius is calculated for directional-error
-probabilities estimated from a fixed number of IID posterior draws. The
-associated probability statement concerns repeated Monte Carlo generation
-conditional on the same supplied posterior law. It does not give a posterior
-probability that a grade is correct.">
+<meta property="og:title" content="Compute a Conditional Fixed-Sample IID Probability Bound — postrank_iid_bounds">
+<meta name="description" content="postrank_iid_bounds() computes an analytic simultaneous error radius for
+pairwise directional-error probabilities estimated from a fixed number of
+independent posterior draws. The 1 - alpha probability statement applies to
+repeated Monte Carlo draw generation from the same fixed posterior
+distribution; it is not a posterior probability that a grading is right and
+does not assess model specification or performance on new datasets.">
+<meta property="og:description" content="postrank_iid_bounds() computes an analytic simultaneous error radius for
+pairwise directional-error probabilities estimated from a fixed number of
+independent posterior draws. The 1 - alpha probability statement applies to
+repeated Monte Carlo draw generation from the same fixed posterior
+distribution; it is not a posterior probability that a grading is right and
+does not assess model specification or performance on new datasets.">
 <meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
 </head>
 <body>
@@ -37,7 +39,7 @@ probability that a grade is correct.">
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +48,7 @@ probability that a grade is correct.">
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -64,17 +66,18 @@ probability that a grade is correct.">
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Calculate a Conditional Fixed-Sample IID Probability Bound</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Compute a Conditional Fixed-Sample IID Probability Bound</h1>
 
       <div class="d-none name"><code>postrank_iid_bounds.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>A simultaneous reference radius is calculated for directional-error
-probabilities estimated from a fixed number of IID posterior draws. The
-associated probability statement concerns repeated Monte Carlo generation
-conditional on the same supplied posterior law. It does not give a posterior
-probability that a grade is correct.</p>
+    <p><code>postrank_iid_bounds()</code> computes an analytic simultaneous error radius for
+pairwise directional-error probabilities estimated from a fixed number of
+independent posterior draws. The <code>1 - alpha</code> probability statement applies to
+repeated Monte Carlo draw generation from the same fixed posterior
+distribution; it is not a posterior probability that a grading is right and
+does not assess model specification or performance on new datasets.</p>
     </div>
 
     <div class="section level2">
@@ -91,65 +94,82 @@ probability that a grade is correct.</p>
 <dl>
 <dt id="arg-draws">draws<a class="anchor" aria-label="anchor" href="#arg-draws"></a>
 </dt>
-<dd><p>Ordinary posterior input from <code><a href="postrank_draws.html">postrank_draws()</a></code> or
-<code><a href="as_postrank_draws.html">as_postrank_draws()</a></code>, with equal-weight IID whole-entity states within
-every criterion. Joint-model and criterion-wise inputs are supported.
-MCMC, exact finite laws, Gaussian/mixture coefficients, supplied probabilities,
-and equality-neutral inputs are not fixed-sample IID target-draw inputs.</p></dd>
+<dd><p>Independent equal-weight posterior draws prepared as an
+<code>S x n x K</code> array via <code>postrank_draws(..., regime = "iid")</code> or as separate
+per-criterion IID entity-draw matrices via <code><a href="as_postrank_draws.html">as_postrank_draws()</a></code>
+(<code>equal_weight = TRUE</code>, with <code>dependence_mode = "joint_model"</code> or
+<code>"criterionwise_expected_only"</code>). MCMC draws (effective sample size ESS
+cannot replace an IID draw count), exact finite laws, Gaussian or mixture
+coefficients, pre-computed <code><a href="postrank_probabilities.html">postrank_probabilities()</a></code>, and tie-mode inputs
+are rejected.</p></dd>
 
 
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a>
 </dt>
-<dd><p>Overall failure-probability budget, strictly between zero and one.
-It must have been fixed before generating the draws.</p></dd>
+<dd><p>Overall failure-probability budget, a finite scalar strictly
+between <code>0</code> and <code>1</code> fixed before generating the draws.</p></dd>
 
 
 <dt id="arg-alpha-by-criterion">alpha_by_criterion<a class="anchor" aria-label="anchor" href="#arg-alpha-by-criterion"></a>
 </dt>
-<dd><p>Positive criterion-named allocations covering every
-criterion, summing to at most <code>alpha</code>. They must also have been fixed before
-sampling; they are not normalized automatically.</p></dd>
+<dd><p>Finite positive numeric vector named by every
+criterion in <code>draws</code>, summing to at most <code>alpha</code> and fixed before
+generating the draws. Values are ordered to <code>draws$criterion_ids</code> and are
+never rescaled automatically.</p></dd>
 
 
 <dt id="arg-design">design<a class="anchor" aria-label="anchor" href="#arg-design"></a>
 </dt>
-<dd><p>List with <code>sample_sizes_fixed_before_sampling = TRUE</code>,
+<dd><p>Named list with exactly five elements (extra fields stop with
+an error): <code>sample_sizes_fixed_before_sampling = TRUE</code>,
 <code>alpha_fixed_before_sampling = TRUE</code>, <code>adaptive_stopping = FALSE</code>,
-criterion-named integer <code>planned_sample_sizes</code>, and a substantive
-<code>declaration_note</code>. Planned sizes must equal the actual retained counts.
-These are declarations about the real sampling design, not switches that
-make an adaptive or dependent sample eligible.</p></dd>
+criterion-named positive integer <code>planned_sample_sizes</code> equal to the actual
+retained draw counts <code>S</code> on every criterion, and a non-empty character
+scalar <code>declaration_note</code>. These fields record how the simulation was
+designed prior to sampling; <code>postrank</code> checks internal consistency but
+cannot verify external sampling history, and setting these flags on an
+adaptive or dependent sample does not make the bound valid.</p></dd>
 
 </dl>
 </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
 </h2>
-    <p>A <code>postrank_iid_bounds</code> object with criterion sample sizes <code>S</code>, pair
-count <code>M</code>, allocations, unclipped <code>raw_radius</code>, and capped <code>epsilon</code>.
-<code>guarantee_status</code> is <code>"conditional_bound"</code>, but <code>guarantee_issued</code>,
-<code>numerically_verified</code>, and <code>finite_sample_certificate</code> remain <code>FALSE</code>.</p>
+    <p>A <code>postrank_iid_bounds</code> list containing <code>schema_version</code>,
+<code>input_identity</code>, <code>bound_identity</code>, <code>entity_ids</code>, <code>criterion_ids</code>,
+<code>dependence_mode</code>, criterion sample sizes <code>S</code>, unordered pair count
+<code>M = choose(n, 2)</code>, <code>alpha</code>, <code>alpha_by_criterion</code>, unclipped <code>raw_radius</code>,
+capped <code>epsilon = pmin(raw_radius, 1)</code>,
+<code>radius_interpretation = "theoretical_floating_reference"</code>, <code>design</code>,
+<code>assumptions</code>, <code>guarantee_reason</code>, <code>numerical_verification_reason</code>, and
+status flags (<code>guarantee_status = "conditional_bound"</code>,
+<code>bound_computed = TRUE</code>, while <code>guarantee_issued</code>, <code>numerically_verified</code>,
+<code>numerical_certification</code>, and <code>finite_sample_certificate</code> are <code>FALSE</code>).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
 </h2>
-    <p><span>With <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><mi>n</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">M=n(n-1)/2</annotation></semantics></math>, the criterion radius is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ε</mi><mi>k</mi></msub><mo>=</mo><mrow><mi mathvariant="normal">min</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><msqrt><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mi>M</mi><mi>/</mi><msub><mi>α</mi><mi>k</mi></msub><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><msub><mi>S</mi><mi>k</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow></msqrt><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\varepsilon_k=\min\{1,\sqrt{\log(2M/\alpha_k)/(2S_k)}\}</annotation></semantics></math>.
-Under the assumptions, the simultaneous event bounds the absolute error
-of every directed-pair coefficient on every criterion with probability at
-least <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow><annotation encoding="application/x-tex">1-\alpha</annotation></semantics></math>. Independence is required across whole-state draws
-within each criterion, not across pairs or criteria.</span></p>
-<p>The factor <code>2M</code> uses the ordinary zero-equality condition: reverse
-directional errors are complements. It must not be applied unchanged to
-positive-equality probabilities. The relevant assumption is zero pairwise
-equality, not continuous marginals. All draws must target the same fixed
-proper posterior; fitted empirical Bayes quantities held fixed remain part
-of that conditioning.</p>
-<p>No adaptive stopping or replacement of <code>S</code> by MCMC ESS is supported.
-Passing the structural checks does not verify IID sampling or prior fixation
-of the design. The computed radii are floating-point references, not
-verified outward enclosures. They do not assess model misspecification or
-frequentist performance across new observed datasets.</p>
+    <p><span>With <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><mi>n</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">M = n(n - 1) / 2</annotation></semantics></math> unordered pairs, the radius on criterion <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+is
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ε</mi><mi>k</mi></msub><mo>=</mo><mrow><mi mathvariant="normal">min</mi><mo>⁡</mo></mrow><mrow><mo stretchy="true" form="prefix">{</mo><mn>1</mn><mo>,</mo><msqrt><mfrac><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mi>M</mi><mi>/</mi><msub><mi>α</mi><mi>k</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mn>2</mn><msub><mi>S</mi><mi>k</mi></msub></mrow></mfrac></msqrt><mo stretchy="true" form="postfix">}</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">\varepsilon_k = \min\left\{1, \sqrt{\frac{\log(2M / \alpha_k)}{2 S_k}}\right\}.</annotation></semantics></math>
+Under the stated assumptions, with Monte Carlo probability at least
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow><annotation encoding="application/x-tex">1 - \alpha</annotation></semantics></math> simultaneously across all directed entity pairs and all
+declared criteria, every empirical directional-error probability lies within
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ε</mi><mi>k</mi></msub><annotation encoding="application/x-tex">\varepsilon_k</annotation></semantics></math> of its true value under the supplied posterior.
+Independence is required across whole-state draws <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>S</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">s = 1, \dots, S_k</annotation></semantics></math>
+within each criterion, not across entity pairs or across criteria.</span></p>
+<p><span>The factor <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>M</mi></mrow><annotation encoding="application/x-tex">2M</annotation></semantics></math> uses the zero-equality complement identity
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mrow><mi>j</mi><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><mn>1</mn><mo>−</mo><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">e_{ji,k} = 1 - e_{ij,k}</annotation></semantics></math>, so bounding one direction per unordered pair
+bounds the reverse direction by the same absolute error. That identity
+requires zero posterior probability of exact pairwise equality (not
+necessarily continuous marginal densities) and does not apply unchanged when
+exact ties have positive probability. All draws must target one fixed proper
+posterior; empirical Bayes hyperparameters held fixed during draw generation
+are part of that conditioning.</span></p>
+<p><span>Adaptive stopping and substituting MCMC ESS for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>S</mi><mi>k</mi></msub><annotation encoding="application/x-tex">S_k</annotation></semantics></math> are not supported.
+Radii are evaluated in ordinary floating-point arithmetic without outward
+interval-arithmetic enclosures, so this function does not issue a formal
+numerical certificate.</span></p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
@@ -161,13 +181,18 @@ frequentist performance across new observed datasets.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
 </h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># These choices were fixed before generation in the bundled toy producer.</span></span></span>
-<span class="r-in"><span><span class="va">bounds</span> <span class="op">&lt;-</span> <span class="fu">postrank_iid_bounds</span><span class="op">(</span><span class="va">postrank_toy</span>, alpha <span class="op">=</span> <span class="fl">.05</span>,</span></span>
-<span class="r-in"><span>  alpha_by_criterion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">.025</span>, need_B <span class="op">=</span> <span class="fl">.025</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  design <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sample_sizes_fixed_before_sampling <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>    alpha_fixed_before_sampling <span class="op">=</span> <span class="cn">TRUE</span>, adaptive_stopping <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">bounds</span> <span class="op">&lt;-</span> <span class="fu">postrank_iid_bounds</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">postrank_toy</span>,</span></span>
+<span class="r-in"><span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span></span>
+<span class="r-in"><span>  alpha_by_criterion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">0.025</span>, need_B <span class="op">=</span> <span class="fl">0.025</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  design <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    sample_sizes_fixed_before_sampling <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>    alpha_fixed_before_sampling <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>    adaptive_stopping <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>    planned_sample_sizes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>need_A <span class="op">=</span> <span class="fl">32L</span>, need_B <span class="op">=</span> <span class="fl">32L</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    declaration_note <span class="op">=</span> <span class="st">"Prespecified in the bundled synthetic Normal generator"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    declaration_note <span class="op">=</span> <span class="st">"Prespecified in the bundled synthetic Normal generator"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">bounds</span><span class="op">$</span><span class="va">epsilon</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    need_A    need_B </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 0.2926346 0.2926346 </span>

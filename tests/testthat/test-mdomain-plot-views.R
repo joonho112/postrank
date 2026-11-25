@@ -1,4 +1,4 @@
-# Frozen-table fixtures exercise presentation independently of a model or solver.
+# Stored-table fixtures exercise plotting independently of a model or solver.
 md_view_data <- function() {
   units <- c("U3", "U1", "U2")
   domains <- c("need", "cost", "constant", "identity")

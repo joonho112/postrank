@@ -1,4 +1,4 @@
-# Independent brute-force oracle for package tests (014 repair, VA-1).
+# Independent brute-force enumeration helper for solver and evaluation tests.
 # Written from the loss definitions only: it enumerates every canonical ordered
 # partition with at most G blocks and evaluates risks from directional-error
 # probabilities computed directly from the draw array (not from package code).

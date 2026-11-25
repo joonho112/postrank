@@ -1,6 +1,6 @@
-# T-api-05: explicit backend -> getOption("postrank.backend") -> "gurobi" for every
-# solving verb; an unavailable backend fails without fallback; explicit HiGHS is
-# independent of the default. Solver-free except the final tier-2 HiGHS block.
+# Backend resolution: explicit backend -> getOption("postrank.backend") -> "gurobi" across
+# solving functions; an unavailable backend stops without fallback; explicit HiGHS is
+# independent of the default. Solver-free except the final HiGHS block.
 br_problem <- function() {
   draws <- read_postrank_draws(system.file("examples", "synthetic-iid.json", package = "postrank", mustWork = TRUE))
   pw <- postrank_pairwise(draws)
@@ -73,7 +73,7 @@ test_that("an unavailable resolved backend errors with both remedies and no fall
   e2 <- tryCatch(postrank_frontier(x$pw, c(need_A = .6, need_B = .4), tau = c(.2, .3), G_max = 3L), error = identity)
   expect_s3_class(e2, "postrank_backend_unavailable"); expect_identical(highs_calls, 0L)
   expect_identical(e2$details$resolution, "default")
-  # Protection analysis stops too (Phase 2 review H1): no quiet attempt record, no fallback.
+  # Protection analysis also stops immediately on an unavailable backend without fallback.
   e3 <- tryCatch(postrank_protection_analysis(list()), error = identity)
   expect_s3_class(e3, "postrank_backend_unavailable"); expect_identical(e3$code, "gurobi_package_missing")
   expect_identical(e3$details$resolution, "default"); expect_identical(highs_calls, 0L)

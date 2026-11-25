@@ -1,6 +1,6 @@
-# Self-contained since 0.9.0: the independent fixed-action risk oracle is the
-# packaged copy in pr_cf_oracle; the solve is mocked with local_mocked_bindings()
-# so no native backend can be entered.
+# Problem construction and evaluation on typed coefficients against pr_cf_oracle,
+# with solver entry points mocked via local_mocked_bindings().
+#
 cp_ref<-pr_cf_oracle
 cp_x<-function(mixture=FALSE) {
   ids<-c('A','B','C');ks<-c('k1','k2')

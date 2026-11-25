@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Build a Grading Problem with Equality-Neutral Loss — postrank_tie_problem • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Build a Grading Problem with Equality-Neutral Loss — postrank_tie_problem"><meta name="description" content="A weighted problem is constructed for targets that may be exactly equal. One
-common grading is selected for all criteria, subject to at most G_max
-occupied grades and a constraint retaining verified identical active
-profiles in the same grade. The resulting problem is passed to
-postrank_tie_solve() for optimization. This explicitly selected loss
-leaves ordinary postrank problems unchanged."><meta property="og:description" content="A weighted problem is constructed for targets that may be exactly equal. One
-common grading is selected for all criteria, subject to at most G_max
-occupied grades and a constraint retaining verified identical active
-profiles in the same grade. The resulting problem is passed to
-postrank_tie_solve() for optimization. This explicitly selected loss
-leaves ordinary postrank problems unchanged."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Build a Grading Problem Under Equality-Neutral Loss — postrank_tie_problem • postrank</title><!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png"><link rel="icon" type="”image/svg+xml”" href="../favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png"><link rel="icon" sizes="any" href="../favicon.ico"><link rel="manifest" href="../site.webmanifest"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet"><meta property="og:title" content="Build a Grading Problem Under Equality-Neutral Loss — postrank_tie_problem"><meta name="description" content="postrank_tie_problem() builds a weighted mixed-integer grading problem for
+tie-aware mode under equality-neutral loss (where true target equality has
+zero loss whether the pair is ordered or placed in the same grade). It
+chooses one common grading across criteria with at most G_max occupied
+grades while constraining entities in the same active-profile equality class
+to receive the same grade. Pass the returned problem to
+postrank_tie_solve()."><meta property="og:description" content="postrank_tie_problem() builds a weighted mixed-integer grading problem for
+tie-aware mode under equality-neutral loss (where true target equality has
+zero loss whether the pair is ordered or placed in the same grade). It
+chooses one common grading across criteria with at most G_max occupied
+grades while constraining entities in the same active-profile equality class
+to receive the same grade. Pass the returned problem to
+postrank_tie_solve()."><meta property="og:image" content="https://joonho112.github.io/postrank/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -17,7 +19,7 @@ leaves ordinary postrank problems unchanged."><meta property="og:image" content=
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,7 +27,7 @@ leaves ordinary postrank problems unchanged."><meta property="og:image" content=
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -39,18 +41,19 @@ leaves ordinary postrank problems unchanged."><meta property="og:image" content=
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Build a Grading Problem with Equality-Neutral Loss</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Build a Grading Problem Under Equality-Neutral Loss</h1>
 
       <div class="d-none name"><code>postrank_tie_problem.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>A weighted problem is constructed for targets that may be exactly equal. One
-common grading is selected for all criteria, subject to at most <code>G_max</code>
-occupied grades and a constraint retaining verified identical active
-profiles in the same grade. The resulting problem is passed to
-<code><a href="postrank_tie_solve.html">postrank_tie_solve()</a></code> for optimization. This explicitly selected loss
-leaves ordinary postrank problems unchanged.</p>
+    <p><code>postrank_tie_problem()</code> builds a weighted mixed-integer grading problem for
+tie-aware mode under equality-neutral loss (where true target equality has
+zero loss whether the pair is ordered or placed in the same grade). It
+chooses one common grading across criteria with at most <code>G_max</code> occupied
+grades while constraining entities in the same active-profile equality class
+to receive the same grade. Pass the returned problem to
+<code><a href="postrank_tie_solve.html">postrank_tie_solve()</a></code>.</p>
     </div>
 
     <div class="section level2">
@@ -71,84 +74,101 @@ leaves ordinary postrank problems unchanged.</p>
 
 
 <dl><dt id="arg-pairwise">pairwise<a class="anchor" aria-label="anchor" href="#arg-pairwise"></a></dt>
-<dd><p>A validated object from <code><a href="postrank_tie_pairwise.html">postrank_tie_pairwise()</a></code>, with
-strict-error, equality and distinctness probabilities and verified
-criterion equality partitions.</p></dd>
+<dd><p>A validated <code>postrank_tie_pairwise</code> object from
+<code><a href="postrank_tie_pairwise.html">postrank_tie_pairwise()</a></code>.</p></dd>
 
 
 <dt id="arg-weights">weights<a class="anchor" aria-label="anchor" href="#arg-weights"></a></dt>
-<dd><p>Nonnegative finite weights named for every criterion exactly
-once and summing to one. No automatic normalization is used. A single
-criterion requires its named weight of 1.</p></dd>
+<dd><p>Non-negative finite numeric vector named by every criterion in
+<code>pairwise</code> and summing to <code>1</code> (for a single criterion, supply a named
+weight of <code>1</code>; weights are not normalized automatically).</p></dd>
 
 
 <dt id="arg-tau">tau<a class="anchor" aria-label="anchor" href="#arg-tau"></a></dt>
-<dd><p>Cost of withholding a distinct comparison, with <code>0 &lt; tau &lt;= 0.5</code>.</p></dd>
+<dd><p>Cost of withholding a distinct comparison, a finite scalar with
+<code>0 &lt; tau &lt;= 0.5</code>.</p></dd>
 
 
 <dt id="arg-g-max">G_max<a class="anchor" aria-label="anchor" href="#arg-g-max"></a></dt>
-<dd><p>Positive integer upper bound on occupied grades, no larger than
-the original entity count. This is a cap, not a required grade count.</p></dd>
+<dd><p>Positive integer cap on the number of occupied grades
+(<code>1 &lt;= G_max &lt;= n</code>).</p></dd>
 
 
 <dt id="arg-objective">objective<a class="anchor" aria-label="anchor" href="#arg-objective"></a></dt>
-<dd><p>Only <code>"weighted"</code> is supported in this mode.</p></dd>
+<dd><p>Must be <code>"weighted"</code> (<code>"minimax"</code> is not supported in
+tie-aware mode).</p></dd>
 
 
 <dt id="arg-q">q<a class="anchor" aria-label="anchor" href="#arg-q"></a></dt>
-<dd><p>Must be <code>NULL</code>; tie-aware error-budget protection is unsupported.</p></dd>
+<dd><p>Must be <code>NULL</code> (criterion error budgets are not supported in
+tie-aware mode).</p></dd>
 
 
 <dt id="arg-exact-g">exact_G<a class="anchor" aria-label="anchor" href="#arg-exact-g"></a></dt>
-<dd><p>Must be <code>NULL</code>; requiring an exact grade count is unsupported.</p></dd>
+<dd><p>Must be <code>NULL</code> (requiring an exact grade count is not
+supported in tie-aware mode).</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>postrank_tie_problem</code> with a sparse label mixed-integer model,
-<code>guard</code>, <code>M</code>, <code>objective_units</code>, settings and input/loss identities. Its raw
-objective Z is weighted expected strict errors minus <code>tau</code> times weighted
-disclosed-distinct opportunities. Risk is <code>R0 + Z/M</code>; the offset
-<code>objective_units$offset</code> is the all-withheld risk R0, not generally <code>tau</code>.</p>
+    <p>A <code>postrank_tie_problem</code> list (separate from <code>postrank_problem</code>)
+containing <code>pairwise</code>, <code>settings</code>, <code>guard</code> (the active-profile equality
+constraint), sparse label-MIP <code>model</code>, <code>index</code>, <code>pair_map</code>,
+<code>M = choose(n, 2)</code>, <code>objective_units</code>, and <code>problem_identity</code>. Its raw
+objective <code>Z</code> equals weighted expected strict errors minus <code>tau</code> times
+weighted expected disclosed-distinct pairs, so weighted risk is
+<code>R0 + Z / M</code>, where <code>objective_units$offset</code> is the all-withheld risk
+<code>R0 = tau * T / M</code> (smaller than <code>tau</code> whenever positive equality
+probability is present on an active criterion).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Grade 1 has highest priority; a shared grade withholds a direction.
-Disclosing i above j has criterion loss <code>P(theta_i &lt; theta_j)</code>;
-withholding has loss <code>tau * P(theta_i != theta_j)</code>. Genuine equality
-costs zero under either action. With T the weighted expected number of
-distinct pairs, <code>R0 = tau * T/M</code>. M still counts the original unordered
-entity pairs, including pairs with equality mass.</p>
-<p>The mandatory guard intersects verified equality partitions over the
-positive-weight criteria. Entities in the same resulting active-profile
-class receive the same grade. The sparse model enforces label equality
-within each class; it retains all entities and original pair
-multiplicities. Equal sample values or posterior means alone cannot
-establish an almost-sure equality class.</p>
-<p>For weighted at-most-G decisions without extra constraints, there exists
-a global minimizer obeying the guard: moving an equality class to its
-least costly currently occupied class grade cannot increase risk or the
-number of occupied grades. This is an existence result, not a claim that
-every unconstrained optimum obeys the guard. It does not extend here to
-quotas, q budgets, minimax or exact-G decisions, or guarantee that a
-funding schedule is preserved when the grade count changes.</p>
+    <p>Grade <code>1</code> is the highest priority, and placing two entities in the same grade
+leaves them unordered without claiming equal targets. On criterion <code>k</code>,
+ordering <code>i</code> above <code>j</code> has expected loss <code>b[i, j, k] = Pr(theta_{i,k} &lt; theta_{j,k})</code>, leaving them in the same grade has expected loss
+<code>tau * d[i, j, k] = tau * Pr(theta_{i,k} != theta_{j,k})</code>, and exact equality
+(<code>theta_{i,k} = theta_{j,k}</code>) contributes zero loss under either decision.
+With <code>T</code> denoting the criterion-weighted sum of expected distinct pairs,
+placing all entities in one shared grade has risk <code>R0 = tau * T / M</code>, where
+<code>M = choose(n, 2)</code> counts all original unordered entity pairs.</p>
+<p><code>postrank_tie_problem()</code> intersects the criterion equality partitions across
+positive-weight (<code>weights &gt; 0</code>) criteria to form <em>active-profile equality
+classes</em> (<code>guard$classes</code> and <code>guard$groups</code>, labeled <code>"profile_1"</code>, ...) and
+adds linear equality rows forcing every member of a class to receive the same
+grade while keeping all <code>n</code> entities and original pair multiplicities. For
+weighted at-most-<code>G_max</code> problems without extra constraints, there always
+exists a global risk minimizer obeying this constraint (moving all members of
+a class to the lowest-cost grade among their currently occupied grades cannot
+increase risk or add occupied grades), although unconstrained problems can
+also admit other minimizers that split a class.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="postrank_tie_evaluate.html">postrank_tie_evaluate()</a></code>, <code><a href="postrank_tie_solve.html">postrank_tie_solve()</a></code>,
+    <div class="dont-index"><p><code><a href="postrank_tie_solve.html">postrank_tie_solve()</a></code>, <code><a href="postrank_tie_evaluate.html">postrank_tie_evaluate()</a></code>,
 <code><a href="postrank_tie_capabilities.html">postrank_tie_capabilities()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"gmp"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"synthetic-tie-aware.json"</span>, package <span class="op">=</span> <span class="st">"postrank"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">pw</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_tie_pairwise.html">postrank_tie_pairwise</a></span><span class="op">(</span><span class="fu"><a href="read_postrank_tie_draws.html">read_postrank_tie_draws</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">problem</span> <span class="op">&lt;-</span> <span class="fu">postrank_tie_problem</span><span class="op">(</span><span class="va">pw</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>S <span class="op">=</span> <span class="fl">.6</span>, C <span class="op">=</span> <span class="fl">.4</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    tau <span class="op">=</span> <span class="fl">.25</span>, G_max <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">problem</span><span class="op">$</span><span class="va">guard</span><span class="op">$</span><span class="va">groups</span></span></span>
-<span class="r-in"><span>  <span class="va">problem</span><span class="op">$</span><span class="va">objective_units</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"synthetic-tie-aware.json"</span>, package <span class="op">=</span> <span class="st">"postrank"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pw</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_tie_pairwise.html">postrank_tie_pairwise</a></span><span class="op">(</span><span class="fu"><a href="read_postrank_tie_draws.html">read_postrank_tie_draws</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">problem</span> <span class="op">&lt;-</span> <span class="fu">postrank_tie_problem</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pw</span>,</span></span>
+<span class="r-in"><span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>S <span class="op">=</span> <span class="fl">0.6</span>, C <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  tau <span class="op">=</span> <span class="fl">0.25</span>,</span></span>
+<span class="r-in"><span>  G_max <span class="op">=</span> <span class="fl">3L</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">problem</span><span class="op">$</span><span class="va">guard</span><span class="op">$</span><span class="va">groups</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $profile_1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "A" "B"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $profile_2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "C"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $profile_3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "D"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="va">problem</span><span class="op">$</span><span class="va">objective_units</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $raw</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "tie_weighted_Z"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>

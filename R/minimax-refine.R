@@ -1,4 +1,4 @@
-# Minimax as a secondary mode (014 repair, decision 3).
+# Lexicographic minimax refinement.
 #
 # Stage 1 finds the minimax value t* (the validated action's maximum selected
 # criterion risk). Stage 2 minimises the weighted risk over actions whose
@@ -173,9 +173,9 @@
       scaled_risk_scale = scaled$objective_units$scale, time_limit = ctrl$time_limit))
 }
 
-# Preserve primary minimax -> ORIGINAL weighted risk -> positive-weight Pareto
-# tie-breaking. The final certificate refers to the actual released action and
-# requires every applicable stage, finite bounds/gaps and strict post-solve caps.
+# Preserve primary minimax -> original weighted risk -> uniform-criterion Pareto
+# tie-breaking. `lexicographic_certified` refers to the released action and
+# requires every applicable stage, finite bounds/gaps, and strict post-solve caps.
 .pr_minimax_refine <- function(problem, fit1, backend, control, strategy, started) {
   elapsed <- function() proc.time()[["elapsed"]] - started
   record <- list(mode = "weighted", applied = FALSE, improved = FALSE, lexicographic_certified = FALSE,
@@ -201,8 +201,8 @@
   cap_tolerance <- 64 * .Machine$double.eps * max(1, abs(caps))
   cap_ok <- function(fit) isTRUE(fit$incumbent_validated) &&
     all(fit$evaluation$criterion_risk[selected] <= caps + cap_tolerance)
-  # Preserve the historical one-second minimum for refinement after a starved
-  # first stage, shared across stages 2/3 and any fallback, not renewed per call.
+  # Guarantee a one-second minimum for refinement after a long first stage,
+  # shared across stages 2/3 and any fallback rather than renewed per call.
   deadline <- max(started + control$time_limit, proc.time()[["elapsed"]] + 1)
   record$time_limits$refinement_deadline_from_start <- deadline - started
   remaining <- function() max(0, deadline - proc.time()[["elapsed"]])

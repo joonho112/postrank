@@ -31,16 +31,10 @@
     <loc>https://joonho112.github.io/postrank/articles/a7-figures-sensitivity.html</loc>
   </url>
   <url>
-    <loc>https://joonho112.github.io/postrank/articles/baselines-and-the-cost-of-a-common-grade.html</loc>
-  </url>
-  <url>
     <loc>https://joonho112.github.io/postrank/articles/figure-gallery.html</loc>
   </url>
   <url>
     <loc>https://joonho112.github.io/postrank/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://joonho112.github.io/postrank/articles/inputs-and-producers.html</loc>
   </url>
   <url>
     <loc>https://joonho112.github.io/postrank/articles/m1-ranking-and-loss.html</loc>
@@ -65,12 +59,6 @@
   </url>
   <url>
     <loc>https://joonho112.github.io/postrank/articles/mdomain-quickstart.html</loc>
-  </url>
-  <url>
-    <loc>https://joonho112.github.io/postrank/articles/migration-from-0-9.html</loc>
-  </url>
-  <url>
-    <loc>https://joonho112.github.io/postrank/articles/quickstart.html</loc>
   </url>
   <url>
     <loc>https://joonho112.github.io/postrank/authors.html</loc>
@@ -148,6 +136,9 @@
     <loc>https://joonho112.github.io/postrank/reference/postrank_declarations.html</loc>
   </url>
   <url>
+    <loc>https://joonho112.github.io/postrank/reference/postrank_describe.html</loc>
+  </url>
+  <url>
     <loc>https://joonho112.github.io/postrank/reference/postrank_diagnose.html</loc>
   </url>
   <url>
@@ -158,6 +149,9 @@
   </url>
   <url>
     <loc>https://joonho112.github.io/postrank/reference/postrank_evaluate.html</loc>
+  </url>
+  <url>
+    <loc>https://joonho112.github.io/postrank/reference/postrank_example.html</loc>
   </url>
   <url>
     <loc>https://joonho112.github.io/postrank/reference/postrank_expected_rank.html</loc>

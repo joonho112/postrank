@@ -1,7 +1,7 @@
-# New-domain strict JSON scanner. Grammar and duplicate decoded keys are checked
-# before binding. Use the same JSON numeric decoder as final payload conversion:
-# on some R runtimes as.numeric() overflows at a valid finite upper boundary.
-# Keep the legacy scanner and its behavior untouched.
+# Tie-aware JSON scanner. Grammar and duplicate decoded keys are checked before
+# binding, using the same JSON numeric decoder as final conversion (on some R
+# builds as.numeric() overflows at a valid finite upper boundary).
+# Kept separate so the tie-free JSON scanner is unchanged.
 .pr_tie_json_scan <- function(text) {
   if (!is.character(text) || length(text) != 1L || is.na(text))
     .pr_abort("expected one JSON string", "invalid_json")

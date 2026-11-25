@@ -1,12 +1,13 @@
 # Draw a Stored postrank Result with autoplot
 
-The re-exported
-[`ggplot2::autoplot()`](https://ggplot2.tidyverse.org/reference/autoplot.html)
-generic dispatches prepared postrank results to the corresponding
-plotting method and returns a `ggplot`. Base R
+[`autoplot()`](https://ggplot2.tidyverse.org/reference/autoplot.html)
+(re-exported from
+[`ggplot2::autoplot()`](https://ggplot2.tidyverse.org/reference/autoplot.html))
+dispatches stored `postrank` objects to the matching `postrank_plot_*()`
+function and returns a `ggplot` object. Base R
 [`plot()`](https://rdrr.io/r/graphics/plot.default.html) uses the same
-dispatch, prints the figure and returns it invisibly. Both methods use
-prepared results without computing a new grading or diagnostic.
+dispatch, prints the figure, and returns the `ggplot` invisibly. Neither
+method solves or computes new posterior summaries.
 
 ## Usage
 
@@ -18,33 +19,50 @@ autoplot(object, ...)
 
 - object:
 
-  A prepared postrank analysis, fit, report card, baseline, frontier,
-  commonality result or method comparison.
+  A `postrank_analysis`, `postrank_fit`, `postrank_report_card`,
+  `postrank_baseline`, `postrank_frontier`, `postrank_commonality_cost`,
+  or `postrank_comparison`.
 
 - ...:
 
-  Arguments for the selected plotting method. Analyses and fits accept
-  `type` to choose the view; other arguments, such as `ncol` or `view`,
-  follow the corresponding plotting function's help.
+  Arguments passed on to the target plotting function. Analyses and fits
+  accept `type` to select the figure; other arguments (such as `ncol` or
+  `view`) follow the target `postrank_plot_*()` function.
 
 ## Value
 
-For the supported postrank classes, a `ggplot` object.
+For supported `postrank` classes, a `ggplot` object
+([`plot()`](https://rdrr.io/r/graphics/plot.default.html) returns it
+invisibly after printing).
 
 ## Details
 
-An analysis defaults to its prepared report card and also accepts
-`type = "relations"`, `"profile"` or `"pairwise"`. A fit defaults to
-relations and accepts `"relations"`, `"profile"` or `"pairwise"`. Report
-cards, frontiers, commonality results, comparisons and baselines
-dispatch to their corresponding plotting functions. Other named
-arguments are passed to that figure, such as `ncol = 1` for a card or
-`view = "relations"` for a comparison.
+Dispatch by class:
 
-Missing prepared results are handled according to the corresponding
-plotting function. Prepared pairwise probabilities remain available for
-a fit without grades. The seven `postrank_plot_*()` functions provide
-explicit selection of the figure type.
+- `postrank_analysis`: `type = "report_card"` (default), `"relations"`,
+  `"profile"`, or `"pairwise"`.
+
+- `postrank_fit`: `type = "relations"` (default), `"profile"`, or
+  `"pairwise"`.
+
+- `postrank_report_card`:
+  [`postrank_plot_report_card()`](https://joonho112.github.io/postrank/reference/postrank_plot_report_card.md).
+
+- `postrank_baseline`:
+  [`postrank_plot_relations()`](https://joonho112.github.io/postrank/reference/postrank_plot_relations.md).
+
+- `postrank_frontier`:
+  [`postrank_plot_frontier()`](https://joonho112.github.io/postrank/reference/postrank_plot_frontier.md).
+
+- `postrank_commonality_cost`:
+  [`postrank_plot_commonality()`](https://joonho112.github.io/postrank/reference/postrank_plot_commonality.md).
+
+- `postrank_comparison`:
+  [`postrank_plot_compare()`](https://joonho112.github.io/postrank/reference/postrank_plot_compare.md).
+
+Objects missing a report card or checked grading return the same status
+`ggplot` as the underlying `postrank_plot_*()` function, while
+`type = "pairwise"` remains available on fits without grades.
 
 ## See also
 
@@ -59,12 +77,10 @@ explicit selection of the figure type.
 ## Examples
 
 ``` r
-source(system.file("scripts", "_vignette-setup.R", package = "postrank"),
-  local = TRUE)
-one <- load_or_compute("tutorial_one")
-p <- autoplot(one) # prepared one-criterion report card
-p
+one <- postrank_example("tutorial_one")
+autoplot(one)
 
-two <- load_or_compute("tutorial_two")
+
+two <- postrank_example("tutorial_two")
 autoplot(two, type = "relations")
 ```

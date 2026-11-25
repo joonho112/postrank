@@ -1,38 +1,43 @@
 % Please edit documentation in R/tie-solve.R
 \name{postrank_tie_capabilities}
 \alias{postrank_tie_capabilities}
-\title{Check Which Tie-Aware Operations Are Available}
+\title{List Supported Features in Tie-Aware Mode}
 \usage{
 postrank_tie_capabilities()
 }
 \value{
-A named list of capability flags, supported backend names, loss
-and input-domain identifiers, and accepted equality-evidence types.
-A \code{TRUE} flag describes implemented support, not scientific validation
-or a numerical certificate.
+A named list containing identifiers (\code{loss = "tie_aware_v1"},
+\code{input_domain = "tie-aware-input-0.1"}, \code{backends = c("gurobi", "highs")},
+and \code{equality_evidence}) and logical support flags:
+\itemize{
+\item \code{TRUE}: \code{joint_draws}, \code{exact_finite_laws}, \code{weighted_at_most_G},
+\code{full_active_profile_guard}, and \code{label_mip}.
+\item \code{FALSE}: \code{staged}, \code{criterionwise_inputs}, \code{typed_coefficients}, \code{q},
+\code{minimax}, \code{exact_G}, \code{legacy_baselines_reports_plots}, \code{mc_diagnostics},
+\code{uniform_iid_bounds}, \code{regret}, \code{protection_envelopes}, and
+\code{numerical_certification}.
+}
 }
 \description{
-This fixed record describes the input types, decisions and numerical
-operations supported by the separate \verb{postrank_tie_*} functions. It does not
-inspect installed solvers, check a license or run an optimization.
+\code{postrank_tie_capabilities()} returns a static list showing which inputs,
+problem settings, solvers, and downstream summaries are supported in
+tie-aware mode (the \verb{postrank_tie_*} workflow for posteriors with positive
+equality probability under equality-neutral loss). It does not probe whether
+\code{"gurobi"} or \code{"highs"} is installed or licensed; use
+\code{\link[=postrank_backend_available]{postrank_backend_available()}} for solver checks.
 }
 \details{
-Joint draws and complete exact finite laws support weighted
-at-most-G label models with the full active-profile guard, using HiGHS
-or Gurobi. One criterion is allowed, with its named weight equal to 1.
-Criterionwise input blocks, typed coefficients, q budgets, minimax,
-exact-G and staged solving are not supported by this route.
+Tie-aware mode supports joint equal-weight draws and complete exact finite
+laws on one or more criteria under weighted at-most-\code{G_max} problems solved
+by \code{label_mip} with the active-profile equality constraint. Criterion-wise
+draw blocks, Gaussian or mixture coefficients, criterion error budgets \code{q},
+\code{minimax} objectives, \code{exact_G} grade counts, and \code{"staged"} solving are not
+implemented for tie-aware inputs.
 
-Core tie-aware objects have print, format and summary methods. Ordinary
-baselines, accessors, reports and plots, and Monte Carlo diagnostics,
-uniform IID bounds, regret bounds and protection envelopes do not apply
-to these classes. The record reports these limits explicitly.
-
-Equality evidence is either a structural declaration checked against
-retained draws or equality across all positive-mass states of a complete
-finite law. Coincidence in finitely many sampled values alone is not
-proof of almost-sure equality. Using this route does not reinterpret
-ordinary postrank objects or silently replace their weak-error loss.
+Tie-aware objects have \code{print()}, \code{format()}, and \code{summary()} methods, while
+ordinary zero-equality baselines, table accessors, HTML reports, plots, Monte
+Carlo diagnostics, and IID bounds reject \verb{postrank_tie_*} classes rather than
+reinterpreting their equality-neutral loss.
 }
 \examples{
 capabilities <- postrank_tie_capabilities()

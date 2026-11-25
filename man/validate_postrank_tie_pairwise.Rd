@@ -1,43 +1,39 @@
 % Please edit documentation in R/tie-pairwise.R
 \name{validate_postrank_tie_pairwise}
 \alias{validate_postrank_tie_pairwise}
-\title{Check Equality-Neutral Comparison Coefficients}
+\title{Validate Tie-Aware Pairwise Probabilities}
 \usage{
 validate_postrank_tie_pairwise(x)
 }
 \arguments{
-\item{x}{An object from \code{\link[=postrank_tie_pairwise]{postrank_tie_pairwise()}}.}
+\item{x}{A \code{postrank_tie_pairwise} object from \code{\link[=postrank_tie_pairwise]{postrank_tie_pairwise()}}.}
 }
 \value{
-Invisible \code{TRUE} on success. Invalid probabilities, axes, source
-records, or changed content raise an error. The function does not repair
-or replace an object.
+\code{TRUE} invisibly when \code{x} passes all checks; invalid or modified
+objects stop with a structured error.
 }
 \description{
-The strict-error, equality and distinctness arrays from
-\code{\link[=postrank_tie_pairwise]{postrank_tie_pairwise()}} are checked against their retained input and
-equality records. Invalid or altered content is detected without modifying
-the object.
+\code{validate_postrank_tie_pairwise()} checks the strict directional-error (\code{b}),
+equality (\code{t}), and distinctness (\code{d}) probability arrays of a
+\code{postrank_tie_pairwise} object against its stored \code{postrank_tie_draws} source
+and content hash.
 }
 \details{
-Checks include matching entity and criterion axes, unused \code{NA}
-diagonals, probability ranges, symmetric equality and distinctness, and
-the identities \code{b[i,j,k] + b[j,i,k] = d[i,j,k]} and
-\code{d[i,j,k] + t[i,j,k] = 1} off the diagonal, to tolerance \code{1e-12}.
-It also checks consistency with the stored input, sample-size meaning,
-equality declarations, and content identity.
-
-Validation does not independently recalculate every probability from the
-source states, verify a scientific structural-equality claim, or provide
-a numerical accuracy certificate. To change the source, construct a new
-tie-aware input and run \code{\link[=postrank_tie_pairwise]{postrank_tie_pairwise()}} again.
+Verifies \code{x$source} via \code{\link[=validate_postrank_tie_draws]{validate_postrank_tie_draws()}}, matching entity and
+criterion axes, \code{NA} diagonals (rejecting \code{NaN}), \verb{[0, 1]} off-diagonal
+bounds, symmetry of \code{t} and \code{d}, and the identities
+\code{b[i, j, k] + b[j, i, k] = d[i, j, k]} and \code{d[i, j, k] + t[i, j, k] = 1}
+off the diagonal within tolerance \code{1e-12}, along with \code{sample_sizes},
+\code{sampling_regimes}, \code{method}, \code{exact}, and \code{pairwise_identity}. Validation
+does not recompute probabilities from raw states, verify scientific equality,
+or issue a numerical certificate.
 }
 \examples{
-if (requireNamespace("gmp", quietly = TRUE)) {
-  path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
-  pw <- postrank_tie_pairwise(read_postrank_tie_draws(path))
-  validate_postrank_tie_pairwise(pw)
-}
+\dontshow{if (requireNamespace("gmp", quietly = TRUE)) withAutoprint(\{ # examplesIf}
+path <- system.file("examples", "synthetic-tie-aware.json", package = "postrank")
+pw <- postrank_tie_pairwise(read_postrank_tie_draws(path))
+validate_postrank_tie_pairwise(pw)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=postrank_tie_pairwise]{postrank_tie_pairwise()}}, \code{\link[=as_postrank_tie_draws]{as_postrank_tie_draws()}}

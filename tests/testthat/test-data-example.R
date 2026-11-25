@@ -1,4 +1,4 @@
-# T-doc-10 / T-doc-12 (example part): the sealed typed fixtures validate, agree with each
+# Bundled synthetic datasets validate, agree with their analytic counterparts,
 # other and leave the caller's RNG state untouched.
 test_that("postrank_toy equals the shipped JSON fixture in full core payload and identity", {
   json <- read_postrank_draws(system.file("examples", "synthetic-iid.json", package = "postrank", mustWork = TRUE))

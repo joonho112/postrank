@@ -168,88 +168,90 @@
 
 #' Use Previously Calculated Comparison Probabilities
 #'
-#' The constructor imports comparison probabilities from an external posterior
-#' analysis, numerical integration or a specified law. A matrix represents one
-#' criterion and an array represents several criteria. The event direction,
-#' target definition, source and any requested numerical correction are
-#' recorded. Neither posterior draws nor a fitted model are produced by this
-#' operation.
+#' `postrank_probabilities()` builds a pairwise-probability input from
+#' comparison probabilities computed outside `postrank` (for example by
+#' analytic formulas, numerical integration or another posterior summary),
+#' without requiring posterior draws. Pass a square matrix for one criterion or
+#' a 3D array for several criteria.
 #'
-#' @param probabilities A named square matrix for one criterion, or a named
-#'   entity-by-entity-by-criterion numeric array. Both entity axes must contain
-#'   the same IDs in the same order. Diagonals must be `NA`: they are unused
-#'   self-comparisons, not zero-probability events.
-#' @param event Explicitly `"higher_priority"` for
-#'   `P(theta[i,k] > theta[j,k])`, or `"directional_error"` for
-#'   `P(theta[i,k] <= theta[j,k])`. Larger target values mean higher priority.
-#'   The output `e` always stores the latter event, the error for reporting
-#'   row entity i above column entity j.
-#' @param zero_ties Explicitly `TRUE`: each pair of distinct targets has equality
-#'   probability zero. Continuous marginals are not required; a finite law with
-#'   no pairwise equality is also admissible. Positive or unknown equality
-#'   probability cannot be imported by this route.
-#' @param margin Explicitly `0`. Nonzero comparison margins are unsupported.
-#' @param source A list with `kind`, `description`, and `conditioning`.
-#'   `kind` is `"analytic_reference"`, `"numerical_integration"`,
-#'   `"iid_summary"`, `"mcmc_summary"`, or `"published_reference"`.
-#'   Describe how the probabilities were obtained and what was held fixed,
-#'   including an estimated prior in an empirical Bayes analysis. The label
-#'   records the producer's account; it does not verify calculation accuracy.
-#' @param targets A criterion-named character vector describing the oriented
-#'   targets and units, in the same order as the probability array.
-#' @param criterion One criterion name, required for matrix input. Omit it for
-#'   an array, whose third dimension provides the names.
-#' @param correction `"none"` (default) or an explicit `"symmetric"`
-#'   correction of small reverse-complement discrepancies.
-#' @param tolerance With symmetric correction, an explicit nonnegative
-#'   tolerance no larger than `1e-3`. This upper limit is a safeguard, not a
-#'   recommended integration tolerance. Without correction, reverse sums must
-#'   be within `1e-12` of one and this argument must be omitted.
-#' @param summaries Optional list with named entity-by-criterion `means`,
-#'   `same_targets = TRUE`, and a `description`. To supply fixed central
-#'   equal-tail intervals, also include `lower`, `upper`, and `level`.
-#'   These must describe the same oriented targets and units. Intervals at
-#'   another level cannot be recovered from these summaries.
-#' @return A `postrank_probabilities` object containing directional errors `e`,
-#'   raw and corrected probabilities, source records, correction magnitudes,
-#'   and optional supplied summaries. It can be used by [postrank()],
-#'   [postrank_problem()], [postrank_evaluate()], [postrank_expected_rank()],
-#'   and [postrank_cuts()] within their documented scope. No draw count,
-#'   Monte Carlo diagnostic, or numerical certificate is inferred.
-#' @details Native joint search and fixed-order cuts support weighted expected
-#'   loss with an upper grade-count limit for this input. Minimax, `q`
-#'   protections, and an exact grade count are unsupported in those routes.
-#'   A fixed report can be scored with [postrank_evaluate()]; this does not test
-#'   whether it belongs to a particular constrained action family.
+#' @param probabilities A named `n x n` numeric matrix for one criterion, or a
+#'   named `n x n x K` numeric array (`n >= 2`). Row and column entity names
+#'   must match in the same order. Diagonal entries must be `NA` (unused
+#'   self-comparisons, not `0` or `NaN`), and off-diagonal entries must be
+#'   finite numbers in `[0, 1]`.
+#' @param event Which pairwise event `probabilities[i, j, ]` represents
+#'   (required): `"higher_priority"` for `P(theta[i, k] > theta[j, k])`, or
+#'   `"directional_error"` for `P(theta[i, k] <= theta[j, k])`, where larger
+#'   `theta` means higher priority. The returned `$e` array always stores
+#'   `"directional_error"` (the expected error if entity `i` is graded above
+#'   entity `j`).
+#' @param zero_ties Must be `TRUE` (required): distinct entities have zero
+#'   probability of exact equality on each criterion. For posteriors with
+#'   positive or unknown tie probability, use [postrank_tie_pairwise()].
+#' @param margin Must be `0` (required). Nonzero comparison margins are not
+#'   supported.
+#' @param source Plain named list with strings `kind`, `description` and
+#'   `conditioning` (required). `kind` must be one of `"analytic_reference"`,
+#'   `"numerical_integration"`, `"iid_summary"`, `"mcmc_summary"` or
+#'   `"published_reference"`. State how the probabilities were computed and
+#'   what was conditioned on (including any fixed empirical Bayes prior).
+#' @param targets Character vector named by criterion (in the same order as
+#'   `probabilities`) describing each higher-priority target and its units
+#'   (required).
+#' @param criterion Single criterion name when `probabilities` is a 2D matrix;
+#'   leave `NULL` when `probabilities` is a 3D array (whose 3rd axis supplies
+#'   the names).
+#' @param correction How small discrepancies in `P(i, j) + P(j, i) = 1` are
+#'   handled: `"none"` (the default) or `"symmetric"`.
+#' @param tolerance Maximum allowed complement discrepancy
+#'   `max |P(i, j) + P(j, i) - 1|` when `correction = "symmetric"`, a finite
+#'   number in `[0, 1e-3]` (this cap is a safeguard, not a recommended
+#'   integration tolerance). Must be `NULL` when `correction = "none"`, which
+#'   requires complement sums to be within `1e-12` of `1`.
+#' @param summaries Optional plain named list of marginal target summaries for
+#'   the same oriented targets and units: `means` (`n x K` matrix with matching
+#'   row and column names), `same_targets = TRUE`, and `description`. To enable
+#'   report cards, also supply `lower`, `upper` (`n x K` matrices with
+#'   `lower <= upper`) and `level` (`0 < level < 1`) together; intervals at any
+#'   other `level` cannot be computed from these summaries.
+#' @returns A `postrank_probabilities` object (inheriting from
+#'   `postrank_pairwise`) containing directional error probabilities `e`,
+#'   `raw_probabilities`, `corrected_probabilities`, `correction` diagnostics,
+#'   `source`, `targets`, `summaries` and `capabilities`. Accepted by
+#'   [postrank()], [postrank_problem()], [postrank_evaluate()],
+#'   [postrank_expected_rank()] and [postrank_cuts()].
+#' @details
+#' **Supported settings and summaries.** Supplied probabilities support the
+#' weighted expected-loss objective with `G_max`. Minimax objectives, `q` error
+#' budgets and `exact_G` are not available in [postrank()] or
+#' [postrank_problem()]. Because no posterior draws are present, Monte Carlo
+#' fragility, cross-fitting, draw diagnostics and IID bounds are unavailable;
+#' a report card is available in [postrank()] and [postrank_report_card()] only
+#' when `summaries` includes `lower`, `upper` and `level`, and only at that
+#' `level`.
 #'
-#'   Range and reverse-complement checks do not establish that the supplied
-#'   probabilities come from a coherent joint posterior or a suitable model.
-#'   Cross-criterion dependence is unnecessary for additive expected loss, but
-#'   these coefficients do not determine composite ordering or simultaneous
-#'   correctness probabilities. A summary of Monte Carlo comparisons likewise
-#'   does not retain the original draws or chain histories.
+#' **Symmetric correction.** When `correction = "symmetric"`, each upper-triangle
+#' entry is replaced by `(a[i, j] + 1 - a[j, i]) / 2` and the lower-triangle
+#' entry is set to `1 - a[i, j]`. For any fixed grading with `N` ordered pairs
+#' out of `M` total pairs, this changes the weighted loss by at most `N / M`
+#' times the weighted sum of `correction$maximum_absolute_change`. That bound
+#' measures only the adjustment to the supplied array, not numerical
+#' integration, Monte Carlo or model error.
 #'
-#'   Symmetric correction replaces a forward probability by the average of
-#'   itself and one minus its reverse, then complements the reverse value.
-#'   The maximum change is retained separately for each criterion. For a fixed
-#'   report, the resulting risk change is at most `N/M` times the weighted
-#'   sum of these maxima, where `N` counts disclosed pairs and `M` counts all
-#'   unordered pairs. This describes a change from the supplied array; it does
-#'   not bound quadrature, model, or Monte Carlo error. Nothing is corrected
-#'   silently when `correction = "none"`.
+#' **Scope of checks.** Checking range and complement sums does not verify that
+#' the probabilities come from a coherent joint posterior or an adequate model.
 #' @seealso [validate_postrank_probabilities()], [postrank_pairwise()],
-#'   [postrank_tie_pairwise()] for the separate equality-neutral loss.
+#'   [postrank_tie_pairwise()]
 #' @concept input
 #' @examples
-#' # The same analytic one-criterion law as the tutorial Gaussian input.
 #' x <- postrank_probabilities(pr_tutorial$one$e,
 #'   event = "directional_error", zero_ties = TRUE, margin = 0,
 #'   source = list(kind = "analytic_reference",
 #'     description = "Normal-CDF comparisons for pr_tutorial score A",
-#'     conditioning = "The specified means, variances, and independent-site law are fixed"),
+#'     conditioning = "The specified means, variances and independent-site law are fixed"),
 #'   targets = c(score_A = "Score A in illustrative units; larger means higher priority"))
 #' grade <- stats::setNames(c(1L, 1L, 2L, 2L, 3L, 3L), x$entity_ids)
-#' postrank_evaluate(grade, x, c(score_A = 1), tau = .25)$weighted_risk
+#' postrank_evaluate(grade, x, c(score_A = 1), tau = 0.25)$weighted_risk
 #' validate_postrank_probabilities(x)
 #' @export
 postrank_probabilities <- function(probabilities, event, zero_ties, margin, source,
@@ -264,21 +266,21 @@ postrank_probabilities <- function(probabilities, event, zero_ties, margin, sour
 
 #' Check an Imported Probability Input
 #'
-#' Directional errors, corrections and summaries are reconstructed from the
-#' stored source values and compared with the recorded probability input. These
-#' checks detect invalid content or changes introduced after construction,
-#' including changes in a loaded object.
+#' `validate_postrank_probabilities()` rebuilds a `postrank_probabilities`
+#' object from its stored raw probabilities, source settings, correction rule
+#' and marginal summaries, checking that nothing was altered after construction.
 #'
-#' @param x An object from [postrank_probabilities()].
-#' @return Invisible `TRUE` on success. An invalid or altered object raises an
-#'   error; values and source records are not repaired or replaced.
-#' @details The checks repeat the constructor's requirements, including named
-#'   axes, unused `NA` diagonals, probability range, reverse complements, and
-#'   consistency of the requested correction. They do not establish joint-law
-#'   coherence, the truth of the source description, or the accuracy of the
-#'   supplied probabilities. A correction record is not an error certificate.
-#'   To change probabilities, targets, or source descriptions, construct a new
-#'   input with [postrank_probabilities()].
+#' @param x A `postrank_probabilities` object created by
+#'   [postrank_probabilities()].
+#' @returns `TRUE`, invisibly, when `x` is valid and unaltered; otherwise stops
+#'   with an error (`invalid_probabilities` or `stale_probability_identity`).
+#' @details
+#' All checks from [postrank_probabilities()] are re-run, including matching
+#' entity and criterion names, `NA` diagonals, values in `[0, 1]`, complement
+#' tolerances and `summaries` consistency. Passing these checks confirms that
+#' the stored object is intact; it does not verify joint-posterior coherence or
+#' the accuracy of the external calculation. To change probabilities or
+#' descriptions, call [postrank_probabilities()] again.
 #' @seealso [postrank_probabilities()]
 #' @examples
 #' x <- postrank_probabilities(pr_tutorial$one$e,

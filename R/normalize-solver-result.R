@@ -3,7 +3,7 @@
 # that exceeded the validated action risk by at most the objective tolerance and
 # was set equal to it (floating-point rounding or solver tolerances; not a
 # numerical certificate). A clamped inversion larger than the requested absolute
-# risk gap is reported with an extra warning (014 repair, Phase 5 review of L5).
+# risk gap is reported with an extra warning.
 .pr_usable_bound_sources <- function() c("backend_reported_dual_bound", "backend_reported_dual_bound_clamped",
   "engine_lp_relaxation_bound", "engine_lp_relaxation_bound_clamped")
 
@@ -79,7 +79,7 @@
     if (is.finite(residual) && residual > tol$feasibility + tol$integrality * max(1, coefficient))
       issue("raw_primal_residual_excessive", "Raw primal residuals exceed what the integrality tolerance can explain; the backend bound is excluded from gap calculations.")
   }
-  # Known source labels only; an unknown label is an adapter contract violation.
+  # Accept only known bound-source labels; exclude unrecognized labels from gap calculations.
   reported_source <- if (is.null(raw$bound_source)) "backend_reported_dual_bound" else raw$bound_source
   if (is.finite(raw_lower) && !(is.character(reported_source) && length(reported_source) == 1L &&
       !is.na(reported_source) && reported_source %in% .pr_reported_bound_sources())) {

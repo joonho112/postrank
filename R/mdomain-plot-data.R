@@ -1,4 +1,4 @@
-# Plotting verifies stored receipts and their integer/character aliases only.
+# Plotting checks stored summary tables and their integer/character aliases only.
 # It deliberately does not enter the input, decision, action or result validators:
 # those paths reconstruct numerical objects and require optional arithmetic.
 .md_plot_ids <- function(x, size=NULL) {

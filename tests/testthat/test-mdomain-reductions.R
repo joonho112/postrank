@@ -19,7 +19,7 @@ md_reduction_finite_p1 <- function(D=2L) {
 }
 
 # An independent statewise weak-error sum, with no production pairwise
-# coefficients, evaluator, action canonicalizer or P2 core calls.
+# coefficients, evaluator, action canonicalizer, or multidomain core calls.
 md_reduction_exact_counts <- function(values, masses, grades, weights, tau) {
   S <- dim(values)[1L]; n <- dim(values)[2L]; D <- dim(values)[3L]
   F <- matrix(0L,S,D); N <- integer(D)
@@ -51,8 +51,8 @@ md_reduction_state_input <- function(values, masses, classes=NULL) {
 
 test_that("one-domain and common-grade P2 risks reduce to the same P1 weak loss", {
   skip_if_not_installed("gmp")
-  # Ordinary P1 inputs require zero latent equality. Positive equality is
-  # checked below against its own weak-error oracle, rather than relabeled.
+  # Standard tie-free inputs require zero probability of exact ties; positive tie
+  # probability is checked below against its own weak-error reference calculation.
   for(D in 1:2) {
     law <- md_reduction_finite_p1(D)
     input <- postrank_mdomain_input(law$draws,provenance=list(
@@ -112,8 +112,8 @@ test_that("positive latent equality is a false strict assertion in the weak loss
   expect_identical(ev$J_exact,"1/3")
   expect_true(ev$mean_feasible); expect_true(ev$joint_feasible)
   expect_identical(unname(ev$evaluation$expected$traces$need1$full_F),c(1L,0L))
-  # The supported P1 positive-equality route explicitly has another loss:
-  # equality is neutral. Preserve that distinction, using the same law/IDs.
+  # Tie-aware common-grade mode uses a different loss in which exact equality
+  # incurs zero cost; verify that distinction on the same law and IDs.
   neutral_pw <- postrank_tie_pairwise(as_postrank_tie_draws(
     pr_tie_fixture(values,c(1L,2L))))
   neutral <- postrank_tie_evaluate(setNames(grades[,1],input$unit_ids),

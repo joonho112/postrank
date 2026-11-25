@@ -17,16 +17,20 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Chronic Absence in a Small California School Example — pr_case_cde">
-<meta name="description" content="A one-criterion teaching example using 12 schools from a frozen 2026
-California School Dashboard chronic-absence analysis. Larger target values
-mean lower chronic-absence probability: \(\theta=-p\). The target uses
-proportion units. Source attribution and documented transformations are
-retained in the object and the installed DATA-NOTICE.">
-<meta property="og:description" content="A one-criterion teaching example using 12 schools from a frozen 2026
-California School Dashboard chronic-absence analysis. Larger target values
-mean lower chronic-absence probability: \(\theta=-p\). The target uses
-proportion units. Source attribution and documented transformations are
-retained in the object and the installed DATA-NOTICE.">
+<meta name="description" content="pr_case_cde is a one-criterion case-study dataset for 12 California
+elementary schools adapted from 2026 California School Dashboard
+chronic-absenteeism counts (academic year 2025–26) and an empirical-Bayes
+model. Larger target values mean lower chronic-absence probability:
+\(\theta = -p\), measured in proportion units. Source attribution and
+documented adaptations are recorded in provenance and the installed
+DATA-NOTICE.md file.">
+<meta property="og:description" content="pr_case_cde is a one-criterion case-study dataset for 12 California
+elementary schools adapted from 2026 California School Dashboard
+chronic-absenteeism counts (academic year 2025–26) and an empirical-Bayes
+model. Larger target values mean lower chronic-absence probability:
+\(\theta = -p\), measured in proportion units. Source attribution and
+documented adaptations are recorded in provenance and the installed
+DATA-NOTICE.md file.">
 <meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
 </head>
 <body>
@@ -37,7 +41,7 @@ retained in the object and the installed DATA-NOTICE.">
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +50,7 @@ retained in the object and the installed DATA-NOTICE.">
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -70,11 +74,13 @@ retained in the object and the installed DATA-NOTICE.">
     </div>
 
     <div class="ref-description section level2">
-    <p><span>A one-criterion teaching example using 12 schools from a frozen 2026
-California School Dashboard chronic-absence analysis. Larger target values
-mean lower chronic-absence probability: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo>=</mo><mi>−</mi><mi>p</mi></mrow><annotation encoding="application/x-tex">\theta=-p</annotation></semantics></math>. The target uses
-proportion units. Source attribution and documented transformations are
-retained in the object and the installed DATA-NOTICE.</span></p>
+    <p><code>pr_case_cde</code><span> is a one-criterion case-study dataset for 12 California
+elementary schools adapted from 2026 California School Dashboard
+chronic-absenteeism counts (academic year 2025–26) and an empirical-Bayes
+model. Larger target values mean lower chronic-absence probability:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo>=</mo><mi>−</mi><mi>p</mi></mrow><annotation encoding="application/x-tex">\theta = -p</annotation></semantics></math>, measured in proportion units. Source attribution and
+documented adaptations are recorded in </span><code>provenance</code> and the installed
+<code>DATA-NOTICE.md</code> file.</p>
     </div>
 
     <div class="section level2">
@@ -89,32 +95,35 @@ retained in the object and the installed DATA-NOTICE.</span></p>
     <p>A named list with five elements:</p>
 <dl>
 <dt>input</dt>
-<dd><p>A validated <code>postrank_probabilities</code> input for 12
-schools and one criterion, with genuine posterior means and fixed
-90% equal-tail marginal intervals for the same oriented target.</p></dd>
+<dd><p>A <code>postrank_probabilities</code><span> object for the 12 schools on one
+criterion, with marginal posterior means and 90% equal-tail intervals for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo>=</mo><mi>−</mi><mi>p</mi></mrow><annotation encoding="application/x-tex">\theta = -p</annotation></semantics></math>.</span></p></dd>
 
 <dt>units</dt>
-<dd><p>12 rows in input order: school CDS IDs as character strings,
-chronic-absence numerators, eligible denominators, observed proportions,
-and the two selection strata. Counts are local source observations,
-not posterior estimates.</p></dd>
+<dd><p>Data frame of 12 rows in input order with columns
+<code>entity_id</code> (14-digit County-District-School CDS codes stored as
+character strings to preserve leading zeros), <code>chronic_absent_count</code>,
+<code>eligible_count</code>, <code>observed_rate</code>, <code>observed_rate_group</code> and
+<code>denominator_group</code>. Counts are observed school data, not posterior
+estimates.</p></dd>
 
 <dt>alternatives</dt>
-<dd><p><code>order_32</code> and <code>order_64</code> are supported
-inputs calculated with more quadrature nodes per prior bin. They use
-the same posterior law, observations and supplied marginal summaries.</p></dd>
+<dd><p>Alternative <code>postrank_probabilities</code> inputs <code>order_32</code>
+and <code>order_64</code>, computed with 32 and 64 Gauss-Legendre nodes per prior
+bin under the same posterior and marginal summaries.</p></dd>
 
 <dt>reference</dt>
-<dd><p>Settings and three fixed teaching actions, their risk
-evaluations, compact continuous posterior parameters, separate upstream
-and constructor corrections, quadrature diagnostics, and archived
-statewide summary rows. These are archive records rather than current
-native fits.</p></dd>
+<dd><p>Settings, three fixed comparison gradings (all-unordered,
+observed-rate tertiles and posterior-mean tertiles) with their losses,
+piecewise-Beta posterior parameters, quadrature diagnostics, and
+archived statewide baseline summaries.</p></dd>
 
 <dt>provenance</dt>
-<dd><p>Source-relative filenames and SHA-256 hashes, dates,
-selection rule, model conditioning, target direction, citation and
-historical source-review records. No raw CDE download is bundled.</p></dd>
+<dd><p>Source filenames and SHA-256 hashes, dates, school
+selection rule, model conditioning, target orientation, attribution and
+historical preparation-stage review records. Raw CDE download files,
+logos, full source tables and statewide pairwise matrices are not
+bundled.</p></dd>
 
 
 </dl>
@@ -122,73 +131,67 @@ historical source-review records. No raw CDE download is bundled.</p></dd>
     <div class="section level2">
     <h2 id="source">Source<a class="anchor" aria-label="anchor" href="#source"></a>
 </h2>
-    <p>California Department of Education, 2026 California School
-Dashboard chronic absenteeism data, academic year 2025–26.
-<a href="https://www.cde.ca.gov/ta/ac/cm/chronicdatafiles.asp" class="external-link">https://www.cde.ca.gov/ta/ac/cm/chronicdatafiles.asp</a>.
-Source copyright statement:
-<a href="https://www.cde.ca.gov/re/di/cr/index.asp" class="external-link">https://www.cde.ca.gov/re/di/cr/index.asp</a> (accessed 2026-10-30).
-Model, numerical integration and teaching selection by the case-study
-authors. No CDE endorsement is implied.</p>
+    <p>California Department of Education, 2026 California School Dashboard
+chronic absenteeism data, academic year 2025–26,
+<a href="https://www.cde.ca.gov/ta/ac/cm/chronicdatafiles.asp" class="external-link">https://www.cde.ca.gov/ta/ac/cm/chronicdatafiles.asp</a>; source
+conditions at <a href="https://www.cde.ca.gov/re/di/cr/index.asp" class="external-link">https://www.cde.ca.gov/re/di/cr/index.asp</a> (accessed
+2026-10-30). Empirical-Bayes model, numerical integration and 12-school
+selection by the package author; no CDE endorsement is implied.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
 </h2>
-    <p>The source frame contains 5,834 elementary-type, non-DASS,
-ALL-student schools with usable chronic-absence counts and denominators
-at least 30; charter schools remain eligible. It is not all California
-schools. The teaching selection takes one school from each of four
-observed-rate rank groups crossed with three denominator rank groups.
-Within a cell, the lower middle school ordered by observed rate,
-denominator and CDS ID is selected. The subset is deliberately spread,
-not a representative statewide sample. Input order follows the rate group
-and then the denominator group.</p>
-<p>The empirical Bayes prior G was estimated on the full source frame and
-remains fixed for this subset. Uncertainty is conditional on that estimated
-G; uncertainty in estimating G is not propagated. The prior is uniform
-within 161 continuous bins. Within a bin the posterior is a truncated
-Beta(y+1,n-y+1) density, weighted by that school's posterior bin mass.
-It is neither a uniform posterior within bins nor a set of bin-center
-atoms. Independent school posteriors given G have zero equality probability.</p>
-<p><span>The primary comparison probabilities use 16 Gauss-Legendre nodes per bin.
-Stored refinements use 32 and 64 nodes. Source integration retains raw
-probabilities before correcting values outside <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0,1]</annotation></semantics></math> by at most 64 machine
-epsilons. The public input then applies a separate symmetric
-reverse-complement correction with tolerance 1e-6. Neither a small correction
-nor agreement between refinement orders is a certified integration-error
-bound. No posterior draws or Monte Carlo diagnostics are claimed.</span></p>
-<p><span>The supplied target mean is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mi>E</mi><mo stretchy="false" form="prefix">[</mo><mi>p</mi><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">-E[p]</annotation></semantics></math>. Its 90% interval is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><mi>−</mi><msub><mi>q</mi><mn>.95</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mi>−</mi><msub><mi>q</mi><mn>.05</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[-q_{.95}(p), -q_{.05}(p)]</annotation></semantics></math>; the negative direction reverses the endpoints.
-Request </span><code>level = .9</code> to use these intervals in <code><a href="postrank.html">postrank()</a></code> or
-<code><a href="postrank_report_card.html">postrank_report_card()</a></code>. Other interval levels cannot be recovered
-from the supplied summaries. The retained intervals are marginal,
-not simultaneous.</p>
-<p>The three sample actions withhold all comparisons or use fixed observed-rate
-and posterior-mean tertiles. They have no optimization guarantee. Archived
-statewide rows describe fixed-order contiguous cuts and other baselines.
-Optimal cuts conditional on a declared order are not an unrestricted
-statewide optimum; their independent-pair relaxation lower bound has a
-separate scope. These posterior-conditioned risks do not provide external
-validation. Current-probability comparisons do not reproduce Dashboard
-Status-plus-Change colors or establish causal effects. Suspension is a
-separate extension and is not included here.</p>
-<p>The asset contains selected public-source IDs/counts and author-derived
-numerical results, not CDE raw files or logos. The original source attribution
-and historical preparation records remain in the provenance. The installed
-DATA-NOTICE describes the current distribution scope. No Creative Commons
-or package-code license is substituted for the CDE source conditions.</p>
+    <p><strong>School selection.</strong> The statewide frame comprises 5,834 elementary-type
+schools outside Dashboard Alternative School Status (non-DASS, including
+eligible charter schools) with usable ALL-student chronic-absence counts and
+denominators of at least 30. One school was chosen from each cell of 4
+observed-rate rank groups crossed with 3 denominator rank groups (the
+lower-median row <code>ceiling(m / 2)</code> within each cell when ordered by observed
+rate, denominator and CDS code). This 12-school subset spans rate and size
+strata for teaching and is not a representative sample of California
+schools.</p>
+<p><strong>Posterior and numerical integration.</strong> A piecewise-uniform empirical-Bayes
+prior <code>G</code> over 161 continuous bins was estimated on the 5,834-school frame
+and held fixed; uncertainty in estimating <code>G</code> is not propagated. Within each
+bin, a school's posterior is a truncated <code>Beta(y + 1, n - y + 1)</code> density
+weighted by its posterior bin probability, so independent school posteriors
+given <code>G</code> have zero probability of exact equality. Primary pairwise
+probabilities use 16 Gauss-Legendre nodes per bin, clipping raw values that
+overshot <code>[0, 1]</code> by at most 64 machine epsilons back into <code>[0, 1]</code> before
+applying symmetric complement correction with <code>tolerance = 1e-6</code> in
+<code><a href="postrank_probabilities.html">postrank_probabilities()</a></code>. Small corrections and agreement across 16, 32
+and 64 nodes are diagnostic checks, not certified bounds on integration
+error, and no posterior draws are stored.</p>
+<p><strong>Intervals and scope.</strong><span> Each school's mean is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mi>E</mi><mo stretchy="false" form="prefix">[</mo><mi>p</mi><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">-E[p]</annotation></semantics></math> and its 90%
+marginal (not simultaneous) interval is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><mi>−</mi><msub><mi>q</mi><mn>0.95</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mi>−</mi><msub><mi>q</mi><mn>0.05</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>p</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[-q_{0.95}(p), -q_{0.05}(p)]</annotation></semantics></math>;
+pass </span><code>level = 0.90</code> in <code><a href="postrank.html">postrank()</a></code> or <code><a href="postrank_report_card.html">postrank_report_card()</a></code> (other
+levels cannot be computed from stored summaries). Archived statewide rows in
+<code>reference$statewide$metrics</code> summarize fixed-order contiguous cuts, an
+all-unordered row and matched grade-size baselines rather than an
+unrestricted 5,834-school optimization, and their independent-pair
+relaxation lower bound has a separate scope. Posterior-conditioned losses do
+not provide external validation, and the results do not reproduce California
+Dashboard Status-plus-Change colors or estimate causal effects.</p>
+<p><strong>Source conditions.</strong> Only the 12 selected school IDs/counts and
+author-derived summaries are included. <code>provenance$rights</code> retains historical
+preparation-stage records, while the installed <code>DATA-NOTICE.md</code> describes the
+current public distribution scope. CDE source conditions apply to <code>pr_case_cde</code>
+and dependent stored results (such as <code>postrank_example("case_cde_12")</code>)
+rather than a Creative Commons or MIT code license.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
 </h2>
-    <div class="dont-index"><p><code><a href="../articles/a2-cde-accountability.html">vignette("a2-cde-accountability", package = "postrank")</a></code>,
-<code><a href="postrank_probabilities.html">postrank_probabilities()</a></code>, <code><a href="postrank_report_card.html">postrank_report_card()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="postrank_example.html">postrank_example()</a></code>, <code><a href="postrank_probabilities.html">postrank_probabilities()</a></code>,
+<code><a href="postrank_report_card.html">postrank_report_card()</a></code>,
+<code><a href="../articles/a2-cde-accountability.html">vignette("a2-cde-accountability", package = "postrank")</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
 </h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">pr_case_cde</span></span></span>
-<span class="r-in"><span><span class="va">x</span><span class="op">$</span><span class="va">units</span></span></span>
+<span class="r-in"><span><span class="va">x</span><span class="op">$</span><span class="va">units</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"entity_id"</span>, <span class="st">"chronic_absent_count"</span>, <span class="st">"eligible_count"</span>, <span class="st">"observed_rate"</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         entity_id chronic_absent_count eligible_count observed_rate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1  30665976068399                   20            363    0.05509642</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2  38684786113997                   26            409    0.06356968</span>
@@ -202,20 +205,7 @@ or package-code license is substituted for the CDE source conditions.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 10 34674216033732                   99            340    0.29117647</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 11 19648816021687                  128            448    0.28571429</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 12 36677106035901                  164            569    0.28822496</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    observed_rate_group denominator_group</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                    1                 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                    1                 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                    1                 3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                    2                 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                    2                 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6                    2                 3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7                    3                 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8                    3                 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9                    3                 3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10                   4                 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11                   4                 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12                   4                 3</span>
-<span class="r-in"><span><span class="fu"><a href="postrank_posterior_means.html">postrank_posterior_means</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">input</span>, level <span class="op">=</span> <span class="fl">.9</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="postrank_posterior_means.html">postrank_posterior_means</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">input</span>, level <span class="op">=</span> <span class="fl">0.90</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                 criterion</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> entity           negative_chronic_absence</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   30665976068399              -0.05959043</span>
@@ -264,29 +254,15 @@ or package-code license is substituted for the CDE source conditions.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"interval_source")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "supplied_marginal_summaries"</span>
-<span class="r-in"><span><span class="va">ev</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_evaluate.html">postrank_evaluate</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">actions</span><span class="op">$</span><span class="va">posterior_mean_tertiles</span>,</span></span>
-<span class="r-in"><span>  <span class="va">x</span><span class="op">$</span><span class="va">input</span>, tau <span class="op">=</span> <span class="fl">.2</span>, weights <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">settings</span><span class="op">$</span><span class="va">weights</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">ev</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G"</span>, <span class="st">"N"</span>, <span class="st">"M"</span>, <span class="st">"primary_risk"</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $G</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $N</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 48</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $M</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 66</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $primary_risk</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.08225512</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span><span class="va">x</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">statewide</span><span class="op">$</span><span class="va">metrics</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"method"</span>, <span class="st">"N"</span>, <span class="st">"E"</span>, <span class="st">"risk"</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  method        N        E       risk</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1        posterior_mean 11343829 150190.6 0.07548678</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2               all_tie        0      0.0 0.20000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3              raw_rate 11337601 150248.7 0.07556340</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      matched_raw_rate 11343829 151730.7 0.07557729</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         expected_rank 11342876 149871.2 0.07547921</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 matched_expected_rank 11343829 150110.8 0.07548208</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">cde_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"case_cde_12"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="get_grades.html">get_grades</a></span><span class="op">(</span><span class="va">cde_res</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30665976068399 38684786113997 30736506094718 58727516056840 30736436030639 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              1              1              1              2              2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 01750936118038 19647330106427 37684520105882 36676866035711 34674216033732 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              2              2              2              2              3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19648816021687 36677106035901 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              3              3 </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

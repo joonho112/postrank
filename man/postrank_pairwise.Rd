@@ -6,67 +6,61 @@
 postrank_pairwise(draws, method = c("blocks", "reference"), block_size = 128L)
 }
 \arguments{
-\item{draws}{An object from \code{\link[=postrank_draws]{postrank_draws()}} or \code{\link[=as_postrank_draws]{as_postrank_draws()}}, a
-supported canonical input payload, or already calculated coefficients from
-\code{\link[=postrank_gaussian_coefficients]{postrank_gaussian_coefficients()}}, \code{\link[=postrank_mixture_coefficients]{postrank_mixture_coefficients()}}, or
-\code{\link[=postrank_probabilities]{postrank_probabilities()}}. For already calculated inputs, omit \code{method}
-and \code{block_size}.}
+\item{draws}{A \code{postrank_draws} object (or complete \code{"applied-0.1"} input
+list), or an already computed \code{postrank_coefficients} or
+\code{\link[=postrank_probabilities]{postrank_probabilities()}} object. When passing \code{postrank_coefficients} or
+\code{postrank_probabilities}, omit \code{method} and \code{block_size}.}
 
-\item{method}{For Monte Carlo draws, \code{"blocks"} (default) aggregates bounded
-blocks of ordered pairs; \code{"reference"} aggregates one pair at a time.
-Both use equal-weight empirical frequencies and preserve the input draws.
-Exact finite laws instead use their declared masses.}
+\item{method}{Aggregation algorithm for Monte Carlo draws: \code{"blocks"} (the
+default, summing bounded blocks of ordered pairs) or \code{"reference"} (one
+pair at a time). Both compute identical equal-weight empirical
+frequencies; exact finite posteriors ignore \code{method} and sum their exact
+state probabilities.}
 
-\item{block_size}{Positive integer maximum ordered-pair block size for the
-block algorithm. It changes working storage, not the probability event.}
+\item{block_size}{Positive integer maximum block size for \code{method = "blocks"}
+(default \code{128L}). Controls working memory without changing \code{e}.}
 }
 \value{
-For draw or finite-law input, a \code{postrank_pairwise} object containing
-the directional-error array \code{e}, criterion-specific \code{sample_sizes}, and
-source records. Exact finite laws also retain rational coefficients and
-a floating-point projection, with sample sizes marked unavailable.
-Already calculated coefficient or probability inputs are validated and
-returned unchanged, with their original class and source information.
+For draw or exact finite-posterior inputs, a \code{postrank_pairwise}
+object containing the \verb{n x n x K} array \code{e}, per-criterion \code{sample_sizes}
+(\code{NA} for exact finite posteriors), \code{exact} rational coefficients when
+applicable, and source identities. For \code{postrank_coefficients} or
+\code{postrank_probabilities}, the validated input object unchanged.
 }
 \description{
-Posterior draws or a specified finite law are aggregated into comparison
-probabilities for one or several criteria. For distinct entities,
-\eqn{e_{ij,k}=P(\theta_{i,k}\leq\theta_{j,k})} is the error for reporting
-entity i above entity j, with larger target values having higher priority.
-Diagonal entries are \code{NA} because self-comparisons are unused.
+\code{postrank_pairwise()} computes pairwise directional-error probabilities
+\eqn{e_{ij,k} = P(\theta_{i,k} \le \theta_{j,k})} (the probability that
+grading entity \code{i} above entity \code{j} is in the wrong order, with larger
+target values meaning higher priority) from posterior draws or an exact
+finite posterior. Diagonal entries are \code{NA}. Normal/mixture posterior
+coefficients and precomputed comparison probabilities are validated and
+returned unchanged.
 }
 \details{
-The ordinary route requires zero equality probability for each pair
-of distinct entities. Continuity of every marginal is neither necessary
-nor sufficient: a finite law with no pairwise equality is admissible,
-whereas identical continuous targets have equality probability one.
-Use \code{\link[=postrank_tie_pairwise]{postrank_tie_pairwise()}} for the separate equality-neutral loss when
-genuine equality is present. With zero equality, reverse off-diagonal
-probabilities sum to one.
+\code{postrank_pairwise()} assumes zero probability of exact equality between
+distinct entities within each criterion, so off-diagonal complements satisfy
+\code{e[i, j, k] + e[j, i, k] = 1} (for posteriors with positive tie probability,
+use \code{\link[=postrank_tie_pairwise]{postrank_tie_pairwise()}}). In IID or MCMC draws, an empirical frequency
+of \code{0} or \code{1} is a finite-sample summary rather than proof of posterior
+certainty, whereas an exact finite posterior computes exact rational
+probabilities using the optional \code{gmp} package.
 
-For IID or MCMC output, a frequency of zero or one does not establish that
-the underlying posterior event is impossible or certain. A declared exact
-finite law instead defines the probabilities through its complete states
-and masses; it requires the optional \code{gmp} package for exact arithmetic.
-
-Criterion-wise inputs retain each criterion's own draw count and history.
-Within a criterion, all entity values must refer to the same state. The
-resulting coefficients suffice for additive expected risk, but separate
-criterion blocks do not establish a cross-criterion joint trace for
-composite-score or simultaneous-event calculations.
+Criterion-wise draw inputs (\code{criterion_blocks}) retain each criterion's own
+draw count \code{S_k}; their probabilities support additive criterion losses
+without defining a cross-criterion joint posterior.
 }
 \examples{
-# A one-criterion analytic input is already calculated.
+# Normal posterior coefficients are validated and returned unchanged:
 one <- postrank_pairwise(pr_tutorial$one)
-one$e[, , "score_A"]
 identical(one, pr_tutorial$one)
 
-# Empirical frequencies from the bundled joint posterior-draw example.
+# Empirical wrong-order frequencies from IID posterior draws:
 pw <- postrank_pairwise(postrank_toy)
 pw$sample_sizes
+pw$e[, , "need_A"]
 }
 \seealso{
-\code{\link[=postrank_evaluate]{postrank_evaluate()}}, \code{\link[=postrank_probabilities]{postrank_probabilities()}},
-\code{\link[=postrank_tie_pairwise]{postrank_tie_pairwise()}}
+\code{\link[=postrank_problem]{postrank_problem()}}, \code{\link[=postrank_evaluate]{postrank_evaluate()}},
+\code{\link[=postrank_probabilities]{postrank_probabilities()}}, \code{\link[=postrank_tie_pairwise]{postrank_tie_pairwise()}}
 }
 \concept{coefficients}

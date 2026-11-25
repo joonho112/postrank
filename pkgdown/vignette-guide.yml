@@ -1,23 +1,19 @@
-intro: Choose a practical guide, explore a case study, or follow the methods in order.
-start: Begin with a small analysis that assigns one grade per unit, shared across the criteria. Then learn how to read results and make figures.
+intro: Choose a practical guide, explore a case study, or read the methods articles in order.
+start: Begin with a six-site analysis that grades entities on one criterion and then on two criteria together, followed by guides on preparing inputs, exporting results, and making figures.
 descriptions:
-  a1-getting-started: Run a complete analysis with one criterion, then with several criteria supporting a common grade.
-  a5-your-posterior-results: Prepare your own posterior results and the scientific declarations needed for analysis.
-  a6-reading-exporting-results: Read grades, losses and status records, and export the results you need.
-  a7-figures-sensitivity: Make the common-grade figures and examine changes in analysis settings.
-  a2-cde-accountability: Compare chronic absence across selected California schools.
-  a3-krw-race-gender: Examine race and gender contact gaps at large employers.
-  a4-alabama-opportunity: Study historical income and incarceration outcomes across Alabama counties.
-  m1-ranking-and-loss: Connect posterior comparisons, integer grades and the cost of withholding a direction.
-  m2-several-criteria: Understand weights, competing goals and the consequences of a common grading.
+  a1-getting-started: Run a complete grading analysis on one criterion and extend it to two criteria.
+  a5-your-posterior-results: Prepare posterior draws, normal or mixture moments, JSON files, and comparison probabilities.
+  a6-reading-exporting-results: Inspect grades, pair counts, losses, and solver status, and export CSV, RDS, and HTML reports.
+  a7-figures-sensitivity: Make the seven common-grade plots and examine sensitivity to tau, G_max, and weights.
+  a2-cde-accountability: Grade California schools on chronic absence rates.
+  a3-krw-race-gender: Grade large employers on race and gender callback gaps.
+  a4-alabama-opportunity: Grade Alabama counties on upward income mobility and adult incarceration.
+  m1-ranking-and-loss: Connect posterior comparison probabilities, integer grades, and reporting loss.
+  m2-several-criteria: Combine multiple criteria in one common grading and compare against fixed-order baselines.
   m3-posterior-inputs: Match posterior representations and pairwise probabilities to the calculations they support.
-  m4-ties-and-withholding: Distinguish true target ties from comparisons left undisclosed.
-  m5-computing-grades: Choose settings and interpret computation status, bounds and gaps.
-  m6-uncertainty-diagnostics: Read Monte Carlo diagnostics and their numerical limits.
-  mdomain-quickstart: Build, evaluate, select and plot a report with a grade in each domain.
-  mdomain-decisions: See when domain choices separate and when joint posterior protection changes the chosen profile.
-  quickstart: Follow the retained posterior-draw example through a common grading.
-  inputs-and-producers: Work with strict input declarations and externally produced posterior information.
-  baselines-and-the-cost-of-a-common-grade: Compare common grades with simpler score orders and criterion-specific burdens.
-  figure-gallery: Browse the seven common-grade plots and their display options.
-  migration-from-0-9: Adapt scripts written for the earlier 0.9 interface.
+  m4-ties-and-withholding: Distinguish exact ties in the posterior from pairs left unordered by a shared grade.
+  m5-computing-grades: Choose problem settings and read solver statuses, lower bounds, and optimality gaps.
+  m6-uncertainty-diagnostics: Read Monte Carlo standard errors, MCMC diagnostics, cross-fitting, and IID bounds.
+  mdomain-quickstart: Build, evaluate, search, and plot a report card with a separate grade in each domain.
+  mdomain-decisions: Compare separate domain rules against joint cross-domain error protection.
+  figure-gallery: Browse all seven common-grade plot functions and their display options.

@@ -1,9 +1,10 @@
-# Check an Equality-Neutral Posterior Input
+# Validate a Tie-Aware Posterior Input
 
-The validator checks numerical values, declared equality classes and
-sampling history for a tie-aware analysis. It also detects changes
-introduced after the object was constructed by
-[`as_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_tie_draws.md).
+`validate_postrank_tie_draws()` checks the numerical arrays or
+finite-law states, declarations, criterion equality partitions, and
+content hash of a `postrank_tie_draws` object used in tie-aware mode
+(the workflow for posteriors with positive probability of exact equality
+under equality-neutral loss).
 
 ## Usage
 
@@ -15,43 +16,42 @@ validate_postrank_tie_draws(x)
 
 - x:
 
-  A `postrank_tie_draws` from
-  [`as_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_tie_draws.md).
+  A `postrank_tie_draws` object from
+  [`as_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_tie_draws.md)
+  or
+  [`read_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/read_postrank_tie_draws.md).
 
 ## Value
 
-Invisible `TRUE` on success. Invalid or changed input raises a
-structured error; unlike
+`TRUE` invisibly when `x` passes all checks. Unlike
 [`validate_postrank_draws()`](https://joonho112.github.io/postrank/reference/validate_postrank_draws.md),
-this function does not return a record with `valid = FALSE`.
+invalid or modified objects stop with a structured error rather than
+returning a report with `valid = FALSE`.
 
 ## Details
 
-Checks cover ordered axes, required source descriptions, sampling
-history, exact within-class equality and the object's content identity.
-Scientific equality classes for Monte Carlo draws remain declarations
-about the model; their agreement with finitely many draws is not proof
-of almost-sure equality. Complete finite laws determine equality from
-all positive-mass states. Validation does not establish scientific
-provenance, jointness, stationarity or convergence. Ordinary
-`postrank_draws` inputs are not accepted, and reusing the constructor
-does not silently accept mutations.
+Checks cover `"tie-aware-input-0.1"` fields, UTF-8 text, axis dimensions
+and order, sampling history or exact rational masses (`gmp` required for
+`"exact_finite_posterior"`), exact equality across every retained draw
+within declared structural classes, and `x$input_identity`. Ordinary
+`postrank_draws` objects are rejected. Passing validation confirms
+internal consistency, not scientific equality, MCMC convergence, or a
+numerical certificate.
 
 ## See also
 
 [`as_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/as_postrank_tie_draws.md),
-[`read_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/read_postrank_tie_draws.md)
+[`read_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/read_postrank_tie_draws.md),
+[`write_postrank_tie_draws()`](https://joonho112.github.io/postrank/reference/write_postrank_tie_draws.md)
 
 ## Examples
 
 ``` r
-if (requireNamespace("gmp", quietly = TRUE)) {
-  input <- read_postrank_tie_draws(system.file("examples", "synthetic-tie-aware.json",
-    package = "postrank"))
-  valid <- validate_postrank_tie_draws(input)
-  valid
-  input$equality$criterion_classes
-}
+input <- read_postrank_tie_draws(
+  system.file("examples", "synthetic-tie-aware.json", package = "postrank")
+)
+validate_postrank_tie_draws(input)
+input$equality$criterion_classes
 #> $S
 #>   A   B   C   D 
 #> "A" "A" "C" "D" 

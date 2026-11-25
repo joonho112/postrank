@@ -17,68 +17,85 @@ postrank_control(
 )
 }
 \arguments{
-\item{time_limit}{Positive time budget in seconds.}
+\item{time_limit}{Positive time budget in seconds (default \code{60}).}
 
-\item{threads}{Positive integer number of solver threads.}
+\item{threads}{Positive integer number of solver threads (default \code{1L}).}
 
-\item{seed}{Nonnegative integer solver seed; \code{NULL} is not accepted.}
+\item{seed}{Nonnegative integer solver seed (default \code{1304L}); \code{NULL} is not
+accepted.}
 
 \item{absolute_risk_gap}{Nonnegative absolute stopping gap in normalized
-risk units, converted to the solver objective scale where needed.}
+loss (\code{risk}) units (default \code{1e-8}), converted internally to the solver's
+objective scale where needed.}
 
-\item{relative_gap}{Nonnegative relative stopping gap for the solver
-objective. For weighted problems this centered objective differs from risk;
-inspect the returned absolute risk gap when comparing computations.}
+\item{relative_gap}{Nonnegative relative stopping gap on the solver's
+objective scale (default \code{0}). For weighted problems the solver uses a
+centered objective that differs from normalized loss, so compare runs
+using the returned absolute gap.}
 
-\item{strategy}{\code{"staged"} (default) or \code{"label_mip"}; see \code{\link[=postrank_solve]{postrank_solve()}}.}
+\item{strategy}{Search method, \code{"staged"} (the default) or \code{"label_mip"};
+see \code{\link[=postrank_solve]{postrank_solve()}}.}
 
-\item{engine}{Named list of staged-search options, such as \code{mip} and
-\code{mip_max_n}; see \code{\link[=postrank_solve]{postrank_solve()}} for their meanings and defaults.}
+\item{engine}{Named list of options for \code{"staged"} search: \code{mip} (\code{"auto"},
+\code{"always"} or \code{"never"}), \code{mip_max_n}, \code{lp_time_share},
+\code{local_search_passes}, \code{local_search_starts}, \code{max_cut_rounds} and
+\code{cuts_per_round}. Ignored when \code{strategy = "label_mip"}; see
+\code{\link[=postrank_solve]{postrank_solve()}} for defaults and meanings.}
 
-\item{verbose}{\code{NULL} (default) reads \code{getOption("postrank.verbose", FALSE)}
-when solving, not when this control object is created. Explicit \code{TRUE} or
-\code{FALSE} overrides that option. Controls progress messages from
-\code{\link[=postrank_solve]{postrank_solve()}} and the main solve in \code{\link[=postrank]{postrank()}}; nested diagnostic
-and grid solves produce no progress messages. It does not change numerical results.}
+\item{verbose}{Whether to print start and completion messages during
+\code{\link[=postrank_solve]{postrank_solve()}} and the main solve in \code{\link[=postrank]{postrank()}}. If \code{NULL} (the
+default), \code{getOption("postrank.verbose", FALSE)} is read at solve time.
+\code{TRUE} or \code{FALSE} overrides that option. Nested diagnostic and grid solves
+never print progress messages, and \code{verbose} does not change numerical
+results.}
 
-\item{output}{Logical; request the backend's own solver log, separately
-from the package progress messages controlled by \code{verbose}.}
+\item{output}{Logical scalar (default \code{FALSE}); whether to print the
+solver's own console log, independent of \code{verbose}.}
 
-\item{tolerances}{Named list overriding the solution validator's
-\code{feasibility}, \code{integrality} and \code{objective} tolerances; see
-\code{\link[=validate_postrank_solution]{validate_postrank_solution()}}.}
+\item{tolerances}{Named list overriding the solution checker's tolerances:
+\code{feasibility} (default \code{1e-7}), \code{integrality} (default \code{1e-6}) and
+\code{objective} (default \code{1e-7}); see \code{\link[=validate_postrank_solution]{validate_postrank_solution()}}.}
 }
 \value{
-A \code{postrank_control} named list containing the requested controls,
-validated tolerance defaults, \code{schema_version}, \code{provenance} and \code{warnings}.
+A \code{postrank_control} object, a named list containing:
+\itemize{
+\item \code{time_limit}, \code{threads}, \code{seed}, \code{absolute_risk_gap}, \code{relative_gap},
+\code{strategy}, \code{engine}, \code{verbose} and \code{output}: the validated controls;
+\item \code{tolerances}: named list with \code{feasibility}, \code{integrality} and
+\code{objective};
+\item \code{schema_version}: \code{"1"}, the version of this object's layout;
+\item \code{provenance}: package and R versions, creation time, and function name;
+\item \code{warnings}: character vector.
+}
 }
 \description{
-The computation controls specify the time budget, stopping gaps and search
-strategy for \code{\link[=postrank_solve]{postrank_solve()}} and related optimization functions. The loss
-and admissible grade reports are specified separately by
-\code{\link[=postrank_settings]{postrank_settings()}}. Solving functions also accept the control values as a
-named list.
+\code{postrank_control()} sets computation limits, stopping gaps, search strategy
+and progress messages for \code{\link[=postrank]{postrank()}}, \code{\link[=postrank_solve]{postrank_solve()}} and related
+optimization functions. Solving functions also accept these options as a
+named list. The loss and allowed grade reports are set separately by
+\code{\link[=postrank_settings]{postrank_settings()}}.
 }
 \details{
-Defaults are a 60-second budget, one thread, seed 1304, absolute risk gap
-\code{1e-8}, relative gap zero and staged search. Construction, validation and
-refinement can add overhead, so the budget is not a strict total wall-clock
-limit. A small solver gap concerns the supplied numerical problem, not
-posterior uncertainty or model calibration.
+Defaults are a 60-second time budget, 1 thread, seed 1304, absolute loss gap
+\code{1e-8}, relative gap \code{0}, and \code{"staged"} search. Problem construction,
+solution checks and refinement stages can add overhead, so \code{time_limit} is
+not a strict wall-clock cap on the whole R call. A small solver gap
+describes the optimization for the supplied probabilities, not posterior
+uncertainty or model adequacy.
 
-These controls do not choose display detail or alter the decision
-weights. \code{engine} accepts \code{mip}, \code{mip_max_n}, \code{lp_time_share},
-\code{local_search_passes}, \code{local_search_starts}, \code{max_cut_rounds} and
-\code{cuts_per_round}. Unknown control names are rejected.
+Unknown names in a control list, \code{engine} or \code{tolerances} stop the
+call with an error (\code{invalid_control} or \code{invalid_tolerances}). Controls
+do not change the decision loss or criterion weights.
 }
 \examples{
 ctrl <- postrank_control(time_limit = 10, absolute_risk_gap = 1e-6)
 ctrl$time_limit
-ctrl$verbose  # NULL inherits the option at solve time
+ctrl$verbose # NULL reads postrank.verbose when solving
+
 quiet <- postrank_control(verbose = FALSE)
 quiet$verbose
 }
 \seealso{
-\code{\link[=postrank_settings]{postrank_settings()}}, \code{\link[=postrank_solve]{postrank_solve()}}
+\code{\link[=postrank_settings]{postrank_settings()}}, \code{\link[=postrank_solve]{postrank_solve()}}, \link{postrank_options}
 }
 \concept{settings}

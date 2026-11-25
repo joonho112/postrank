@@ -6,91 +6,93 @@
 \format{
 A named list with five elements:
 \describe{
-\item{input}{A validated \code{postrank_probabilities} input for all 67
-counties and both criteria, from selected numerical pool A. It includes
-genuine marginal posterior means and fixed 95\% equal-tail intervals.}
-\item{units}{67 rows in input order, with county IDs and names, published
-estimates and standard errors, oriented point scales, and source fields.
-The published population count is descriptive; it is not a binomial
-denominator for the fitted model.}
-\item{alternatives}{\code{pool_B} supplies probabilities from a separate
-numerical run; \code{income} and \code{incarceration} are one-criterion
-inputs from pool A. All retain their same-target marginal summaries.}
-\item{reference}{Archived settings, seven grade vectors, A/B evaluations,
-single-criterion solver results, commonality comparisons, and numerical
-precision information. These were computed with postrank 0.9.0 and
-HiGHS 1.12.0.3; they are not fresh fits by the installed package.}
-\item{provenance}{Source-relative filenames and hashes, outcome dates,
-directions, model conditioning, attribution and CC BY 4.0 notice.}
+\item{input}{A \code{postrank_probabilities} object for the 67 counties on
+\code{income} and \code{incarceration} from MCMC pool A, with marginal posterior
+means and 95\% equal-tail intervals.}
+\item{units}{Data frame of 67 rows in input order: county IDs and names,
+published Opportunity Atlas point estimates and standard errors, and
+oriented point-scale columns. Published cohort counts are descriptive,
+not binomial denominators in the model.}
+\item{alternatives}{Alternative \code{postrank_probabilities} inputs: \code{pool_B}
+(from a second MCMC run on the same data and model) and single-criterion
+\code{income} and \code{incarceration} from pool A, each with matching 95\%
+marginal summaries.}
+\item{reference}{Archived settings, seven reference gradings, pool A and B
+loss evaluations, single-criterion and commonality summaries, and
+chain-based precision records (originally computed with postrank 0.9.0
+and HiGHS 1.12.0.3).}
+\item{provenance}{Source filenames and SHA-256 hashes, cohort and outcome
+dates, target orientations, model conditioning, attribution and the
+CC BY 4.0 license notice.}
 }
 }
 \source{
-Raj Chetty, John Friedman, Nathaniel Hendren, Maggie R. Jones and
+Chetty, Raj, John Friedman, Nathaniel Hendren, Maggie R. Jones and
 Sonya R. Porter (2022), \emph{Replication Data for: The Opportunity Atlas:
 Mapping the Childhood Roots of Social Mobility}, Harvard Dataverse V1.0,
-\doi{10.7910/DVN/NKCQM1}. Source: Opportunity Insights and U.S. Census Bureau.
-Selected CSV: \url{https://opportunityinsights.org/wp-content/uploads/2018/10/county_outcomes_simple.csv}.
-Observations and documented derivatives are available under
-\href{https://creativecommons.org/licenses/by/4.0/}{CC BY 4.0}.
-Changes include Alabama filtering, county identifiers and names, point
-scales, incarceration orientation, separate M1 posterior summaries, and
-compact package inputs. Attribution and earlier change notices are retained
-in \code{provenance$rights}. No endorsement is implied.
+\doi{10.7910/DVN/NKCQM1}; Opportunity Insights and U.S. Census Bureau
+(\code{county_outcomes_simple.csv}, licensed under
+\href{https://creativecommons.org/licenses/by/4.0/}{CC BY 4.0}). Alabama
+filtering, county labels, incarceration sign orientation, separate
+hierarchical fits and compact probability extraction by the package author;
+no endorsement is implied.
 }
 \usage{
 pr_case_alabama
 }
 \description{
-A compact example combining income and incarceration outcomes for children
-born in 1978--1983, at parent income percentile 25, with race and gender
-pooled. Income ranks use household incomes from 2014--2015; incarceration
-is measured on April 1, 2010. The example favors higher income and lower
-incarceration. It describes historical conditional outcomes, not current
-county conditions or the causal effect of a policy.
+\code{pr_case_alabama} is a two-criterion case-study dataset for all 67 Alabama
+counties adapted from the Opportunity Atlas replication data, combining
+adult household income rank (measured in 2014--2015) and incarceration rate
+(measured on April 1, 2010) for children born in 1978--1983 to parents at
+the 25th national income percentile (race and gender pooled). Larger target
+values mean higher adult income and lower incarceration. These values
+describe historical cohort outcomes, not current county conditions or causal
+policy effects.
 }
 \details{
-The two criteria were fitted separately using the published
-conditional estimates and total standard errors, with Gaussian observation
-models and logistic-normal partial pooling. Their comparison probabilities
-support additive expected loss; they do not supply a joint posterior across
-criteria. The retained probabilities are Monte Carlo estimates, including
-observed zeros and ones, not exact posterior-certainty statements.
+\strong{Model and numerical pools.} Each criterion was fitted separately to the
+published county point estimates and standard errors using a Gaussian
+observation model with logistic-normal partial pooling. The resulting
+pairwise probabilities support weighted additive expected loss without
+specifying a cross-criterion joint posterior, and observed Monte Carlo \code{0}
+or \code{1} frequencies are finite-sample estimates rather than exact posterior
+certainties.
 
-A and B use the same observations and model. They are separate numerical
-pools, not independent observational replications. Pool A uses 16,000
-retained draws per criterion and pool B uses 8,000 in the source study;
-those draws are not included here and the supplied inputs do not claim
-retained samples or newly computed diagnostics. B failed the source's
-sensitive-pair MCSE target of .005 in 486 directional criterion rows
-(maximum .00586708). Its fixed-action risk precision was assessed separately.
-The archived MCSEs came from the original chains; they cannot be recalculated
-from these probability summaries. Constant-trace pair MCSE is unavailable.
+Pool A (16,000 retained MCMC draws per criterion in the source study) and
+pool B (8,000 draws) are two MCMC runs on the exact same observations and
+model, not independent data replications. Original MCMC draws are not
+bundled, so archived chain-based MCSEs cannot be recomputed from \code{input}
+(and MCSE on constant zero/one pair traces is unavailable, not zero). In
+pool B, 486 directional criterion entries exceeded the source study's \code{0.005}
+pair-MCSE screen (maximum \code{0.00586708}).
 
-The archived common grades use weights .5/.5, withholding cost .20, and
-at most five grades. Their grade vector equals the expected-rank cut
-baseline B3 in this example. B3 optimizes within a fixed score order; the
-common optimization's lower bound has a different scope. Numerical solver
-gaps do not measure Monte Carlo error or posterior uncertainty.
+\strong{Intervals and archived settings.} Pass \code{level = 0.95} when requesting a
+report card in \code{\link[=postrank]{postrank()}} or \code{\link[=postrank_report_card]{postrank_report_card()}} (other levels cannot
+be computed from stored summaries). Incarceration is negated so lower
+incarceration means higher priority toward grade 1. At \code{weights = c(0.5, 0.5)},
+\code{tau = 0.20} and \code{G_max = 5} (see \code{postrank_example("case_alabama67")}), the
+common grading matches the expected-rank cut baseline \code{B3}, whose fixed-order
+optimality has a narrower scope than the unrestricted solver lower bound.
 
-To use the supplied marginal intervals in \code{postrank()} or
-\code{postrank_report_card()}, request \code{level = .95}; intervals at
-other levels cannot be recovered from the stored summaries. A negative
-incarceration target has higher priority when original incarceration is
-lower. This direction differs from the source project's later policy-v2
-needs analysis, which is not included.
+\strong{Source license.} Source observations and documented derivatives (including
+dependent stored results) are distributed under CC BY 4.0, with attribution
+and modification notices retained in \code{provenance$rights} (alongside
+historical preparation records) and the installed \code{DATA-NOTICE.md}.
 }
 \examples{
 x <- pr_case_alabama
-x$units[c("entity_id", "county_name", "income_estimate_points",
-          "incarceration_estimate_points")]
-postrank_posterior_means(x$input, level = .95)[1:3, ]
-ev <- postrank_evaluate(x$reference$actions$P, x$input,
-  weights = c(income = .5, incarceration = .5), tau = .2)
-ev[c("G", "N", "M", "primary_risk")]
+head(x$units[, c("entity_id", "county_name", "income_estimate_points",
+  "incarceration_estimate_points")])
+postrank_posterior_means(x$input, level = 0.95)[1:3, ]
+
+ala_res <- postrank_example("case_alabama67")
+get_risk(ala_res)
 }
 \seealso{
-\code{vignette("a4-alabama-opportunity", package = "postrank")},
-\code{\link[=postrank_probabilities]{postrank_probabilities()}}, \code{\link[=postrank_report_card]{postrank_report_card()}}
+\code{\link[=postrank_example]{postrank_example()}}, \code{\link[=postrank_probabilities]{postrank_probabilities()}},
+\code{\link[=postrank_report_card]{postrank_report_card()}},
+\code{vignette("a4-alabama-opportunity", package = "postrank")}
 }
 \concept{data}
 \keyword{datasets}

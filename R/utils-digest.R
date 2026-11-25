@@ -1,6 +1,6 @@
-# Versioned typed content encoding for tabular data digests (Chapter 14 CACHE-14,
-# T-pil-01). Locale-independent: UTF-8 length-prefixed names and strings, explicit
-# missing markers, little-endian fixed-width numbers. Encoding "postrank-table-v1":
+# Versioned typed binary encoding for tabular data digests. Locale-independent:
+# UTF-8 length-prefixed names and strings, explicit missing markers, and
+# little-endian fixed-width numbers. Encoding "postrank-table-v1":
 #   header  "postrank-table-v1" | nrow (int32) | ncol (int32)
 #   column  name (len-prefixed UTF-8) | type code (1 byte: 1 character, 2 double,
 #           3 integer, 4 logical) | values

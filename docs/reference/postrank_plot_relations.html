@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Plot Disclosed Comparisons or Their Changes — postrank_plot_relations • postrank</title>
+<title>Plot Disclosed Pair Relations or Their Changes — postrank_plot_relations • postrank</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,17 +16,19 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Plot Disclosed Comparisons or Their Changes — postrank_plot_relations">
-<meta name="description" content="The matrix displays the pairwise directions disclosed or withheld by a
-grading. When a second report is supplied, each relation is classified as
-unchanged, newly disclosed, newly withheld or reversed. The tiles represent
-selected actions. Posterior comparison probabilities are displayed
-separately by postrank_plot_pairwise().">
-<meta property="og:description" content="The matrix displays the pairwise directions disclosed or withheld by a
-grading. When a second report is supplied, each relation is classified as
-unchanged, newly disclosed, newly withheld or reversed. The tiles represent
-selected actions. Posterior comparison probabilities are displayed
-separately by postrank_plot_pairwise().">
+<meta property="og:title" content="Plot Disclosed Pair Relations or Their Changes — postrank_plot_relations">
+<meta name="description" content="postrank_plot_relations() draws an upper-triangular matrix showing whether
+each unordered entity pair is ordered (above or below) or left in the
+same grade (withheld), or how those pair relations change from one grading
+x to a second grading y. Tiles show chosen grading decisions rather than
+posterior comparison probabilities; use postrank_plot_pairwise() to view
+directional-error probabilities.">
+<meta property="og:description" content="postrank_plot_relations() draws an upper-triangular matrix showing whether
+each unordered entity pair is ordered (above or below) or left in the
+same grade (withheld), or how those pair relations change from one grading
+x to a second grading y. Tiles show chosen grading decisions rather than
+posterior comparison probabilities; use postrank_plot_pairwise() to view
+directional-error probabilities.">
 <meta property="og:image" content="https://joonho112.github.io/postrank/logo.png">
 </head>
 <body>
@@ -37,7 +39,7 @@ separately by postrank_plot_pairwise().">
 
     <a class="navbar-brand me-2" href="../index.html">postrank</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +48,7 @@ separately by postrank_plot_pairwise().">
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Introduction</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/a1-getting-started.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -64,17 +66,18 @@ separately by postrank_plot_pairwise().">
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Plot Disclosed Comparisons or Their Changes</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Plot Disclosed Pair Relations or Their Changes</h1>
 
       <div class="d-none name"><code>postrank_plot_relations.Rd</code></div>
     </div>
 
     <div class="ref-description section level2">
-    <p>The matrix displays the pairwise directions disclosed or withheld by a
-grading. When a second report is supplied, each relation is classified as
-unchanged, newly disclosed, newly withheld or reversed. The tiles represent
-selected actions. Posterior comparison probabilities are displayed
-separately by <code><a href="postrank_plot_pairwise.html">postrank_plot_pairwise()</a></code>.</p>
+    <p><code>postrank_plot_relations()</code> draws an upper-triangular matrix showing whether
+each unordered entity pair is ordered (<code>above</code> or <code>below</code>) or left in the
+same grade (<code>withheld</code>), or how those pair relations change from one grading
+<code>x</code> to a second grading <code>y</code>. Tiles show chosen grading decisions rather than
+posterior comparison probabilities; use <code><a href="postrank_plot_pairwise.html">postrank_plot_pairwise()</a></code> to view
+directional-error probabilities.</p>
     </div>
 
     <div class="section level2">
@@ -98,75 +101,86 @@ separately by <code><a href="postrank_plot_pairwise.html">postrank_plot_pairwise
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a>
 </dt>
 <dd><p>A <code>postrank_fit</code>, <code>postrank_analysis</code>, <code>postrank_baseline</code>, or a
-complete named integer grade vector. Grade 1 has highest priority.</p></dd>
+named integer/numeric vector of grades (<code>1</code> = highest priority).</p></dd>
 
 
 <dt id="arg-y">y<a class="anchor" aria-label="anchor" href="#arg-y"></a>
 </dt>
-<dd><p>Optional second fit, analysis, baseline or named grade vector on
-exactly the same entities. Changes run from <code>x</code> to <code>y</code>.</p></dd>
+<dd><p>Optional second <code>postrank_fit</code>, <code>postrank_analysis</code>,
+<code>postrank_baseline</code>, or named grade vector grading the exact same set of
+entity IDs as <code>x</code>. Relation changes are classified from <code>x</code> to <code>y</code>.</p></dd>
 
 
 <dt id="arg-labels">labels<a class="anchor" aria-label="anchor" href="#arg-labels"></a>
 </dt>
-<dd><p><code>"auto"</code> shows IDs or display names for at most 15 entities
-when every label has at most 20 characters; otherwise it shows positions
-in grade order. <code>"ids"</code> always shows the labels. <code>"none"</code> hides ticks and
-axis labels. Increase the canvas size when explicitly showing many IDs.</p></dd>
+<dd><p>Axis label mode: <code>"auto"</code> (the default) shows entity IDs (or
+<code>entity_labels</code>) when there are at most 15 entities and every display label
+has at most 20 characters, and otherwise shows integer positions in grade
+order; <code>"ids"</code> always shows display labels (wrapped at 18 characters on
+axes); <code>"none"</code> hides ticks and axis labels.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a>
 </dt>
-<dd><p>Unused.</p></dd>
+<dd><p>Unused; unnamed extra arguments are ignored. Pass <code>entity_labels</code>
+by name.</p></dd>
 
 
 <dt id="arg-entity-labels">entity_labels<a class="anchor" aria-label="anchor" href="#arg-entity-labels"></a>
 </dt>
-<dd><p>Optional partial named character vector mapping raw
-entity IDs to display names. Unmapped IDs keep their text. Names are
-wrapped on explicit ID axes and never alter data or ordering. Supply
-this argument by name.</p></dd>
+<dd><p>Optional named character vector mapping raw entity IDs
+to display names. Unmapped IDs keep their raw IDs. Labels affect tick text
+only and never alter axis order or <code>$data</code>.</p></dd>
 
 </dl>
 </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a>
 </h2>
-    <p>A <code>ggplot</code> object. If either fitted object lacks a validated grade,
-a status panel explains which result is unavailable.</p>
+    <p>A <code>ggplot</code> object whose <code>$data</code> table has one row per unordered pair
+(<code>entity_i</code>, <code>entity_j</code>, <code>i_pos</code>, <code>j_pos</code>, <code>code</code>, <code>relation</code>, plus
+<code>change</code> when <code>y</code> is supplied). If <code>x</code> or <code>y</code> is a fitted object without a
+checked grading, returns an empty status <code>ggplot</code> stating which object has
+no grades.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a>
 </h2>
-    <p>Both axes follow the first object's grade, then raw entity ID. Only the
-upper triangle is drawn, so every unordered pair appears once. In a
-single-report view, gray means that the comparison is withheld. A shared
-grade does not assert latent equality.</p>
-<p>In a change map, light gray means unchanged and medium gray means newly
-withheld. Unchanged includes pairs that were disclosed in the same direction
-and pairs withheld by both reports. Agreement uses all <code>M = choose(n, 2)</code>
-pairs. A relation change is not itself a loss improvement: reports from
-different policies need evaluation under a common loss for a risk comparison.
-The function reads grades and does not solve or calculate new posterior scores.</p>
+    <p>Both axes order entities by <code>x</code>'s grade (<code>1</code> first) and then raw entity ID
+(<code>radix</code> order), with the horizontal axis along the top and the vertical axis
+reversed so every unordered pair appears once in the upper triangle. In a
+single-grading plot, gray tiles mark pairs left in the same grade
+(<code>withheld</code>), which withholds ordering without asserting equal targets.</p>
+<p>When <code>y</code> is supplied, each pair is classified as <code>"unchanged"</code>,
+<code>"newly disclosed"</code>, <code>"newly withheld"</code>, or <code>"reversed"</code>. <code>"unchanged"</code>
+(light gray) covers both pairs ordered in the same direction by <code>x</code> and <code>y</code>
+and pairs withheld by both; <code>"newly withheld"</code> is medium gray. The subtitle
+reports category counts and overall agreement (<code>unchanged / M</code>, over all
+<code>M = choose(n, 2)</code> unordered pairs). Relation changes describe how two
+gradings differ on pairs, not which grading has lower risk; use
+<code><a href="postrank_compare.html">postrank_compare()</a></code> to evaluate rules under one shared loss.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a>
 </h2>
-    <div class="dont-index"><p><code><a href="postrank_plot_compare.html">postrank_plot_compare()</a></code>, <code><a href="get_relations.html">get_relations()</a></code>, <code><a href="postrank_plot_pairwise.html">postrank_plot_pairwise()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="postrank_plot_compare.html">postrank_plot_compare()</a></code>, <code><a href="get_relations.html">get_relations()</a></code>,
+<code><a href="postrank_plot_pairwise.html">postrank_plot_pairwise()</a></code>, <code><a href="postrank_plot_data.html">postrank_plot_data()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a>
 </h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Read prepared tutorial results; no model fitting or optimization.</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"scripts"</span>, <span class="st">"_vignette-setup.R"</span>, package <span class="op">=</span> <span class="st">"postrank"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"tutorial_one"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">one</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_one"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">postrank_plot_relations</span><span class="op">(</span><span class="va">one</span><span class="op">)</span></span></span>
-<span class="r-plt img"><a href="postrank_plot_relations-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Disclosed and withheld pair relations in the one-criterion six-site report." target="_blank" rel="noopener"><img src="postrank_plot_relations-1.png" alt="Disclosed and withheld pair relations in the one-criterion six-site report." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="postrank_plot_relations-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Disclosed and withheld pair relations in the one-criterion six-site report.">Open full-size figure</a></span></span>
-<span class="r-in"><span><span class="va">two</span> <span class="op">&lt;-</span> <span class="fu">load_or_compute</span><span class="op">(</span><span class="st">"tutorial_two"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">postrank_plot_relations</span><span class="op">(</span><span class="va">one</span>, <span class="va">two</span>, labels <span class="op">=</span> <span class="st">"ids"</span>,</span></span>
-<span class="r-in"><span>  entity_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="st">"Site A"</span>, F <span class="op">=</span> <span class="st">"Site F"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-plt img"><a href="postrank_plot_relations-1.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Ordered and unordered pair relations in the one-criterion six-site report." target="_blank" rel="noopener"><img src="postrank_plot_relations-1.png" alt="Ordered and unordered pair relations in the one-criterion six-site report." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="postrank_plot_relations-1.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Ordered and unordered pair relations in the one-criterion six-site report.">Open full-size figure</a></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">two</span> <span class="op">&lt;-</span> <span class="fu"><a href="postrank_example.html">postrank_example</a></span><span class="op">(</span><span class="st">"tutorial_two"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">postrank_plot_relations</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">one</span>,</span></span>
+<span class="r-in"><span>  <span class="va">two</span>,</span></span>
+<span class="r-in"><span>  labels <span class="op">=</span> <span class="st">"ids"</span>,</span></span>
+<span class="r-in"><span>  entity_labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>A <span class="op">=</span> <span class="st">"Site A"</span>, F <span class="op">=</span> <span class="st">"Site F"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><a href="postrank_plot_relations-2.png" class="figure-full-size" title="Open full-size figure" aria-label="Open full-size figure: Pair-relation changes from the one-criterion report to the common two-criterion report for the same six sites." target="_blank" rel="noopener"><img src="postrank_plot_relations-2.png" alt="Pair-relation changes from the one-criterion report to the common two-criterion report for the same six sites." width="700" height="433"></a><span class="figure-full-size-link d-block small"><a href="postrank_plot_relations-2.png" target="_blank" rel="noopener" aria-label="Open full-size figure: Pair-relation changes from the one-criterion report to the common two-criterion report for the same six sites.">Open full-size figure</a></span></span>
 </code></pre></div>
     </div>

@@ -1,4 +1,4 @@
-# 014 repair Phase 3 (Step 3.3): commonality cost and tau/q frontier.
+# Criterion commonality cost and tau/q frontier sweeps.
 testthat::test_that("commonality costs equal enumerated criterion minima", {
   testthat::skip_if_not_installed("highs")
   x <- pr_random_payload(91L, 30L, 5L, 3L, conflict = FALSE); pw <- postrank_pairwise(x)

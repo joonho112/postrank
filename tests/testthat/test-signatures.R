@@ -1,6 +1,6 @@
-# T-ref-05: the 24 inherited and 5 ported exports keep their formal names in source order and
-# their default expressions, except for the enumerated Appendix C changes (dagger rows).
-# T-rel-03: DESCRIPTION metadata of the 0.9.0 candidate. T-doc-09: the live-reproduction record.
+# Formal argument names and defaults of core exports match inherited-formals.json,
+# alongside DESCRIPTION metadata and live-reproduction reader checks.
+#
 test_that("inherited and ported signatures change only where Appendix C says so", {
   ref <- jsonlite::read_json(test_path("fixtures", "inherited-formals.json"))
   expect_length(ref, 29L)
@@ -27,7 +27,7 @@ test_that("inherited and ported signatures change only where Appendix C says so"
 
 test_that("DESCRIPTION carries the release's version, author, DOI and dependency sets", {
   d <- utils::packageDescription("postrank")
-  expect_identical(d$Version, "1.2.0")
+  expect_identical(d$Version, "1.3.0")
   expect_match(d$`Authors@R`, "0009-0006-4019-8703", fixed = TRUE)
   expect_match(d$Description, "<doi:10.1257/aer.20230700>", fixed = TRUE)
   deps <- function(field) sort(trimws(sub("\\(.*$", "", strsplit(gsub("\\s+", " ", d[[field]]), ",")[[1]])))
